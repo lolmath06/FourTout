@@ -1,0 +1,4 @@
+# Réglages pnpm (pnpm >= 10 lit ces clés ici, plus dans package.json).
+# esbuild est une dépendance de Vite : son script d'installation est légitime.
+allowBuilds:
+  esbuild: true
