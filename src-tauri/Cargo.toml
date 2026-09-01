@@ -19,6 +19,8 @@ tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+tauri-plugin-dialog = "2.7.3"
+tauri-plugin-fs = "2.5.2"
 
 [profile.release]
 # Application distribuée : on privilégie la taille du binaire.

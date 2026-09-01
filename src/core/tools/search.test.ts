@@ -118,3 +118,48 @@ describe("filtres", () => {
     expect(searchTools("pdf", { limit: 3 })).toHaveLength(3);
   });
 });
+
+describe("recherche des outils PDF de la phase 2", () => {
+  const first = (query: string) => ids(query)[0];
+
+  it("« assembler deux pdf » trouve la fusion", () => {
+    expect(first("assembler deux pdf")).toBe("pdf-merge");
+  });
+
+  it("« enlever page 3 » trouve la suppression de pages", () => {
+    expect(ids("enlever page 3")).toContain("pdf-remove-pages");
+  });
+
+  it("« tourner page pdf » trouve la rotation", () => {
+    expect(first("tourner page pdf")).toBe("pdf-rotate");
+  });
+
+  it("« convertir pdf en png » trouve PDF vers images", () => {
+    expect(first("convertir pdf en png")).toBe("pdf-to-images");
+  });
+
+  it("« mettre mot de passe pdf » trouve la protection", () => {
+    expect(first("mettre mot de passe pdf")).toBe("pdf-protect");
+  });
+
+  it("« découper un pdf » trouve la séparation", () => {
+    expect(ids("découper un pdf")).toContain("pdf-split");
+  });
+
+  it("« filigrane confidentiel » trouve le filigrane", () => {
+    expect(first("filigrane confidentiel")).toBe("pdf-watermark");
+  });
+
+  it("« numéroter les pages » trouve la numérotation", () => {
+    expect(first("numéroter les pages")).toBe("pdf-page-numbers");
+  });
+
+  it("distingue protéger et déverrouiller", () => {
+    expect(first("enlever le mot de passe d'un pdf")).toBe("pdf-unlock");
+  });
+
+  it("classe les outils disponibles avant ceux encore prévus", () => {
+    const results = searchTools("pdf", { limit: 5 });
+    expect(results[0].tool.status).toBe("available");
+  });
+});

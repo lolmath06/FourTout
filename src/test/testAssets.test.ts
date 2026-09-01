@@ -73,8 +73,15 @@ describe("générateur de test-assets", () => {
   });
 
   it("garde les fixtures légères", () => {
+    // Aucune fixture n'est versionnée (`test-assets/generated/` est ignoré par
+    // Git) : la contrainte porte sur le temps de génération et l'espace disque.
+    // `pdf-large-images.pdf` est volontairement lourd — c'est ce qui permet de
+    // mesurer un vrai gain de compression.
+    const DELIBERATELY_HEAVY = new Set(["pdf-large-images.pdf"]);
+
     for (const name of readdirSync(outDir)) {
-      expect(read(name).length, `${name} est trop volumineux`).toBeLessThan(64 * 1024);
+      const limit = DELIBERATELY_HEAVY.has(name) ? 8 * 1024 * 1024 : 512 * 1024;
+      expect(read(name).length, `${name} est trop volumineux`).toBeLessThan(limit);
     }
   });
 });

@@ -34,6 +34,36 @@ aucun téléchargement, aucune dépendance supplémentaire.
 
 ## Fixtures actuelles
 
+### Documents PDF (phase 2)
+
+Toutes ces pages portent un **grand numéro** et une **couleur distincte** :
+après un découpage, une extraction ou une réorganisation, l'ordre se vérifie
+d'un coup d'œil.
+
+| Fichier | Contenu | Utilité |
+| --- | --- | --- |
+| `pdf-single-page.pdf` | 1 page, « PAGE 1 » rouge | Fusion, conversions |
+| `pdf-three-pages.pdf` | 3 pages : rouge, vert, bleu | Fusion, PDF vers images, extraction de texte |
+| `pdf-five-pages.pdf` | 5 pages colorées | Découpage, extraction, suppression, réorganisation |
+| `pdf-ten-pages.pdf` | 10 pages colorées | Suppression multiple, numérotation, plages |
+| `pdf-with-metadata.pdf` | 2 pages, titre « Rapport de test FourTout », auteur « Equipe FourTout » | Lecture et écriture des métadonnées |
+| `pdf-with-image.pdf` | 1 page, texte + image embarquée | Extraction d'images |
+| `pdf-large-images.pdf` | 4 pages, images non compressées (~4,5 Mo) | Compression — c'est le fichier qui montre un vrai gain |
+| `pdf-protected.pdf` | 2 pages, **chiffré AES-256** | Déverrouillage, détection de document protégé |
+| `pdf-invalid.pdf` | En-tête `%PDF-` suivi de texte quelconque | Vérifier le message « document endommagé » |
+
+> **Mot de passe de `pdf-protected.pdf` : `fourtout`**
+
+### Images pour « Images vers PDF »
+
+| Fichier | Contenu |
+| --- | --- |
+| `page-red.png` | 600 × 400, fond rouge, texte « ROUGE » |
+| `page-green.png` | 600 × 400, fond vert, texte « VERT » |
+| `page-blue.png` | 600 × 400, fond bleu, texte « BLEU » |
+
+### Fixtures générales (phase 1)
+
 | Fichier | Contenu | Utilité |
 | --- | --- | --- |
 | `sample.txt` | Texte accentué, lignes dupliquées, e-mail, URL, nombres | Compteur de mots, nettoyage, extraction, tri, doublons |
@@ -48,8 +78,8 @@ aucun téléchargement, aucune dépendance supplémentaire.
 
 Au fur et à mesure que les outils arrivent :
 
-- PDF multipages, PDF protégé par mot de passe, PDF scanné (pour l'OCR) ;
 - GIF animé, image avec EXIF/GPS, image très grande ;
+- PDF scanné (image de texte, sans texte sélectionnable) pour l'OCR ;
 - audio court (MP3, WAV) et audio avec silences ;
 - vidéo courte (MP4, MKV) avec et sans piste audio ;
 - archives ZIP/7z, dont une archive chiffrée ;

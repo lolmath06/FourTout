@@ -28,6 +28,56 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
     import("./impl/TextCaseTool").then((m) => ({ default: m.TextCaseTool })),
   ),
   base64: lazy(() => import("./impl/Base64Tool").then((m) => ({ default: m.Base64Tool }))),
+
+  // Outils PDF (phase 2)
+  "pdf-merge": lazy(() =>
+    import("./impl/pdf/PdfMergeTool").then((m) => ({ default: m.PdfMergeTool })),
+  ),
+  "pdf-split": lazy(() =>
+    import("./impl/pdf/PdfSplitTool").then((m) => ({ default: m.PdfSplitTool })),
+  ),
+  "pdf-extract-pages": lazy(() =>
+    import("./impl/pdf/PdfExtractPagesTool").then((m) => ({ default: m.PdfExtractPagesTool })),
+  ),
+  "pdf-remove-pages": lazy(() =>
+    import("./impl/pdf/PdfRemovePagesTool").then((m) => ({ default: m.PdfRemovePagesTool })),
+  ),
+  "pdf-reorder-pages": lazy(() =>
+    import("./impl/pdf/PdfReorderTool").then((m) => ({ default: m.PdfReorderTool })),
+  ),
+  "pdf-rotate": lazy(() =>
+    import("./impl/pdf/PdfRotateTool").then((m) => ({ default: m.PdfRotateTool })),
+  ),
+  "images-to-pdf": lazy(() =>
+    import("./impl/pdf/ImagesToPdfTool").then((m) => ({ default: m.ImagesToPdfTool })),
+  ),
+  "pdf-to-images": lazy(() =>
+    import("./impl/pdf/PdfToImagesTool").then((m) => ({ default: m.PdfToImagesTool })),
+  ),
+  "pdf-watermark": lazy(() =>
+    import("./impl/pdf/PdfWatermarkTool").then((m) => ({ default: m.PdfWatermarkTool })),
+  ),
+  "pdf-page-numbers": lazy(() =>
+    import("./impl/pdf/PdfPageNumbersTool").then((m) => ({ default: m.PdfPageNumbersTool })),
+  ),
+  "pdf-metadata": lazy(() =>
+    import("./impl/pdf/PdfMetadataTool").then((m) => ({ default: m.PdfMetadataTool })),
+  ),
+  "pdf-extract-text": lazy(() =>
+    import("./impl/pdf/PdfExtractTextTool").then((m) => ({ default: m.PdfExtractTextTool })),
+  ),
+  "pdf-extract-images": lazy(() =>
+    import("./impl/pdf/PdfExtractImagesTool").then((m) => ({ default: m.PdfExtractImagesTool })),
+  ),
+  "pdf-protect": lazy(() =>
+    import("./impl/pdf/PdfProtectTool").then((m) => ({ default: m.PdfProtectTool })),
+  ),
+  "pdf-unlock": lazy(() =>
+    import("./impl/pdf/PdfUnlockTool").then((m) => ({ default: m.PdfUnlockTool })),
+  ),
+  "pdf-compress": lazy(() =>
+    import("./impl/pdf/PdfCompressTool").then((m) => ({ default: m.PdfCompressTool })),
+  ),
 };
 
 export function getToolComponent(toolId: string): ToolComponent | undefined {

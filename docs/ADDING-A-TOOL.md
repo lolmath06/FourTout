@@ -105,6 +105,8 @@ contient que l'outil lui-même.
 | Besoin | À utiliser |
 | --- | --- |
 | Recevoir des fichiers | `FileDropZone` + `constraintsForTool(tool)` |
+| Écrire un outil PDF | `PdfToolShell` — voir [PDF.md](PDF.md) |
+| Enregistrer le résultat | `saveFile` / `saveFilesToFolder` (`@/core/output/save`) |
 | Traitement long | `useJob()` (`@/core/jobs`) |
 | Message à l'utilisateur | `notify.success/error/warning/info/loading` |
 | Bouton, badge, état vide | `@/components/ui/*` |

@@ -55,7 +55,8 @@ Build Tools Visual Studio (C++).
 | `pnpm test:watch` | Tests en mode watch |
 | `pnpm lint` | ESLint |
 | `pnpm typecheck` | TypeScript sans émission |
-| `pnpm test:assets` | Régénère `test-assets/generated/` |
+| `pnpm test:assets` | Régénère `test-assets/generated/` (fixtures PDF incluses) |
+| `pnpm pdfjs:assets` | Recopie les ressources pdf.js dans `public/` |
 | `pnpm verify` | lint + typecheck + tests + build |
 
 Côté natif : `cd src-tauri && cargo check` puis `cargo test --lib`.
@@ -63,12 +64,19 @@ Côté natif : `cd src-tauri && cargo check` puis `cargo test --lib`.
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md) — structure du projet et décisions
+- [Architecture PDF](docs/PDF.md) — bibliothèques, opérations, limites
 - [Ajouter un outil](docs/ADDING-A-TOOL.md) — la procédure, en trois fichiers
 - [test-assets/](test-assets/README.md) — fixtures de développement
 
 ## État actuel
 
-Phase 1 : la fondation. Le catalogue complet est en place et navigable ; la
-plupart des outils affichent une page « bientôt disponible » en attendant leur
-implémentation. Voir `docs/ARCHITECTURE.md` pour ce qui est prêt à recevoir du
-code métier.
+**Phase 1** — la fondation : catalogue central de 131 outils, navigation,
+recherche en langage courant, favoris, récents, notifications.
+
+**Phase 2** — les outils PDF : seize opérations réellement utilisables,
+entièrement locales (fusion, découpage, extraction, suppression,
+réorganisation, rotation, images ↔ PDF, filigrane, numérotation, métadonnées,
+extraction de texte et d'images, protection et déverrouillage par mot de passe,
+compression). Voir [docs/PDF.md](docs/PDF.md).
+
+Les autres catégories affichent encore une page « bientôt disponible ».

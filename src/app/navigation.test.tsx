@@ -48,12 +48,23 @@ describe("navigation principale", () => {
   });
 
   it("ouvre la page d'un outil non implémenté", async () => {
-    renderApp("/tools/t/pdf-compress");
+    renderApp("/tools/t/ocr-document");
 
-    expect(await screen.findByRole("heading", { name: "Compresser un PDF" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: /OCR/ }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Bientôt")).toBeInTheDocument();
     expect(screen.getByText("Cet outil arrive prochainement")).toBeInTheDocument();
     expect(screen.getByText(/vos fichiers restent sur votre appareil/i)).toBeInTheDocument();
+  });
+
+  it("ouvre un outil PDF réellement implémenté", async () => {
+    renderApp("/tools/t/pdf-compress");
+
+    expect(await screen.findByRole("heading", { name: "Compresser un PDF" })).toBeInTheDocument();
+    expect(screen.getByText("Disponible")).toBeInTheDocument();
+    expect(await screen.findByText("Déposez votre PDF ici")).toBeInTheDocument();
+    expect(screen.queryByText("Cet outil arrive prochainement")).not.toBeInTheDocument();
   });
 
   it("ouvre la page d'un outil implémenté", async () => {

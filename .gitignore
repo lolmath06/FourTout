@@ -29,3 +29,6 @@ coverage
 
 # Fixtures générées (régénérables via `pnpm test:assets`)
 test-assets/generated/
+
+# Ressources pdf.js copiées depuis node_modules (voir scripts/sync-pdfjs-assets.mjs)
+public/pdfjs/

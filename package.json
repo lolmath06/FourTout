@@ -16,14 +16,22 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:assets": "node scripts/generate-test-assets.mjs",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+    "test:assets": "node scripts/generate-test-assets.mjs && node scripts/generate-pdf-assets.mjs",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "pdfjs:assets": "node scripts/sync-pdfjs-assets.mjs",
+    "predev": "node scripts/sync-pdfjs-assets.mjs",
+    "prebuild": "node scripts/sync-pdfjs-assets.mjs",
+    "pretest": "node scripts/sync-pdfjs-assets.mjs"
   },
   "dependencies": {
+    "@cantoo/pdf-lib": "^2.9.1",
     "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "^2.7.3",
+    "@tauri-apps/plugin-fs": "^2.5.2",
     "@tauri-apps/plugin-opener": "^2",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
+    "pdfjs-dist": "^6.3.289",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.9.1",
@@ -31,6 +39,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
+    "@napi-rs/canvas": "^1.0.8",
     "@tailwindcss/vite": "^4.1.13",
     "@tauri-apps/cli": "^2",
     "@testing-library/dom": "^10.4.1",
