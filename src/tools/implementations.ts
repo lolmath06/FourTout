@@ -84,6 +84,53 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   "pdf-recover-password": lazy(() =>
     import("./impl/pdf/PdfRecoverPasswordTool").then((m) => ({ default: m.PdfRecoverPasswordTool })),
   ),
+
+  // Outils Image (phase 3)
+  "image-convert": lazy(() =>
+    import("./impl/image/ImageConvertTool").then((m) => ({ default: m.ImageConvertTool })),
+  ),
+  "image-compress": lazy(() =>
+    import("./impl/image/ImageCompressTool").then((m) => ({ default: m.ImageCompressTool })),
+  ),
+  "image-resize": lazy(() =>
+    import("./impl/image/ImageResizeTool").then((m) => ({ default: m.ImageResizeTool })),
+  ),
+  "image-crop": lazy(() =>
+    import("./impl/image/ImageCropTool").then((m) => ({ default: m.ImageCropTool })),
+  ),
+  "image-rotate": lazy(() =>
+    import("./impl/image/RotateFlipTool").then((m) => ({ default: m.RotateFlipTool })),
+  ),
+  "image-flip": lazy(() =>
+    import("./impl/image/ImageFlipTool").then((m) => ({ default: m.ImageFlipTool })),
+  ),
+  "image-grayscale": lazy(() =>
+    import("./impl/image/ImageGrayscaleTool").then((m) => ({ default: m.ImageGrayscaleTool })),
+  ),
+  "image-adjust": lazy(() =>
+    import("./impl/image/ImageAdjustTool").then((m) => ({ default: m.ImageAdjustTool })),
+  ),
+  "image-blur": lazy(() =>
+    import("./impl/image/ImageBlurTool").then((m) => ({ default: m.ImageBlurTool })),
+  ),
+  "image-remove-transparency": lazy(() =>
+    import("./impl/image/ImageRemoveTransparencyTool").then((m) => ({ default: m.ImageRemoveTransparencyTool })),
+  ),
+  "image-color-transparent": lazy(() =>
+    import("./impl/image/ImageColorTransparentTool").then((m) => ({ default: m.ImageColorTransparentTool })),
+  ),
+  "image-ocr": lazy(() =>
+    import("./impl/image/ImageOcrTool").then((m) => ({ default: m.ImageOcrTool })),
+  ),
+  "image-add-text": lazy(() =>
+    import("./impl/image/ImageAddTextTool").then((m) => ({ default: m.ImageAddTextTool })),
+  ),
+  "image-metadata-read": lazy(() =>
+    import("./impl/image/ImageMetadataReadTool").then((m) => ({ default: m.ImageMetadataReadTool })),
+  ),
+  "image-metadata-strip": lazy(() =>
+    import("./impl/image/ImageMetadataStripTool").then((m) => ({ default: m.ImageMetadataStripTool })),
+  ),
 };
 
 export function getToolComponent(toolId: string): ToolComponent | undefined {

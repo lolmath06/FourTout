@@ -106,6 +106,10 @@ contient que l'outil lui-même.
 | --- | --- |
 | Recevoir des fichiers | `FileDropZone` + `constraintsForTool(tool)` |
 | Écrire un outil PDF | `PdfToolShell` — voir [PDF.md](PDF.md) |
+| Écrire un outil Image par lot | `ImageToolShell` (`@/components/image`) — voir [IMAGES.md](IMAGES.md) |
+| Traiter une image | `processImage` / `processImages` (`@/core/image`) |
+| Aperçu d'image (dont temps réel) | `ImagePreview`, `useSourceCanvas`, `useProcessedPreview` |
+| Reconnaître du texte (OCR) | `recognizeImages` (`@/core/ocr`) |
 | Enregistrer le résultat | `saveFile` / `saveFilesToFolder` (`@/core/output/save`) |
 | Traitement long | `useJob()` (`@/core/jobs`) |
 | Message à l'utilisateur | `notify.success/error/warning/info/loading` |

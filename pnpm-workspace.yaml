@@ -2,3 +2,4 @@
 # esbuild est une dépendance de Vite : son script d'installation est légitime.
 allowBuilds:
   esbuild: true
+  tesseract.js: false

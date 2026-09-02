@@ -142,6 +142,9 @@ import {
   Plus,
   Minus,
   Download,
+  Copy,
+  MapPin,
+  Contrast,
   type LucideIcon,
 } from "lucide-react";
 
@@ -298,6 +301,9 @@ export const ICONS: Record<string, LucideIcon> = {
   Wrench,
   X,
   Zap,
+  Copy,
+  MapPin,
+  Contrast,
 };
 
 /** Icône de repli lorsqu'un nom est inconnu : jamais d'écran cassé. */

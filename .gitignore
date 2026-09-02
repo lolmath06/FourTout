@@ -32,3 +32,7 @@ test-assets/generated/
 
 # Ressources pdf.js copiées depuis node_modules (voir scripts/sync-pdfjs-assets.mjs)
 public/pdfjs/
+
+# Ressources OCR copiées/téléchargées (voir scripts/sync-tesseract-assets.mjs)
+public/tesseract/
+public/tessdata/

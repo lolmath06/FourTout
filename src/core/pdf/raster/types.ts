@@ -8,7 +8,7 @@
  * les tests — mais le cœur métier ne connaît que cette interface.
  */
 
-export type RasterFormat = "png" | "jpeg";
+export type RasterFormat = "png" | "jpeg" | "webp";
 
 /** Image en mémoire, au format RVBA sur 8 bits par composante. */
 export interface RasterPixels {

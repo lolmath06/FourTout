@@ -39,7 +39,9 @@ class NodeRasterCanvas implements RasterCanvas {
     const buffer =
       format === "png"
         ? this.handle.toBuffer("image/png")
-        : this.handle.toBuffer("image/jpeg", Math.round(quality * 100));
+        : format === "webp"
+          ? this.handle.toBuffer("image/webp", Math.round(quality * 100))
+          : this.handle.toBuffer("image/jpeg", Math.round(quality * 100));
     return new Uint8Array(buffer);
   }
 

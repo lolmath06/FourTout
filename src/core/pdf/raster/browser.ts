@@ -9,6 +9,7 @@ import type { RasterBackend, RasterCanvas, RasterFormat, RasterPixels } from "./
 const MIME: Record<RasterFormat, string> = {
   png: "image/png",
   jpeg: "image/jpeg",
+  webp: "image/webp",
 };
 
 class BrowserCanvas implements RasterCanvas {
@@ -30,7 +31,7 @@ class BrowserCanvas implements RasterCanvas {
 
   async encode(format: RasterFormat, quality = 0.82): Promise<Uint8Array> {
     const blob = await new Promise<Blob | null>((resolve) =>
-      this.handle.toBlob(resolve, MIME[format], format === "jpeg" ? quality : undefined),
+      this.handle.toBlob(resolve, MIME[format], format === "png" ? undefined : quality),
     );
     if (!blob) throw new Error("Encodage de l'image impossible");
     return new Uint8Array(await blob.arrayBuffer());
@@ -63,7 +64,7 @@ export const browserRasterBackend: RasterBackend = {
     // `bytes.slice()` détache la vue d'un éventuel buffer partagé : le Blob
     // doit posséder ses octets, sinon un traitement suivant peut les écraser.
     const blob = new Blob([bytes.slice().buffer as ArrayBuffer], { type: mimeType });
-    const bitmap = await createImageBitmap(blob);
+    const bitmap = await createImageBitmap(blob, { imageOrientation: "none" });
     try {
       const canvas = create(bitmap.width, bitmap.height);
       canvas.context.drawImage(bitmap, 0, 0);
