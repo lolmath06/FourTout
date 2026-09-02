@@ -129,13 +129,17 @@ describe("compression PDF", () => {
     expect(strong.compressedSize).toBeLessThan(balanced.compressedSize);
   });
 
-  it("ne touche pas aux images en mode léger", async () => {
-    const bytes = await buildImagePdf(1, 200);
+  it("réencode les images à haute qualité en mode léger, sans les réduire", async () => {
+    const bytes = await buildImagePdf(1, 400);
     const result = await compressPdf({ name: "p.pdf", bytes }, "light");
 
-    expect(result.imagesRecompressed).toBe(0);
+    // Le mode léger tente réellement une réduction (correction du « +0,0 % »).
+    expect(result.imagesRecompressed).toBe(1);
     const reloaded = await PDFDocument.load(result.output.bytes);
-    expect(listEmbeddedImages(reloaded)[0].encoding).toBe("raw");
+    const image = listEmbeddedImages(reloaded)[0];
+    expect(image.encoding).toBe("jpeg");
+    // La résolution n'est pas réduite en mode léger.
+    expect(image.width).toBe(400);
   });
 
   it("dit la vérité quand il n'y a rien à gagner", async () => {
@@ -230,4 +234,32 @@ describe("archive ZIP", () => {
     ]);
     expect(new TextDecoder().decode(zip)).toContain("été/rapport final.txt");
   });
+});
+
+describe("niveaux de compression distincts", () => {
+  it("Original > Légère > Équilibrée > Forte sur un document compressible", async () => {
+    const bytes = await buildImagePdf(2, 500);
+    const original = bytes.length;
+
+    const light = await compressPdf({ name: "p.pdf", bytes }, "light");
+    const balanced = await compressPdf({ name: "p.pdf", bytes }, "balanced");
+    const strong = await compressPdf({ name: "p.pdf", bytes }, "strong");
+
+    expect(light.imagesRecompressed).toBe(2);
+    expect(balanced.imagesRecompressed).toBe(2);
+    expect(strong.imagesRecompressed).toBe(2);
+
+    // La légère gagne réellement de la place (corrige l'ancien « +0,0 % »).
+    expect(light.improved).toBe(true);
+    expect(light.compressedSize).toBeLessThan(original);
+
+    // Ordre attendu.
+    expect(light.compressedSize).toBeGreaterThan(balanced.compressedSize);
+    expect(balanced.compressedSize).toBeGreaterThan(strong.compressedSize);
+
+    for (const result of [light, balanced, strong]) {
+      const doc = await PDFDocument.load(result.output.bytes);
+      expect(doc.getPageCount()).toBe(2);
+    }
+  }, 30_000);
 });

@@ -19,9 +19,16 @@ use super::verifier::{EncryptionParams, PasswordVerifier};
 use super::wordlist::{read_meta, read_seeds};
 
 /// Paramètres de chiffrement transmis depuis le frontend (octets en hexa).
+///
+/// Le contrat de sérialisation est **explicite** : le frontend envoie du
+/// camelCase (`keyLength`, `encryptMetadata`), ce que `rename_all` fait
+/// correspondre aux champs snake_case de Rust. Sans cela, serde rejetait le
+/// payload avec « missing field `key_length` ». Un test verrouille ce contrat.
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct EncryptionParamsDto {
     pub revision: u8,
+    /// Longueur de clé en octets (envoyée sous `keyLength`).
     pub key_length: usize,
     /// /O en hexadécimal.
     pub o: String,
@@ -30,6 +37,7 @@ pub struct EncryptionParamsDto {
     pub p: i32,
     /// Premier élément de /ID en hexadécimal.
     pub id0: String,
+    /// /EncryptMetadata (envoyé sous `encryptMetadata`).
     pub encrypt_metadata: bool,
 }
 
@@ -234,6 +242,39 @@ mod tests {
         assert_eq!(hex_to_bytes("00ff10").unwrap(), vec![0x00, 0xff, 0x10]);
         assert!(hex_to_bytes("abc").is_err());
         assert!(hex_to_bytes("zz").is_err());
+    }
+
+    /// Contrat de sérialisation IPC : le JSON exact produit par le frontend
+    /// (camelCase) doit se désérialiser dans le DTO Rust. Reproduit la panne
+    /// « missing field `key_length` » si le `rename_all` disparaît.
+    #[test]
+    fn deserializes_the_exact_frontend_payload() {
+        let payload = r#"{
+            "revision": 4,
+            "keyLength": 16,
+            "o": "0abf965e",
+            "u": "5d945ae5",
+            "p": -3904,
+            "id0": "50fe383d",
+            "encryptMetadata": true
+        }"#;
+
+        let dto: EncryptionParamsDto = serde_json::from_str(payload).expect("payload frontend accepté");
+        assert_eq!(dto.revision, 4);
+        assert_eq!(dto.key_length, 16);
+        assert_eq!(dto.p, -3904);
+        assert!(dto.encrypt_metadata);
+        let params = dto.into_params().expect("conversion en octets");
+        assert_eq!(params.o, vec![0x0a, 0xbf, 0x96, 0x5e]);
+        assert_eq!(params.id0, vec![0x50, 0xfe, 0x38, 0x3d]);
+    }
+
+    /// Le snake_case (ancien contrat) doit désormais être refusé : preuve que
+    /// le contrat est bien le camelCase et non un hasard.
+    #[test]
+    fn rejects_snake_case_payload() {
+        let payload = r#"{"revision":4,"key_length":16,"o":"00","u":"00","p":0,"id0":"00","encrypt_metadata":true}"#;
+        assert!(serde_json::from_str::<EncryptionParamsDto>(payload).is_err());
     }
 
     #[test]

@@ -57,4 +57,15 @@ describe("extraction des paramètres de chiffrement", () => {
       readEncryptionInfo({ name: "x.pdf", bytes: new TextEncoder().encode("bonjour") }),
     ).rejects.toMatchObject({ code: "not-a-pdf" });
   });
+
+  it("émet exactement les clés camelCase attendues par le moteur natif", async () => {
+    // Contrat IPC : ces clés doivent correspondre au DTO Rust (rename_all camelCase).
+    const bytes = await encrypt({ userPassword: "topsecret", ownerPassword: "o", algorithm: "AES-128" });
+    const info = await readEncryptionInfo({ name: "p.pdf", bytes });
+    expect(Object.keys(info!.params).sort()).toEqual(
+      ["encryptMetadata", "id0", "keyLength", "o", "p", "revision", "u"],
+    );
+    expect(typeof info!.params.keyLength).toBe("number");
+    expect(typeof info!.params.encryptMetadata).toBe("boolean");
+  });
 });

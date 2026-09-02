@@ -1,15 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { renderThumbnail } from "@/core/pdf/operations/toImages";
 import { Icon } from "@/components/ui/Icon";
 import type { PdfSource } from "@/core/pdf/types";
+import { reorderByInsertion } from "./pageReorder";
 
 /**
  * Grille des pages d'un document, avec miniatures.
  *
- * Sert à réorganiser les pages par glisser-déposer et à en sélectionner
- * visuellement. Les miniatures sont rendues page par page en arrière-plan :
- * un document volumineux reste utilisable pendant leur apparition, et leur
- * absence n'empêche jamais l'opération — les cartes restent numérotées.
+ * Le glisser-déposer repose sur les **Pointer Events** (et non l'API HTML5
+ * Drag & Drop, peu fiable dans WebKitGTK) : capture du pointeur, calcul de la
+ * position d'insertion, repère visuel. Les miniatures sont produites hors écran
+ * puis affichées via `<img>` — aucune surface canvas n'est conservée.
  */
 
 interface PageGridProps {
@@ -23,6 +24,12 @@ interface PageGridProps {
   onToggle?: (page: number) => void;
 }
 
+interface DragState {
+  from: number;
+  /** Position d'insertion : la page ira devant `insertBefore` dans l'ordre. */
+  insertBefore: number;
+}
+
 export function PageGrid({
   source,
   pageCount,
@@ -32,39 +39,89 @@ export function PageGrid({
   onToggle,
 }: PageGridProps) {
   const thumbnails = useThumbnails(source, pageCount);
-  const [dragged, setDragged] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [drag, setDrag] = useState<DragState | null>(null);
 
-  const move = (from: number, to: number) => {
-    if (!onReorder || from === to) return;
-    const next = [...order];
-    const [page] = next.splice(from, 1);
-    next.splice(to, 0, page);
-    onReorder(next);
+  const reorderable = onReorder !== undefined;
+  const interactive = onToggle !== undefined;
+
+  /** Position d'insertion la plus proche du pointeur, dans [0, order.length]. */
+  const insertionAt = (clientX: number, clientY: number): number => {
+    let best = order.length;
+    let bestDist = Infinity;
+    for (let i = 0; i < order.length; i += 1) {
+      const el = cardRefs.current[i];
+      if (!el) continue;
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dist = Math.hypot(clientX - cx, clientY - cy);
+      if (dist < bestDist) {
+        bestDist = dist;
+        // Avant ou après la carte selon le côté où pointe le curseur.
+        best = clientX < cx ? i : i + 1;
+      }
+    }
+    return best;
+  };
+
+  const beginDrag = (index: number, event: React.PointerEvent<HTMLDivElement>) => {
+    if (!reorderable) return;
+    event.preventDefault();
+    containerRef.current?.setPointerCapture(event.pointerId);
+    setDrag({ from: index, insertBefore: index });
+  };
+
+  const updateDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!drag) return;
+    const insertBefore = insertionAt(event.clientX, event.clientY);
+    if (insertBefore !== drag.insertBefore) setDrag({ ...drag, insertBefore });
+  };
+
+  const endDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!drag) return;
+    containerRef.current?.releasePointerCapture(event.pointerId);
+    const { from, insertBefore } = drag;
+    setDrag(null);
+
+    // Insertion « devant l'index » : on retire d'abord, puis on réinsère en
+    // corrigeant le décalage si l'élément retiré était avant la cible.
+    let target = insertBefore;
+    if (from < insertBefore) target -= 1;
+    if (target !== from && onReorder) {
+      onReorder(reorderByInsertion(order, from, insertBefore));
+    }
   };
 
   return (
-    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+    <div
+      ref={containerRef}
+      onPointerMove={reorderable ? updateDrag : undefined}
+      onPointerUp={reorderable ? endDrag : undefined}
+      onPointerCancel={reorderable ? () => setDrag(null) : undefined}
+      className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6"
+    >
       {order.map((page, index) => {
         const isSelected = selected?.has(page) ?? false;
-        const interactive = onToggle !== undefined;
+        const isDragged = drag?.from === index;
+        // Repère d'insertion : trait avant cette carte.
+        const showMarkerBefore = drag != null && drag.insertBefore === index;
+        const showMarkerAfterLast =
+          drag != null && index === order.length - 1 && drag.insertBefore === order.length;
 
         return (
           <div
             key={page}
-            draggable={onReorder !== undefined}
-            onDragStart={() => setDragged(index)}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              if (dragged !== null) move(dragged, index);
-              setDragged(null);
+            ref={(el) => {
+              cardRefs.current[index] = el;
             }}
-            onDragEnd={() => setDragged(null)}
+            onPointerDown={reorderable ? (event) => beginDrag(index, event) : undefined}
             onClick={interactive ? () => onToggle(page) : undefined}
-            role={interactive ? "checkbox" : undefined}
+            role={interactive ? "checkbox" : reorderable ? "button" : undefined}
             aria-checked={interactive ? isSelected : undefined}
             aria-label={`Page ${page}`}
-            tabIndex={interactive ? 0 : undefined}
+            tabIndex={interactive || reorderable ? 0 : undefined}
             onKeyDown={
               interactive
                 ? (event) => {
@@ -75,19 +132,28 @@ export function PageGrid({
                   }
                 : undefined
             }
-            className={`group relative flex flex-col overflow-hidden rounded-[var(--radius-card)] border bg-[var(--ft-surface)] transition-colors ${
-              onReorder ? "cursor-grab active:cursor-grabbing" : ""
+            className={`group relative flex touch-none select-none flex-col overflow-hidden rounded-[var(--radius-card)] border bg-[var(--ft-surface)] transition-[border-color,opacity] ${
+              reorderable ? "cursor-grab active:cursor-grabbing" : ""
             } ${interactive ? "cursor-pointer" : ""} ${
               isSelected
                 ? "border-[var(--ft-accent)] ring-1 ring-[var(--ft-accent)]"
                 : "border-[var(--ft-border)] hover:border-[var(--ft-border-strong)]"
-            } ${dragged === index ? "opacity-40" : ""}`}
+            } ${isDragged ? "opacity-40 ring-2 ring-[var(--ft-accent)]" : ""}`}
           >
+            {/* Repère d'insertion (barre verticale) */}
+            {showMarkerBefore && (
+              <span className="pointer-events-none absolute -left-1 top-0 z-10 h-full w-0.5 rounded bg-[var(--ft-accent)]" />
+            )}
+            {showMarkerAfterLast && (
+              <span className="pointer-events-none absolute -right-1 top-0 z-10 h-full w-0.5 rounded bg-[var(--ft-accent)]" />
+            )}
+
             <div className="flex aspect-[3/4] items-center justify-center bg-[var(--ft-surface-2)]">
               {thumbnails[page] ? (
                 <img
                   src={thumbnails[page]}
                   alt={`Aperçu de la page ${page}`}
+                  draggable={false}
                   className="max-h-full max-w-full object-contain"
                 />
               ) : (
@@ -99,10 +165,8 @@ export function PageGrid({
               <span className="text-[11px] tabular-nums text-[var(--ft-text-muted)]">
                 Page {page}
               </span>
-              {isSelected && (
-                <Icon name="Check" size={12} className="text-[var(--ft-accent-text)]" />
-              )}
-              {onReorder && index !== page - 1 && (
+              {isSelected && <Icon name="Check" size={12} className="text-[var(--ft-accent-text)]" />}
+              {reorderable && index !== page - 1 && (
                 <span className="text-[10px] text-[var(--ft-accent-text)]">→ {index + 1}</span>
               )}
             </div>
@@ -115,7 +179,8 @@ export function PageGrid({
 
 /**
  * Rend les miniatures une par une et les publie au fur et à mesure.
- * Les URL d'objet sont libérées au démontage pour ne pas fuir de mémoire.
+ * Chaque miniature est un PNG hors écran affiché via `<img>` : aucune surface
+ * canvas n'est conservée. Les URL d'objet sont libérées au démontage.
  */
 function useThumbnails(source: PdfSource, pageCount: number): Record<number, string> {
   const [thumbnails, setThumbnails] = useState<Record<number, string>>({});
@@ -158,3 +223,4 @@ function useThumbnails(source: PdfSource, pageCount: number): Record<number, str
 
   return thumbnails;
 }
+

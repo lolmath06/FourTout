@@ -35,8 +35,11 @@ interface LevelSettings {
 }
 
 const LEVELS: Record<CompressionLevel, LevelSettings> = {
-  // Sans perte : uniquement la réécriture de la structure.
-  light: { recompressImages: false, maxDimension: Infinity, quality: 1 },
+  // Légère : réencode les images à très haute qualité, sans jamais réduire la
+  // résolution. Dégradation visuelle minime, mais vraie tentative de réduction
+  // (une image non compressée y gagne beaucoup). L'original est conservé si le
+  // réencodage ne fait pas gagner de place.
+  light: { recompressImages: true, maxDimension: Infinity, quality: 0.92 },
   balanced: { recompressImages: true, maxDimension: 1600, quality: 0.72 },
   strong: { recompressImages: true, maxDimension: 1100, quality: 0.5 },
 };
@@ -45,7 +48,7 @@ export const COMPRESSION_LEVELS: { value: CompressionLevel; label: string; hint:
   {
     value: "light",
     label: "Légère",
-    hint: "Sans perte : réécrit la structure du fichier, ne touche pas aux images.",
+    hint: "Réencode les images à très haute qualité, sans réduire la résolution. Dégradation minime.",
   },
   {
     value: "balanced",

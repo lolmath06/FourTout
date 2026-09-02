@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { installPolyfills } from "./core/platform/polyfills";
 import { App } from "./app/App";
 import { applyTheme, useSettings } from "./features/settings/store";
 import { setRasterBackend } from "./core/pdf/raster/types";
@@ -7,6 +8,10 @@ import { browserRasterBackend } from "./core/pdf/raster/browser";
 import { configurePdfJs } from "./core/pdf/pdfjs";
 import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import "./styles/app.css";
+
+// Comble les API manquantes de la WebView (WebKitGTK) avant tout usage de
+// pdf.js, qui est chargé paresseusement — donc toujours après cette ligne.
+installPolyfills();
 
 // Applique le thème avant le premier rendu pour éviter tout clignotement.
 applyTheme(useSettings.getState().theme);
