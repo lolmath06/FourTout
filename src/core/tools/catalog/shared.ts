@@ -4,7 +4,7 @@ import type { ToolDefinition, ToolInput, ToolOutput } from "../types";
  * Raccourcis d'entrées/sorties partagés par le catalogue.
  * Ils évitent de répéter les listes d'extensions dans chaque définition.
  */
-export const IMAGE_EXT = ["png", "jpg", "jpeg", "webp", "bmp", "gif", "tiff", "avif"];
+export const IMAGE_EXT = ["png", "jpg", "jpeg", "webp", "bmp", "gif", "tiff", "tif", "svg", "avif"];
 export const AUDIO_EXT = ["mp3", "wav", "flac", "ogg", "m4a", "aac", "opus"];
 export const VIDEO_EXT = ["mp4", "mkv", "webm", "mov", "avi", "gif"];
 export const ARCHIVE_EXT = ["zip", "7z", "tar", "gz", "tgz", "bz2", "xz", "rar"];

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { ColorField } from "@/components/image/ColorField";
 import { PreviewFrame } from "@/components/image/ImagePreview";
 import { useImagePreview } from "@/components/image/useImagePreview";
+import { useRenderedSize } from "@/components/image/useRenderedSize";
 import { processImage } from "@/core/image/pipeline";
 import { drawText, type TextItem } from "@/core/image/operations";
 import { rgbToHex, type Rgb } from "@/core/image/types";
@@ -69,6 +70,7 @@ function TextStage({
 }) {
   const preview = useImagePreview(file);
   const boxRef = useRef<HTMLDivElement>(null);
+  const rendered = useRenderedSize(boxRef);
   const dragRef = useRef<{ dx: number; dy: number } | null>(null);
 
   useEffect(() => {
@@ -104,7 +106,7 @@ function TextStage({
 
   return (
     <PreviewFrame maxHeight={440}>
-      <div ref={boxRef} className="relative inline-block select-none" style={{ containerType: "size" }}>
+      <div ref={boxRef} className="relative inline-block select-none">
         {preview.url && <img src={preview.url} alt={file.name} className="block max-h-[420px] max-w-full object-contain" draggable={false} />}
         <div
           onPointerDown={start}
@@ -112,7 +114,7 @@ function TextStage({
           style={{
             left: `${pos.x * 100}%`,
             top: `${pos.y * 100}%`,
-            fontSize: `${item.sizeFrac * 100}cqh`,
+            fontSize: `${Math.max(1, item.sizeFrac * rendered.height)}px`,
             color: rgbToHex(item.color),
             fontWeight: item.bold ? 700 : 400,
             fontFamily: "sans-serif",

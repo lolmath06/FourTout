@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ImageToolShell } from "@/components/image/ImageToolShell";
 import { Field, Fieldset, OptionGroup, Slider } from "@/components/pdf/Field";
 import { ColorField } from "@/components/image/ColorField";
+import { Icon } from "@/components/ui/Icon";
 import { processImages } from "@/core/image/pipeline";
 import { formatFileSize } from "@/core/files";
 import type { ImageFormat, Rgb } from "@/core/image/types";
@@ -38,8 +39,14 @@ export function ImageConvertTool({ tool }: ToolComponentProps) {
         };
       }}
     >
-      {() => (
+      {(files) => (
         <Fieldset>
+          {files.some((file) => file.extension === "gif") && (
+            <div className="sm:col-span-full flex items-start gap-2 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-xs text-[var(--ft-text-muted)]">
+              <Icon name="Info" size={14} className="mt-px shrink-0" />
+              Les GIF animés sont convertis à partir de leur première image : l'animation n'est pas conservée.
+            </div>
+          )}
           <Field label="Format de sortie" full>
             <OptionGroup ariaLabel="Format" value={format} onChange={setFormat} options={FORMATS} />
           </Field>

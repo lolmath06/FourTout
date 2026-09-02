@@ -253,6 +253,14 @@ describe("SVG sécurisé", () => {
     expect(safe).not.toContain("https://example.com");
   });
 
+  it("rastérise le SVG en PNG valide (SVG -> PNG)", async () => {
+    const canvas = await decodeImage(read("image-test.svg"), "svg");
+    expect([canvas.width, canvas.height]).toEqual([120, 120]);
+    const png = await encodeCanvas(canvas, "png");
+    expect([...png.subarray(0, 4)]).toEqual([0x89, 0x50, 0x4e, 0x47]);
+    expect(png.length).toBeGreaterThan(50);
+  });
+
   it("déduit la taille intrinsèque", () => {
     const safe = sanitizeSvg(new TextDecoder().decode(read("image-test.svg")));
     expect(svgIntrinsicSize(safe)).toEqual({ width: 120, height: 120 });

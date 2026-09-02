@@ -4,6 +4,7 @@ import { FileDropZone } from "@/components/files/FileDropZone";
 import { PdfSourceList } from "@/components/pdf/PdfSourceList";
 import { usePdfSources } from "@/components/pdf/usePdfSources";
 import { usePdfPage } from "@/components/pdf/usePdfPage";
+import { useRenderedSize } from "@/components/image/useRenderedSize";
 import { PreviewFrame } from "@/components/image/ImagePreview";
 import { ColorField } from "@/components/image/ColorField";
 import { Field, Fieldset, Slider, TextInput } from "@/components/pdf/Field";
@@ -120,10 +121,12 @@ function TextStage({ source, page, boxes, selected, onSelect, onAdd, onMove }: {
 }) {
   const render = usePdfPage(source, page);
   const boxRef = useRef<HTMLDivElement>(null);
+  const rendered = useRenderedSize(boxRef);
   const dragRef = useRef<{ id: string; dx: number; dy: number } | null>(null);
-  // Taille de police exprimée en unités de conteneur : exacte quelle que soit
-  // la taille d'affichage de la page (le PDF fait `widthPts` points de large).
-  const fontCqw = (size: number) => (render.widthPts > 0 ? `${(size / render.widthPts) * 100}cqw` : `${size}px`);
+  // Taille de police en pixels réels : la taille en points est mise à l'échelle
+  // d'après la hauteur d'affichage de la page (le PDF fait `heightPts` de haut).
+  const fontPx = (size: number) =>
+    render.heightPts > 0 && rendered.height > 0 ? `${(size / render.heightPts) * rendered.height}px` : `${size}px`;
 
   useEffect(() => {
     const onMoveEvt = (event: PointerEvent) => {
@@ -146,7 +149,7 @@ function TextStage({ source, page, boxes, selected, onSelect, onAdd, onMove }: {
 
   return (
     <PreviewFrame maxHeight={560}>
-      <div ref={boxRef} className="relative inline-block select-none" style={{ containerType: "size" }} onPointerDown={onStageDown}>
+      <div ref={boxRef} className="relative inline-block select-none" onPointerDown={onStageDown}>
         {render.url ? (
           <img src={render.url} alt={`Page ${page}`} className="block max-h-[540px] max-w-full object-contain" draggable={false} />
         ) : (
@@ -163,7 +166,7 @@ function TextStage({ source, page, boxes, selected, onSelect, onAdd, onMove }: {
               dragRef.current = { id: b.id, dx: (e.clientX - box.left) / box.width - b.x, dy: (e.clientY - box.top) / box.height - b.y };
             }}
             className={`absolute cursor-move whitespace-pre leading-none ${b.id === selected ? "outline outline-1 outline-[var(--ft-accent)]" : ""}`}
-            style={{ left: `${b.x * 100}%`, top: `${b.y * 100}%`, color: rgbToHex(b.color), fontWeight: b.bold ? 700 : 400, fontFamily: "Helvetica, Arial, sans-serif", fontSize: fontCqw(b.size) }}
+            style={{ left: `${b.x * 100}%`, top: `${b.y * 100}%`, color: rgbToHex(b.color), fontWeight: b.bold ? 700 : 400, fontFamily: "Helvetica, Arial, sans-serif", fontSize: fontPx(b.size) }}
           >
             {b.text}
           </div>
