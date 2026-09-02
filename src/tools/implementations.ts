@@ -66,6 +66,9 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   "pdf-extract-text": lazy(() =>
     import("./impl/pdf/PdfExtractTextTool").then((m) => ({ default: m.PdfExtractTextTool })),
   ),
+  "pdf-edit-text": lazy(() =>
+    import("./impl/pdf/PdfEditTextTool").then((m) => ({ default: m.PdfEditTextTool })),
+  ),
   "pdf-extract-images": lazy(() =>
     import("./impl/pdf/PdfExtractImagesTool").then((m) => ({ default: m.PdfExtractImagesTool })),
   ),

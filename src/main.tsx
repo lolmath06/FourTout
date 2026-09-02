@@ -6,6 +6,7 @@ import { applyTheme, useSettings } from "./features/settings/store";
 import { setRasterBackend } from "./core/pdf/raster/types";
 import { browserRasterBackend } from "./core/pdf/raster/browser";
 import { configurePdfJs } from "./core/pdf/pdfjs";
+import { installRecoveryShutdownGuard } from "./features/jobs/recovery";
 import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import "./styles/app.css";
 
@@ -20,6 +21,11 @@ applyTheme(useSettings.getState().theme);
 // jamais par un CDN (voir scripts/sync-pdfjs-assets.mjs).
 setRasterBackend(browserRasterBackend);
 configurePdfJs({ workerSrc: pdfWorkerUrl });
+
+// Un vrai rechargement / une fermeture ne doit pas laisser un calcul natif
+// tourner sans interface pour le suivre : on l'arrête proprement. La navigation
+// interne (SPA), elle, ne déclenche pas cet événement et laisse le job vivre.
+installRecoveryShutdownGuard();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

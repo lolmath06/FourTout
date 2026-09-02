@@ -7,6 +7,8 @@ import { ToastViewport } from "@/components/ui/ToastViewport";
 import { useFavorites } from "@/features/favorites/store";
 import { useRecents } from "@/features/recents/store";
 import { applyTheme, useSettings } from "@/features/settings/store";
+import { useActiveJobs } from "@/features/jobs/hooks";
+import { toolRoute } from "@/core/tools/types";
 
 interface NavItem {
   to: string;
@@ -26,6 +28,7 @@ export function AppShell() {
   const favorites = useFavorites((state) => state.ids);
   const recents = useRecents((state) => state.entries);
   const theme = useSettings((state) => state.theme);
+  const activeJobs = useActiveJobs();
 
   useEffect(() => {
     applyTheme(theme);
@@ -107,7 +110,29 @@ export function AppShell() {
           ))}
         </nav>
 
-        <div className="p-2">
+        <div className="space-y-1 p-2">
+          {activeJobs.length > 0 && (
+            <button
+              type="button"
+              onClick={() => navigate(toolRoute(activeJobs[0].toolId))}
+              title={
+                collapsed
+                  ? `${activeJobs.length} opération${activeJobs.length > 1 ? "s" : ""} en cours`
+                  : undefined
+              }
+              className={clsx(
+                "flex w-full items-center gap-2 rounded-md border border-[var(--ft-accent-soft)] bg-[var(--ft-accent-soft)] px-2.5 py-2 text-left text-xs font-medium text-[var(--ft-accent-text)] transition-colors hover:brightness-95",
+                collapsed && "justify-center px-0",
+              )}
+            >
+              <Icon name="Loader" size={14} className="shrink-0 animate-spin" />
+              {!collapsed && (
+                <span className="flex-1 truncate">
+                  {activeJobs.length} opération{activeJobs.length > 1 ? "s" : ""} en cours
+                </span>
+              )}
+            </button>
+          )}
           {!collapsed && (
             <p className="flex items-center gap-1.5 rounded-md px-2.5 py-2 text-[11px] leading-4 text-[var(--ft-text-faint)]">
               <Icon name="ShieldCheck" size={13} />

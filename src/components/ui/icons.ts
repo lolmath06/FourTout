@@ -132,6 +132,16 @@ import {
   Wrench,
   X,
   Zap,
+  ChevronLeft,
+  ZoomIn,
+  ZoomOut,
+  Maximize,
+  Undo2,
+  Redo2,
+  Save,
+  Plus,
+  Minus,
+  Download,
   type LucideIcon,
 } from "lucide-react";
 
@@ -145,6 +155,16 @@ import {
  * Ajouter un outil avec une nouvelle icône = ajouter son nom ici.
  */
 export const ICONS: Record<string, LucideIcon> = {
+  ChevronLeft,
+  ZoomIn,
+  ZoomOut,
+  Maximize,
+  Undo2,
+  Redo2,
+  Save,
+  Plus,
+  Minus,
+  Download,
   AlignLeft,
   ArrowDownAZ,
   ArrowLeft,

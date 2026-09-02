@@ -1,10 +1,15 @@
 //! Moteur de recherche : parcourt les graines, les décline en candidats et
 //! teste chaque candidat contre le document, en parallèle.
 //!
-//! La recherche est découpée en lots pour rester réactive : entre deux lots on
-//! publie l'avancement et on vérifie la demande d'annulation. À l'intérieur
-//! d'un lot, les candidats sont vérifiés sur tous les cœurs, et la recherche
-//! s'arrête dès qu'un mot de passe fonctionne.
+//! La recherche est découpée en lots pour publier l'avancement, mais
+//! l'annulation n'est **pas** liée à la granularité des lots : le drapeau
+//! d'annulation est consulté **à l'intérieur** de la vérification parallèle
+//! d'un lot. Ainsi, même avec l'AES-256 (volontairement lent, ~20 000 essais/s
+//! → un lot de 60 000 prendrait ~3 s), une demande d'arrêt court-circuite la
+//! recherche en cours de lot en quelques millisecondes, sans attendre la fin du
+//! lot. À l'intérieur d'un lot, les candidats sont vérifiés sur tous les cœurs,
+//! et la recherche s'arrête dès qu'un mot de passe fonctionne ou dès qu'une
+//! annulation est demandée.
 
 use std::collections::HashSet;
 use std::time::Instant;
@@ -15,7 +20,9 @@ use super::rules::{expand_into, Tier};
 use super::verifier::PasswordVerifier;
 
 /// Nombre de candidats visés par lot. Compromis entre parallélisme (assez de
-/// travail pour tous les cœurs) et réactivité (avancement/annulation fréquents).
+/// travail pour tous les cœurs) et cadence d'avancement. La réactivité de
+/// l'annulation ne dépend **pas** de cette valeur : elle est vérifiée au sein
+/// même du lot (voir `run_batch`).
 const BATCH_TARGET: usize = 60_000;
 
 /// Instantané d'avancement transmis à l'appelant.
@@ -41,13 +48,24 @@ pub enum Outcome {
     Cancelled { tested: u64, elapsed_ms: u128 },
 }
 
+/// Issue de la vérification parallèle d'un seul lot.
+enum BatchOutcome {
+    /// Un candidat valide a été trouvé.
+    Found(String),
+    /// Le lot a été entièrement testé sans succès.
+    Done,
+    /// L'annulation a court-circuité le lot avant sa fin.
+    Cancelled,
+}
+
 /// Lance la recherche.
 ///
 /// - `seeds` : itérateur de mots-graines (déjà limité au niveau si besoin).
 /// - `verifier` : vérificateur préparé pour ce document.
 /// - `total` : total prévisionnel de candidats, pour l'avancement.
 /// - `on_progress` : appelé au plus une fois par lot.
-/// - `should_cancel` : consulté entre les lots.
+/// - `should_cancel` : consulté **entre** les lots **et au sein** de chaque lot
+///   (depuis les fils rayon), d'où la borne `Sync`.
 pub fn search<S, P, C>(
     seeds: S,
     verifier: &PasswordVerifier,
@@ -59,7 +77,7 @@ pub fn search<S, P, C>(
 where
     S: Iterator<Item = String>,
     P: FnMut(Progress),
-    C: Fn() -> bool,
+    C: Fn() -> bool + Sync,
 {
     let started = Instant::now();
     let mut tested: u64 = 0;
@@ -68,17 +86,34 @@ where
     let mut scratch: Vec<String> = Vec::new();
     let mut seen: HashSet<String> = HashSet::new();
 
-    let run_batch = |batch: &mut Vec<String>, tested: &mut u64| -> Option<String> {
+    // Vérifie un lot sur tous les cœurs. Le drapeau d'annulation est consulté
+    // *dans* le prédicat parallèle : dès qu'il passe à vrai, `find_any` s'arrête
+    // au prochain candidat de chaque fil, sans attendre la fin du lot. On
+    // re-vérifie le candidat renvoyé pour distinguer une vraie trouvaille d'un
+    // court-circuit d'annulation (une seule vérification supplémentaire).
+    let run_batch = |batch: &mut Vec<String>, tested: &mut u64| -> BatchOutcome {
         if batch.is_empty() {
-            return None;
+            return BatchOutcome::Done;
         }
-        // La vérification (coûteuse) est parallélisée ; l'expansion des graines
-        // (bon marché) reste séquentielle en amont.
-        let found = batch.par_iter().find_any(|candidate| verifier.verify(candidate));
-        *tested += batch.len() as u64;
-        let result = found.cloned();
+        let size = batch.len() as u64;
+        let hit = batch
+            .par_iter()
+            .find_any(|candidate| should_cancel() || verifier.verify(candidate));
+        let outcome = match hit {
+            Some(candidate) if verifier.verify(candidate) => {
+                *tested += size;
+                BatchOutcome::Found(candidate.clone())
+            }
+            // `find_any` a rendu un candidat qui ne se vérifie pas : c'est donc
+            // le court-circuit d'annulation. On ne comptabilise pas ce lot.
+            Some(_) => BatchOutcome::Cancelled,
+            None => {
+                *tested += size;
+                BatchOutcome::Done
+            }
+        };
         batch.clear();
-        result
+        outcome
     };
 
     for seed in seeds {
@@ -90,8 +125,14 @@ where
         batch.append(&mut scratch);
 
         if batch.len() >= BATCH_TARGET {
-            if let Some(password) = run_batch(&mut batch, &mut tested) {
-                return Outcome::Found { password, tested, elapsed_ms: started.elapsed().as_millis() };
+            match run_batch(&mut batch, &mut tested) {
+                BatchOutcome::Found(password) => {
+                    return Outcome::Found { password, tested, elapsed_ms: started.elapsed().as_millis() };
+                }
+                BatchOutcome::Cancelled => {
+                    return Outcome::Cancelled { tested, elapsed_ms: started.elapsed().as_millis() };
+                }
+                BatchOutcome::Done => {}
             }
             let elapsed = started.elapsed();
             on_progress(Progress {
@@ -107,11 +148,15 @@ where
     }
 
     // Dernier lot partiel.
-    if let Some(password) = run_batch(&mut batch, &mut tested) {
-        return Outcome::Found { password, tested, elapsed_ms: started.elapsed().as_millis() };
+    match run_batch(&mut batch, &mut tested) {
+        BatchOutcome::Found(password) => {
+            Outcome::Found { password, tested, elapsed_ms: started.elapsed().as_millis() }
+        }
+        BatchOutcome::Cancelled => {
+            Outcome::Cancelled { tested, elapsed_ms: started.elapsed().as_millis() }
+        }
+        BatchOutcome::Done => Outcome::Exhausted { tested, elapsed_ms: started.elapsed().as_millis() },
     }
-
-    Outcome::Exhausted { tested, elapsed_ms: started.elapsed().as_millis() }
 }
 
 #[cfg(test)]
@@ -182,6 +227,99 @@ mod tests {
             Outcome::Cancelled { tested, .. } => assert!(tested < 1_000_000),
             _ => panic!("la recherche aurait dû être annulée"),
         }
+    }
+
+    #[test]
+    fn cancels_within_a_batch_not_only_between_batches() {
+        use std::sync::atomic::{AtomicUsize, Ordering};
+
+        // Corpus largement supérieur à un lot, mot de passe absent : sans
+        // vérification interne au lot, la recherche parcourrait des dizaines de
+        // millions de candidats avant de voir l'annulation.
+        let seeds: Vec<String> = (0..1_000_000).map(|i| format!("absent{i}")).collect();
+        let calls = AtomicUsize::new(0);
+        // Bascule à « annulé » après quelques milliers de vérifications, soit
+        // bien avant la fin du premier lot (60 000 candidats).
+        let should_cancel = || calls.fetch_add(1, Ordering::Relaxed) >= 3_000;
+
+        let outcome = search(seeds.into_iter(), &verifier(), Tier::Full, u64::MAX, |_| {}, should_cancel);
+
+        match outcome {
+            Outcome::Cancelled { .. } => {
+                // Preuve que le lot a été court-circuité : on n'a pas approché le
+                // corpus complet (des dizaines de millions de candidats).
+                assert!(
+                    calls.load(Ordering::Relaxed) < 200_000,
+                    "l'annulation aurait dû court-circuiter le lot ({} appels)",
+                    calls.load(Ordering::Relaxed)
+                );
+            }
+            _ => panic!("la recherche aurait dû être annulée en cours de lot"),
+        }
+    }
+
+    #[test]
+    fn a_running_search_stops_on_a_shared_flag_and_the_system_recovers() {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        use std::sync::Arc;
+        use std::thread;
+        use std::time::Duration;
+
+        // Une vraie recherche longue lancée sur un fil, annulée depuis l'extérieur.
+        let cancel = Arc::new(AtomicBool::new(false));
+        let seeds: Vec<String> = (0..2_000_000).map(|i| format!("absent{i}")).collect();
+        let flag = cancel.clone();
+        let handle = thread::spawn(move || {
+            let verifier = verifier();
+            search(
+                seeds.into_iter(),
+                &verifier,
+                Tier::Full,
+                u64::MAX,
+                |_| {},
+                move || flag.load(Ordering::SeqCst),
+            )
+        });
+
+        thread::sleep(Duration::from_millis(50));
+        let asked_at = Instant::now();
+        cancel.store(true, Ordering::SeqCst);
+        let outcome = handle.join().expect("le fil de recherche se termine");
+        let stop_latency = asked_at.elapsed();
+
+        assert!(matches!(outcome, Outcome::Cancelled { .. }), "arrêt attendu");
+        // Le corpus (2 M graines × 40 variantes = 80 M candidats) mettrait
+        // plusieurs minutes à être parcouru : un arrêt en une poignée de
+        // centaines de ms prouve que l'on n'attend pas la fin de la recherche.
+        // La cible « < 500 ms » vise le mode release réel (vérificateur ~50× plus
+        // rapide qu'en debug) ; ici on borde large pour rester fiable en debug.
+        assert!(
+            stop_latency < Duration::from_secs(3),
+            "arrêt trop lent : {stop_latency:?}"
+        );
+
+        // Le système reste fonctionnel : une seconde recherche retrouve un mot
+        // de passe atteignable, sans état résiduel de la première.
+        let verifier = verifier();
+        let outcome2 = search(
+            std::iter::once("topsecret".to_string()),
+            &verifier,
+            Tier::Full,
+            40,
+            |_| {},
+            || false,
+        );
+        assert!(matches!(outcome2, Outcome::Found { .. }), "relance fonctionnelle");
+    }
+
+    #[test]
+    fn an_immediate_cancel_is_never_missed() {
+        // Course « démarrage → annulation immédiate » : le drapeau est déjà vrai
+        // avant le premier lot. La recherche doit rendre « annulé », jamais
+        // « épuisé », même si le corpus est petit.
+        let seeds: Vec<String> = (0..500_000).map(|i| format!("word{i}")).collect();
+        let outcome = search(seeds.into_iter(), &verifier(), Tier::Full, u64::MAX, |_| {}, || true);
+        assert!(matches!(outcome, Outcome::Cancelled { .. }));
     }
 
     #[test]

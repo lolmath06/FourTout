@@ -46,11 +46,21 @@ export function PageGrid({
   const reorderable = onReorder !== undefined;
   const interactive = onToggle !== undefined;
 
+  // L'ordre courant, lisible depuis les écouteurs fenêtre sans capture périmée.
+  const orderRef = useRef(order);
+  orderRef.current = order;
+  const dragRef = useRef<DragState | null>(null);
+  const listenersRef = useRef<{
+    move: (event: PointerEvent) => void;
+    up: (event: PointerEvent) => void;
+  } | null>(null);
+
   /** Position d'insertion la plus proche du pointeur, dans [0, order.length]. */
   const insertionAt = (clientX: number, clientY: number): number => {
-    let best = order.length;
+    const current = orderRef.current;
+    let best = current.length;
     let bestDist = Infinity;
-    for (let i = 0; i < order.length; i += 1) {
+    for (let i = 0; i < current.length; i += 1) {
       const el = cardRefs.current[i];
       if (!el) continue;
       const rect = el.getBoundingClientRect();
@@ -66,40 +76,73 @@ export function PageGrid({
     return best;
   };
 
+  const detachListeners = () => {
+    const listeners = listenersRef.current;
+    if (!listeners) return;
+    window.removeEventListener("pointermove", listeners.move);
+    window.removeEventListener("pointerup", listeners.up);
+    window.removeEventListener("pointercancel", listeners.up);
+    listenersRef.current = null;
+  };
+
+  // Les mouvements sont suivis au niveau **fenêtre**, pas via la capture de
+  // pointeur du conteneur : sous WebKitGTK, `setPointerCapture` ne redélivre pas
+  // toujours les `pointermove`, ce qui laissait `insertBefore` figé et rendait
+  // le glisser-déposer sans effet (bug historique « page 5 → devant page 1 »).
   const beginDrag = (index: number, event: React.PointerEvent<HTMLDivElement>) => {
     if (!reorderable) return;
     event.preventDefault();
-    containerRef.current?.setPointerCapture(event.pointerId);
-    setDrag({ from: index, insertBefore: index });
-  };
-
-  const updateDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!drag) return;
-    const insertBefore = insertionAt(event.clientX, event.clientY);
-    if (insertBefore !== drag.insertBefore) setDrag({ ...drag, insertBefore });
-  };
-
-  const endDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!drag) return;
-    containerRef.current?.releasePointerCapture(event.pointerId);
-    const { from, insertBefore } = drag;
-    setDrag(null);
-
-    // Insertion « devant l'index » : on retire d'abord, puis on réinsère en
-    // corrigeant le décalage si l'élément retiré était avant la cible.
-    let target = insertBefore;
-    if (from < insertBefore) target -= 1;
-    if (target !== from && onReorder) {
-      onReorder(reorderByInsertion(order, from, insertBefore));
+    detachListeners();
+    const state: DragState = { from: index, insertBefore: index };
+    dragRef.current = state;
+    setDrag(state);
+    // La capture reste utile (curseur, suppression de sélection) mais n'est plus
+    // le mécanisme dont dépend le suivi ; on tolère qu'elle échoue.
+    try {
+      containerRef.current?.setPointerCapture(event.pointerId);
+    } catch {
+      /* certaines WebView refusent la capture : sans conséquence ici */
     }
+
+    const move = (moveEvent: PointerEvent) => {
+      const cur = dragRef.current;
+      if (!cur) return;
+      const insertBefore = insertionAt(moveEvent.clientX, moveEvent.clientY);
+      if (insertBefore !== cur.insertBefore) {
+        const next = { ...cur, insertBefore };
+        dragRef.current = next;
+        setDrag(next);
+      }
+    };
+    const up = (upEvent: PointerEvent) => {
+      const cur = dragRef.current;
+      detachListeners();
+      dragRef.current = null;
+      setDrag(null);
+      if (!cur || upEvent.type === "pointercancel") return;
+      const insertBefore = insertionAt(upEvent.clientX, upEvent.clientY);
+      const { from } = cur;
+      // Ne réordonne que si la position change réellement (un simple clic n'a
+      // aucun effet). `reorderByInsertion` corrige lui-même le décalage.
+      let target = insertBefore;
+      if (from < insertBefore) target -= 1;
+      if (target !== from && onReorder) {
+        onReorder(reorderByInsertion(orderRef.current, from, insertBefore));
+      }
+    };
+
+    listenersRef.current = { move, up };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
   };
+
+  // Filet de sécurité : si le composant est démonté en plein glissement.
+  useEffect(() => detachListeners, []);
 
   return (
     <div
       ref={containerRef}
-      onPointerMove={reorderable ? updateDrag : undefined}
-      onPointerUp={reorderable ? endDrag : undefined}
-      onPointerCancel={reorderable ? () => setDrag(null) : undefined}
       className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6"
     >
       {order.map((page, index) => {
@@ -214,7 +257,9 @@ function useThumbnails(source: PdfSource, pageCount: number): Record<number, str
     void run();
     return () => {
       cancelled = true;
-      urls.forEach(URL.revokeObjectURL);
+      // Enveloppé dans une flèche : `forEach` refuse un rappel absent (le cas
+      // en environnement de test où `URL.revokeObjectURL` n'existe pas).
+      urls.forEach((url) => URL.revokeObjectURL?.(url));
     };
     // `key` identifie le document : inutile de re-rendre si l'objet change
     // d'identité sans que son contenu change.

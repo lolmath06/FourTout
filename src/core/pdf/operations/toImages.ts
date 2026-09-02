@@ -2,7 +2,7 @@ import { openWithPdfJs } from "../pdfjs";
 import { report, throwIfCancelled } from "../document";
 import { PdfError } from "../errors";
 import { numberedName } from "../filenames";
-import { getRasterBackend } from "../raster/types";
+import { getRasterBackend, type RasterPixels } from "../raster/types";
 import type { OperationContext, OutputFile, PdfSource } from "../types";
 
 /**
@@ -133,6 +133,79 @@ export async function renderThumbnail(
     }).promise;
     page.cleanup();
     return await canvas.encode("png");
+  } finally {
+    await document.loadingTask?.destroy();
+  }
+}
+
+/** Résultat du rendu d'une page pour l'éditeur visuel. */
+export interface EditorPageRender {
+  /** Page encodée en PNG, pour un affichage `<img>` statique (WebKitGTK-safe). */
+  png: Uint8Array;
+  /** Largeur du rendu, en pixels. */
+  widthPx: number;
+  /** Hauteur du rendu, en pixels. */
+  heightPx: number;
+  /** Pixels RVBA du rendu, pour échantillonner fond et couleur du texte. */
+  pixels: RasterPixels;
+  /** Facteur pixels par point (px / pt). */
+  scale: number;
+  /** Dimensions de la page en points PDF. */
+  widthPts: number;
+  heightPts: number;
+}
+
+/**
+ * Rend une page pour l'éditeur de texte : un PNG statique (affiché via `<img>`,
+ * conformément à l'approche anti-artefacts WebKitGTK — aucune surface canvas
+ * persistante) **et** les pixels du rendu, nécessaires pour échantillonner la
+ * couleur de fond sous chaque zone de texte. Le canvas temporaire est libéré
+ * immédiatement.
+ */
+export async function renderPageForEditor(
+  source: PdfSource,
+  pageNumber: number,
+  targetWidthPx: number,
+): Promise<EditorPageRender> {
+  const backend = getRasterBackend();
+  if (!backend) throw new PdfError("render-unavailable");
+
+  const document = await openWithPdfJs(source);
+  try {
+    if (pageNumber < 1 || pageNumber > document.numPages) {
+      throw new PdfError("page-out-of-range", `Page ${pageNumber} inexistante.`);
+    }
+    const page = await document.getPage(pageNumber);
+    const base = page.getViewport({ scale: 1 });
+    const rawScale = targetWidthPx / base.width;
+    const scale = clampScale(rawScale, base);
+    const viewport = page.getViewport({ scale });
+
+    const canvas = backend.createCanvas(viewport.width, viewport.height);
+    const ctx = canvas.context as CanvasRenderingContext2D;
+    // Fond blanc : une page PDF est opaque, et cela évite un fond transparent
+    // (noir en JPEG) sous les zones échantillonnées.
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    await page.render({
+      canvasContext: canvas.context as never,
+      canvas: canvas.handle as never,
+      viewport,
+    }).promise;
+
+    const png = await canvas.encode("png");
+    const pixels = canvas.getPixels();
+    page.cleanup();
+
+    return {
+      png,
+      widthPx: canvas.width,
+      heightPx: canvas.height,
+      pixels,
+      scale,
+      widthPts: base.width,
+      heightPts: base.height,
+    };
   } finally {
     await document.loadingTask?.destroy();
   }

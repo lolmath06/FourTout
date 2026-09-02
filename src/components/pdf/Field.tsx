@@ -81,17 +81,22 @@ export function OptionGroup<T extends string>({
   onChange,
   options,
   ariaLabel,
+  disabled = false,
 }: {
   value: T;
   onChange: (value: T) => void;
   options: readonly { value: T; label: string; hint?: string }[];
   ariaLabel: string;
+  disabled?: boolean;
 }) {
   return (
     <div
       role="radiogroup"
       aria-label={ariaLabel}
-      className="flex flex-wrap gap-1 rounded-lg border border-[var(--ft-border)] bg-[var(--ft-bg)] p-1"
+      aria-disabled={disabled || undefined}
+      className={`flex flex-wrap gap-1 rounded-lg border border-[var(--ft-border)] bg-[var(--ft-bg)] p-1 ${
+        disabled ? "opacity-60" : ""
+      }`}
     >
       {options.map((option) => (
         <button
@@ -100,8 +105,9 @@ export function OptionGroup<T extends string>({
           role="radio"
           aria-checked={value === option.value}
           title={option.hint}
+          disabled={disabled}
           onClick={() => onChange(option.value)}
-          className={`flex-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
+          className={`flex-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed ${
             value === option.value
               ? "bg-[var(--ft-accent-soft)] text-[var(--ft-accent-text)]"
               : "text-[var(--ft-text-muted)] hover:text-[var(--ft-text)]"

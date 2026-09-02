@@ -128,7 +128,10 @@ plus longue.
    candidats).
 4. `recovery://done` : `found` (mot de passe + proposition d'enregistrer une
    copie déverrouillée), `exhausted`, `cancelled` ou `error`.
-5. `recover_cancel` interrompt entre deux lots.
+5. `recover_cancel` interrompt la recherche : le drapeau d'annulation est
+   consulté **au sein même** de chaque lot (dans la vérification parallèle), donc
+   l'arrêt est quasi immédiat (de l'ordre de la milliseconde en release), sans
+   attendre la fin du lot en cours. Voir `docs/JOBS.md`.
 
 ## Fixtures de test
 

@@ -52,6 +52,8 @@ describe("fixtures PDF livrées", () => {
       "pdf-large-images.pdf",
       "pdf-protected.pdf",
       "pdf-invalid.pdf",
+      "pdf-edit-text.pdf",
+      "pdf-edit-text-long.pdf",
       "page-red.png",
       "page-green.png",
       "page-blue.png",
@@ -69,6 +71,8 @@ describe("fixtures PDF livrées", () => {
       ["pdf-with-metadata.pdf", 2],
       ["pdf-with-image.pdf", 1],
       ["pdf-large-images.pdf", 4],
+      ["pdf-edit-text.pdf", 3],
+      ["pdf-edit-text-long.pdf", 1],
     ];
     for (const [name, pages] of expected) {
       const info = await inspectPdf(asset(name));

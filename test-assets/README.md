@@ -51,6 +51,8 @@ d'un coup d'œil.
 | `pdf-large-images.pdf` | 4 pages, images non compressées (~4,5 Mo) | Compression — c'est le fichier qui montre un vrai gain |
 | `pdf-protected.pdf` | 2 pages, **chiffré AES-256** | Déverrouillage, détection de document protégé |
 | `pdf-invalid.pdf` | En-tête `%PDF-` suivi de texte quelconque | Vérifier le message « document endommagé » |
+| `pdf-edit-text.pdf` | 3 pages : texte simple ; tailles/graisses/couleurs ; textes sur fond bleu et vert unis | **Modifier le texte d'un PDF** — édition simple, variantes, et fond coloré non détruit |
+| `pdf-edit-text-long.pdf` | 1 page, mot court « 2026 » isolé avec de la place à droite | Tester un remplacement nettement plus long (« année fiscale 2027 ») |
 
 > **Mot de passe de `pdf-protected.pdf` : `fourtout`**
 

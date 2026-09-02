@@ -35,6 +35,12 @@ describe("recherche par mot-clé", () => {
     expect(results).toEqual(expect.arrayContaining(["pdf-merge", "audio-merge", "video-merge"]));
   });
 
+  it("trouve « Modifier le texte d'un PDF » par ses formulations", () => {
+    expect(ids("modifier texte pdf")).toContain("pdf-edit-text");
+    expect(ids("changer texte pdf")).toContain("pdf-edit-text");
+    expect(ids("corriger texte dans pdf")).toContain("pdf-edit-text");
+  });
+
   it("trouve un outil par un alias anglais", () => {
     expect(ids("unzip")).toContain("archive-extract");
     expect(ids("word count")).toContain("text-statistics");

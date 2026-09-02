@@ -175,6 +175,56 @@ cartes restent numérotées et l'opération fonctionne normalement.
 n'introduit pas (moteur OCR, comparaison visuelle, réécriture sûre du contenu,
 rendu de documents bureautiques, synthèse vocale).
 
+## Modifier le texte d'un PDF (`pdf-edit-text`)
+
+Outil d'**édition visuelle** : on affiche la page réelle, on double-clique un
+texte, on le remplace, et l'export produit une copie qui montre le changement
+dans n'importe quel lecteur.
+
+### Affichage (couche de texte interactive)
+
+`renderPageForEditor` (`operations/toImages.ts`) rend la page **une fois** dans
+un canvas temporaire, l'encode en PNG puis **libère le canvas** : la page est
+ensuite affichée par un simple `<img>`, jamais par une surface canvas
+persistante — c'est la règle qui préserve le correctif anti-artefacts
+WebKitGTK. Par-dessus, une couche HTML de zones cliquables est construite à
+partir de `getTextContent()` : les `transform` de pdf.js sont exprimés en points
+utilisateur PDF (origine en bas à gauche), donc directement réutilisables par
+pdf-lib au dessin, sans conversion d'axe. Seule la page courante est rendue
+(navigation, zoom) ; le rendu précédent et son URL d'objet sont libérés.
+
+### Nature réelle de l'édition — remplacement visuel, assumé
+
+On ne réécrit **pas** les flux de contenu ni les polices *subset* du document :
+c'est irréalisable de façon fiable sur des PDF quelconques (encodages de
+glyphes, `Tj`/`TJ`, matrices, sous-ensembles). L'édition est un **remplacement
+visuel** (`operations/editText.ts`) : recouvrir l'ancien texte par un aplat de
+la **couleur de fond échantillonnée** sous la zone, puis redessiner le nouveau
+texte (taille, graisse, couleur approchées, police standard proche).
+
+Pour ne pas détruire un fond coloré, une photo ou un graphique, on **détecte
+l'uniformité** du fond autour de la zone (`sampleTextStyle` : médiane et
+dispersion d'un anneau autour du texte). Si le fond n'est pas uniforme,
+l'édition est **refusée** et signalée (« Cette zone ne peut pas être modifiée
+proprement ») plutôt que d'abîmer la page. Le texte pivoté ou vertical est
+également refusé (v1). Un texte de remplacement trop long est réduit pour tenir,
+sans descendre sous 60 % du corps ; au-delà, il est laissé tel quel et le
+débordement est signalé.
+
+**Limite honnête** : le texte d'origine reste présent dans le flux de contenu
+(recouvert, donc invisible et non imprimé, mais encore *extractible* par un
+copier-coller). Le remplacement vise le rendu visuel — impression, partage du
+PDF — pas l'effacement du calque texte sous-jacent. Une vraie réécriture du
+contenu (ou un caviardage) relève d'outils distincts (`pdf-redact`, à venir).
+
+### Ce qui est bien pris en charge / limité
+
+Bien : texte horizontal, polices standard, petits changements, documents
+administratifs, factures simples, rapports, fonds unis (y compris colorés).
+Limité (signalé) : texte vectorisé, scans (aucun texte éditable → message
+dédié), fonds non uniformes, glyphes exotiques, texte vertical ou pivoté. Pas
+d'OCR à ce stade.
+
 ## Ressources pdf.js
 
 pdf.js a besoin des polices standard (documents qui ne les embarquent pas, cas

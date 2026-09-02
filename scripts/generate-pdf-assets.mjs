@@ -177,6 +177,69 @@ write(
   write("pdf-large-images.pdf", await document.save());
 }
 
+/* ------------------------------------------------ éditeur de texte PDF */
+
+/**
+ * Fixture pour « Modifier le texte d'un PDF ». Trois pages pensées pour les
+ * essais manuels : texte simple, variantes de taille/graisse/couleur, et texte
+ * sur fond coloré (pour vérifier qu'une édition ne crée pas un rectangle blanc
+ * destructeur).
+ */
+{
+  const document = await PDFDocument.create();
+  const regular = await document.embedFont(StandardFonts.Helvetica);
+  const bold = await document.embedFont(StandardFonts.HelveticaBold);
+
+  // Page 1 — texte simple sur fond blanc.
+  {
+    const page = document.addPage([420, 595]);
+    page.drawText("Rapport annuel 2026", { x: 40, y: 520, size: 24, font: bold, color: rgb(0.1, 0.1, 0.12) });
+    page.drawText("Entreprise FourTout", { x: 40, y: 480, size: 16, font: regular, color: rgb(0.2, 0.2, 0.2) });
+    page.drawText("Montant : 1250 euros", { x: 40, y: 450, size: 16, font: regular, color: rgb(0.2, 0.2, 0.2) });
+  }
+
+  // Page 2 — tailles, graisses et couleurs variées.
+  {
+    const page = document.addPage([420, 595]);
+    page.drawText("Petit texte gris", { x: 40, y: 540, size: 10, font: regular, color: rgb(0.45, 0.45, 0.45) });
+    page.drawText("Texte moyen", { x: 40, y: 500, size: 16, font: regular, color: rgb(0.15, 0.15, 0.15) });
+    page.drawText("Grand titre gras", { x: 40, y: 450, size: 30, font: bold, color: rgb(0.1, 0.1, 0.1) });
+    page.drawText("Rouge important", { x: 40, y: 400, size: 18, font: bold, color: rgb(0.8, 0.15, 0.15) });
+    page.drawText("Bleu discret", { x: 40, y: 360, size: 18, font: regular, color: rgb(0.15, 0.3, 0.75) });
+    page.drawText("Vert de validation", { x: 40, y: 320, size: 18, font: regular, color: rgb(0.15, 0.55, 0.25) });
+  }
+
+  // Page 3 — texte sur fond coloré uni : une édition doit conserver le fond.
+  {
+    const page = document.addPage([420, 595]);
+    // Bandeau bleu uni couvrant la zone du titre.
+    page.drawRectangle({ x: 0, y: 470, width: 420, height: 90, color: rgb(0.16, 0.32, 0.62) });
+    page.drawText("Titre sur fond bleu", { x: 40, y: 500, size: 24, font: bold, color: rgb(1, 1, 1) });
+    // Encadré vert uni avec du texte foncé.
+    page.drawRectangle({ x: 40, y: 300, width: 340, height: 60, color: rgb(0.78, 0.92, 0.78) });
+    page.drawText("Texte sur fond vert", { x: 60, y: 322, size: 18, font: regular, color: rgb(0.1, 0.25, 0.12) });
+  }
+
+  write("pdf-edit-text.pdf", await document.save());
+}
+
+/**
+ * Fixture pour tester un remplacement nettement plus long : un mot court, seul
+ * sur sa ligne, avec beaucoup de place à droite (« 2026 » → « année fiscale
+ * 2027 » sans réduction agressive).
+ */
+{
+  const document = await PDFDocument.create();
+  const regular = await document.embedFont(StandardFonts.Helvetica);
+  const bold = await document.embedFont(StandardFonts.HelveticaBold);
+  const page = document.addPage([600, 400]);
+  page.drawText("Exercice", { x: 40, y: 320, size: 26, font: bold, color: rgb(0.12, 0.12, 0.12) });
+  // Mot court isolé, largeur d'origine faible, espace libre à droite.
+  page.drawText("2026", { x: 40, y: 260, size: 26, font: regular, color: rgb(0.12, 0.12, 0.12) });
+  page.drawText("Total : 100 EUR", { x: 40, y: 200, size: 20, font: regular, color: rgb(0.2, 0.2, 0.2) });
+  write("pdf-edit-text-long.pdf", await document.save());
+}
+
 /* ------------------------------------------------------------- protégé */
 
 {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { constraintsForTool, type SelectedFile } from "@/core/files";
 import { FileDropZone } from "@/components/files/FileDropZone";
 import { OptionGroup } from "@/components/pdf/Field";
@@ -8,14 +8,15 @@ import { readEncryptionInfo, type EncryptionInfo } from "@/core/pdf/encryptionIn
 import { toPdfError } from "@/core/pdf/errors";
 import { unlockPdf } from "@/core/pdf/operations/protect";
 import { saveFile } from "@/core/output/save";
+import { isRecoveryAvailable, type RecoveryProgress, type RecoveryTier } from "@/core/recovery/client";
 import {
-  isRecoveryAvailable,
-  startRecovery,
-  type RecoveryDone,
-  type RecoveryProgress,
-  type RecoverySession,
-  type RecoveryTier,
-} from "@/core/recovery/client";
+  cancelRecoveryJob,
+  clearRecoveryJob,
+  recoverySource,
+  startRecoveryJob,
+} from "@/features/jobs/recovery";
+import { useToolJob } from "@/features/jobs/hooks";
+import type { Job } from "@/features/jobs/store";
 import { notify } from "@/features/notifications/store";
 import type { PdfSource } from "@/core/pdf/types";
 import type { ToolComponentProps } from "@/tools/implementations";
@@ -29,7 +30,26 @@ const TIERS: { value: RecoveryTier; label: string; hint: string }[] = [
   { value: "full", label: "Complet", hint: "~14 millions de candidats (dictionnaire + règles). Peut être long." },
 ];
 
-type Phase = "idle" | "running" | "found" | "exhausted" | "cancelled" | "error";
+/** Traduit l'état du job global en phase d'affichage. */
+type Phase = "idle" | "running" | "cancelling" | "found" | "exhausted" | "cancelled" | "error";
+
+function phaseOf(job: Job | undefined): Phase {
+  if (!job) return "idle";
+  if (job.status === "running") return "running";
+  if (job.status === "cancelling") return "cancelling";
+  if (job.status === "error") return "error";
+  // status === "done" : le détail vient du résultat natif.
+  switch (job.result?.status) {
+    case "found":
+      return "found";
+    case "exhausted":
+      return "exhausted";
+    case "cancelled":
+      return "cancelled";
+    default:
+      return "error";
+  }
+}
 
 export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
   const [files, setFiles] = useState<SelectedFile[]>([]);
@@ -38,11 +58,11 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
   const [inspectError, setInspectError] = useState<string | null>(null);
   const [tier, setTier] = useState<RecoveryTier>("quick");
 
-  const [phase, setPhase] = useState<Phase>("idle");
-  const [progress, setProgress] = useState<RecoveryProgress | null>(null);
-  const [result, setResult] = useState<RecoveryDone | null>(null);
-  const [total, setTotal] = useState(0);
-  const sessionRef = useRef<RecoverySession | null>(null);
+  // Le traitement appartient au gestionnaire global, pas à ce composant :
+  // quitter la page ne l'arrête pas et n'en perd pas la trace. On s'y reconnecte.
+  const job = useToolJob(tool.id);
+  const phase = phaseOf(job);
+  const busy = phase === "running" || phase === "cancelling";
 
   const available = isRecoveryAvailable();
 
@@ -52,9 +72,6 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
     setSource(null);
     setInfo(null);
     setInspectError(null);
-    setPhase("idle");
-    setResult(null);
-    setProgress(null);
 
     const file = files[0];
     if (!file?.file) return;
@@ -78,67 +95,36 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
     };
   }, [files]);
 
-  // Au démontage : arrête la recherche en cours (sinon le fil natif continue
-  // sans personne pour l'écouter) puis se désabonne.
-  useEffect(
-    () => () => {
-      void sessionRef.current?.cancel();
-      sessionRef.current?.dispose();
-    },
-    [],
-  );
-
   const start = useCallback(async () => {
     if (!source || !info) return;
-    setPhase("running");
-    setResult(null);
-    setProgress(null);
-
     try {
-      const session = await startRecovery(info.params, tier, {
-        onProgress: (p) => setProgress(p),
-        onDone: (done) => {
-          setResult(done);
-          setPhase(
-            done.status === "found"
-              ? "found"
-              : done.status === "exhausted"
-                ? "exhausted"
-                : done.status === "cancelled"
-                  ? "cancelled"
-                  : "error",
-          );
-          sessionRef.current?.dispose();
-          sessionRef.current = null;
-        },
-      });
-      sessionRef.current = session;
-      setTotal(session.total);
+      await startRecoveryJob({ source, params: info.params, tier });
     } catch (error) {
-      setPhase("error");
-      setResult({
-        status: "error",
-        tested: 0,
-        elapsedMs: 0,
-        message: error instanceof Error ? error.message : String(error),
-      });
+      notify.error("Recherche impossible", error instanceof Error ? error.message : String(error));
     }
   }, [source, info, tier]);
 
   const cancel = useCallback(() => {
-    void sessionRef.current?.cancel();
-  }, []);
+    if (job) void cancelRecoveryJob(job.id);
+  }, [job]);
+
+  const dismiss = useCallback(() => {
+    if (job) clearRecoveryJob(job.id);
+  }, [job]);
 
   const unlockAndSave = useCallback(async () => {
-    if (!source || !result?.password) return;
+    const password = job?.result?.password;
+    // Le document est retrouvé via le job (fonctionne même après navigation).
+    const doc = (job && recoverySource(job.id)) ?? source;
+    if (!doc || !password) return;
     try {
-      const output = await unlockPdf(source, result.password);
+      const output = await unlockPdf(doc, password);
       const saved = await saveFile(output);
       if (saved.saved) notify.success("Copie déverrouillée enregistrée", saved.path);
     } catch (error) {
       notify.error("Déverrouillage impossible", toPdfError(error).message);
     }
-  }, [source, result]);
+  }, [job, source]);
 
   return (
     <div className="space-y-4">
@@ -155,13 +141,24 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
         </p>
       )}
 
+      {/* Une recherche relancée depuis un autre appareil/onglet peut déjà tourner
+          sans qu'un fichier soit déposé ici : on affiche alors le job seul. */}
+      {job && busy && !info && (
+        <div className="flex items-center gap-2.5 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] px-3 py-2.5 text-sm">
+          <Icon name="Loader" size={16} className="shrink-0 animate-spin text-[var(--ft-accent)]" />
+          <span>
+            Recherche en cours sur <span className="font-medium">{job.title}</span>.
+          </span>
+        </div>
+      )}
+
       <FileDropZone
         constraints={constraintsForTool(tool)}
         files={files}
         onChange={setFiles}
         label="Déposez le PDF protégé"
         hint="Le document et les mots de passe testés restent sur votre appareil."
-        disabled={phase === "running"}
+        disabled={busy}
       />
 
       {inspectError && (
@@ -187,6 +184,7 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
               value={tier}
               onChange={setTier}
               options={TIERS}
+              disabled={busy}
             />
             <p className="mt-2 text-xs text-[var(--ft-text-faint)]">
               {TIERS.find((t) => t.value === tier)?.hint}
@@ -195,10 +193,10 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
             </p>
 
             <div className="mt-4 flex items-center gap-2">
-              {phase === "running" ? (
-                <Button variant="secondary" onClick={cancel}>
-                  <Icon name="X" size={15} />
-                  Arrêter
+              {busy ? (
+                <Button variant="secondary" onClick={cancel} disabled={phase === "cancelling"}>
+                  <Icon name={phase === "cancelling" ? "Loader" : "X"} size={15} className={phase === "cancelling" ? "animate-spin" : undefined} />
+                  {phase === "cancelling" ? "Arrêt en cours…" : "Arrêter"}
                 </Button>
               ) : (
                 <Button variant="primary" onClick={start} disabled={!available}>
@@ -211,17 +209,18 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
         </>
       )}
 
-      {(phase === "running" || progress) && <StatsPanel phase={phase} progress={progress} total={total} />}
+      {(busy || job?.progress) && <StatsPanel phase={phase} progress={job?.progress ?? null} total={job?.total ?? 0} />}
 
-      {phase === "found" && result?.password && (
-        <ResultFound password={result.password} tested={result.tested} onUnlock={unlockAndSave} />
+      {phase === "found" && job?.result?.password && (
+        <ResultFound password={job.result.password} tested={job.result.tested} onUnlock={unlockAndSave} onDismiss={dismiss} />
       )}
       {phase === "exhausted" && (
         <ResultBanner
           icon="CircleAlert"
           tone="warn"
           title="Mot de passe non trouvé dans ce niveau"
-          detail={`${formatInt(result?.tested ?? 0)} candidats testés. Essayez un niveau plus large, ou ce mot de passe n'est pas dans le corpus.`}
+          detail={`${formatInt(job?.result?.tested ?? 0)} candidats testés. Essayez un niveau plus large, ou ce mot de passe n'est pas dans le corpus.`}
+          onDismiss={dismiss}
         />
       )}
       {phase === "cancelled" && (
@@ -229,11 +228,12 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
           icon="Info"
           tone="muted"
           title="Recherche arrêtée"
-          detail={`${formatInt(result?.tested ?? 0)} candidats testés avant l'arrêt.`}
+          detail={`${formatInt(job?.result?.tested ?? 0)} candidats testés avant l'arrêt.`}
+          onDismiss={dismiss}
         />
       )}
       {phase === "error" && (
-        <ResultBanner icon="CircleAlert" tone="danger" title="Échec" detail={result?.message ?? ""} />
+        <ResultBanner icon="CircleAlert" tone="danger" title="Échec" detail={job?.error ?? job?.result?.message ?? ""} onDismiss={dismiss} />
       )}
     </div>
   );
@@ -254,12 +254,13 @@ function StatsPanel({
   const elapsed = progress?.elapsedMs ?? 0;
   const remaining = rate > 0 && knownTotal > tested ? (knownTotal - tested) / rate : undefined;
   const ratio = knownTotal > 0 ? Math.min(1, tested / knownTotal) : 0;
+  const active = phase === "running" || phase === "cancelling";
 
   return (
     <div className="space-y-2 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-4">
       <div className="flex items-center justify-between text-sm">
         <span className="flex items-center gap-1.5 font-medium">
-          {phase === "running" && <Icon name="Loader" size={14} className="animate-spin text-[var(--ft-accent)]" />}
+          {active && <Icon name="Loader" size={14} className="animate-spin text-[var(--ft-accent)]" />}
           {formatInt(tested)} / {formatInt(knownTotal)} candidats
         </span>
         <span className="tabular-nums text-[var(--ft-text-muted)]">{Math.round(ratio * 100)} %</span>
@@ -294,17 +295,28 @@ function ResultFound({
   password,
   tested,
   onUnlock,
+  onDismiss,
 }: {
   password: string;
   tested: number;
   onUnlock: () => void;
+  onDismiss: () => void;
 }) {
   return (
     <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklch,var(--ft-ok)_45%,var(--ft-border))] bg-[color-mix(in_oklch,var(--ft-ok)_6%,transparent)] p-4">
-      <p className="flex items-center gap-2 text-sm font-medium">
-        <Icon name="CircleCheck" size={18} className="text-[var(--ft-ok)]" />
-        Mot de passe trouvé
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="flex items-center gap-2 text-sm font-medium">
+          <Icon name="CircleCheck" size={18} className="text-[var(--ft-ok)]" />
+          Mot de passe trouvé
+        </p>
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="text-xs text-[var(--ft-text-muted)] hover:text-[var(--ft-text)]"
+        >
+          Fermer
+        </button>
+      </div>
       <div className="mt-2 flex items-center gap-2">
         <code className="flex-1 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface)] px-3 py-2 font-mono text-sm">
           {password}
@@ -336,11 +348,13 @@ function ResultBanner({
   tone,
   title,
   detail,
+  onDismiss,
 }: {
   icon: string;
   tone: "warn" | "danger" | "muted";
   title: string;
   detail: string;
+  onDismiss?: () => void;
 }) {
   const color =
     tone === "danger"
@@ -351,10 +365,19 @@ function ResultBanner({
   return (
     <div className="flex items-start gap-2.5 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-4">
       <Icon name={icon} size={16} className={`mt-0.5 shrink-0 ${color}`} />
-      <div>
+      <div className="min-w-0 flex-1">
         <p className="text-sm font-medium">{title}</p>
         {detail && <p className="mt-0.5 text-xs text-[var(--ft-text-muted)]">{detail}</p>}
       </div>
+      {onDismiss && (
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="shrink-0 text-xs text-[var(--ft-text-muted)] hover:text-[var(--ft-text)]"
+        >
+          Fermer
+        </button>
+      )}
     </div>
   );
 }
