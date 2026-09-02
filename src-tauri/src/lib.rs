@@ -6,6 +6,7 @@
 //! doivent être natifs (ffmpeg, OCR, chiffrement, accès disque), en gardant la
 //! règle : tout se fait localement, rien n'est envoyé sur le réseau.
 
+pub mod image_native;
 pub mod recovery;
 
 use serde::Serialize;
@@ -38,6 +39,7 @@ pub fn run() {
         .manage(recovery::command::RecoveryState::default())
         .invoke_handler(tauri::generate_handler![
             app_info,
+            image_native::encode_webp,
             recovery::command::recover_password,
             recovery::command::recover_cancel,
         ])

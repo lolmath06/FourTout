@@ -217,6 +217,37 @@ write("sample.pdf", makePdf());
 /* --------------------------------------------------------------- corrompu */
 
 // Fichier délibérément invalide : utile pour tester la gestion d'erreur.
+write(
+  "document-simple.txt",
+  `FourTout - document de test
+
+Ceci est un fichier texte simple destine a la conversion en PDF.
+Il contient plusieurs paragraphes, des accents (eee aaa), et une
+ligne un peu plus longue pour verifier le retour a la ligne automatique
+lors de la mise en page du document produit.
+
+Merci d'utiliser FourTout.
+`,
+);
+
+write(
+  "document-markdown.md",
+  `# Rapport FourTout
+
+Un paragraphe d'introduction avec du texte **en gras** et de l'*italique*.
+
+## Points cles
+
+- Premier element de liste
+- Deuxieme element
+- Troisieme element
+
+## Conclusion
+
+Fin du document de demonstration.
+`,
+);
+
 write("corrupted.pdf", Buffer.from("%PDF-1.4\nceci n'est pas un PDF valide\n", "latin1"));
 
 console.log(`Fixtures générées dans test-assets/generated/ :`);

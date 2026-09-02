@@ -1,10 +1,12 @@
 // @vitest-environment node
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { getRasterBackend, setRasterBackend } from "@/core/pdf/raster/types";
 import { nodeRasterBackend } from "@/test/nodeRaster";
+import { loadImage } from "@napi-rs/canvas";
 import type { SelectedFile } from "@/core/files";
 import type { SKRSContext2D } from "@napi-rs/canvas";
 import { applyOrientation, decodeImage, encodeCanvas } from "./codec";
@@ -301,5 +303,27 @@ describe("chaîne de traitement et nommage", () => {
     await expect(
       processImages([fileOf("image-landscape.jpg")], (c) => c, { format: "png" }, { signal: controller.signal }),
     ).rejects.toThrow();
+  });
+});
+
+describe("validation binaire croisée (fichier réel relu)", () => {
+  it("produit des PNG/JPEG/WebP relisibles par un décodeur indépendant", async () => {
+    // On écrit réellement le fichier sur disque puis on le relit avec une autre
+    // implémentation (@napi-rs/canvas). Un fichier tronqué ou corrompu échoue.
+    const dir = mkdtempSync(join(tmpdir(), "fourtout-img-"));
+    const source = fileOf("image-colors.png");
+    for (const [format, ext, w, h] of [
+      ["png", "png", 80, 80],
+      ["jpeg", "jpg", 80, 80],
+      ["webp", "webp", 80, 80],
+    ] as const) {
+      const output = await processImage(source, (c) => c, { format });
+      const path = join(dir, `out.${ext}`);
+      writeFileSync(path, output.bytes);
+      // Taille disque = taille en mémoire : pas de troncature à l'écriture.
+      expect(readFileSync(path).length).toBe(output.bytes.length);
+      const reloaded = await loadImage(readFileSync(path));
+      expect([reloaded.width, reloaded.height]).toEqual([w, h]);
+    }
   });
 });

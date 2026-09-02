@@ -1,4 +1,5 @@
 import { getRasterBackend, type RasterCanvas } from "@/core/pdf/raster/types";
+import { isTauri } from "@/core/platform";
 import type { SelectedFile } from "@/core/files";
 import { ImageError } from "./errors";
 import { sanitizeSvg, svgIntrinsicSize } from "./svg";
@@ -179,24 +180,47 @@ export function flattenOnColor(source: RasterCanvas, color: Rgb): RasterCanvas {
 /**
  * Encode un canvas. Le JPEG ne gère pas la transparence : on aplatit alors sur
  * un fond blanc (ou la couleur demandée) pour éviter un fond noir.
+ *
+ * Cas WebP : la WebView WebKitGTK ne sait pas encoder le WebP — `toBlob` y
+ * renvoie silencieusement du PNG, produisant des `.webp` en réalité PNG,
+ * refusés par les visionneuses GNOME. Dans l'application, on encode donc le
+ * WebP nativement (Rust) à partir du PNG valide du canvas. Hors application
+ * (navigateur, tests Node), `canvas.encode("webp")` fonctionne et sert de repli.
  */
 export async function encodeCanvas(
   source: RasterCanvas,
   format: ImageFormat,
   options: { quality?: number; background?: Rgb } = {},
 ): Promise<Uint8Array> {
-  const backend = backendOrThrow();
-  void backend;
   let canvas = source;
   if (format === "jpeg") {
     canvas = flattenOnColor(source, options.background ?? { r: 255, g: 255, b: 255 });
   } else if (options.background) {
     canvas = flattenOnColor(source, options.background);
   }
+
+  if (format === "webp" && isTauri()) {
+    return encodeWebpNative(canvas);
+  }
+
   try {
     return await canvas.encode(format, options.quality ?? 0.85);
   } catch (error) {
     throw new ImageError("encode-failed", undefined, { cause: error });
+  }
+}
+
+/** Transcode le PNG (valide) du canvas en WebP réel via la commande native. */
+async function encodeWebpNative(canvas: RasterCanvas): Promise<Uint8Array> {
+  try {
+    const png = await canvas.encode("png");
+    const { invoke } = await import("@tauri-apps/api/core");
+    // On envoie une copie propre (offset 0, longueur exacte) comme corps brut.
+    const body = png.slice();
+    const result = await invoke<ArrayBuffer>("encode_webp", body);
+    return new Uint8Array(result);
+  } catch (error) {
+    throw new ImageError("encode-failed", "WebP natif indisponible.", { cause: error });
   }
 }
 

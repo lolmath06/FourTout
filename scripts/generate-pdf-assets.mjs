@@ -261,6 +261,85 @@ write("page-red.png", buildLabelledPng("ROUGE", [220, 70, 70]));
 write("page-green.png", buildLabelledPng("VERT", [70, 180, 100]));
 write("page-blue.png", buildLabelledPng("BLEU", [70, 120, 220]));
 
+/* ---------------------------------------------------- phase 3B : PDF+ */
+
+/** Page-image (aucune couche texte) : le texte n'est que des pixels -> OCR. */
+function textPageImage(lines) {
+  const width = 1000;
+  const height = 120 + lines.length * 90;
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = "#111111";
+  ctx.font = "48px Cantarell";
+  ctx.textBaseline = "top";
+  lines.forEach((line, i) => ctx.fillText(line, 40, 50 + i * 90));
+  return canvas.toBuffer("image/png");
+}
+
+async function buildScanPdf(pages) {
+  const document = await PDFDocument.create();
+  for (const lines of pages) {
+    const png = await document.embedPng(textPageImage(lines));
+    const page = document.addPage([png.width / 2, png.height / 2]);
+    page.drawImage(png, { x: 0, y: 0, width: png.width / 2, height: png.height / 2 });
+  }
+  return document.save();
+}
+
+write("pdf-scan-fr.pdf", await buildScanPdf([
+  ["FourTout reconnait ce texte.", "Facture numero 2026-042.", "Montant total : 128,50 euros."],
+  ["Deuxieme page numerisee.", "Client : Dupont SARL.", "Merci de votre confiance."],
+]));
+
+write("pdf-scan-en.pdf", await buildScanPdf([
+  ["FourTout reads this text.", "Invoice number 2026-042.", "Total amount: 128.50 euros."],
+  ["Second scanned page.", "Customer: Dupont Ltd.", "Thank you for your business."],
+]));
+
+/* PDF de base pour ajouter texte / image. */
+write("pdf-add-content.pdf", await buildColoredPdf(2, { title: "A completer" }));
+
+/* Deux versions proches, pour la comparaison. */
+{
+  const a = await buildColoredPdf(3, { title: "Version A" });
+  write("pdf-compare-a.pdf", a);
+  const document = await PDFDocument.load(a);
+  const bold = await document.embedFont(StandardFonts.HelveticaBold);
+  // Modifie visiblement les pages 2 et 3 ; la page 1 reste identique.
+  document.getPage(1).drawText("MODIFIE", { x: 60, y: 300, size: 60, font: bold, color: rgb(0.9, 0.1, 0.1) });
+  document.getPage(2).drawRectangle({ x: 40, y: 40, width: 340, height: 200, color: rgb(0.1, 0.3, 0.9) });
+  write("pdf-compare-b.pdf", await document.save());
+}
+
+/* Document a caviarder : contient un secret verifiable. */
+{
+  const document = await PDFDocument.create();
+  const bold = await document.embedFont(StandardFonts.HelveticaBold);
+  const regular = await document.embedFont(StandardFonts.Helvetica);
+  const p1 = document.addPage([420, 595]);
+  p1.drawText("Document confidentiel", { x: 40, y: 540, size: 20, font: bold });
+  p1.drawText("Numero de dossier :", { x: 40, y: 480, size: 14, font: regular });
+  p1.drawText("SECRET-FOURTOUT-92841", { x: 40, y: 450, size: 18, font: bold, color: rgb(0.8, 0.1, 0.1) });
+  p1.drawText("A masquer avant partage.", { x: 40, y: 400, size: 12, font: regular });
+  const p2 = document.addPage([420, 595]);
+  p2.drawText("Page publique (non sensible).", { x: 40, y: 500, size: 14, font: regular });
+  write("pdf-redact.pdf", await document.save());
+}
+
+/* Signature transparente. */
+{
+  const canvas = createCanvas(320, 120);
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, 320, 120);
+  ctx.fillStyle = "#1e3a8a";
+  ctx.font = "italic bold 52px Comfortaa";
+  ctx.textBaseline = "middle";
+  ctx.fillText("J. Dupont", 20, 64);
+  write("signature-transparent.png", canvas.toBuffer("image/png"));
+}
+
 console.log("Fixtures PDF generees dans test-assets/generated/ :");
 for (const [name, size] of written) {
   console.log(`  ${name.padEnd(24)} ${String(size).padStart(9)} octets`);

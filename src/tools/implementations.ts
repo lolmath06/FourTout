@@ -84,6 +84,24 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   "pdf-recover-password": lazy(() =>
     import("./impl/pdf/PdfRecoverPasswordTool").then((m) => ({ default: m.PdfRecoverPasswordTool })),
   ),
+  "document-to-pdf": lazy(() =>
+    import("./impl/pdf/DocumentToPdfTool").then((m) => ({ default: m.DocumentToPdfTool })),
+  ),
+  "pdf-add-text": lazy(() =>
+    import("./impl/pdf/PdfAddTextTool").then((m) => ({ default: m.PdfAddTextTool })),
+  ),
+  "pdf-add-image": lazy(() =>
+    import("./impl/pdf/PdfAddImageTool").then((m) => ({ default: m.PdfAddImageTool })),
+  ),
+  "ocr-document": lazy(() =>
+    import("./impl/pdf/PdfOcrTool").then((m) => ({ default: m.PdfOcrTool })),
+  ),
+  "pdf-compare": lazy(() =>
+    import("./impl/pdf/PdfCompareTool").then((m) => ({ default: m.PdfCompareTool })),
+  ),
+  "pdf-redact": lazy(() =>
+    import("./impl/pdf/PdfRedactTool").then((m) => ({ default: m.PdfRedactTool })),
+  ),
 
   // Outils Image (phase 3)
   "image-convert": lazy(() =>

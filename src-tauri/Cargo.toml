@@ -27,6 +27,7 @@ aes = "0.8.4"
 rayon = "1.10.0"
 flate2 = "1.1.10"
 num_cpus = "1.17.0"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
 
 [profile.release]
 # Application distribuée : on privilégie la taille du binaire.

@@ -17,7 +17,6 @@ export function ImageConvertTool({ tool }: ToolComponentProps) {
   const [format, setFormat] = useState<ImageFormat>("webp");
   const [quality, setQuality] = useState(85);
   const [background, setBackground] = useState<Rgb>({ r: 255, g: 255, b: 255 });
-  const lossy = format === "jpeg" || format === "webp";
 
   return (
     <ImageToolShell
@@ -44,9 +43,14 @@ export function ImageConvertTool({ tool }: ToolComponentProps) {
           <Field label="Format de sortie" full>
             <OptionGroup ariaLabel="Format" value={format} onChange={setFormat} options={FORMATS} />
           </Field>
-          {lossy && (
+          {format === "jpeg" && (
             <Field label="Qualité" hint="Plus la qualité est basse, plus le fichier est léger.">
               <Slider value={quality} onChange={setQuality} min={40} max={100} suffix=" %" />
+            </Field>
+          )}
+          {format === "webp" && (
+            <Field label="WebP" hint="Encodage sans perte : idéal pour les captures et les graphiques.">
+              <p className="text-xs text-[var(--ft-text-muted)]">Qualité maximale conservée, fichier compact.</p>
             </Field>
           )}
           {format === "jpeg" && (

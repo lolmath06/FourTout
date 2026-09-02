@@ -48,10 +48,10 @@ describe("navigation principale", () => {
   });
 
   it("ouvre la page d'un outil non implémenté", async () => {
-    renderApp("/tools/t/ocr-document");
+    renderApp("/tools/t/image-favicon");
 
     expect(
-      await screen.findByRole("heading", { name: /OCR/ }),
+      await screen.findByRole("heading", { name: /favicon/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Bientôt")).toBeInTheDocument();
     expect(screen.getByText("Cet outil arrive prochainement")).toBeInTheDocument();

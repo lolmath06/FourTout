@@ -168,12 +168,33 @@ garder en mémoire.
 Pour la réorganisation, les miniatures s'arrêtent à 60 pages : au-delà, les
 cartes restent numérotées et l'opération fonctionne normalement.
 
+### Complétés en Phase 3B
+
+Grâce à l'infrastructure existante (rendu de pages, moteur OCR de la phase 3,
+backend bitmap), six outils sont passés `available` :
+
+| Outil | Cœur | Réutilise |
+| --- | --- | --- |
+| `document-to-pdf` — TXT / Markdown / HTML → PDF | `operations/documentToPdf.ts` | pdf-lib, mise en page maison (titres, listes, gras/italique, pagination, WinAnsi) |
+| `pdf-add-text` — zones de texte placées visuellement | `operations/addContent.ts` | pdf-lib `drawText`, `usePdfPage` |
+| `pdf-add-image` — image / signature (PNG transparent) | `operations/addContent.ts` | pdf-lib `embedPng/embedJpg`, transcodage WebP→PNG |
+| `ocr-document` — OCR d'un PDF scanné, page par page | `core/ocr/pdf.ts` | `pdfToImages` + moteur OCR tesseract.js (aucune duplication) |
+| `pdf-compare` — comparaison visuelle | `operations/compare.ts` | rendu des pages + diff pixel + carte de chaleur |
+| `pdf-redact` — caviardage **réel** | `operations/redact.ts` | rendu + rastérisation des pages masquées |
+
+**Caviardage — garantie de sécurité.** Le piège classique (rectangle noir
+par-dessus un texte resté extractible) est évité par construction : une page
+contenant une zone à masquer est **rendue en image**, les rectangles sont peints
+sur ces pixels, et la page est reconstruite depuis cette image — elle n'a donc
+plus **aucune couche de texte**. Un test de sécurité vérifie qu'après caviardage
+le secret n'est plus extractible **ni** présent dans les octets bruts du fichier.
+Les pages sans zone masquée restent vectorielles (texte conservé). L'opération
+est irréversible sur le fichier produit.
+
 ### Ce qui reste `planned`
 
-`ocr-document`, `pdf-compare`, `pdf-redact`, `pdf-add-text`, `pdf-add-image`,
-`document-to-pdf`, `pdf-to-audio`. Chacun demande une brique que cette phase
-n'introduit pas (moteur OCR, comparaison visuelle, réécriture sûre du contenu,
-rendu de documents bureautiques, synthèse vocale).
+`pdf-to-audio` uniquement : il dépend du moteur de synthèse vocale local, qui
+sera introduit avec le bloc Audio/TTS.
 
 ## Modifier le texte d'un PDF (`pdf-edit-text`)
 

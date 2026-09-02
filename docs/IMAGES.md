@@ -16,7 +16,8 @@ reconnu ne quitte la machine. Aucun service réseau, aucun binaire système requ
 
 | Bibliothèque | Licence | Rôle |
 | --- | --- | --- |
-| Canvas de la WebView (`RasterBackend`) | — | Décodage/encodage et tous les traitements bitmap, via le backend bitmap partagé (déjà utilisé par le bloc PDF). |
+| Canvas de la WebView (`RasterBackend`) | — | Décodage, encodage PNG/JPEG et tous les traitements bitmap, via le backend bitmap partagé (déjà utilisé par le bloc PDF). |
+| Crate Rust [`image`](https://crates.io/crates/image) 0.25 (pur Rust) | MIT | Encodage **WebP** natif (voir « Encodage WebP » ci-dessous). |
 | [`tesseract.js`](https://github.com/naptha/tesseract.js) 6 + `tesseract.js-core` | Apache-2.0 | Moteur OCR WebAssembly, exécuté dans un worker, 100 % hors ligne. |
 | `@napi-rs/canvas` (dev) | MIT | Backend bitmap **des tests** (Node) et génération des fixtures images. |
 
@@ -54,6 +55,23 @@ Le cœur est dans `src/core/image/` :
 | TIFF | ✅ | ❌ |
 | SVG | ✅ (rastérisé, sécurisé) | ❌ |
 | AVIF / HEIC | selon la WebView | ❌ |
+
+### Encodage WebP (correctif Phase 3B)
+
+La WebView WebKitGTK (Fedora) **n'encode pas** le WebP : `canvas.toBlob(…,
+"image/webp")` y renvoie silencieusement du **PNG**. Les fichiers `.webp`
+produits par le frontend étaient donc des PNG mal étiquetés — les visionneuses
+GNOME (glycin/Loupe), qui choisissent le décodeur d'après l'extension, les
+rejetaient (« Loader process exited early »), alors que Nautilus (gdk-pixbuf,
+qui reconnaît le contenu) affichait quand même une miniature.
+
+Correctif : dans l'application, le WebP est encodé **nativement en Rust**
+(commande `encode_webp`, crate `image`, WebAssembly non impliqué) à partir du
+PNG — valide — produit par le canvas. L'encodage est **sans perte** (mode fourni
+par `image`) : le fichier est un vrai WebP RIFF/VP8L, vérifié par `identify` et
+par GdkPixbuf, transparence conservée. Hors application (navigateur, tests
+Node), `canvas.encode("webp")` reste utilisé (Chromium et `@napi-rs/canvas`
+encodent correctement). PNG et JPEG, eux, étaient déjà valides côté WebKitGTK.
 
 L'écriture se limite à PNG, JPEG et WebP — les trois formats réellement utiles
 et universellement lisibles. Une conversion qui ne conserve pas l'animation (GIF)
