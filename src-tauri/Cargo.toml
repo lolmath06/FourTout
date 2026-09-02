@@ -21,6 +21,12 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tauri-plugin-dialog = "2.7.3"
 tauri-plugin-fs = "2.5.2"
+md-5 = "0.10.6"
+sha2 = "0.10.9"
+aes = "0.8.4"
+rayon = "1.10.0"
+flate2 = "1.1.10"
+num_cpus = "1.17.0"
 
 [profile.release]
 # Application distribuée : on privilégie la taille du binaire.

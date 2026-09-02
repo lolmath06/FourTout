@@ -54,6 +54,18 @@ d'un coup d'œil.
 
 > **Mot de passe de `pdf-protected.pdf` : `fourtout`**
 
+### Récupération de mot de passe (phase 3)
+
+Mots de passe **dérivés du corpus réel** (donc réellement retrouvables), placés
+suffisamment loin pour prouver une vraie recherche. Le mot de passe exact de
+chaque fichier est écrit dans `recovery-fixture.json` à la génération.
+
+| Fichier | Chiffrement | Où se trouve le mot de passe |
+| --- | --- | --- |
+| `pdf-recover-quick.pdf` | AES-128 | Graine de rang ~800 : hors des 100 premiers candidats, trouvée au niveau **Rapide** en quelques secondes |
+| `pdf-recover-deep.pdf` | AES-256 | Graine profonde + « 2024 » : atteinte au niveau **Complet** après ~360 000 candidats (plusieurs lots) |
+| `recovery-fixture.json` | — | Paramètres + mots de passe, pour le test d'intégration Rust |
+
 ### Images pour « Images vers PDF »
 
 | Fichier | Contenu |

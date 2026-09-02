@@ -163,3 +163,21 @@ describe("recherche des outils PDF de la phase 2", () => {
     expect(results[0].tool.status).toBe("available");
   });
 });
+
+describe("recherche de l'outil de récupération de mot de passe", () => {
+  it("« mot de passe oublié » trouve la récupération", () => {
+    expect(searchTools("mot de passe oublié pdf")[0].tool.id).toBe("pdf-recover-password");
+  });
+
+  it("« retrouver le mot de passe d'un pdf » aussi", () => {
+    expect(searchTools("retrouver le mot de passe d'un pdf").map((r) => r.tool.id)).toContain(
+      "pdf-recover-password",
+    );
+  });
+
+  it("distingue récupération et déverrouillage à mot de passe connu", () => {
+    expect(searchTools("j'ai perdu le mot de passe de mon pdf")[0].tool.id).toBe(
+      "pdf-recover-password",
+    );
+  });
+});

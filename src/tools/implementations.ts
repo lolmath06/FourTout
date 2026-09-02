@@ -78,6 +78,9 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   "pdf-compress": lazy(() =>
     import("./impl/pdf/PdfCompressTool").then((m) => ({ default: m.PdfCompressTool })),
   ),
+  "pdf-recover-password": lazy(() =>
+    import("./impl/pdf/PdfRecoverPasswordTool").then((m) => ({ default: m.PdfRecoverPasswordTool })),
+  ),
 };
 
 export function getToolComponent(toolId: string): ToolComponent | undefined {

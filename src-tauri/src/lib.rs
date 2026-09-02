@@ -6,6 +6,8 @@
 //! doivent être natifs (ffmpeg, OCR, chiffrement, accès disque), en gardant la
 //! règle : tout se fait localement, rien n'est envoyé sur le réseau.
 
+pub mod recovery;
+
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -33,7 +35,12 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .invoke_handler(tauri::generate_handler![app_info])
+        .manage(recovery::command::RecoveryState::default())
+        .invoke_handler(tauri::generate_handler![
+            app_info,
+            recovery::command::recover_password,
+            recovery::command::recover_cancel,
+        ])
         .run(tauri::generate_context!())
         .expect("erreur au démarrage de FourTout");
 }

@@ -27,7 +27,13 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["deb", "rpm", "appimage", "nsis", "msi"],
+    "targets": [
+      "deb",
+      "rpm",
+      "appimage",
+      "nsis",
+      "msi"
+    ],
     "category": "Utility",
     "shortDescription": "Boîte à outils locale : PDF, image, audio, vidéo, texte, fichiers.",
     "longDescription": "FourTout regroupe dans une seule application desktop les petits outils du quotidien (PDF, images, audio, vidéo, texte, fichiers, développeur, calculateurs). Les traitements sont réalisés localement : vos fichiers ne quittent pas votre appareil.",
@@ -37,6 +43,10 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
+    ],
+    "resources": [
+      "resources/wordlists/seeds.txt.gz",
+      "resources/wordlists/seeds.meta"
     ]
   }
 }
