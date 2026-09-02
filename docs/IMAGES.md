@@ -185,6 +185,20 @@ cumulent.
   visible persistante).
 - **`ColorField`** — nuancier + hexadécimal + pipette.
 
+## Outils de finition (Phase 4)
+
+Ajoutés en fin de bloc Images — plus aucun outil `planned` dans la catégorie :
+
+- **Conversion par lot** — UX explicitement batch (résumé réussites/échecs).
+- **Filigrane** — texte et/ou logo PNG transparent, position, opacité, rotation ; à l'unité ou par lot.
+- **Générer un favicon** — vrai `favicon.ico` multi-résolutions (16/32/48) + PNG utiles (`core/image/favicon.ts`, `buildIco`).
+- **Générer plusieurs tailles** — export multi-tailles (carré recadré ou proportionnel).
+- **Palette de couleurs** — couleurs dominantes par découpage médian (`core/image/palette.ts`).
+- **QR code** — génération (PNG/SVG) et lecture (`core/image/qr.ts`, via `qrcode` + `jsQR`) ; un QR lu n'est jamais ouvert automatiquement.
+
+Les ponts **Vidéo → GIF**, **GIF → vidéo** et **Extraire une image d'une vidéo**
+relèvent du socle média (voir [MEDIA.md](MEDIA.md)).
+
 ## Limitations réelles
 
 - Écriture limitée à PNG/JPEG/WebP ; pas d'export GIF/AVIF/TIFF.

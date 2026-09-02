@@ -145,6 +145,8 @@ import {
   Copy,
   MapPin,
   Contrast,
+  ChevronUp,
+  Eye,
   type LucideIcon,
 } from "lucide-react";
 
@@ -304,6 +306,8 @@ export const ICONS: Record<string, LucideIcon> = {
   Copy,
   MapPin,
   Contrast,
+  ChevronUp,
+  Eye,
 };
 
 /** Icône de repli lorsqu'un nom est inconnu : jamais d'écran cassé. */

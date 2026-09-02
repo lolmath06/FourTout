@@ -48,10 +48,10 @@ describe("navigation principale", () => {
   });
 
   it("ouvre la page d'un outil non implémenté", async () => {
-    renderApp("/tools/t/image-favicon");
+    renderApp("/tools/t/video-convert");
 
     expect(
-      await screen.findByRole("heading", { name: /favicon/i }),
+      await screen.findByRole("heading", { name: /vidéo/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Bientôt")).toBeInTheDocument();
     expect(screen.getByText("Cet outil arrive prochainement")).toBeInTheDocument();

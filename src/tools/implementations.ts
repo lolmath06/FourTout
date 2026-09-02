@@ -149,6 +149,34 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   "image-metadata-strip": lazy(() =>
     import("./impl/image/ImageMetadataStripTool").then((m) => ({ default: m.ImageMetadataStripTool })),
   ),
+
+  // Images — finition (phase 4)
+  "image-batch-convert": lazy(() => import("./impl/image/ImageBatchConvertTool").then((m) => ({ default: m.ImageBatchConvertTool }))),
+  "image-watermark": lazy(() => import("./impl/image/ImageWatermarkTool").then((m) => ({ default: m.ImageWatermarkTool }))),
+  "image-favicon": lazy(() => import("./impl/image/ImageFaviconTool").then((m) => ({ default: m.ImageFaviconTool }))),
+  "image-icon-sizes": lazy(() => import("./impl/image/ImageIconSizesTool").then((m) => ({ default: m.ImageIconSizesTool }))),
+  "color-picker": lazy(() => import("./impl/image/ImagePaletteTool").then((m) => ({ default: m.ImagePaletteTool }))),
+
+  // QR (phase 4)
+  "qr-generate": lazy(() => import("./impl/dev/QrGenerateTool").then((m) => ({ default: m.QrGenerateTool }))),
+  "qr-read": lazy(() => import("./impl/dev/QrReadTool").then((m) => ({ default: m.QrReadTool }))),
+
+  // Audio (phase 4)
+  "audio-convert": lazy(() => import("./impl/audio/AudioConvertTool").then((m) => ({ default: m.AudioConvertTool }))),
+  "audio-compress": lazy(() => import("./impl/audio/AudioCompressTool").then((m) => ({ default: m.AudioCompressTool }))),
+  "audio-trim": lazy(() => import("./impl/audio/AudioTrimTool").then((m) => ({ default: m.AudioTrimTool }))),
+  "audio-merge": lazy(() => import("./impl/audio/AudioMergeTool").then((m) => ({ default: m.AudioMergeTool }))),
+  "audio-volume": lazy(() => import("./impl/audio/AudioVolumeTool").then((m) => ({ default: m.AudioVolumeTool }))),
+  "audio-normalize": lazy(() => import("./impl/audio/AudioNormalizeTool").then((m) => ({ default: m.AudioNormalizeTool }))),
+  "audio-speed": lazy(() => import("./impl/audio/AudioSpeedTool").then((m) => ({ default: m.AudioSpeedTool }))),
+  "audio-remove-silence": lazy(() => import("./impl/audio/AudioRemoveSilenceTool").then((m) => ({ default: m.AudioRemoveSilenceTool }))),
+  "audio-record": lazy(() => import("./impl/audio/AudioRecordTool").then((m) => ({ default: m.AudioRecordTool }))),
+  "video-extract-audio": lazy(() => import("./impl/audio/VideoExtractAudioTool").then((m) => ({ default: m.VideoExtractAudioTool }))),
+
+  // Vidéo — petits ponts (phase 4)
+  "video-to-gif": lazy(() => import("./impl/video/VideoToGifTool").then((m) => ({ default: m.VideoToGifTool }))),
+  "gif-to-video": lazy(() => import("./impl/video/GifToVideoTool").then((m) => ({ default: m.GifToVideoTool }))),
+  "video-extract-frame": lazy(() => import("./impl/video/VideoExtractFrameTool").then((m) => ({ default: m.VideoExtractFrameTool }))),
 };
 
 export function getToolComponent(toolId: string): ToolComponent | undefined {

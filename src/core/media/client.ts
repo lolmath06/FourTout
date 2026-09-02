@@ -1,0 +1,144 @@
+import { isTauri } from "@/core/platform";
+import type { SelectedFile } from "@/core/files";
+import type { OperationContext, OutputFile } from "@/core/pdf/types";
+import { JobCancelledError } from "@/core/jobs/types";
+import { parseProbe, type MediaInfo } from "./types";
+
+/**
+ * Client du socle média. Orchestre le cycle complet d'une opération FFmpeg :
+ * préparation des entrées, exécution native (progression + annulation),
+ * relecture de la sortie, nettoyage. Tout reste local ; l'application native
+ * (Tauri) est requise — FFmpeg n'existe pas dans un simple navigateur.
+ */
+
+/** Forme commune des opérations audio/vidéo (voir `operations/`). */
+export interface MediaExecutable {
+  buildArgs: (inputs: string[], output: string) => string[];
+  outputExt: string;
+  mimeType: string;
+}
+
+let availability: Promise<boolean> | undefined;
+
+/** FFmpeg est-il disponible (application native avec binaire résolu) ? */
+export function isMediaAvailable(): Promise<boolean> {
+  if (!isTauri()) return Promise.resolve(false);
+  if (!availability) {
+    availability = import("@tauri-apps/api/core")
+      .then(({ invoke }) => invoke<boolean>("media_available"))
+      .catch(() => false);
+  }
+  return availability;
+}
+
+let encoderCache: Promise<string[]> | undefined;
+
+/** Encodeurs disponibles dans le FFmpeg utilisé (mis en cache). */
+export function availableEncoders(): Promise<string[]> {
+  if (!isTauri()) return Promise.resolve([]);
+  if (!encoderCache) {
+    encoderCache = import("@tauri-apps/api/core")
+      .then(({ invoke }) => invoke<string[]>("media_encoders"))
+      .catch(() => []);
+  }
+  return encoderCache;
+}
+
+/** Meilleur encodeur H.264 logiciel disponible (libx264 sinon libopenh264). */
+export async function bestH264Encoder(): Promise<"libx264" | "libopenh264"> {
+  const encoders = await availableEncoders();
+  return encoders.includes("libx264") ? "libx264" : "libopenh264";
+}
+
+async function readBytes(file: SelectedFile): Promise<Uint8Array> {
+  if (file.file) return new Uint8Array(await file.file.arrayBuffer());
+  if (file.path) {
+    const { readFile } = await import("@tauri-apps/plugin-fs");
+    return await readFile(file.path);
+  }
+  throw new Error("Fichier illisible.");
+}
+
+async function stage(bytes: Uint8Array, ext: string): Promise<string> {
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<string>("media_stage", bytes.slice(), { headers: { "x-media-ext": ext } });
+}
+
+async function tempPath(ext: string): Promise<string> {
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<string>("media_temp", { ext });
+}
+
+async function cleanup(paths: string[]): Promise<void> {
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("media_cleanup", { paths });
+  } catch {
+    // Le nettoyage ne doit jamais faire échouer une opération.
+  }
+}
+
+/** Inspecte un fichier média via ffprobe. */
+export async function probeFile(file: SelectedFile): Promise<MediaInfo> {
+  const bytes = await readBytes(file);
+  const path = await stage(bytes, file.extension || "bin");
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    const json = await invoke<string>("media_probe", { path });
+    return parseProbe(json);
+  } finally {
+    await cleanup([path]);
+  }
+}
+
+export interface RunOptions {
+  files: SelectedFile[];
+  operation: MediaExecutable;
+  /** Nom du fichier produit. */
+  outputName: string;
+  /** Durée totale en ms, pour la progression (0 = indéterminée). */
+  totalMs?: number;
+}
+
+/** Exécute une opération média de bout en bout et renvoie le fichier produit. */
+export async function runMedia(options: RunOptions, context?: OperationContext): Promise<OutputFile> {
+  if (!isTauri()) throw new Error("Le traitement média nécessite l'application FourTout installée.");
+  const { invoke } = await import("@tauri-apps/api/core");
+  const { listen } = await import("@tauri-apps/api/event");
+
+  const jobId = `media-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const staged: string[] = [];
+  let outPath: string | undefined;
+
+  const unlisten = await listen<{ jobId: string; ratio: number }>("media://progress", (event) => {
+    if (event.payload.jobId === jobId) context?.report?.({ ratio: event.payload.ratio, label: "Traitement…" });
+  });
+
+  const onAbort = () => {
+    void invoke("media_cancel", { jobId });
+  };
+  context?.signal?.addEventListener("abort", onAbort);
+
+  try {
+    for (const file of options.files) {
+      const bytes = await readBytes(file);
+      staged.push(await stage(bytes, file.extension || "bin"));
+    }
+    outPath = await tempPath(options.operation.outputExt);
+    const args = options.operation.buildArgs(staged, outPath);
+
+    try {
+      await invoke("media_exec", { params: { jobId, args, totalMs: options.totalMs ?? 0 } });
+    } catch (error) {
+      if (String(error) === "cancelled" || context?.signal?.aborted) throw new JobCancelledError();
+      throw error instanceof Error ? error : new Error(String(error));
+    }
+
+    const output = await invoke<ArrayBuffer>("media_read", { path: outPath });
+    return { name: options.outputName, bytes: new Uint8Array(output), mimeType: options.operation.mimeType };
+  } finally {
+    unlisten();
+    context?.signal?.removeEventListener("abort", onAbort);
+    await cleanup([...staged, ...(outPath ? [outPath] : [])]);
+  }
+}

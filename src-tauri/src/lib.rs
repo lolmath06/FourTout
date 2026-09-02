@@ -7,6 +7,7 @@
 //! règle : tout se fait localement, rien n'est envoyé sur le réseau.
 
 pub mod image_native;
+pub mod media;
 pub mod recovery;
 
 use serde::Serialize;
@@ -37,9 +38,19 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .manage(recovery::command::RecoveryState::default())
+        .manage(media::command::MediaState::default())
         .invoke_handler(tauri::generate_handler![
             app_info,
             image_native::encode_webp,
+            media::command::media_available,
+            media::command::media_temp,
+            media::command::media_encoders,
+            media::command::media_stage,
+            media::command::media_probe,
+            media::command::media_read,
+            media::command::media_cleanup,
+            media::command::media_exec,
+            media::command::media_cancel,
             recovery::command::recover_password,
             recovery::command::recover_cancel,
         ])

@@ -110,6 +110,8 @@ contient que l'outil lui-même.
 | Traiter une image | `processImage` / `processImages` (`@/core/image`) |
 | Aperçu d'image (dont temps réel) | `ImagePreview`, `useSourceCanvas`, `useProcessedPreview` |
 | Reconnaître du texte (OCR) | `recognizeImages` (`@/core/ocr`) |
+| Traiter un audio/vidéo (FFmpeg) | `runMedia` (`@/core/media`) + `MediaToolShell` — voir [MEDIA.md](MEDIA.md) |
+| Générer/lire un QR code | `generateQrPng`/`decodeQr` (`@/core/image/qr`) |
 | Enregistrer le résultat | `saveFile` / `saveFilesToFolder` (`@/core/output/save`) |
 | Traitement long | `useJob()` (`@/core/jobs`) |
 | Message à l'utilisateur | `notify.success/error/warning/info/loading` |
