@@ -29,6 +29,11 @@ flate2 = "1.1.10"
 num_cpus = "1.17.0"
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
 
+# Arbitrage des permissions de la WebView (microphone). La version est figée sur
+# celle de wry : c'est la même WebView qui est manipulée.
+[target.'cfg(target_os = "linux")'.dependencies]
+webkit2gtk = { version = "=2.0.2", features = ["v2_38"] }
+
 [profile.release]
 # Application distribuée : on privilégie la taille du binaire.
 codegen-units = 1

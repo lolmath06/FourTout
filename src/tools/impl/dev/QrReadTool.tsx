@@ -6,7 +6,7 @@ import { Icon } from "@/components/ui/Icon";
 import { useSourceCanvas } from "@/components/image/useSourceCanvas";
 import { decodeQr, looksLikeUrl } from "@/core/image/qr";
 import { notify } from "@/features/notifications/store";
-import { openFile } from "@/core/output/save";
+import { openExternalUrl } from "@/core/output/externalUrl";
 import type { ToolComponentProps } from "@/tools/implementations";
 
 export function QrReadTool({ tool }: ToolComponentProps) {
@@ -25,6 +25,11 @@ export function QrReadTool({ tool }: ToolComponentProps) {
     }
   }, [source.full]);
 
+  const openLink = async (url: string) => {
+    const opened = await openExternalUrl(url).catch(() => false);
+    if (!opened) notify.error("Lien non ouvrable", "Ce contenu n'est pas une adresse web valide.");
+  };
+
   return (
     <div className="space-y-4">
       <FileDropZone constraints={{ ...constraintsForTool(tool), maxFiles: 1 }} files={files} onChange={setFiles} label="Déposez une image contenant un QR code" />
@@ -35,7 +40,7 @@ export function QrReadTool({ tool }: ToolComponentProps) {
           <div className="mt-3 flex flex-wrap gap-2">
             <Button size="sm" variant="primary" onClick={() => navigator.clipboard.writeText(content).then(() => notify.success("Copié")).catch(() => {})}><Icon name="Copy" size={14} /> Copier</Button>
             {looksLikeUrl(content) && (
-              <Button size="sm" onClick={() => openFile(content)}><Icon name="Globe" size={14} /> Ouvrir le lien</Button>
+              <Button size="sm" onClick={() => void openLink(content)}><Icon name="Globe" size={14} /> Ouvrir le lien</Button>
             )}
           </div>
         </div>

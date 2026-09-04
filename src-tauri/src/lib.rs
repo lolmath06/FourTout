@@ -8,6 +8,7 @@
 
 pub mod image_native;
 pub mod media;
+pub mod microphone;
 pub mod recovery;
 
 use serde::Serialize;
@@ -37,6 +38,20 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
+        .setup(|app| {
+            // WebKitGTK refuse toute capture tant que l'hôte n'arbitre pas les
+            // demandes de permission : on branche l'arbitrage dès le départ.
+            // Aucune autorisation n'est demandée ici (voir `microphone`).
+            #[cfg(target_os = "linux")]
+            {
+                use tauri::Manager;
+                if let Some(window) = app.get_webview_window("main") {
+                    microphone::attach(&window);
+                }
+            }
+            let _ = app;
+            Ok(())
+        })
         .manage(recovery::command::RecoveryState::default())
         .manage(media::command::MediaState::default())
         .invoke_handler(tauri::generate_handler![
@@ -51,6 +66,8 @@ pub fn run() {
             media::command::media_cleanup,
             media::command::media_exec,
             media::command::media_cancel,
+            microphone::mic_permission_state,
+            microphone::mic_request_permission,
             recovery::command::recover_password,
             recovery::command::recover_cancel,
         ])

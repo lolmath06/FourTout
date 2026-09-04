@@ -22,12 +22,42 @@ Lecteur audio réutilisable (`AudioPreview`) : lecture, pause, timeline, volume.
 
 ### Enregistrement microphone
 
-La capture utilise `getUserMedia` + `MediaRecorder` dans la WebView. Cas gérés :
-permission refusée, aucun micro, périphérique absent. **Note Tauri/WebKitGTK :**
-l'accès au micro peut nécessiter que l'application accorde la permission au
-niveau natif (gestionnaire `permission-request` de WebKitGTK) ; à défaut, l'outil
-affiche un message clair. À finaliser lors du packaging (permissions micro
-Windows/Fedora).
+La capture utilise `getUserMedia` + `MediaRecorder` dans la WebView.
+
+**WebKitGTK (Linux) — permission.** WebKitGTK n'affiche aucun dialogue de
+permission et refuse toute capture par défaut ; sans intervention de
+l'application hôte, `getUserMedia` échoue immédiatement en `NotAllowedError`.
+Deux verrous sont levés côté natif (`src-tauri/src/microphone.rs`) :
+
+- `WebKitSettings:enable-media-stream` est activé au démarrage (aucune demande
+  n'est faite à ce moment-là : le réglage autorise seulement la question) ;
+- le signal `permission-request` de la WebView est intercepté. Une
+  `WebKitUserMediaPermissionRequest` **audio seule** est acceptée uniquement si
+  l'utilisateur a donné son accord ; toute demande incluant la caméra est
+  refusée, de même que les autres types de permission.
+
+L'accord est demandé par la commande `mic_request_permission`, qui ouvre un
+vrai dialogue natif (**Autoriser** / **Refuser**), appelée par l'outil au clic
+sur *Démarrer* — jamais au lancement de FourTout. La décision vaut pour la
+session : après un refus, le bouton **Autoriser le microphone** relance le
+dialogue. Sur macOS et Windows, la WebView s'appuie sur les réglages du système
+et FourTout n'ajoute pas de filtre (`mic_permission_state` y renvoie
+`granted`).
+
+**Libération.** À l'arrêt, au démontage de l'outil et après chaque échec :
+pistes `MediaStream` arrêtées (`readyState === "ended"`), `MediaRecorder`
+arrêté, `AudioContext` fermé, boucle de niveau annulée et URL objet révoquée.
+Aucun indicateur système ne doit rester actif. Un verrou synchrone empêche
+d'ouvrir deux captures sur un double-clic.
+
+**Test manuel (non automatisable).** Le dialogue natif GTK et la capture réelle
+ne sont pas reproductibles en test : dans l'application, ouvrir *Enregistrer au
+micro*, cliquer **Démarrer**, répondre **Autoriser**, parler (le niveau et la
+durée doivent bouger), cliquer **Arrêter**, réécouter, puis vérifier que
+l'indicateur micro du système s'est éteint. Rejouer une fois en répondant
+**Refuser** : le message « L'accès au microphone a été refusé. » et le bouton
+**Autoriser le microphone** doivent apparaître, et le bouton doit rouvrir le
+dialogue.
 
 ## Synthèse vocale (TTS) — `planned`
 

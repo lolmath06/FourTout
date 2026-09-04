@@ -1,5 +1,6 @@
 import QRCode from "qrcode";
 import jsQR from "jsqr";
+import { isOpenableUrl } from "@/core/output/externalUrl";
 import type { RasterPixels } from "@/core/pdf/raster/types";
 
 /**
@@ -53,7 +54,10 @@ export function decodeQr(pixels: RasterPixels): string | undefined {
   return result?.data;
 }
 
-/** Une chaîne ressemble-t-elle à une URL http(s) ? */
+/**
+ * Le contenu lu est-il un lien que FourTout accepte d'ouvrir ? Même règle que
+ * l'ouverture elle-même : pas de bouton pour un contenu non ouvrable.
+ */
 export function looksLikeUrl(text: string): boolean {
-  return /^https?:\/\/\S+$/i.test(text.trim());
+  return isOpenableUrl(text);
 }
