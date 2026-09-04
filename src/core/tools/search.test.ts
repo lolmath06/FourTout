@@ -41,6 +41,15 @@ describe("recherche par mot-clé", () => {
     expect(ids("corriger texte dans pdf")).toContain("pdf-edit-text");
   });
 
+  it("mène aux outils de parole par des formulations naturelles", () => {
+    expect(ids("lire un texte à voix haute")[0]).toBe("text-to-speech");
+    expect(ids("faire un mp3 avec mon texte")).toContain("text-to-speech");
+    expect(ids("écouter un pdf")[0]).toBe("pdf-to-audio");
+    expect(ids("transcrire mp3")[0]).toBe("audio-transcribe");
+    expect(ids("faire des sous titres")).toContain("audio-generate-srt");
+    expect(ids("txt en audio")).toContain("text-file-to-audio");
+  });
+
   it("trouve un outil par un alias anglais", () => {
     expect(ids("unzip")).toContain("archive-extract");
     expect(ids("word count")).toContain("text-statistics");

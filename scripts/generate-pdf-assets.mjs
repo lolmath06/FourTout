@@ -328,6 +328,33 @@ write("pdf-add-content.pdf", await buildColoredPdf(2, { title: "A completer" }))
   write("pdf-redact.pdf", await document.save());
 }
 
+/* PDF a lire a voix haute : paragraphes connus, en-tete et numeros de page
+   repetes pour verifier le nettoyage avant synthese. */
+{
+  const document = await PDFDocument.create();
+  const regular = await document.embedFont(StandardFonts.Helvetica);
+  const bold = await document.embedFont(StandardFonts.HelveticaBold);
+  const paragraphs = [
+    ["Bienvenue dans FourTout.", "Ce document sert a tester la conversion d'un PDF en audio."],
+    ["La synthese vocale lit chaque paragraphe l'un apres l'autre.", "Les numeros de page ne doivent jamais etre prononces."],
+    ["Le traitement reste entierement local sur votre appareil.", "Aucun texte n'est envoye sur le reseau."],
+  ];
+  paragraphs.forEach((lines, index) => {
+    const page = document.addPage([420, 595]);
+    // En-tete repete sur chaque page : doit etre ecarte avant lecture.
+    page.drawText("FourTout - document de test", {
+      x: 40, y: 555, size: 9, font: regular, color: rgb(0.55, 0.55, 0.55),
+    });
+    page.drawText("Lecture audio", { x: 40, y: 500, size: 20, font: bold, color: rgb(0.12, 0.12, 0.12) });
+    lines.forEach((line, row) => {
+      page.drawText(line, { x: 40, y: 450 - row * 26, size: 13, font: regular, color: rgb(0.15, 0.15, 0.15) });
+    });
+    // Numero de page seul, en pied : doit etre ecarte avant lecture.
+    page.drawText(String(index + 1), { x: 205, y: 30, size: 10, font: regular, color: rgb(0.5, 0.5, 0.5) });
+  });
+  write("pdf-to-audio.pdf", await document.save());
+}
+
 /* Signature transparente. */
 {
   const canvas = createCanvas(320, 120);

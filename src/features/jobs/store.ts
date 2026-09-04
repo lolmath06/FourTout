@@ -20,7 +20,12 @@ import type { RecoveryDone, RecoveryProgress } from "@/core/recovery/client";
 export type JobStatus = "running" | "cancelling" | "done" | "error";
 
 /** Nature du traitement — permet d'associer un job à son outil et son rendu. */
-export type JobKind = "pdf-recover-password";
+export type JobKind =
+  | "pdf-recover-password"
+  /** Synthèse vocale (texte, TXT ou PDF vers audio). */
+  | "speech-synthesis"
+  /** Transcription vocale (texte, sous-titres). */
+  | "speech-transcription";
 
 export interface Job {
   id: string;
@@ -38,6 +43,10 @@ export interface Job {
   total: number;
   /** Avancement courant (récupération : testés/total/débit/temps). */
   progress?: RecoveryProgress;
+  /** Avancement de 0 à 1 des traitements à progression simple (parole). */
+  ratio?: number;
+  /** Étape en cours, affichable telle quelle (« Segment 3 sur 12 »). */
+  step?: string;
   /** Résultat détaillé une fois le job terminé (found/exhausted/cancelled…). */
   result?: RecoveryDone;
   /** Message d'erreur si le lancement ou l'exécution a échoué. */

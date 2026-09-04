@@ -50,7 +50,8 @@ export async function bestH264Encoder(): Promise<"libx264" | "libopenh264"> {
   return encoders.includes("libx264") ? "libx264" : "libopenh264";
 }
 
-async function readBytes(file: SelectedFile): Promise<Uint8Array> {
+/** Lit les octets d'un fichier sélectionné (mémoire ou disque). */
+export async function readBytes(file: SelectedFile): Promise<Uint8Array> {
   if (file.file) return new Uint8Array(await file.file.arrayBuffer());
   if (file.path) {
     const { readFile } = await import("@tauri-apps/plugin-fs");
@@ -59,17 +60,20 @@ async function readBytes(file: SelectedFile): Promise<Uint8Array> {
   throw new Error("Fichier illisible.");
 }
 
-async function stage(bytes: Uint8Array, ext: string): Promise<string> {
+/** Écrit des octets dans un fichier temporaire natif et renvoie son chemin. */
+export async function stage(bytes: Uint8Array, ext: string): Promise<string> {
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<string>("media_stage", bytes.slice(), { headers: { "x-media-ext": ext } });
 }
 
-async function tempPath(ext: string): Promise<string> {
+/** Réserve un chemin temporaire natif (fichier non créé). */
+export async function tempPath(ext: string): Promise<string> {
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<string>("media_temp", { ext });
 }
 
-async function cleanup(paths: string[]): Promise<void> {
+/** Supprime des fichiers temporaires natifs ; n'échoue jamais. */
+export async function cleanup(paths: string[]): Promise<void> {
   try {
     const { invoke } = await import("@tauri-apps/api/core");
     await invoke("media_cleanup", { paths });

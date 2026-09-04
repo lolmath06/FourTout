@@ -88,6 +88,23 @@ chaque fichier est écrit dans `recovery-fixture.json` à la génération.
 | `sample.pdf` | PDF 1.4 valide, 1 page, texte sélectionnable | Fusion, extraction de texte, métadonnées, pagination |
 | `corrupted.pdf` | En-tête PDF suivi de données invalides | Vérifier que les erreurs sont gérées proprement |
 
+### Parole : synthèse et transcription (phase 4C)
+
+| Fichier | Contenu | Utilité |
+| --- | --- | --- |
+| `tts-short-fr.txt` | « Bonjour, ceci est un test de FourTout. Le numero est 2026. » | Synthèse française, aller-retour TTS → STT |
+| `tts-short-en.txt` | « Hello, this is a FourTout test. The number is 2026. » | Synthèse anglaise, aller-retour TTS → STT |
+| `tts-long-fr.txt` | 18 sections, ~4 400 caractères (≈ 4 min d'audio, 36 segments) | Segmentation, progression, navigation pendant un job, **annulation** |
+| `pdf-to-audio.pdf` | 3 pages, paragraphes connus, en-tête répété et numéros de page | `PDF vers audio` : lecture correcte **et** nettoyage des ornements |
+| `audio-speech-fr.wav` | Parole française produite par la vraie voix Piper | Transcription française, sous-titres |
+| `audio-speech-en.wav` | Parole anglaise produite par la vraie voix Piper | Transcription anglaise |
+
+Les deux fichiers `audio-speech-*.wav` sont générés par `pnpm speech:assets` à
+partir des textes ci-dessus : ce sont exactement les fichiers que la
+transcription doit savoir relire. Le script ne télécharge rien ; il s'arrête
+sans erreur si les moteurs de parole ne sont pas encore installés (voir
+[docs/MODELS.md](../docs/MODELS.md)).
+
 ## À compléter par les prochaines phases
 
 Au fur et à mesure que les outils arrivent :

@@ -85,8 +85,28 @@ Réutilisation du Job Manager global : progression (`media://progress` →
 `report`), annulation (le signal du job appelle `media_cancel`, qui tue FFmpeg),
 survie à la navigation.
 
+## Socle parole (Piper, whisper.cpp)
+
+La synthèse et la transcription suivent **exactement les mêmes principes** que
+FFmpeg : aucun shell, arguments strictement séparés, processus enfant suivi et
+réellement tué à l'annulation, fichiers de travail confinés à
+`fourtout-media/`. Elles réutilisent d'ailleurs ses briques —
+`media_stage`/`media_temp`/`media_read`/`media_cleanup` pour les fichiers, et
+FFmpeg lui-même pour normaliser un média en WAV 16 kHz mono avant
+transcription, ou pour l'export MP3 après synthèse.
+
+Ce qui diffère : les binaires ne sont pas supposés installés. Ils sont déclarés,
+téléchargés et vérifiés par le gestionnaire de modèles — voir
+[MODELS.md](MODELS.md). Commandes : `tts_speak`, `tts_concat`, `stt_transcribe`,
+`speech_cancel`, et `models_list` / `models_install` / `models_cancel` /
+`models_remove` / `models_dir`.
+
 ## Tests
 
+- `src-tauri/tests/speech_integration.rs` — synthèse **et** transcription
+  réelles : aller-retour texte → voix → texte en français et en anglais,
+  concaténation multi-segments relue par le moteur (ignorés si les moteurs ne
+  sont pas installés).
 - `src-tauri/tests/media_integration.rs` — exécution/inspection réelles, chemins
   Unicode, erreur sur entrée invalide (ignorés si FFmpeg absent).
 - `src/core/media/media.test.ts` — constructeurs d'arguments (purs) **et**

@@ -9,7 +9,9 @@
 pub mod image_native;
 pub mod media;
 pub mod microphone;
+pub mod models;
 pub mod recovery;
+pub mod speech;
 
 use serde::Serialize;
 
@@ -54,6 +56,8 @@ pub fn run() {
         })
         .manage(recovery::command::RecoveryState::default())
         .manage(media::command::MediaState::default())
+        .manage(models::command::ModelsState::default())
+        .manage(speech::command::SpeechState::default())
         .invoke_handler(tauri::generate_handler![
             app_info,
             image_native::encode_webp,
@@ -68,6 +72,15 @@ pub fn run() {
             media::command::media_cancel,
             microphone::mic_permission_state,
             microphone::mic_request_permission,
+            models::command::models_list,
+            models::command::models_dir,
+            models::command::models_install,
+            models::command::models_cancel,
+            models::command::models_remove,
+            speech::command::tts_speak,
+            speech::command::tts_concat,
+            speech::command::stt_transcribe,
+            speech::command::speech_cancel,
             recovery::command::recover_password,
             recovery::command::recover_cancel,
         ])

@@ -80,12 +80,39 @@ writeFileSync(path("tts-short-fr.txt"), "Bonjour, ceci est un test de FourTout. 
 written.push("tts-short-fr.txt");
 writeFileSync(path("tts-short-en.txt"), "Hello, this is a FourTout test. The number is 2026.\n");
 written.push("tts-short-en.txt");
+// Texte long : plusieurs pages, accentuees, pour eprouver reellement la
+// segmentation, la progression, la navigation pendant un job et l'annulation.
+// Un texte de quelques lignes se synthetise en une fraction de seconde et ne
+// permettrait de verifier aucun de ces comportements.
+const LONG_SECTIONS = [
+  "FourTout est une boite a outils locale. Elle regroupe des outils PDF, image, audio et video, " +
+    "et les execute entierement sur votre appareil. Aucune donnee n'est envoyee sur le reseau.",
+  "La synthese vocale decoupe ce texte en segments, phrase par phrase, puis les assemble en un " +
+    "seul fichier audio. Ce decoupage suit la ponctuation francaise : le point, le point " +
+    "d'interrogation, le point d'exclamation et le point-virgule ferment une phrase, mais une " +
+    "abreviation comme M. Dupont ou la page p. 12 ne la ferme pas.",
+  "La progression affichee correspond au segment en cours. Vous pouvez quitter l'outil pendant " +
+    "la generation : le traitement continue et reste visible depuis n'importe quelle page. En " +
+    "revenant, vous retrouvez l'avancement exact, puis le resultat.",
+  "L'annulation arrete reellement le moteur de synthese. Les segments deja produits sont " +
+    "supprimes et aucun fichier partiel ne vous est presente comme un resultat valable.",
+  "Un document plus long, comme un cours ou un rapport, se lit de la meme facon. Les numeros de " +
+    "page et les en-tetes repetes sont ecartes avant la lecture, pour ne pas les entendre a " +
+    "chaque page. Le texte reste modifiable avant de lancer la synthese.",
+  "La transcription fait le chemin inverse. Elle accepte un fichier audio ou une video, en " +
+    "extrait la bande son, puis produit un texte horodate que vous pouvez corriger passage par " +
+    "passage avant d'exporter un fichier de sous-titres.",
+];
+
 writeFileSync(
   path("tts-long-fr.txt"),
-  "FourTout est une boite a outils locale. Elle regroupe des outils PDF, image, audio et video.\n\n" +
-    "Ce texte comporte plusieurs phrases et plusieurs paragraphes. Il sert a verifier la segmentation " +
-    "et la progression de la synthese vocale sur un contenu plus long.\n\n" +
-    "Merci d'utiliser FourTout au quotidien.\n",
+  // Dix-huit sections : environ dix mille caracteres, soit plusieurs pages et
+  // une bonne minute de lecture a voix haute.
+  Array.from({ length: 3 }, (_, pass) =>
+    LONG_SECTIONS.map(
+      (section, index) => `Partie ${pass * LONG_SECTIONS.length + index + 1}.\n\n${section}`,
+    ).join("\n\n"),
+  ).join("\n\n") + "\n",
 );
 written.push("tts-long-fr.txt");
 

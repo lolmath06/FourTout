@@ -246,6 +246,30 @@ Limité (signalé) : texte vectorisé, scans (aucun texte éditable → message
 dédié), fonds non uniformes, glyphes exotiques, texte vertical ou pivoté. Pas
 d'OCR à ce stade.
 
+## PDF vers audio (`pdf-to-audio`)
+
+L'outil ne réimplémente **rien** : il réutilise `extractText` (pdf.js) et, pour
+un document scanné, `recognizePdf` (tesseract.js). Il n'ajoute qu'une étape de
+préparation, `core/speech/pdfText.ts`, avant la synthèse vocale.
+
+Ce nettoyage est délibérément **prudent** : lire un numéro de page à voix haute
+est agaçant, mais supprimer une phrase est bien pire. Une ligne n'est écartée
+que si elle réunit trois conditions :
+
+1. elle fait 80 caractères ou moins ;
+2. elle est la **première ou la dernière** ligne de sa page ;
+3. elle est soit un numéro de page isolé (`12`, `- 12 -`, `3 / 40`), soit une
+   ligne répétée en bordure sur au moins 60 % des pages (minimum trois pages).
+
+Un « 2026 » au milieu d'un paragraphe est donc lu ; une phrase longue répétée
+l'est aussi. Le nombre de lignes écartées est affiché sous le texte.
+
+Sans couche texte, l'outil dit « Aucun texte extractible détecté dans ce PDF. »
+et propose **OCR puis générer l'audio**, qui passe par le moteur OCR existant.
+Le texte reste modifiable avant la lecture, quelle que soit sa provenance.
+
+Pipeline complet et fixture (`pdf-to-audio.pdf`) : voir [AUDIO.md](AUDIO.md).
+
 ## Ressources pdf.js
 
 pdf.js a besoin des polices standard (documents qui ne les embarquent pas, cas

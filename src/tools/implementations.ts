@@ -29,6 +29,23 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   ),
   base64: lazy(() => import("./impl/Base64Tool").then((m) => ({ default: m.Base64Tool }))),
 
+  // Parole locale : synthèse (Piper) et transcription (whisper.cpp) — phase 4C
+  "text-to-speech": lazy(() =>
+    import("./impl/speech/TextToSpeechTool").then((m) => ({ default: m.TextToSpeechTool })),
+  ),
+  "text-file-to-audio": lazy(() =>
+    import("./impl/speech/TextFileToAudioTool").then((m) => ({ default: m.TextFileToAudioTool })),
+  ),
+  "pdf-to-audio": lazy(() =>
+    import("./impl/speech/PdfToAudioTool").then((m) => ({ default: m.PdfToAudioTool })),
+  ),
+  "audio-transcribe": lazy(() =>
+    import("./impl/speech/AudioTranscribeTool").then((m) => ({ default: m.AudioTranscribeTool })),
+  ),
+  "audio-generate-srt": lazy(() =>
+    import("./impl/speech/AudioSubtitlesTool").then((m) => ({ default: m.AudioSubtitlesTool })),
+  ),
+
   // Outils PDF (phase 2)
   "pdf-merge": lazy(() =>
     import("./impl/pdf/PdfMergeTool").then((m) => ({ default: m.PdfMergeTool })),
