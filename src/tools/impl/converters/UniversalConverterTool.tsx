@@ -19,7 +19,7 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * comportements divergents ; il n'y a donc qu'un seul chemin de code par
  * conversion, celui de l'outil dédié.
  */
-export function UniversalConverterTool({ tool }: ToolComponentProps) {
+export function UniversalConverterTool(_props: ToolComponentProps) {
   const [files, setFiles] = useState<SelectedFile[]>([]);
   const navigate = useNavigate();
   const file = files[0];
@@ -44,20 +44,22 @@ export function UniversalConverterTool({ tool }: ToolComponentProps) {
         onChange={setFiles}
         label="Déposez un fichier"
         hint="FourTout identifie le format et propose les conversions réellement disponibles."
+        // La ligne de détection ci-dessous décrit déjà le fichier retenu.
+        showFileList={false}
       />
 
       {file && (
         <div
           data-testid="converter-detection"
-          className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-sm"
+          className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-2.5 py-1.5 text-[13px]"
         >
           <span className="flex items-center gap-1.5 font-medium">
-            <Icon name="FileSearch" size={15} />
+            <Icon name="FileSearch" size={14} />
             {file.extension ? file.extension.toUpperCase() : "Format inconnu"}
           </span>
           <span className="text-[var(--ft-text-muted)]">{file.name}</span>
-          <span className="tabular-nums text-[var(--ft-text-muted)]">{formatFileSize(file.size)}</span>
-          <span className="font-mono text-xs text-[var(--ft-text-faint)]">{file.mimeType}</span>
+          <span className="ft-value text-[var(--ft-text-muted)]">{formatFileSize(file.size)}</span>
+          <span className="ft-value text-[var(--ft-text-faint)]">{file.mimeType}</span>
         </div>
       )}
 
@@ -111,11 +113,6 @@ export function UniversalConverterTool({ tool }: ToolComponentProps) {
         </div>
       )}
 
-      {!file && (
-        <p className="text-xs text-[var(--ft-text-muted)]">
-          {tool.description}
-        </p>
-      )}
     </div>
   );
 }

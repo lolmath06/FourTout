@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { notify } from "@/features/notifications/store";
 import { measureText } from "@/core/text/clean";
 import { saveFile } from "@/core/output/save";
+import { Callout } from "@/components/ui/Callout";
 
 /**
  * Ossature commune aux outils Texte.
@@ -72,10 +73,10 @@ export function TextPane({
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-1.5">
       <div className="flex items-baseline justify-between gap-2">
-        <label htmlFor={id} className="text-xs font-medium text-[var(--ft-text-muted)]">
+        <label htmlFor={id} className="ft-label">
           {label}
         </label>
-        <span className="shrink-0 font-mono text-[11px] tabular-nums text-[var(--ft-text-faint)]">
+        <span className="ft-value shrink-0 text-[var(--ft-text-faint)]">
           {size.characters} car. · {size.words} mots · {size.lines} lignes
         </span>
       </div>
@@ -101,11 +102,11 @@ export function TextPane({
         }}
         style={{ minHeight }}
         className={clsx(
-          "w-full resize-y rounded-[var(--radius-card)] border p-3 text-sm outline-none transition-colors",
+          "w-full resize-y rounded-[var(--radius-card)] border p-2.5 text-[13px] leading-5 outline-none transition-colors",
           monospace && "font-mono",
           readOnly ? "bg-[var(--ft-surface-2)]" : "bg-[var(--ft-surface)]",
           dragging
-            ? "border-[var(--ft-accent)] bg-[var(--ft-accent-soft)]"
+            ? "border-[var(--ft-accent)] bg-[var(--ft-accent-quiet)]"
             : "border-[var(--ft-border)] focus:border-[var(--ft-accent)]",
         )}
       />
@@ -221,15 +222,10 @@ export function TextToolShell({
 
       {children && <div className="space-y-3">{children}</div>}
 
-      {error && (
-        <p className="flex items-start gap-2 rounded-md border border-[var(--ft-danger)] px-3 py-2 text-sm text-[var(--ft-danger)]">
-          <Icon name="CircleAlert" size={16} className="mt-px shrink-0" />
-          {error}
-        </p>
-      )}
+      {error && <Callout tone="error">{error}</Callout>}
 
       {summary && (
-        <div className="rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-sm">
+        <div className="ft-num rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-1.5 text-[12.5px]">
           {summary}
         </div>
       )}

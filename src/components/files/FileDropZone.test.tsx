@@ -24,10 +24,13 @@ const makeFile = (name: string, size = 2048) =>
 beforeEach(() => useNotifications.getState().clear());
 
 describe("zone de dépôt de fichiers", () => {
-  it("affiche l'invitation et le rappel de confidentialité", () => {
+  it("affiche l'invitation, sans redire le rappel de confidentialité", () => {
     render(<Harness toolId="pdf-merge" />);
     expect(screen.getByText("Déposez vos fichiers ici")).toBeInTheDocument();
-    expect(screen.getByText(/vos fichiers restent sur votre appareil/i)).toBeInTheDocument();
+    // Depuis la passe visuelle, le rappel « traitement local » n'est écrit
+    // qu'une seule fois par écran, en pied de page d'outil : trois répétitions
+    // du même bandeau ne rendaient pas la promesse plus crédible.
+    expect(screen.queryByText(/vos fichiers restent sur votre appareil/i)).not.toBeInTheDocument();
   });
 
   it("accepte des fichiers via l'explorateur et affiche nom, type et taille", async () => {

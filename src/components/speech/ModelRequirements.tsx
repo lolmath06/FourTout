@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
+import { Callout } from "@/components/ui/Callout";
 import { isTauri } from "@/core/platform";
 import {
   formatSize,
@@ -25,15 +26,10 @@ import { notify } from "@/features/notifications/store";
 /** Message affiché hors application (aucun moteur natif dans un navigateur). */
 function NativeOnly() {
   return (
-    <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-4 text-sm text-[var(--ft-text-muted)]">
-      <p className="flex items-center gap-2 font-medium text-[var(--ft-text)]">
-        <Icon name="Info" size={16} /> Traitement local requis
-      </p>
-      <p className="mt-1.5">
-        La synthèse et la transcription vocales s'appuient sur des moteurs locaux et nécessitent
-        l'application FourTout installée. Elles ne sont pas disponibles dans l'aperçu navigateur.
-      </p>
-    </div>
+    <Callout tone="info" title="Traitement local requis">
+      La synthèse et la transcription vocales s'appuient sur des moteurs locaux et nécessitent
+      l'application FourTout installée. Elles ne sont pas disponibles dans l'aperçu navigateur.
+    </Callout>
   );
 }
 
@@ -196,12 +192,3 @@ export function ModelRequirements({ required, optional = [], children }: ModelRe
   );
 }
 
-/** Bandeau de confidentialité, identique dans tous les outils de parole. */
-export function LocalProcessingNote() {
-  return (
-    <p className="flex items-center gap-2 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-xs text-[var(--ft-text-muted)]">
-      <Icon name="ShieldCheck" size={14} className="shrink-0" />
-      Traitement local — votre texte et vos enregistrements ne quittent pas cet appareil.
-    </p>
-  );
-}

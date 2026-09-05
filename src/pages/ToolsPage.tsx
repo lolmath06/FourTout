@@ -44,14 +44,14 @@ export function ToolsPage() {
   const isSearching = query.trim().length > 0 || status !== undefined;
 
   return (
-    <Page>
+    <Page width="wide">
       <PageHeader
         icon="LayoutGrid"
         title="Outils"
         description={`${toolRegistry.all().length} outils répartis en ${categories.length} catégories.`}
       />
 
-      <div className="mb-5 flex flex-wrap items-center gap-2">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
         <SearchInput
           value={query}
           onChange={(value) => update({ q: value })}
@@ -64,7 +64,7 @@ export function ToolsPage() {
       {isSearching ? (
         results.length > 0 ? (
           <>
-            <p className="mb-2 text-xs text-[var(--ft-text-muted)]">
+            <p className="ft-meta ft-num mb-1.5">
               {results.length} résultat{results.length > 1 ? "s" : ""}
             </p>
             <ToolList tools={results.map((result) => result.tool)} showCategory />
@@ -77,7 +77,7 @@ export function ToolsPage() {
           />
         )
       ) : (
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {categories.map((category) => (
             <CategoryTile
               key={category.id}

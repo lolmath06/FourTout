@@ -10,6 +10,15 @@ const ICON_BY_KIND: Record<NoticeKind, string> = {
   loading: "Loader",
 };
 
+/** Filet latéral : la couleur porte l'état sans colorer toute la surface. */
+const BORDER_BY_KIND: Record<NoticeKind, string> = {
+  success: "var(--ft-ok)",
+  error: "var(--ft-danger)",
+  warning: "var(--ft-warn)",
+  info: "var(--ft-accent)",
+  loading: "var(--ft-border-strong)",
+};
+
 const COLOR_BY_KIND: Record<NoticeKind, string> = {
   success: "text-[var(--ft-ok)]",
   error: "text-[var(--ft-danger)]",
@@ -41,35 +50,34 @@ export function ToastViewport() {
     <div
       role="status"
       aria-live="polite"
-      className="pointer-events-none fixed bottom-4 right-4 z-50 flex w-80 flex-col gap-2"
+      className="pointer-events-none fixed bottom-3 right-3 z-50 flex w-76 flex-col gap-1.5"
     >
       {notices.map((notice) => (
         <div
           key={notice.id}
-          className="ft-rise pointer-events-auto flex items-start gap-2.5 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-3 shadow-[var(--ft-shadow)]"
+          className="ft-rise pointer-events-auto flex items-start gap-2 rounded-[var(--radius-card)] border border-l-2 border-[var(--ft-border)] bg-[var(--ft-surface)] px-2.5 py-2 shadow-[var(--ft-shadow)]"
+          style={{ borderLeftColor: BORDER_BY_KIND[notice.kind] }}
         >
-          <span className={`mt-0.5 shrink-0 ${COLOR_BY_KIND[notice.kind]}`}>
+          <span className={`mt-px shrink-0 ${COLOR_BY_KIND[notice.kind]}`}>
             <Icon
               name={ICON_BY_KIND[notice.kind]}
-              size={16}
+              size={14}
               className={notice.kind === "loading" ? "animate-spin" : undefined}
             />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">{notice.title}</p>
+            <p className="text-[13px] font-medium leading-5">{notice.title}</p>
             {notice.description && (
-              <p className="mt-0.5 text-xs text-[var(--ft-text-muted)]">
-                {notice.description}
-              </p>
+              <p className="ft-meta mt-0.5 break-words">{notice.description}</p>
             )}
           </div>
           <button
             type="button"
             aria-label="Fermer la notification"
             onClick={() => dismiss(notice.id)}
-            className="shrink-0 rounded p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)]"
+            className="shrink-0 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)]"
           >
-            <Icon name="X" size={14} />
+            <Icon name="X" size={13} />
           </button>
         </div>
       ))}

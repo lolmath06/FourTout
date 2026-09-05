@@ -64,7 +64,10 @@ describe("navigation principale", () => {
     renderApp("/tools/t/pdf-compress");
 
     expect(await screen.findByRole("heading", { name: "Compresser un PDF" })).toBeInTheDocument();
-    expect(screen.getByText("Disponible")).toBeInTheDocument();
+    // Un outil disponible est la norme : son en-tête ne porte aucun marqueur
+    // d'état, seulement sa ligne de propriétés.
+    expect(screen.queryByText("Bientôt")).not.toBeInTheDocument();
+    expect(screen.getByTitle("Traitement entièrement local")).toBeInTheDocument();
     expect(await screen.findByText("Déposez votre PDF ici")).toBeInTheDocument();
     expect(screen.queryByText("Cet outil arrive prochainement")).not.toBeInTheDocument();
   });

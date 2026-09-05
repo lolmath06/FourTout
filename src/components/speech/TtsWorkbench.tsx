@@ -4,7 +4,6 @@ import { Icon } from "@/components/ui/Icon";
 import { Field, Fieldset, OptionGroup, Select } from "@/components/pdf/Field";
 import { AudioPreview } from "@/components/media/AudioPreview";
 import { ResultPanel, type OperationOutcome } from "@/components/pdf/ResultPanel";
-import { LocalProcessingNote } from "./ModelRequirements";
 import { cleanMessage } from "./message";
 import { countText, previewText } from "@/core/speech/segment";
 import {
@@ -205,7 +204,6 @@ export function TtsWorkbench({
         </Field>
       </Fieldset>
 
-      <LocalProcessingNote />
 
       <div className="flex flex-wrap items-center justify-end gap-2 border-t border-[var(--ft-border)] pt-4">
         <Button size="sm" onClick={() => void listen()} disabled={previewing || running || !text.trim()}>

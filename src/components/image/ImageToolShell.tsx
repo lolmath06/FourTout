@@ -9,6 +9,7 @@ import { toImageError } from "@/core/image/errors";
 import type { OperationContext } from "@/core/pdf/types";
 import { notify } from "@/features/notifications/store";
 import { ResultPanel, type OperationOutcome } from "@/components/pdf/ResultPanel";
+import { Callout, ProgressBar } from "@/components/ui/Callout";
 import { useHandoff } from "@/features/handoff/store";
 
 /**
@@ -114,20 +115,12 @@ export function ImageToolShell({
         </div>
       )}
 
-      {job.isRunning && (
-        <div className="h-1 overflow-hidden rounded-full bg-[var(--ft-surface-2)]">
-          <div
-            className="h-full rounded-full bg-[var(--ft-accent)] transition-[width]"
-            style={{ width: `${Math.round((job.progress.ratio ?? 0) * 100)}%` }}
-          />
-        </div>
-      )}
+      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
 
       {errorMessage && job.status === "error" && (
-        <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-[var(--ft-danger)] bg-[color-mix(in_oklch,var(--ft-danger)_8%,transparent)] px-3 py-2.5 text-sm text-[var(--ft-danger)]">
-          <Icon name="CircleAlert" size={16} className="mt-0.5 shrink-0" />
+        <Callout tone="error" title="L'opération a échoué">
           {errorMessage}
-        </p>
+        </Callout>
       )}
 
       {outcome && <ResultPanel outcome={outcome} />}

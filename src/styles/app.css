@@ -10,77 +10,131 @@
     "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
 
-  --radius-card: 0.625rem;
+  /*
+   * Échelle de rayons — volontairement courte et serrée.
+   *
+   * FourTout est un logiciel, pas une page web : les grands arrondis (12 à
+   * 16 px) donnent immédiatement un air de carte marketing. On redéfinit donc
+   * l'échelle de Tailwind elle-même, ce qui resserre d'un coup tous les
+   * `rounded-*` déjà écrits dans l'application, sans toucher aux composants.
+   *
+   *   contrôles   3 à 4 px
+   *   panneaux    6 px
+   *   containers  8 px (rare)
+   */
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius: 4px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-2xl: 8px;
+  --radius-3xl: 10px;
+
+  /* Rayon des panneaux, utilisé explicitement par les composants partagés. */
+  --radius-card: 6px;
+
+  /* Hauteurs de contrôle : une seule grille pour tous les champs et boutons. */
+  --ft-control-sm: 26px;
+  --ft-control: 30px;
+  --ft-control-lg: 34px;
 }
 
 /*
- * Jetons de couleur. Une seule définition par rôle : les composants n'utilisent
- * jamais de couleur en dur, ce qui garde clair et sombre cohérents.
+ * Jetons de couleur.
+ *
+ * Une seule définition par rôle : les composants n'utilisent jamais de couleur
+ * en dur. La règle de la passe visuelle : les **surfaces sont neutres**, la
+ * couleur d'accent ne sert qu'à l'action, au focus et à la sélection.
  */
 :root {
   color-scheme: light;
 
-  --ft-bg: oklch(98.4% 0.002 250);
+  --ft-bg: oklch(97.6% 0.002 250);
   --ft-surface: oklch(100% 0 0);
-  --ft-surface-2: oklch(96.8% 0.003 250);
-  --ft-border: oklch(91% 0.005 250);
-  --ft-border-strong: oklch(84% 0.008 250);
-  --ft-text: oklch(24% 0.015 260);
-  --ft-text-muted: oklch(52% 0.012 260);
-  --ft-text-faint: oklch(64% 0.01 260);
-  --ft-accent: oklch(55% 0.17 264);
-  --ft-accent-soft: oklch(95% 0.03 264);
-  --ft-accent-text: oklch(46% 0.17 264);
-  --ft-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06), 0 4px 16px oklch(20% 0.02 260 / 0.05);
+  --ft-surface-2: oklch(96.5% 0.003 250);
+  /* Surface des barres d'outils et de la barre latérale. */
+  --ft-chrome: oklch(98.8% 0.002 250);
+  --ft-border: oklch(90% 0.005 250);
+  --ft-border-strong: oklch(82% 0.008 250);
+  /* Filet de séparation interne : plus discret qu'une bordure de panneau. */
+  --ft-rule: oklch(93% 0.004 250);
+  --ft-hover: oklch(95.5% 0.004 250);
+  --ft-text: oklch(22% 0.015 260);
+  --ft-text-muted: oklch(50% 0.012 260);
+  --ft-text-faint: oklch(57% 0.011 260);
 
-  --ft-ok: oklch(58% 0.14 155);
-  --ft-warn: oklch(70% 0.15 75);
-  --ft-danger: oklch(58% 0.19 25);
+  --ft-accent: oklch(52% 0.16 264);
+  --ft-accent-text: oklch(45% 0.16 264);
+  /* Teinte d'accent posée sur de grandes surfaces : chroma volontairement bas. */
+  --ft-accent-soft: oklch(94.5% 0.022 264);
+  --ft-accent-quiet: oklch(96.5% 0.012 264);
+  --ft-focus: oklch(52% 0.16 264);
+
+  /* Les ombres sont l'exception, pas la règle : elles ne servent qu'au flottant. */
+  --ft-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.07), 0 8px 24px oklch(20% 0.02 260 / 0.06);
+
+  --ft-ok: oklch(52% 0.13 155);
+  --ft-warn: oklch(58% 0.13 70);
+  --ft-danger: oklch(53% 0.18 25);
 }
 
 .dark {
   color-scheme: dark;
 
-  --ft-bg: oklch(17.5% 0.012 260);
-  --ft-surface: oklch(21.5% 0.014 260);
-  --ft-surface-2: oklch(25% 0.015 260);
-  --ft-border: oklch(30% 0.015 260);
-  --ft-border-strong: oklch(38% 0.018 260);
-  --ft-text: oklch(94% 0.005 260);
-  --ft-text-muted: oklch(72% 0.012 260);
-  --ft-text-faint: oklch(58% 0.012 260);
-  --ft-accent: oklch(70% 0.15 264);
-  --ft-accent-soft: oklch(30% 0.06 264);
-  --ft-accent-text: oklch(80% 0.12 264);
-  --ft-shadow: 0 1px 2px oklch(0% 0 0 / 0.3), 0 6px 20px oklch(0% 0 0 / 0.25);
+  --ft-bg: oklch(16% 0.008 260);
+  --ft-surface: oklch(20% 0.01 260);
+  --ft-surface-2: oklch(23.5% 0.011 260);
+  --ft-chrome: oklch(18.5% 0.009 260);
+  --ft-border: oklch(28% 0.011 260);
+  --ft-border-strong: oklch(36% 0.013 260);
+  --ft-rule: oklch(25% 0.01 260);
+  --ft-hover: oklch(24.5% 0.012 260);
+  --ft-text: oklch(93% 0.004 260);
+  --ft-text-muted: oklch(70% 0.01 260);
+  --ft-text-faint: oklch(61% 0.011 260);
 
-  --ft-ok: oklch(72% 0.15 155);
-  --ft-warn: oklch(80% 0.14 75);
-  --ft-danger: oklch(68% 0.17 25);
+  --ft-accent: oklch(68% 0.13 264);
+  --ft-accent-text: oklch(78% 0.1 264);
+  --ft-accent-soft: oklch(28% 0.045 264);
+  --ft-accent-quiet: oklch(24% 0.025 264);
+  --ft-focus: oklch(72% 0.13 264);
+
+  --ft-shadow: 0 1px 2px oklch(0% 0 0 / 0.4), 0 8px 24px oklch(0% 0 0 / 0.32);
+
+  --ft-ok: oklch(70% 0.13 155);
+  --ft-warn: oklch(76% 0.12 75);
+  --ft-danger: oklch(66% 0.16 25);
 }
 
-/* Accents de catégorie : une teinte par catégorie, déclarée une seule fois. */
-[data-accent="red"] { --ft-cat: oklch(58% 0.2 25); --ft-cat-soft: oklch(95% 0.03 25); }
-[data-accent="orange"] { --ft-cat: oklch(64% 0.17 55); --ft-cat-soft: oklch(95.5% 0.03 55); }
-[data-accent="amber"] { --ft-cat: oklch(70% 0.15 80); --ft-cat-soft: oklch(96% 0.04 85); }
-[data-accent="lime"] { --ft-cat: oklch(66% 0.16 130); --ft-cat-soft: oklch(96% 0.04 130); }
-[data-accent="emerald"] { --ft-cat: oklch(62% 0.14 160); --ft-cat-soft: oklch(95.5% 0.03 160); }
-[data-accent="cyan"] { --ft-cat: oklch(64% 0.12 210); --ft-cat-soft: oklch(95.5% 0.03 210); }
-[data-accent="sky"] { --ft-cat: oklch(60% 0.15 245); --ft-cat-soft: oklch(95.5% 0.03 245); }
-[data-accent="violet"] { --ft-cat: oklch(58% 0.18 290); --ft-cat-soft: oklch(95.5% 0.03 290); }
-[data-accent="fuchsia"] { --ft-cat: oklch(60% 0.2 325); --ft-cat-soft: oklch(95.5% 0.03 325); }
-[data-accent="slate"] { --ft-cat: oklch(52% 0.02 260); --ft-cat-soft: oklch(95% 0.005 260); }
+/*
+ * Accents de catégorie.
+ *
+ * Ils identifient une famille d'outils, ils ne décorent pas : la teinte porte
+ * sur le **glyphe** et sur un filet, jamais sur une grande surface. Les
+ * variantes « soft » sont donc très peu chromatiques.
+ */
+[data-accent="red"] { --ft-cat: oklch(55% 0.19 25); --ft-cat-soft: oklch(96% 0.014 25); }
+[data-accent="orange"] { --ft-cat: oklch(58% 0.15 55); --ft-cat-soft: oklch(96.2% 0.014 55); }
+[data-accent="amber"] { --ft-cat: oklch(58% 0.12 80); --ft-cat-soft: oklch(96.4% 0.016 85); }
+[data-accent="lime"] { --ft-cat: oklch(55% 0.14 130); --ft-cat-soft: oklch(96.4% 0.016 130); }
+[data-accent="emerald"] { --ft-cat: oklch(53% 0.12 160); --ft-cat-soft: oklch(96.2% 0.014 160); }
+[data-accent="cyan"] { --ft-cat: oklch(54% 0.11 210); --ft-cat-soft: oklch(96.2% 0.014 210); }
+[data-accent="sky"] { --ft-cat: oklch(53% 0.14 245); --ft-cat-soft: oklch(96.2% 0.014 245); }
+[data-accent="violet"] { --ft-cat: oklch(53% 0.16 290); --ft-cat-soft: oklch(96.2% 0.014 290); }
+[data-accent="fuchsia"] { --ft-cat: oklch(55% 0.18 325); --ft-cat-soft: oklch(96.2% 0.014 325); }
+[data-accent="slate"] { --ft-cat: oklch(48% 0.02 260); --ft-cat-soft: oklch(96% 0.004 260); }
 
-.dark [data-accent="red"] { --ft-cat: oklch(70% 0.17 25); --ft-cat-soft: oklch(30% 0.05 25); }
-.dark [data-accent="orange"] { --ft-cat: oklch(74% 0.14 55); --ft-cat-soft: oklch(30% 0.05 55); }
-.dark [data-accent="amber"] { --ft-cat: oklch(80% 0.13 80); --ft-cat-soft: oklch(30% 0.05 80); }
-.dark [data-accent="lime"] { --ft-cat: oklch(76% 0.14 130); --ft-cat-soft: oklch(29% 0.05 130); }
-.dark [data-accent="emerald"] { --ft-cat: oklch(74% 0.13 160); --ft-cat-soft: oklch(29% 0.05 160); }
-.dark [data-accent="cyan"] { --ft-cat: oklch(76% 0.11 210); --ft-cat-soft: oklch(29% 0.05 210); }
-.dark [data-accent="sky"] { --ft-cat: oklch(72% 0.13 245); --ft-cat-soft: oklch(29% 0.05 245); }
-.dark [data-accent="violet"] { --ft-cat: oklch(72% 0.15 290); --ft-cat-soft: oklch(30% 0.06 290); }
-.dark [data-accent="fuchsia"] { --ft-cat: oklch(74% 0.16 325); --ft-cat-soft: oklch(30% 0.06 325); }
-.dark [data-accent="slate"] { --ft-cat: oklch(72% 0.02 260); --ft-cat-soft: oklch(28% 0.01 260); }
+.dark [data-accent="red"] { --ft-cat: oklch(72% 0.15 25); --ft-cat-soft: oklch(24% 0.026 25); }
+.dark [data-accent="orange"] { --ft-cat: oklch(76% 0.12 55); --ft-cat-soft: oklch(24% 0.026 55); }
+.dark [data-accent="amber"] { --ft-cat: oklch(80% 0.11 80); --ft-cat-soft: oklch(24% 0.026 80); }
+.dark [data-accent="lime"] { --ft-cat: oklch(77% 0.12 130); --ft-cat-soft: oklch(24% 0.026 130); }
+.dark [data-accent="emerald"] { --ft-cat: oklch(75% 0.11 160); --ft-cat-soft: oklch(24% 0.026 160); }
+.dark [data-accent="cyan"] { --ft-cat: oklch(77% 0.1 210); --ft-cat-soft: oklch(24% 0.026 210); }
+.dark [data-accent="sky"] { --ft-cat: oklch(74% 0.11 245); --ft-cat-soft: oklch(24% 0.026 245); }
+.dark [data-accent="violet"] { --ft-cat: oklch(74% 0.13 290); --ft-cat-soft: oklch(24% 0.03 290); }
+.dark [data-accent="fuchsia"] { --ft-cat: oklch(76% 0.14 325); --ft-cat-soft: oklch(24% 0.03 325); }
+.dark [data-accent="slate"] { --ft-cat: oklch(74% 0.015 260); --ft-cat-soft: oklch(23% 0.006 260); }
 
 html,
 body,
@@ -108,12 +162,12 @@ nav {
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--ft-border-strong);
-  border: 3px solid transparent;
+  border: 2px solid transparent;
   background-clip: content-box;
   border-radius: 999px;
 }
@@ -125,15 +179,132 @@ nav {
   background: transparent;
 }
 
+/*
+ * Focus clavier : un anneau net, jamais un halo. Il doit rester visible sur
+ * une surface claire comme sur une surface sombre.
+ */
 :focus-visible {
-  outline: 2px solid var(--ft-accent);
-  outline-offset: 2px;
+  outline: 2px solid var(--ft-focus);
+  outline-offset: 1px;
+}
+
+::selection {
+  background: var(--ft-accent-soft);
+  color: var(--ft-text);
 }
 
 @utility surface {
   background: var(--ft-surface);
   border: 1px solid var(--ft-border);
   border-radius: var(--radius-card);
+}
+
+/*
+ * Typographie — l'échelle est courte et les écarts sont nets. C'est ce qui
+ * distingue un logiciel d'un site : peu de tailles, mais franchement
+ * différenciées.
+ */
+@utility ft-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+@utility ft-page-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+/* Titre de section : petit, capitalisé, il structure sans crier. */
+@utility ft-section {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ft-text-faint);
+}
+
+@utility ft-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--ft-text-muted);
+}
+
+/* Ligne de métadonnées : ce qui remplace les anciennes pastilles. */
+@utility ft-meta {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--ft-text-muted);
+}
+
+/*
+ * Valeurs techniques : empreintes, tailles, dimensions, codecs, chemins,
+ * horodatages. Le chiffre doit être aligné et reconnaissable au premier coup
+ * d'œil — c'est la signature visuelle d'un outil sérieux.
+ */
+@utility ft-num {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility ft-value {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Filet de séparation horizontal, à l'intérieur d'un panneau. */
+@utility ft-rule {
+  border-color: var(--ft-rule);
+}
+
+/*
+ * Tables techniques : lignes fines, pas de carte par valeur.
+ */
+@utility ft-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.ft-table th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--ft-text-muted);
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--ft-border);
+  white-space: nowrap;
+}
+
+.ft-table td {
+  padding: 4px 10px;
+  border-top: 1px solid var(--ft-rule);
+  vertical-align: top;
+}
+
+.ft-table tbody tr:first-child td {
+  border-top: 0;
+}
+
+/* Liste de propriétés : libellé à gauche, valeur alignée à droite. */
+.ft-props {
+  display: grid;
+  grid-template-columns: minmax(7rem, max-content) 1fr;
+  gap: 2px 16px;
+  font-size: 12px;
+}
+
+.ft-props dt {
+  color: var(--ft-text-muted);
+}
+
+.ft-props dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -148,7 +319,7 @@ nav {
 @keyframes ft-rise {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -157,5 +328,5 @@ nav {
 }
 
 .ft-rise {
-  animation: ft-rise 0.18s ease-out both;
+  animation: ft-rise 0.14s ease-out both;
 }

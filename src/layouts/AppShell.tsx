@@ -65,20 +65,25 @@ export function AppShell() {
     <div className="flex h-full w-full overflow-hidden bg-[var(--ft-bg)] text-[var(--ft-text)]">
       <aside
         className={clsx(
-          "flex shrink-0 flex-col border-r border-[var(--ft-border)] bg-[var(--ft-surface)] transition-[width]",
-          collapsed ? "w-14" : "w-56",
+          "flex shrink-0 flex-col border-r border-[var(--ft-border)] bg-[var(--ft-chrome)] transition-[width]",
+          collapsed ? "w-12" : "w-52",
         )}
       >
-        <div className={clsx("flex h-14 items-center gap-2 px-3", collapsed && "justify-center")}>
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-[var(--ft-accent)] text-white">
+        <div
+          className={clsx(
+            "flex h-11 items-center gap-2 border-b border-[var(--ft-rule)] px-3",
+            collapsed && "justify-center px-0",
+          )}
+        >
+          <span className="shrink-0 text-[var(--ft-accent)]">
             <Icon name="Hammer" size={15} />
           </span>
           {!collapsed && (
-            <span className="truncate text-[15px] font-semibold tracking-tight">FourTout</span>
+            <span className="truncate text-[13px] font-semibold tracking-[-0.01em]">FourTout</span>
           )}
         </div>
 
-        <nav className="flex flex-1 flex-col gap-0.5 px-2" aria-label="Navigation principale">
+        <nav className="flex flex-1 flex-col gap-px p-1.5" aria-label="Navigation principale">
           {items.map((item) => (
             <NavLink
               key={item.to}
@@ -87,20 +92,21 @@ export function AppShell() {
               title={collapsed ? item.label : undefined}
               className={({ isActive }) =>
                 clsx(
-                  "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors",
+                  "relative flex h-7 items-center gap-2.5 rounded-[var(--radius-sm)] px-2 text-[13px] transition-colors",
                   collapsed && "justify-center px-0",
                   isActive
-                    ? "bg-[var(--ft-accent-soft)] font-medium text-[var(--ft-accent-text)]"
-                    : "text-[var(--ft-text-muted)] hover:bg-[var(--ft-surface-2)] hover:text-[var(--ft-text)]",
+                    // Sélection sobre : surface neutre + accent latéral de 2 px.
+                    ? "bg-[var(--ft-surface-2)] font-medium text-[var(--ft-text)] before:absolute before:inset-y-1 before:left-0 before:w-[2px] before:rounded-full before:bg-[var(--ft-accent)]"
+                    : "text-[var(--ft-text-muted)] hover:bg-[var(--ft-hover)] hover:text-[var(--ft-text)]",
                 )
               }
             >
-              <Icon name={item.icon} size={16} />
+              <Icon name={item.icon} size={15} />
               {!collapsed && (
                 <>
                   <span className="flex-1 truncate">{item.label}</span>
                   {item.count !== undefined && item.count > 0 && (
-                    <span className="rounded bg-[var(--ft-surface-2)] px-1.5 text-[11px] tabular-nums text-[var(--ft-text-muted)]">
+                    <span className="ft-num shrink-0 text-[11px] text-[var(--ft-text-faint)]">
                       {item.count}
                     </span>
                   )}
@@ -110,7 +116,7 @@ export function AppShell() {
           ))}
         </nav>
 
-        <div className="space-y-1 p-2">
+        <div className="space-y-px border-t border-[var(--ft-rule)] p-1.5">
           {activeJobs.length > 0 && (
             <button
               type="button"
@@ -121,11 +127,11 @@ export function AppShell() {
                   : undefined
               }
               className={clsx(
-                "flex w-full items-center gap-2 rounded-md border border-[var(--ft-accent-soft)] bg-[var(--ft-accent-soft)] px-2.5 py-2 text-left text-xs font-medium text-[var(--ft-accent-text)] transition-colors hover:brightness-95",
+                "flex h-7 w-full items-center gap-2.5 rounded-[var(--radius-sm)] px-2 text-left text-xs text-[var(--ft-accent-text)] transition-colors hover:bg-[var(--ft-hover)]",
                 collapsed && "justify-center px-0",
               )}
             >
-              <Icon name="Loader" size={14} className="shrink-0 animate-spin" />
+              <Icon name="Loader" size={13} className="shrink-0 animate-spin" />
               {!collapsed && (
                 <span className="flex-1 truncate">
                   {activeJobs.length} opération{activeJobs.length > 1 ? "s" : ""} en cours
@@ -134,7 +140,7 @@ export function AppShell() {
             </button>
           )}
           {!collapsed && (
-            <p className="flex items-center gap-1.5 rounded-md px-2.5 py-2 text-[11px] leading-4 text-[var(--ft-text-faint)]">
+            <p className="flex h-7 items-center gap-2.5 px-2 text-[11px] text-[var(--ft-text-faint)]">
               <Icon name="ShieldCheck" size={13} />
               Traitement local
             </p>
@@ -143,14 +149,14 @@ export function AppShell() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-[var(--ft-border)] bg-[var(--ft-surface)] px-4">
+        <header className="flex h-11 shrink-0 items-center gap-3 border-b border-[var(--ft-border)] bg-[var(--ft-chrome)] px-3">
           <SearchInput
             value={query}
             onChange={setQuery}
             onSubmit={submitSearch}
             placeholder="Rechercher un outil…"
             aria-label="Rechercher un outil"
-            className="max-w-md flex-1"
+            className="max-w-sm flex-1"
           />
         </header>
 

@@ -8,6 +8,7 @@ import { useJob } from "@/core/jobs";
 import type { OperationContext } from "@/core/pdf/types";
 import { notify } from "@/features/notifications/store";
 import { ResultPanel, type OperationOutcome } from "@/components/pdf/ResultPanel";
+import { Callout, ProgressBar } from "@/components/ui/Callout";
 import { AudioPreview } from "./AudioPreview";
 import { isMediaAvailable, probeFile } from "@/core/media/client";
 import { emptyMediaInfo, formatTimecode, type MediaInfo } from "@/core/media/types";
@@ -112,15 +113,10 @@ export function MediaToolShell({
 
   if (available === false) {
     return (
-      <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-4 text-sm text-[var(--ft-text-muted)]">
-        <p className="flex items-center gap-2 font-medium text-[var(--ft-text)]">
-          <Icon name="Info" size={16} /> Traitement local requis
-        </p>
-        <p className="mt-1.5">
-          Cet outil s'appuie sur le moteur média local (FFmpeg) et nécessite l'application FourTout installée. Il n'est pas
-          disponible dans l'aperçu navigateur.
-        </p>
-      </div>
+      <Callout tone="info" title="Traitement local requis">
+        Cet outil s'appuie sur le moteur média local (FFmpeg) et nécessite l'application FourTout
+        installée. Il n'est pas disponible dans l'aperçu navigateur.
+      </Callout>
     );
   }
 
@@ -169,16 +165,12 @@ export function MediaToolShell({
         </div>
       )}
 
-      {job.isRunning && (
-        <div className="h-1 overflow-hidden rounded-full bg-[var(--ft-surface-2)]">
-          <div className="h-full rounded-full bg-[var(--ft-accent)] transition-[width]" style={{ width: `${Math.round((job.progress.ratio ?? 0) * 100)}%` }} />
-        </div>
-      )}
+      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
 
       {errorMessage && (
-        <p className="flex items-center gap-2 rounded-md border border-[var(--ft-danger)] px-3 py-2 text-sm text-[var(--ft-danger)]">
-          <Icon name="CircleAlert" size={16} /> {errorMessage}
-        </p>
+        <Callout tone="error" title="L'opération a échoué">
+          {errorMessage}
+        </Callout>
       )}
 
       {outcome && (

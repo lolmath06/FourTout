@@ -103,39 +103,44 @@ export function PathPicker({
         disabled={disabled}
         data-testid="path-picker"
         className={clsx(
-          "flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-[var(--radius-card)]",
-          "border border-dashed px-6 py-8 text-center transition-colors",
+          "flex w-full cursor-pointer rounded-[var(--radius-card)] border border-dashed transition-colors",
           disabled && "pointer-events-none opacity-50",
+          // Une fois la sélection faite, la cible se réduit : les réglages
+          // deviennent l'objet de l'écran.
+          paths.length > 0
+            ? "items-center gap-2.5 px-3 py-2.5 text-left"
+            : "flex-col items-center justify-center gap-1.5 px-6 py-6 text-center",
           dragging
-            ? "border-[var(--ft-accent)] bg-[var(--ft-accent-soft)]"
-            : "border-[var(--ft-border-strong)] bg-[var(--ft-surface)] hover:border-[var(--ft-accent)]",
+            ? "border-[var(--ft-accent)] bg-[var(--ft-accent-quiet)]"
+            : "border-[var(--ft-border-strong)] bg-[var(--ft-surface)] hover:border-[var(--ft-accent)] hover:bg-[var(--ft-hover)]",
         )}
       >
-        <span className="flex size-10 items-center justify-center rounded-full bg-[var(--ft-surface-2)] text-[var(--ft-text-muted)]">
-          <Icon name={mode === "directory" ? "FolderTree" : "File"} size={20} />
+        <span className="shrink-0 text-[var(--ft-text-faint)]">
+          <Icon name={mode === "directory" ? "FolderTree" : "File"} size={paths.length > 0 ? 15 : 18} />
         </span>
-        <span className="text-sm font-medium text-[var(--ft-text)]">{label ?? defaultLabel}</span>
-        <span className="text-xs text-[var(--ft-text-muted)]">
-          {isTauri() ? "ou déposez-les sur la fenêtre" : "boîte de dialogue du système"}
+        <span className={paths.length > 0 ? "min-w-0 flex-1" : "contents"}>
+          <span className="block text-[13px] font-medium text-[var(--ft-text)]">
+            {label ?? defaultLabel}
+          </span>
+          <span className="ft-meta block">
+            {isTauri() ? "ou déposez-les sur la fenêtre" : "boîte de dialogue du système"}
+            {hint && <span className="text-[var(--ft-text-faint)]"> · {hint}</span>}
+          </span>
         </span>
-        {hint && <span className="text-xs text-[var(--ft-text-faint)]">{hint}</span>}
       </button>
 
       {paths.length > 0 && (
-        <ul className="mt-3 flex flex-col gap-1.5">
+        <ul className="mt-2 divide-y divide-[var(--ft-rule)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
           {paths.map((path) => (
-            <li
-              key={path}
-              className="flex items-center gap-2.5 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface)] px-2.5 py-2"
-            >
+            <li key={path} className="flex items-center gap-2.5 px-2.5 py-1.5">
               <Icon
                 name={mode === "directory" ? "FolderTree" : "File"}
-                size={15}
+                size={14}
                 className="shrink-0 text-[var(--ft-text-faint)]"
               />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm">{baseName(path)}</span>
-                <span className="block truncate text-[11px] text-[var(--ft-text-faint)]" title={path}>
+                <span className="block truncate text-[13px]">{baseName(path)}</span>
+                <span className="ft-value block truncate text-[var(--ft-text-faint)]" title={path}>
                   {shortenPath(directoryName(path), 3)}
                 </span>
               </span>
@@ -143,9 +148,9 @@ export function PathPicker({
                 type="button"
                 aria-label={`Retirer ${baseName(path)}`}
                 onClick={() => onChange(paths.filter((entry) => entry !== path))}
-                className="shrink-0 rounded p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-danger)]"
+                className="shrink-0 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-danger)]"
               >
-                <Icon name="X" size={14} />
+                <Icon name="X" size={13} />
               </button>
             </li>
           ))}

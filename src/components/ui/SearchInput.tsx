@@ -10,9 +10,18 @@ interface SearchInputProps {
   className?: string;
   size?: "sm" | "lg";
   onSubmit?: () => void;
+  /** Indication de raccourci affichée à droite (purement visuelle). */
+  hint?: string;
   "aria-label"?: string;
 }
 
+/**
+ * Champ de recherche.
+ *
+ * Il doit ressembler à une **ligne de commande** d'application, pas à la barre
+ * de recherche d'une page d'accueil : hauteur de contrôle standard, angles
+ * serrés, bordure nette, aucune ombre.
+ */
 export function SearchInput({
   value,
   onChange,
@@ -21,6 +30,7 @@ export function SearchInput({
   className,
   size = "sm",
   onSubmit,
+  hint,
   ...rest
 }: SearchInputProps) {
   const ref = useRef<HTMLInputElement>(null);
@@ -34,15 +44,15 @@ export function SearchInput({
   return (
     <div
       className={clsx(
-        "flex items-center gap-2 rounded-lg border border-[var(--ft-border)] bg-[var(--ft-surface)] transition-colors",
-        "focus-within:border-[var(--ft-accent)]",
-        large ? "h-12 px-4" : "h-8 px-2.5",
+        "flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--ft-border-strong)]",
+        "bg-[var(--ft-bg)] transition-colors focus-within:border-[var(--ft-accent)]",
+        large ? "h-[var(--ft-control-lg)] px-2.5" : "h-[var(--ft-control)] px-2",
         className,
       )}
     >
       <Icon
         name="Search"
-        size={large ? 18 : 14}
+        size={large ? 15 : 14}
         className="shrink-0 text-[var(--ft-text-faint)]"
       />
       <input
@@ -57,20 +67,27 @@ export function SearchInput({
           if (event.key === "Escape" && value) onChange("");
         }}
         className={clsx(
-          "w-full bg-transparent text-[var(--ft-text)] outline-none placeholder:text-[var(--ft-text-faint)]",
+          "w-full bg-transparent text-[var(--ft-text)] outline-none",
+          "placeholder:text-[var(--ft-text-faint)]",
           "[&::-webkit-search-cancel-button]:appearance-none",
-          large ? "text-base" : "text-sm",
+          large ? "text-sm" : "text-[13px]",
         )}
       />
-      {value && (
+      {value ? (
         <button
           type="button"
           aria-label="Effacer la recherche"
           onClick={() => onChange("")}
-          className="shrink-0 rounded p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)]"
+          className="shrink-0 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)]"
         >
-          <Icon name="X" size={large ? 16 : 13} />
+          <Icon name="X" size={13} />
         </button>
+      ) : (
+        hint && (
+          <span className="ft-value shrink-0 rounded-[var(--radius-sm)] border border-[var(--ft-border)] px-1 text-[10px] leading-4 text-[var(--ft-text-faint)]">
+            {hint}
+          </span>
+        )
       )}
     </div>
   );

@@ -6,6 +6,7 @@ import { useJob } from "@/core/jobs";
 import type { OperationContext } from "@/core/pdf/types";
 import { isFilesEngineAvailable, NATIVE_REQUIRED } from "@/core/files/native";
 import { notify } from "@/features/notifications/store";
+import { Callout, ProgressBar } from "@/components/ui/Callout";
 
 /**
  * Ossature commune aux outils Fichiers travaillant sur des chemins.
@@ -47,12 +48,9 @@ export function NativeToolShell<TResult>({
 
   if (!isFilesEngineAvailable()) {
     return (
-      <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-4 text-sm text-[var(--ft-text-muted)]">
-        <p className="flex items-center gap-2 font-medium text-[var(--ft-text)]">
-          <Icon name="Info" size={16} /> Application installée requise
-        </p>
-        <p className="mt-1.5">{NATIVE_REQUIRED}</p>
-      </div>
+      <Callout tone="info" title="Application installée requise">
+        {NATIVE_REQUIRED}
+      </Callout>
     );
   }
 
@@ -108,30 +106,18 @@ export function NativeToolShell<TResult>({
         </div>
       )}
 
-      {job.isRunning && (
-        <div className="space-y-1">
-          <div className="h-1 overflow-hidden rounded-full bg-[var(--ft-surface-2)]">
-            <div
-              className="h-full rounded-full bg-[var(--ft-accent)] transition-[width]"
-              style={{ width: `${Math.round((job.progress.ratio ?? 0) * 100)}%` }}
-            />
-          </div>
-          {job.progress.label && (
-            <p className="text-xs text-[var(--ft-text-muted)]">{job.progress.label}</p>
-          )}
-        </div>
-      )}
+      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
 
       {job.status === "cancelled" && (
-        <p className="flex items-center gap-2 rounded-md border border-[var(--ft-border)] px-3 py-2 text-sm text-[var(--ft-text-muted)]">
-          <Icon name="Info" size={15} /> Opération annulée. Aucun résultat n'a été produit.
-        </p>
+        <Callout tone="neutral" title="Opération annulée">
+          Aucun résultat n'a été produit.
+        </Callout>
       )}
 
       {errorMessage && (
-        <p className="flex items-start gap-2 rounded-md border border-[var(--ft-danger)] px-3 py-2 text-sm text-[var(--ft-danger)]">
-          <Icon name="CircleAlert" size={16} className="mt-px shrink-0" /> {errorMessage}
-        </p>
+        <Callout tone="error" title="L'opération a échoué">
+          {errorMessage}
+        </Callout>
       )}
 
       {result !== null && renderResult(result)}

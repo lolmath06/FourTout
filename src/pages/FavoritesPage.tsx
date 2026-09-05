@@ -12,7 +12,7 @@ export function FavoritesPage() {
   const tools = toolRegistry.resolveMany(ids);
 
   return (
-    <Page>
+    <Page width="wide">
       <PageHeader
         icon="Star"
         title="Favoris"

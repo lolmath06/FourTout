@@ -66,51 +66,53 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
   };
 
   return (
-    <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklch,var(--ft-ok)_45%,var(--ft-border))] bg-[color-mix(in_oklch,var(--ft-ok)_6%,transparent)] p-4">
-      <div className="flex items-start gap-2.5">
-        <span className="mt-0.5 shrink-0 text-[var(--ft-ok)]">
-          <Icon name="CircleCheck" size={18} />
+    <div
+      className="rounded-[var(--radius-card)] border border-l-2 border-[var(--ft-border)] bg-[var(--ft-surface)]"
+      style={{ borderLeftColor: "var(--ft-ok)" }}
+    >
+      <div className="flex items-start gap-2 border-b border-[var(--ft-rule)] px-3 py-2">
+        <span className="mt-px shrink-0 text-[var(--ft-ok)]">
+          <Icon name="CircleCheck" size={15} />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium">
+          <p className="text-[13px] font-medium leading-5">
             {many ? `${outcome.files.length} fichiers produits` : "Fichier produit"}
           </p>
-          {outcome.summary && (
-            <p className="mt-0.5 text-xs text-[var(--ft-text-muted)]">{outcome.summary}</p>
-          )}
+          {outcome.summary && <p className="ft-meta mt-0.5">{outcome.summary}</p>}
           {outcome.warning && (
-            <p className="mt-1.5 flex items-start gap-1.5 text-xs text-[var(--ft-warn)]">
-              <Icon name="TriangleAlert" size={13} className="mt-px shrink-0" />
+            <p className="mt-1 flex items-start gap-1.5 text-[11.5px] leading-4 text-[var(--ft-warn)]">
+              <Icon name="TriangleAlert" size={12} className="mt-0.5 shrink-0" />
               {outcome.warning}
             </p>
           )}
         </div>
+        <span className="ft-value shrink-0 text-[var(--ft-text-faint)]">
+          {formatFileSize(total)}
+        </span>
       </div>
 
-      <ul className="mt-3 flex max-h-56 flex-col gap-1 overflow-y-auto">
+      {/* Les fichiers produits sont une donnée technique : une table, pas des cartes. */}
+      <ul className="max-h-52 divide-y divide-[var(--ft-rule)] overflow-y-auto">
         {outcome.files.map((file) => (
-          <li
-            key={file.name}
-            className="flex items-center gap-2.5 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface)] px-2.5 py-1.5"
-          >
-            <Icon name="File" size={14} className="shrink-0 text-[var(--ft-text-faint)]" />
-            <span className="min-w-0 flex-1 truncate text-sm">{file.name}</span>
-            <span className="shrink-0 text-xs tabular-nums text-[var(--ft-text-muted)]">
+          <li key={file.name} className="flex items-center gap-2.5 px-3 py-1.5">
+            <Icon name="File" size={13} className="shrink-0 text-[var(--ft-text-faint)]" />
+            <span className="min-w-0 flex-1 truncate text-[13px]">{file.name}</span>
+            <span className="ft-value shrink-0 text-[var(--ft-text-muted)]">
               {formatFileSize(file.bytes.length)}
             </span>
           </li>
         ))}
       </ul>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-1.5 border-t border-[var(--ft-rule)] px-3 py-2">
         <Button size="sm" variant="primary" onClick={() => persist(false)} disabled={busy}>
-          <Icon name="HardDrive" size={14} />
+          <Icon name="HardDrive" size={13} />
           {many ? "Enregistrer dans un dossier" : "Enregistrer"}
         </Button>
 
         {many && (
           <Button size="sm" onClick={() => persist(true)} disabled={busy}>
-            <Icon name="FolderArchive" size={14} />
+            <Icon name="FolderArchive" size={13} />
             Enregistrer en ZIP
           </Button>
         )}
@@ -122,21 +124,17 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
               variant="ghost"
               onClick={() => (many ? openFolder(savedPath) : revealFile(savedPath))}
             >
-              <Icon name="FolderTree" size={14} />
+              <Icon name="FolderTree" size={13} />
               Ouvrir le dossier
             </Button>
             {!many && (
               <Button size="sm" variant="ghost" onClick={() => void openFile(savedPath)}>
-                <Icon name="Play" size={14} />
+                <Icon name="Play" size={13} />
                 Ouvrir le fichier
               </Button>
             )}
           </>
         )}
-
-        <span className="ml-auto text-xs text-[var(--ft-text-faint)]">
-          {formatFileSize(total)} au total
-        </span>
       </div>
     </div>
   );

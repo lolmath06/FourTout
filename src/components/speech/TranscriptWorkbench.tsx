@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Field, Fieldset, Select } from "@/components/pdf/Field";
 import { FileDropZone } from "@/components/files/FileDropZone";
-import { LocalProcessingNote } from "./ModelRequirements";
 import { cleanMessage } from "./message";
 import { constraintsForTool, type SelectedFile } from "@/core/files";
 import { formatSrtTime, toPlainText, toSrt, toVtt, type TranscriptSegment } from "@/core/speech/subtitles";
@@ -187,7 +186,6 @@ export function TranscriptWorkbench({
         </Fieldset>
       )}
 
-      <LocalProcessingNote />
 
       {files.length > 0 && (
         <div className="flex items-center justify-end gap-2 border-t border-[var(--ft-border)] pt-4">

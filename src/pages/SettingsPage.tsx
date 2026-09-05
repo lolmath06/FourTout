@@ -27,9 +27,9 @@ export function SettingsPage() {
     <Page>
       <PageHeader icon="Settings" title="Paramètres" description="Apparence et données locales." />
 
-      <div className="space-y-2">
+      <div className="divide-y divide-[var(--ft-rule)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
         <Row label="Thème" description="S'adapte par défaut au réglage de votre système.">
-          <div className="flex h-8 items-center gap-0.5 rounded-lg border border-[var(--ft-border)] bg-[var(--ft-surface)] p-0.5">
+          <div className="flex h-[var(--ft-control)] items-stretch gap-px overflow-hidden rounded-[var(--radius-md)] border border-[var(--ft-border-strong)] bg-[var(--ft-border)]">
             {THEMES.map((option) => (
               <button
                 key={option.value}
@@ -38,8 +38,8 @@ export function SettingsPage() {
                 onClick={() => set("theme", option.value)}
                 className={
                   theme === option.value
-                    ? "flex items-center gap-1.5 rounded-md bg-[var(--ft-accent-soft)] px-2.5 py-1 text-xs font-medium text-[var(--ft-accent-text)]"
-                    : "flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium text-[var(--ft-text-muted)] hover:text-[var(--ft-text)]"
+                    ? "flex items-center gap-1.5 bg-[var(--ft-surface-2)] px-2.5 text-xs font-medium text-[var(--ft-text)] shadow-[inset_0_-2px_0_var(--ft-accent)]"
+                    : "flex items-center gap-1.5 bg-[var(--ft-bg)] px-2.5 text-xs font-medium text-[var(--ft-text-muted)] hover:bg-[var(--ft-hover)] hover:text-[var(--ft-text)]"
                 }
               >
                 <Icon name={option.icon} size={13} />
@@ -183,10 +183,10 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] px-4 py-3">
+    <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2.5">
       <div className="min-w-0">
-        <p className="text-sm font-medium">{label}</p>
-        <p className="text-xs text-[var(--ft-text-muted)]">{description}</p>
+        <p className="text-[13px] font-medium leading-5">{label}</p>
+        <p className="ft-meta">{description}</p>
       </div>
       {children}
     </div>
@@ -195,9 +195,9 @@ function Row({
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-3 border-b border-[var(--ft-border)] py-1 last:border-0">
+    <div className="flex justify-between gap-3 border-b border-[var(--ft-rule)] py-1 last:border-0">
       <dt className="text-[var(--ft-text-muted)]">{label}</dt>
-      <dd className="font-medium">{value}</dd>
+      <dd className="ft-value">{value}</dd>
     </div>
   );
 }

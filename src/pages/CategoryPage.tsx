@@ -47,13 +47,13 @@ export function CategoryPage() {
   const availableCount = tools.filter((tool) => tool.status === "available").length;
 
   return (
-    <Page>
+    <Page width="wide">
       <div data-accent={category.accent}>
         <Link
           to="/tools"
-          className="mb-3 inline-flex items-center gap-1 text-xs text-[var(--ft-text-muted)] transition-colors hover:text-[var(--ft-text)]"
+          className="ft-meta mb-1 inline-flex items-center gap-1 transition-colors hover:text-[var(--ft-text)]"
         >
-          <Icon name="ArrowLeft" size={13} />
+          <Icon name="ArrowLeft" size={12} />
           Toutes les catégories
         </Link>
 
@@ -64,7 +64,7 @@ export function CategoryPage() {
         />
       </div>
 
-      <div className="mb-5 flex flex-wrap items-center gap-2">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
         <SearchInput
           value={query}
           onChange={(value) => update({ q: value })}
@@ -74,7 +74,7 @@ export function CategoryPage() {
         <StatusFilter value={status} onChange={(next) => update({ status: next })} />
       </div>
 
-      <p className="mb-2 text-xs text-[var(--ft-text-muted)]">
+      <p className="ft-meta ft-num mb-1.5">
         {tools.length} outil{tools.length > 1 ? "s" : ""}
         {availableCount > 0 && ` · ${availableCount} disponible${availableCount > 1 ? "s" : ""}`}
       </p>

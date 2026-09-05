@@ -31,7 +31,7 @@ export function RecentsPage() {
   const clear = useRecents((state) => state.clear);
 
   return (
-    <Page>
+    <Page width="wide">
       <PageHeader
         icon="Clock3"
         title="Récents"

@@ -11,6 +11,7 @@ import { notify } from "@/features/notifications/store";
 import { usePdfSources, type LoadedPdf } from "./usePdfSources";
 import { PdfSourceList } from "./PdfSourceList";
 import { ResultPanel, type OperationOutcome } from "./ResultPanel";
+import { Callout, ProgressBar } from "@/components/ui/Callout";
 import { useHandoff } from "@/features/handoff/store";
 
 /**
@@ -138,6 +139,8 @@ export function PdfToolShell({
         label={selection === "multiple" ? "Déposez vos PDF ici" : "Déposez votre PDF ici"}
         hint={hint}
         disabled={job.isRunning}
+        // `PdfSourceList` ci-dessous liste les mêmes fichiers, en plus détaillé.
+        showFileList={false}
       />
 
       {loaded.length > 0 && (
@@ -180,20 +183,12 @@ export function PdfToolShell({
         </div>
       )}
 
-      {job.isRunning && (
-        <div className="h-1 overflow-hidden rounded-full bg-[var(--ft-surface-2)]">
-          <div
-            className="h-full rounded-full bg-[var(--ft-accent)] transition-[width]"
-            style={{ width: `${Math.round((job.progress.ratio ?? 0) * 100)}%` }}
-          />
-        </div>
-      )}
+      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
 
       {errorMessage && job.status === "error" && (
-        <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-[var(--ft-danger)] bg-[color-mix(in_oklch,var(--ft-danger)_8%,transparent)] px-3 py-2.5 text-sm text-[var(--ft-danger)]">
-          <Icon name="CircleAlert" size={16} className="mt-0.5 shrink-0" />
+        <Callout tone="error" title="L'opération a échoué">
           {errorMessage}
-        </p>
+        </Callout>
       )}
 
       {outcome && <ResultPanel outcome={outcome} />}

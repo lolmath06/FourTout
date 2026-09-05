@@ -7,6 +7,10 @@ import type { LoadedPdf } from "./usePdfSources";
 /**
  * Liste des documents chargés : nom, nombre de pages, taille, et le cas
  * échéant la demande de mot de passe ou le motif du rejet.
+ *
+ * Un seul panneau séparé par des filets, comme la liste de `FileDropZone` :
+ * une carte encadrée par document transformait trois PDF en trois blocs
+ * flottants alors qu'il s'agit d'une seule liste.
  */
 export function PdfSourceList({
   documents,
@@ -20,13 +24,10 @@ export function PdfSourceList({
   onUnlock?: (id: string, password: string) => Promise<boolean>;
 }) {
   return (
-    <ul className="flex flex-col gap-1.5">
+    <ul className="divide-y divide-[var(--ft-rule)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
       {documents.map((document, index) => (
-        <li
-          key={document.id}
-          className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]"
-        >
-          <div className="flex items-center gap-2.5 px-3 py-2.5">
+        <li key={document.id}>
+          <div className="flex items-center gap-2.5 px-2.5 py-1.5">
             <span
               className={
                 document.error
@@ -38,13 +39,13 @@ export function PdfSourceList({
             >
               <Icon
                 name={document.needsPassword ? "Lock" : document.error ? "CircleAlert" : "FileText"}
-                size={16}
+                size={14}
               />
             </span>
 
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{document.name}</p>
-              <p className="text-xs text-[var(--ft-text-muted)]">
+              <p className="truncate text-[13px]">{document.name}</p>
+              <p className="ft-meta ft-num">
                 {document.error ? (
                   <span className="text-[var(--ft-danger)]">{document.error}</span>
                 ) : document.needsPassword ? (
@@ -73,14 +74,14 @@ export function PdfSourceList({
                   aria-label={`Monter ${document.name}`}
                   disabled={index === 0}
                   onClick={() => onMove(document.id, -1)}
-                  className="rounded p-1 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)] disabled:opacity-30"
+                  className="rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)] disabled:opacity-30"
                 >
-                  <Icon name="ArrowUpDown" size={14} />
+                  <Icon name="ArrowUpDown" size={13} />
                 </button>
               </span>
             )}
             {onMove && (
-              <span className="shrink-0 text-[11px] tabular-nums text-[var(--ft-text-faint)]">
+              <span className="ft-num shrink-0 text-[11px] text-[var(--ft-text-faint)]">
                 {index + 1}
               </span>
             )}
@@ -90,9 +91,9 @@ export function PdfSourceList({
                 aria-label={`Descendre ${document.name}`}
                 disabled={index === documents.length - 1}
                 onClick={() => onMove(document.id, 1)}
-                className="shrink-0 rotate-180 rounded p-1 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)] disabled:opacity-30"
+                className="shrink-0 rotate-180 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)] disabled:opacity-30"
               >
-                <Icon name="ArrowUpDown" size={14} />
+                <Icon name="ArrowUpDown" size={13} />
               </button>
             )}
 
@@ -101,9 +102,9 @@ export function PdfSourceList({
                 type="button"
                 aria-label={`Retirer ${document.name}`}
                 onClick={() => onRemove(document.id)}
-                className="shrink-0 rounded p-1 text-[var(--ft-text-faint)] hover:text-[var(--ft-danger)]"
+                className="shrink-0 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-danger)]"
               >
-                <Icon name="X" size={14} />
+                <Icon name="X" size={13} />
               </button>
             )}
           </div>
@@ -135,7 +136,7 @@ function PasswordPrompt({
   };
 
   return (
-    <div className="flex items-center gap-2 border-t border-[var(--ft-border)] px-3 py-2.5">
+    <div className="flex items-center gap-2 border-t border-[var(--ft-rule)] px-2.5 py-2">
       <input
         type="password"
         value={password}
@@ -145,7 +146,7 @@ function PasswordPrompt({
         }}
         placeholder="Mot de passe du document"
         aria-label="Mot de passe du document"
-        className="h-8 min-w-0 flex-1 rounded-md border border-[var(--ft-border)] bg-[var(--ft-bg)] px-2.5 text-sm outline-none focus:border-[var(--ft-accent)]"
+        className="h-[var(--ft-control)] min-w-0 flex-1 rounded-[var(--radius-md)] border border-[var(--ft-border-strong)] bg-[var(--ft-bg)] px-2 text-[13px] outline-none focus:border-[var(--ft-accent)]"
       />
       <Button size="sm" onClick={submit} disabled={password.length === 0 || checking}>
         {checking ? "Vérification…" : "Déverrouiller"}

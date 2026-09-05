@@ -17,6 +17,7 @@ import {
   startMediaJob,
 } from "@/features/jobs/media";
 import { useToolJob } from "@/features/jobs/hooks";
+import { Callout, ProgressBar } from "@/components/ui/Callout";
 import { useHandoff } from "@/features/handoff/store";
 import { VideoInfoList } from "./VideoInfoList";
 import { OutputVideoPreview } from "./VideoPreview";
@@ -173,15 +174,10 @@ export function VideoToolShell({
 
   if (available === false) {
     return (
-      <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-4 text-sm text-[var(--ft-text-muted)]">
-        <p className="flex items-center gap-2 font-medium text-[var(--ft-text)]">
-          <Icon name="Info" size={16} /> Traitement local requis
-        </p>
-        <p className="mt-1.5">
-          Cet outil s'appuie sur le moteur média local (FFmpeg) et nécessite l'application FourTout
-          installée. Il n'est pas disponible dans l'aperçu navigateur.
-        </p>
-      </div>
+      <Callout tone="info" title="Traitement local requis">
+        Cet outil s'appuie sur le moteur média local (FFmpeg) et nécessite l'application FourTout
+        installée. Il n'est pas disponible dans l'aperçu navigateur.
+      </Callout>
     );
   }
 
@@ -224,9 +220,6 @@ export function VideoToolShell({
 
       {files.length > 0 && !probing && caps && children?.({ files, infos, caps })}
 
-      <p className="flex items-center gap-1.5 text-[11px] text-[var(--ft-text-faint)]">
-        <Icon name="ShieldCheck" size={13} /> 100 % local — le fichier ne quitte pas votre appareil.
-      </p>
 
       {files.length > 0 && (
         <div className="flex items-center justify-end gap-2 border-t border-[var(--ft-border)] pt-4">
@@ -260,12 +253,7 @@ export function VideoToolShell({
 
       {running && (
         <div className="space-y-1">
-          <div className="h-1 overflow-hidden rounded-full bg-[var(--ft-surface-2)]">
-            <div
-              className="h-full rounded-full bg-[var(--ft-accent)] transition-[width]"
-              style={{ width: `${Math.round((job?.ratio ?? 0) * 100)}%` }}
-            />
-          </div>
+          <ProgressBar ratio={job?.ratio} />
           <p className="text-[11px] text-[var(--ft-text-faint)]">
             {job?.step ?? "Traitement en cours"} — vous pouvez quitter cet outil, le traitement
             continue.

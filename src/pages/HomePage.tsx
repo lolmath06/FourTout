@@ -11,10 +11,10 @@ import { useFavorites } from "@/features/favorites/store";
 import { useRecents } from "@/features/recents/store";
 
 const EXAMPLES = [
-  "Je veux réduire la taille d'un PDF",
-  "Transformer un GIF en vidéo",
-  "Convertir cette image en WebP",
-  "Extraire le son d'une vidéo",
+  "réduire la taille d'un PDF",
+  "gif en vidéo",
+  "image en webp",
+  "extraire le son d'une vidéo",
 ];
 
 /**
@@ -52,14 +52,16 @@ export function HomePage() {
 
   return (
     <Page>
-      <section className="mx-auto max-w-3xl pb-2 pt-6 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Que voulez-vous faire ?</h1>
-        <p className="mt-1.5 text-sm text-[var(--ft-text-muted)]">
-          Décrivez votre besoin en langage courant : FourTout vous propose l'outil correspondant.
-        </p>
+      <section className="pb-1">
+        <div className="flex items-baseline justify-between gap-3">
+          <h1 className="ft-page-title">Que voulez-vous faire ?</h1>
+          <p className="ft-meta hidden truncate sm:block">
+            Décrivez votre besoin en langage courant.
+          </p>
+        </div>
 
-        <div className="mt-5 flex items-center gap-2 rounded-xl border border-[var(--ft-border)] bg-[var(--ft-surface)] px-4 py-3 shadow-[var(--ft-shadow)] focus-within:border-[var(--ft-accent)]">
-          <Icon name="Sparkles" size={18} className="shrink-0 text-[var(--ft-accent)]" />
+        <div className="mt-2 flex h-[var(--ft-control-lg)] items-center gap-2 rounded-[var(--radius-md)] border border-[var(--ft-border-strong)] bg-[var(--ft-bg)] px-2.5 focus-within:border-[var(--ft-accent)]">
+          <Icon name="Search" size={15} className="shrink-0 text-[var(--ft-text-faint)]" />
           <input
             autoFocus
             value={query}
@@ -68,43 +70,46 @@ export function HomePage() {
               if (event.key === "Enter") openFirst();
               if (event.key === "Escape") setQuery("");
             }}
-            placeholder="Je veux réduire la taille d'un PDF…"
+            placeholder="Réduire la taille d'un PDF, extraire le son d'une vidéo…"
             aria-label="Décrivez ce que vous voulez faire"
             data-testid="home-intent-input"
-            className="w-full bg-transparent text-base outline-none placeholder:text-[var(--ft-text-faint)]"
+            className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--ft-text-faint)]"
           />
           {query && (
             <button
               type="button"
               aria-label="Effacer"
               onClick={() => setQuery("")}
-              className="shrink-0 rounded p-1 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)]"
+              className="shrink-0 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)]"
             >
-              <Icon name="X" size={15} />
+              <Icon name="X" size={13} />
             </button>
           )}
         </div>
 
         {!intent && (
-          <div className="mt-3 flex flex-wrap justify-center gap-1.5">
-            {EXAMPLES.map((example) => (
-              <button
-                key={example}
-                type="button"
-                onClick={() => setQuery(example)}
-                className="rounded-full border border-[var(--ft-border)] px-3 py-1 text-xs text-[var(--ft-text-muted)] transition-colors hover:border-[var(--ft-accent)] hover:text-[var(--ft-text)]"
-              >
-                {example}
-              </button>
+          <div className="ft-meta mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+            <span className="text-[var(--ft-text-faint)]">Exemples :</span>
+            {EXAMPLES.map((example, index) => (
+              <span key={example} className="flex items-center gap-1.5">
+                {index > 0 && <span className="text-[var(--ft-text-faint)]">·</span>}
+                <button
+                  type="button"
+                  onClick={() => setQuery(example)}
+                  className="rounded-[var(--radius-sm)] text-[var(--ft-text-muted)] underline decoration-[var(--ft-border-strong)] underline-offset-2 transition-colors hover:text-[var(--ft-accent-text)]"
+                >
+                  {example}
+                </button>
+              </span>
             ))}
           </div>
         )}
       </section>
 
       {intent && (
-        <section className="mx-auto mt-4 max-w-3xl" data-testid="intent-results">
+        <section className="mt-4" data-testid="intent-results">
           {intent.outcome === "no-match" ? (
-            <div className="flex items-start gap-2.5 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-4 text-left">
+            <div className="flex items-start gap-2.5 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-3 text-left">
               <Icon name="CircleAlert" size={16} className="mt-0.5 shrink-0 text-[var(--ft-warn)]" />
               <div>
                 <p className="text-sm font-medium">Aucun outil ne correspond</p>
@@ -120,12 +125,10 @@ export function HomePage() {
             </div>
           ) : (
             <>
-              <p className="mb-2 text-left text-xs text-[var(--ft-text-muted)]">
-                {intent.outcome === "match"
-                  ? "Outil correspondant :"
-                  : "Plusieurs outils peuvent convenir :"}
-              </p>
-              <div className="flex flex-col gap-1.5">
+              <h2 className="ft-section mb-1.5">
+                {intent.outcome === "match" ? "Outil correspondant" : "Plusieurs outils peuvent convenir"}
+              </h2>
+              <div className="divide-y divide-[var(--ft-rule)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
                 {intent.candidates.map((candidate) => (
                   <ToolRow
                     key={candidate.tool.id}
@@ -147,11 +150,11 @@ export function HomePage() {
       {!intent && (
         <>
           {(favorites.length > 0 || recents.length > 0) && (
-            <section className="mt-8 grid gap-6 md:grid-cols-2">
+            <section className="mt-6 grid gap-5 md:grid-cols-2">
               {favorites.length > 0 && (
                 <div>
                   <SectionTitle icon="Star" title="Favoris" to="/favorites" />
-                  <div className="flex flex-col gap-1.5">
+                  <div className="divide-y divide-[var(--ft-rule)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
                     {favorites.map((tool) => (
                       <ToolRow key={tool.id} tool={tool} showCategory />
                     ))}
@@ -161,7 +164,7 @@ export function HomePage() {
               {recents.length > 0 && (
                 <div>
                   <SectionTitle icon="Clock3" title="Récemment utilisés" to="/recents" />
-                  <div className="flex flex-col gap-1.5">
+                  <div className="divide-y divide-[var(--ft-rule)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
                     {recents.map((tool) => (
                       <ToolRow key={tool.id} tool={tool} showCategory />
                     ))}
@@ -171,31 +174,35 @@ export function HomePage() {
             </section>
           )}
 
-          <section className="mt-8">
+          <section className="mt-6">
             <SectionTitle icon="LayoutGrid" title="Catégories" to="/tools" />
-            <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {categories.map((category) => (
                 <Link
                   key={category.id}
                   to={`/tools/${category.id}`}
                   data-accent={category.accent}
-                  className="flex items-center gap-2.5 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] px-3 py-2.5 transition-colors hover:border-[var(--ft-cat)]"
+                  className="relative flex items-center gap-2.5 overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] py-2 pl-3 pr-2.5 transition-colors hover:bg-[var(--ft-hover)]"
                 >
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-[var(--ft-cat-soft)] text-[var(--ft-cat)]">
+                  <span
+                    aria-hidden
+                    className="absolute inset-y-0 left-0 w-[2px] bg-[var(--ft-cat)] opacity-70"
+                  />
+                  <span className="shrink-0 text-[var(--ft-cat)]">
                     <Icon name={category.icon} size={15} />
                   </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium">{category.name}</span>
-                    <span className="block text-[11px] text-[var(--ft-text-faint)]">
-                      {counts[category.id]} outils
-                    </span>
+                  <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
+                    {category.name}
+                  </span>
+                  <span className="ft-num shrink-0 text-[11px] text-[var(--ft-text-faint)]">
+                    {counts[category.id]}
                   </span>
                 </Link>
               ))}
             </div>
           </section>
 
-          <p className="mt-8 flex items-center justify-center gap-1.5 text-xs text-[var(--ft-text-faint)]">
+          <p className="mt-6 flex items-center gap-1.5 border-t border-[var(--ft-rule)] pt-3 text-[11.5px] text-[var(--ft-text-faint)]">
             <Icon name="ShieldCheck" size={13} />
             {toolRegistry.all().length} outils au catalogue, dont {availableCount} déjà utilisables —
             traitement local, vos fichiers restent sur votre appareil.
@@ -208,9 +215,9 @@ export function HomePage() {
 
 function SectionTitle({ icon, title, to }: { icon: string; title: string; to: string }) {
   return (
-    <div className="mb-2 flex items-center justify-between">
-      <h2 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--ft-text-muted)]">
-        <Icon name={icon} size={13} />
+    <div className="mb-1.5 flex items-center justify-between border-b border-[var(--ft-rule)] pb-1.5">
+      <h2 className="ft-section flex items-center gap-1.5">
+        <Icon name={icon} size={12} />
         {title}
       </h2>
       <Link

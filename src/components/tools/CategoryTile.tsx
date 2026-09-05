@@ -2,6 +2,13 @@ import { Link } from "react-router-dom";
 import { categoryRoute, type CategoryDefinition } from "@/core/tools/types";
 import { Icon } from "@/components/ui/Icon";
 
+/**
+ * Tuile de catégorie.
+ *
+ * La couleur de la famille se lit sur un **filet latéral** et sur l'icône,
+ * jamais sur un aplat : dix tuiles à fond coloré ressemblent à une palette,
+ * pas à un logiciel.
+ */
 export function CategoryTile({
   category,
   count,
@@ -16,25 +23,26 @@ export function CategoryTile({
       to={categoryRoute(category.id)}
       data-accent={category.accent}
       data-testid={`category-tile-${category.id}`}
-      className="group flex flex-col gap-2 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-3.5 transition-colors hover:border-[var(--ft-cat)]"
+      className="group relative flex flex-col gap-1 overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] py-2.5 pl-3.5 pr-3 transition-colors hover:bg-[var(--ft-hover)]"
     >
-      <div className="flex items-center gap-2.5">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--ft-cat-soft)] text-[var(--ft-cat)]">
-          <Icon name={category.icon} size={16} />
+      <span
+        aria-hidden
+        className="absolute inset-y-0 left-0 w-[2px] bg-[var(--ft-cat)] opacity-70 transition-opacity group-hover:opacity-100"
+      />
+      <div className="flex items-center gap-2">
+        <span className="shrink-0 text-[var(--ft-cat)]">
+          <Icon name={category.icon} size={15} />
         </span>
-        <span className="min-w-0 flex-1 truncate text-sm font-semibold">{category.name}</span>
-        <Icon
-          name="ChevronRight"
-          size={15}
-          className="shrink-0 text-[var(--ft-text-faint)] transition-transform group-hover:translate-x-0.5"
-        />
+        <span className="ft-title min-w-0 flex-1 truncate">{category.name}</span>
+        <span className="ft-num shrink-0 text-[11.5px] text-[var(--ft-text-faint)]">{count}</span>
       </div>
-      <p className="line-clamp-2 text-xs text-[var(--ft-text-muted)]">{category.description}</p>
-      <p className="mt-auto pt-1 text-[11px] text-[var(--ft-text-faint)]">
-        {count} outil{count > 1 ? "s" : ""}
-        {availableCount > 0 && (
-          <span className="text-[var(--ft-ok)]"> · {availableCount} disponible{availableCount > 1 ? "s" : ""}</span>
-        )}
+      <p className="line-clamp-2 text-[11.5px] leading-4 text-[var(--ft-text-muted)]">
+        {category.description}
+      </p>
+      <p className="ft-num mt-auto pt-0.5 text-[11px] text-[var(--ft-text-faint)]">
+        {availableCount > 0
+          ? `${availableCount} disponible${availableCount > 1 ? "s" : ""}`
+          : "à venir"}
       </p>
     </Link>
   );

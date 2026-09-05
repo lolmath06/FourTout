@@ -93,8 +93,14 @@ describe("générateur de test-assets", () => {
     // Depuis la phase 6, les fixtures comportent aussi des dossiers
     // (archives à comprimer, doublons, arborescence) : on ne pèse que les
     // fichiers, chacun devant rester léger.
+    //
+    // Les essais manuels laissent aussi des résidus dans ce dossier : morceaux
+    // « .partNNN » d'un découpage, ou fichier reconstruit « nom (2).ext ». Ils
+    // ne viennent pas du générateur, donc ils ne sont pas de son ressort.
+    const LEFTOVER = /\.part\d+$|\s\(\d+\)\.[^.]+$/;
+
     for (const entry of readdirSync(outDir, { withFileTypes: true })) {
-      if (!entry.isFile()) continue;
+      if (!entry.isFile() || LEFTOVER.test(entry.name)) continue;
       const name = entry.name;
       const limit = DELIBERATELY_HEAVY.has(name)
         ? 8 * 1024 * 1024

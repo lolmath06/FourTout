@@ -9,7 +9,6 @@ import {
 } from "@/core/files";
 import { notify } from "@/features/notifications/store";
 import { Icon } from "@/components/ui/Icon";
-import { PrivacyNote } from "@/components/ui/PrivacyNote";
 
 interface FileDropZoneProps {
   /** Contraintes issues de la définition de l'outil (`constraintsForTool`). */
@@ -20,6 +19,18 @@ interface FileDropZoneProps {
   hint?: string;
   disabled?: boolean;
   className?: string;
+  /**
+   * `standard` quand le dépôt est le cœur de l'outil ; `compact` dès qu'il
+   * n'est qu'une étape parmi d'autres — une zone haute de 120 px répétée sur
+   * cent écrans finit par pousser tous les réglages sous la ligne de flottaison.
+   */
+  variant?: "standard" | "compact";
+  /**
+   * Masque la liste des fichiers retenus, quand l'écran en affiche déjà une
+   * plus riche (pages, réordonnancement, déverrouillage). Deux listes du même
+   * fichier l'une sous l'autre ne disent pas deux fois plus de choses.
+   */
+  showFileList?: boolean;
 }
 
 /**
@@ -38,10 +49,15 @@ export function FileDropZone({
   hint,
   disabled = false,
   className,
+  variant = "standard",
+  showFileList = true,
 }: FileDropZoneProps) {
   const inputId = useId();
   const [isDragging, setDragging] = useState(false);
   const multiple = (constraints.maxFiles ?? Number.POSITIVE_INFINITY) > 1;
+  // Une fois le fichier choisi, la zone a fait son travail : elle se réduit
+  // pour laisser la place aux réglages et au résultat.
+  const compact = variant === "compact" || files.length > 0;
 
   const addFiles = useCallback(
     (incoming: FileList | null) => {
@@ -83,22 +99,29 @@ export function FileDropZone({
           if (!disabled) addFiles(event.dataTransfer.files);
         }}
         className={clsx(
-          "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-[var(--radius-card)]",
-          "border border-dashed px-6 py-10 text-center transition-colors",
+          "flex cursor-pointer rounded-[var(--radius-card)] border border-dashed transition-colors",
           disabled && "pointer-events-none opacity-50",
+          compact
+            ? "items-center gap-2.5 px-3 py-2.5 text-left"
+            : "flex-col items-center justify-center gap-1.5 px-6 py-6 text-center",
           isDragging
-            ? "border-[var(--ft-accent)] bg-[var(--ft-accent-soft)]"
-            : "border-[var(--ft-border-strong)] bg-[var(--ft-surface)] hover:border-[var(--ft-accent)]",
+            ? "border-[var(--ft-accent)] bg-[var(--ft-accent-quiet)]"
+            : "border-[var(--ft-border-strong)] bg-[var(--ft-surface)] hover:border-[var(--ft-accent)] hover:bg-[var(--ft-hover)]",
         )}
       >
-        <span className="flex size-10 items-center justify-center rounded-full bg-[var(--ft-surface-2)] text-[var(--ft-text-muted)]">
-          <Icon name="UploadCloud" size={20} />
+        <span className="shrink-0 text-[var(--ft-text-faint)]">
+          <Icon name="UploadCloud" size={compact ? 15 : 18} />
         </span>
-        <span className="text-sm font-medium text-[var(--ft-text)]">{label}</span>
-        <span className="text-xs text-[var(--ft-text-muted)]">
-          ou <span className="text-[var(--ft-accent-text)] underline">parcourir vos fichiers</span>
+        <span className={compact ? "min-w-0 flex-1" : "contents"}>
+          <span className="block text-[13px] font-medium text-[var(--ft-text)]">{label}</span>
+          <span className="ft-meta block">
+            ou <span className="text-[var(--ft-accent-text)]">parcourir vos fichiers</span>
+            {compact && hint && <span className="text-[var(--ft-text-faint)]"> · {hint}</span>}
+          </span>
         </span>
-        {hint && <span className="text-xs text-[var(--ft-text-faint)]">{hint}</span>}
+        {!compact && hint && (
+          <span className="text-[11.5px] text-[var(--ft-text-faint)]">{hint}</span>
+        )}
         <input
           id={inputId}
           type="file"
@@ -113,35 +136,31 @@ export function FileDropZone({
         />
       </label>
 
-      {files.length > 0 && (
-        <ul className="mt-3 flex flex-col gap-1.5">
+      {showFileList && files.length > 0 && (
+        <ul className="mt-2 divide-y divide-[var(--ft-rule)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
           {files.map((file) => (
-            <li
-              key={file.id}
-              className="flex items-center gap-2.5 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface)] px-2.5 py-2"
-            >
-              <Icon name="File" size={15} className="shrink-0 text-[var(--ft-text-faint)]" />
-              <span className="min-w-0 flex-1 truncate text-sm">{file.name}</span>
-              <span className="shrink-0 font-mono text-xs uppercase text-[var(--ft-text-faint)]">
+            <li key={file.id} className="flex items-center gap-2.5 px-2.5 py-1.5">
+              <Icon name="File" size={14} className="shrink-0 text-[var(--ft-text-faint)]" />
+              <span className="min-w-0 flex-1 truncate text-[13px]">{file.name}</span>
+              <span className="ft-value shrink-0 uppercase text-[var(--ft-text-faint)]">
                 {file.extension || file.kind}
               </span>
-              <span className="shrink-0 text-xs tabular-nums text-[var(--ft-text-muted)]">
+              <span className="ft-value shrink-0 text-[var(--ft-text-muted)]">
                 {formatFileSize(file.size)}
               </span>
               <button
                 type="button"
                 aria-label={`Retirer ${file.name}`}
                 onClick={() => removeAt(file.id)}
-                className="shrink-0 rounded p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-danger)]"
+                className="shrink-0 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-danger)]"
               >
-                <Icon name="X" size={14} />
+                <Icon name="X" size={13} />
               </button>
             </li>
           ))}
         </ul>
       )}
 
-      <PrivacyNote className="mt-3" />
     </div>
   );
 }
