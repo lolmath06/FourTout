@@ -6,7 +6,7 @@ import { SearchInput } from "@/components/ui/SearchInput";
 import { ToastViewport } from "@/components/ui/ToastViewport";
 import { useFavorites } from "@/features/favorites/store";
 import { useRecents } from "@/features/recents/store";
-import { applyTheme, useSettings } from "@/features/settings/store";
+import { useUiScale } from "@/features/settings/useUiScale";
 import { useActiveJobs } from "@/features/jobs/hooks";
 import { toolRoute } from "@/core/tools/types";
 
@@ -27,17 +27,11 @@ export function AppShell() {
   const [collapsed, setCollapsed] = useState(false);
   const favorites = useFavorites((state) => state.ids);
   const recents = useRecents((state) => state.entries);
-  const theme = useSettings((state) => state.theme);
   const activeJobs = useActiveJobs();
 
-  useEffect(() => {
-    applyTheme(theme);
-    if (theme !== "system" || typeof window.matchMedia !== "function") return;
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const listener = () => applyTheme("system");
-    media.addEventListener("change", listener);
-    return () => media.removeEventListener("change", listener);
-  }, [theme]);
+  // Thème, échelle, densité, animations et raccourcis de zoom : un seul point
+  // de montage pour toute l'application.
+  useUiScale();
 
   // La fenêtre desktop peut être étroite : la barre latérale se replie.
   useEffect(() => {

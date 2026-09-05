@@ -139,7 +139,7 @@ export function FileDropZone({
       {showFileList && files.length > 0 && (
         <ul className="mt-2 divide-y divide-[var(--ft-rule)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
           {files.map((file) => (
-            <li key={file.id} className="flex items-center gap-2.5 px-2.5 py-1.5">
+            <li key={file.id} className="ft-row-py flex items-center gap-2.5 px-2.5">
               <Icon name="File" size={14} className="shrink-0 text-[var(--ft-text-faint)]" />
               <span className="min-w-0 flex-1 truncate text-[13px]">{file.name}</span>
               <span className="ft-value shrink-0 uppercase text-[var(--ft-text-faint)]">

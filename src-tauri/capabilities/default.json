@@ -1,12 +1,13 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Permissions de la fenêtre principale : enregistrement des fichiers produits, ouverture du fichier ou du dossier de destination, et ouverture d'un lien web dans le navigateur du système.",
+  "description": "Permissions de la fenêtre principale : mise à l'échelle de l'interface, enregistrement des fichiers produits, ouverture du fichier ou du dossier de destination, et ouverture d'un lien web dans le navigateur du système.",
   "windows": [
     "main"
   ],
   "permissions": [
     "core:default",
+    "core:webview:allow-set-webview-zoom",
     "opener:default",
     "opener:allow-open-url",
     "opener:allow-reveal-item-in-dir",

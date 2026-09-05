@@ -94,7 +94,7 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
       {/* Les fichiers produits sont une donnée technique : une table, pas des cartes. */}
       <ul className="max-h-52 divide-y divide-[var(--ft-rule)] overflow-y-auto">
         {outcome.files.map((file) => (
-          <li key={file.name} className="flex items-center gap-2.5 px-3 py-1.5">
+          <li key={file.name} className="ft-row-py flex items-center gap-2.5 px-3">
             <Icon name="File" size={13} className="shrink-0 text-[var(--ft-text-faint)]" />
             <span className="min-w-0 flex-1 truncate text-[13px]">{file.name}</span>
             <span className="ft-value shrink-0 text-[var(--ft-text-muted)]">

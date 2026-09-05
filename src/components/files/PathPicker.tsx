@@ -132,7 +132,7 @@ export function PathPicker({
       {paths.length > 0 && (
         <ul className="mt-2 divide-y divide-[var(--ft-rule)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
           {paths.map((path) => (
-            <li key={path} className="flex items-center gap-2.5 px-2.5 py-1.5">
+            <li key={path} className="ft-row-py flex items-center gap-2.5 px-2.5">
               <Icon
                 name={mode === "directory" ? "FolderTree" : "File"}
                 size={14}

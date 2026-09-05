@@ -38,6 +38,24 @@
   --ft-control-sm: 26px;
   --ft-control: 30px;
   --ft-control-lg: 34px;
+
+  /* Respiration verticale des lignes de liste (outils, fichiers, documents). */
+  --ft-row-py: 6px;
+}
+
+/*
+ * Densité.
+ *
+ * Un seul jeu de jetons, jamais un second système de classes : « confortable »
+ * relâche les hauteurs de contrôle et la respiration des listes, et tout ce qui
+ * s'appuie sur ces variables suit. La densité de la passe visuelle reste la
+ * référence, c'est « compacte ».
+ */
+:root[data-density="comfortable"] {
+  --ft-control-sm: 30px;
+  --ft-control: 34px;
+  --ft-control-lg: 38px;
+  --ft-row-py: 9px;
 }
 
 /*
@@ -135,6 +153,18 @@
 .dark [data-accent="violet"] { --ft-cat: oklch(74% 0.13 290); --ft-cat-soft: oklch(24% 0.03 290); }
 .dark [data-accent="fuchsia"] { --ft-cat: oklch(76% 0.14 325); --ft-cat-soft: oklch(24% 0.03 325); }
 .dark [data-accent="slate"] { --ft-cat: oklch(74% 0.015 260); --ft-cat-soft: oklch(23% 0.006 260); }
+
+/*
+ * Taille de l'interface, repli hors application.
+ *
+ * `zoom` remet la page en page à la nouvelle échelle : le texte reste net et
+ * les coordonnées de pointeur restent justes, contrairement à
+ * `transform: scale()`. En application, c'est la WebView elle-même qui zoome
+ * et `--ft-zoom` vaut 1.
+ */
+:root {
+  zoom: var(--ft-zoom, 1);
+}
 
 html,
 body,
@@ -256,6 +286,12 @@ nav {
   letter-spacing: -0.01em;
 }
 
+/* Hauteur de ligne de liste, pilotée par la densité. */
+@utility ft-row-py {
+  padding-top: var(--ft-row-py);
+  padding-bottom: var(--ft-row-py);
+}
+
 /* Filet de séparation horizontal, à l'intérieur d'un panneau. */
 @utility ft-rule {
   border-color: var(--ft-rule);
@@ -305,6 +341,19 @@ nav {
   margin: 0;
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+/*
+ * Animations réduites : réglage explicite de l'utilisateur, en plus du réglage
+ * système traité juste en dessous. Les deux chemins mènent au même résultat.
+ */
+:root[data-motion="reduced"] *,
+:root[data-motion="reduced"] *::before,
+:root[data-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -30,7 +30,7 @@ export function ToolRow({
       to={toolRoute(tool.id)}
       data-accent={category?.accent}
       data-testid={`tool-row-${tool.id}`}
-      className="group flex items-center gap-2.5 px-2.5 py-1.5 transition-colors hover:bg-[var(--ft-hover)]"
+      className="ft-row-py group flex items-center gap-2.5 px-2.5 transition-colors hover:bg-[var(--ft-hover)]"
     >
       <span className="shrink-0 text-[var(--ft-cat,var(--ft-text-muted))]">
         <Icon name={tool.icon} size={15} />

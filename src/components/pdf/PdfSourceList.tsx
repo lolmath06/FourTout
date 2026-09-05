@@ -27,7 +27,7 @@ export function PdfSourceList({
     <ul className="divide-y divide-[var(--ft-rule)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
       {documents.map((document, index) => (
         <li key={document.id}>
-          <div className="flex items-center gap-2.5 px-2.5 py-1.5">
+          <div className="ft-row-py flex items-center gap-2.5 px-2.5">
             <span
               className={
                 document.error

@@ -42,7 +42,11 @@ describe("jobs de parole", () => {
     expect(job?.ratio).toBe(1);
     // Le résultat n'encombre pas le store : il vit à côté, indexé par id.
     expect(speechJobResult<{ words: number }>(id)).toEqual({ words: 42 });
-    expect(JSON.stringify(useJobStore.getState().jobs[id])).not.toContain("42");
+    // Chercher « 42 » dans le JSON entier était un piège : un horodatage
+    // contient tôt ou tard ces deux chiffres. On vérifie la seule chose qui
+    // compte — le job ne porte aucun champ de résultat.
+    expect(useJobStore.getState().jobs[id]).not.toHaveProperty("result");
+    expect(useJobStore.getState().jobs[id]).not.toHaveProperty("words");
   });
 
   it("reste retrouvable après un démontage de l'interface", async () => {
