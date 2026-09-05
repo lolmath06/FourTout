@@ -3,7 +3,7 @@ import { VideoToolShell } from "@/components/media/VideoToolShell";
 import { Field, Fieldset, OptionGroup, Select } from "@/components/pdf/Field";
 import { Icon } from "@/components/ui/Icon";
 import { runMedia } from "@/core/media/client";
-import { extractSubtitleTrack } from "@/core/media/operations/video";
+import { extractSubtitlePipeline } from "@/core/media/video/pipelines";
 import { baseName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 
@@ -24,19 +24,15 @@ export function VideoExtractSubtitlesTool({ tool }: ToolComponentProps) {
       tool={tool}
       actionLabel="Extraire les sous-titres"
       hint="Les pistes détectées dans le fichier sont listées ci-dessous."
-      run={async ({ files, infos, context }) => {
-        const tracks = infos[0]?.subtitles ?? [];
-        if (tracks.length === 0) throw new Error("Ce fichier ne contient aucune piste de sous-titres.");
-        const track = tracks.find((entry) => entry.order === order) ?? tracks[0];
-        if (!track.textBased) {
-          throw new Error(
-            `La piste sélectionnée est au format image (${track.codecName ?? "inconnu"}) : elle ne peut pas être convertie en texte.`,
-          );
-        }
+      run={async ({ files, infos, caps, context }) => {
+        const { operation, track } = extractSubtitlePipeline(
+          { caps, info: infos[0], extension: files[0].extension },
+          { order, format },
+        );
         const file = await runMedia(
           {
             files: [files[0]],
-            operation: extractSubtitleTrack(track.order, format),
+            operation,
             outputName: `${baseName(files[0].name)}${track.language ? `-${track.language}` : ""}.${format}`,
             totalMs: infos[0]?.durationMs,
             label: "Extraction…",

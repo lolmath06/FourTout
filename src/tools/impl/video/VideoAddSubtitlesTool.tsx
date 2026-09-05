@@ -3,15 +3,18 @@ import { VideoToolShell } from "@/components/media/VideoToolShell";
 import { Field, Fieldset, Select, TextInput } from "@/components/pdf/Field";
 import { Icon } from "@/components/ui/Icon";
 import { runMedia } from "@/core/media/client";
-import { addSubtitleTrack } from "@/core/media/operations/video";
 import {
   CONTAINER_LABEL,
   SUBTITLE_ENCODER,
   type VideoContainerId,
 } from "@/core/media/capabilities";
+import {
+  containerOfExtension,
+  softSubtitlePipeline,
+  subtitleContainerFor,
+} from "@/core/media/video/pipelines";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { containerOfExtension } from "./shared";
 
 /**
  * Ajout d'un fichier SRT/VTT **comme piste** de sous-titres.
@@ -38,18 +41,16 @@ export function VideoAddSubtitlesTool({ tool }: ToolComponentProps) {
         if (videoIndex < 0 || subIndex < 0) {
           throw new Error("Déposez une vidéo et un fichier de sous-titres (.srt, .vtt ou .ass).");
         }
-        const target = container ?? pickContainer(files[videoIndex].extension, caps.subtitleContainers);
-        if (!target) {
-          throw new Error(
-            "Le moteur installé ne sait écrire aucune piste de sous-titres. Utilisez plutôt « Incruster des sous-titres ».",
-          );
-        }
+        const pipeline = softSubtitlePipeline(
+          { caps, info: infos[videoIndex], extension: files[videoIndex].extension },
+          { container, language: language || undefined },
+        );
 
         const file = await runMedia(
           {
             files: [files[videoIndex], files[subIndex]],
-            operation: addSubtitleTrack({ container: target, language: language || undefined }),
-            outputName: outputName(files[videoIndex].name, "sous-titree", target),
+            operation: pipeline.operation,
+            outputName: outputName(files[videoIndex].name, "sous-titree", pipeline.container),
             totalMs: infos[videoIndex]?.durationMs,
             label: "Ajout de la piste…",
           },
@@ -57,7 +58,9 @@ export function VideoAddSubtitlesTool({ tool }: ToolComponentProps) {
         );
         return {
           files: [file],
-          summary: `Piste de sous-titres ajoutée (${CONTAINER_LABEL[target]}, encodeur ${SUBTITLE_ENCODER[target]}).`,
+          summary:
+            `Piste de sous-titres ajoutée (${CONTAINER_LABEL[pipeline.container]}, ` +
+            `encodeur ${SUBTITLE_ENCODER[pipeline.container]}).`,
         };
       }}
     >
@@ -65,7 +68,7 @@ export function VideoAddSubtitlesTool({ tool }: ToolComponentProps) {
         const videoFile = files.find((file) => file.kind === "video");
         const subFile = files.find((file) => ["srt", "vtt", "ass"].includes(file.extension));
         const options = caps.subtitleContainers;
-        const target = container ?? pickContainer(videoFile?.extension, options);
+        const target = container ?? subtitleContainerFor(videoFile?.extension, caps);
 
         if (options.length === 0) {
           return (
@@ -108,14 +111,4 @@ export function VideoAddSubtitlesTool({ tool }: ToolComponentProps) {
       }}
     </VideoToolShell>
   );
-}
-
-/** Conteneur de sortie : celui de la source s'il sait porter des sous-titres. */
-function pickContainer(
-  extension: string | undefined,
-  supported: readonly VideoContainerId[],
-): VideoContainerId | undefined {
-  const source = extension ? containerOfExtension(extension) : undefined;
-  if (source && supported.includes(source)) return source;
-  return supported.find((value) => value === "mkv") ?? supported[0];
 }

@@ -4,29 +4,17 @@ import { Field, Fieldset, OptionGroup, Select } from "@/components/pdf/Field";
 import { formatFileSize } from "@/core/files";
 import { runMedia } from "@/core/media/client";
 import type { OutputFile } from "@/core/pdf/types";
-import { extractAudio } from "@/core/media/operations/audio";
-import {
-  VIDEO_TRANSFORMS,
-  encodeVideo,
-  scaleFilter,
-  transformFilter,
-  type VideoTransform,
-} from "@/core/media/operations/video";
-import { audioCodecsFor, CONTAINER_LABEL, type VideoContainerId } from "@/core/media/capabilities";
+import { VIDEO_TRANSFORMS, type VideoTransform } from "@/core/media/operations/video";
+import { type VideoContainerId } from "@/core/media/capabilities";
+import { batchPipeline, type BatchOperation } from "@/core/media/video/pipelines";
 import { COMPRESSION_LABEL, type QualityLevel } from "@/core/media/video/presets";
-import { RESOLUTION_PRESETS, sizeForHeight } from "@/core/media/video/dimensions";
+import { RESOLUTION_PRESETS } from "@/core/media/video/dimensions";
 import { AUDIO_FORMATS, type AudioFormat } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import {
-  containerOptions,
-  defaultContainer,
-  encodeArgsFor,
-  passthroughAudioArgs,
-  totalDuration,
-} from "./shared";
+import { containerOptions, totalDuration } from "./shared";
 
-type Operation = "convert" | "compress" | "resize" | "rotate" | "extract-audio";
+type Operation = BatchOperation;
 
 const OPERATIONS: { value: Operation; label: string }[] = [
   { value: "convert", label: "Convertir" },
@@ -64,18 +52,24 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
       hint="Déposez plusieurs vidéos : la même opération leur est appliquée l'une après l'autre."
       run={async ({ files, infos, caps, context }) => {
         const outputs: OutputFile[] = [];
+        // Le lot écrit un seul format, celui affiché : sans cela, des sources
+        // d'extensions différentes ressortiraient dans des conteneurs différents
+        // alors que l'interface n'en annonce qu'un.
+        const target = container ?? containerOptions(caps)[0]?.value;
         const total = Math.max(1, totalDuration(infos));
         let done = 0;
         let savedBytes = 0;
+        let fellBack = false;
 
         for (let index = 0; index < files.length; index += 1) {
           const file = files[index];
           const info = infos[index];
-          const target = container ?? defaultContainer(file.extension, caps);
-          const videoCodec = (["h264", "vp9", "h265", "av1"] as const).find((codec) => caps.video[codec]);
-          if (!videoCodec && operation !== "extract-audio") {
-            throw new Error("Aucun encodeur vidéo n'est disponible dans le moteur installé.");
-          }
+          // Même point de décision que les outils unitaires : conteneur,
+          // encodeur réellement utilisable et repli logiciel compris.
+          const pipeline = batchPipeline(
+            { caps, info, extension: file.extension },
+            { operation, container: target, level, height, transform, audioFormat },
+          );
 
           // Progression globale : part faite + avancement du fichier courant.
           const report = (progress: { ratio?: number; label?: string }) =>
@@ -85,18 +79,17 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
             });
 
           const produced = await runMedia(
-            buildRun({
-              operation,
-              file,
-              info,
-              caps,
-              target,
-              level,
-              height,
-              transform,
-              audioFormat,
-              videoCodec: videoCodec ?? "h264",
-            }),
+            {
+              files: [file],
+              operation: pipeline.operation,
+              alternatives: pipeline.alternatives,
+              onFallback: () => {
+                fellBack = true;
+              },
+              outputName: outputName(file.name, pipeline.suffix, pipeline.outputExt),
+              totalMs: info?.durationMs,
+              label: "Traitement…",
+            },
             { report, signal: context.signal },
           );
           outputs.push(produced);
@@ -115,6 +108,9 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
               : savedBytes > 0
                 ? ` ${formatFileSize(savedBytes)} économisés au total.`
                 : " Le lot n'a pas gagné en poids ; les sources étaient déjà optimisées."),
+          warning: fellBack
+            ? "L'encodeur initial n'a pas pu démarrer sur au moins un fichier ; un encodeur logiciel a pris le relais."
+            : undefined,
         };
       }}
     >
@@ -185,70 +181,4 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
       )}
     </VideoToolShell>
   );
-}
-
-/** Compose l'appel `runMedia` correspondant à l'opération choisie. */
-function buildRun(options: {
-  operation: Operation;
-  file: Parameters<typeof runMedia>[0]["files"][number];
-  info: Parameters<typeof encodeArgsFor>[2];
-  caps: Parameters<typeof encodeArgsFor>[1];
-  target: VideoContainerId;
-  level: QualityLevel;
-  height: number;
-  transform: VideoTransform;
-  audioFormat: AudioFormat;
-  videoCodec: "h264" | "h265" | "vp9" | "av1";
-}): Parameters<typeof runMedia>[0] {
-  const { operation, file, info, caps, target, level, height, transform, audioFormat, videoCodec } = options;
-
-  if (operation === "extract-audio") {
-    return {
-      files: [file],
-      operation: extractAudio(audioFormat),
-      outputName: outputName(file.name, "audio", audioFormat),
-      totalMs: info?.durationMs,
-      label: "Extraction audio…",
-    };
-  }
-
-  const { videoArgs, audioArgs } = encodeArgsFor(
-    {
-      container: target,
-      video: videoCodec,
-      audio: audioCodecsFor(target, caps)[0],
-      level: operation === "compress" ? level : "balanced",
-    },
-    caps,
-    info,
-  );
-
-  const videoFilters: string[] = [];
-  let suffix = CONTAINER_LABEL[target].toLowerCase();
-  if (operation === "resize" && info?.width && info?.height) {
-    const size = sizeForHeight({ width: info.width, height: info.height }, height);
-    videoFilters.push(scaleFilter(size.width, size.height));
-    suffix = `${size.height}p`;
-  } else if (operation === "rotate") {
-    videoFilters.push(transformFilter(transform));
-    suffix = "pivotee";
-  } else if (operation === "compress") {
-    suffix = "compressee";
-  }
-
-  return {
-    files: [file],
-    operation: encodeVideo({
-      container: target,
-      videoArgs,
-      audioArgs:
-        operation === "compress"
-          ? audioArgs
-          : passthroughAudioArgs(file.extension, info, target, caps),
-      videoFilters,
-    }),
-    outputName: outputName(file.name, suffix, target),
-    totalMs: info?.durationMs,
-    label: "Traitement…",
-  };
 }

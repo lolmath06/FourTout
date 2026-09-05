@@ -1,9 +1,9 @@
 import { VideoToolShell } from "@/components/media/VideoToolShell";
 import { runMedia } from "@/core/media/client";
-import { removeAudio } from "@/core/media/operations/video";
+import { removeAudioPipeline } from "@/core/media/video/pipelines";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { defaultContainer, sizeOutcome } from "./shared";
+import { sizeOutcome } from "./shared";
 
 /**
  * Version muette d'une vidéo.
@@ -18,15 +18,13 @@ export function VideoRemoveAudioTool({ tool }: ToolComponentProps) {
       actionLabel="Supprimer le son"
       hint="L'image n'est pas réencodée : la qualité est strictement identique."
       run={async ({ files, infos, caps, context }) => {
-        const info = infos[0];
-        if (!info?.hasAudio) throw new Error("Cette vidéo ne contient aucune piste audio.");
-        const container = defaultContainer(files[0].extension, caps);
+        const pipeline = removeAudioPipeline({ caps, info: infos[0], extension: files[0].extension });
         const file = await runMedia(
           {
             files: [files[0]],
-            operation: removeAudio(container),
-            outputName: outputName(files[0].name, "muette", container),
-            totalMs: info.durationMs,
+            operation: pipeline.operation,
+            outputName: outputName(files[0].name, "muette", pipeline.container),
+            totalMs: infos[0]?.durationMs,
             label: "Suppression du son…",
           },
           context,

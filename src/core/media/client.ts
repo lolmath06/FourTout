@@ -3,6 +3,7 @@ import type { SelectedFile } from "@/core/files";
 import type { OperationContext, OutputFile } from "@/core/pdf/types";
 import { JobCancelledError } from "@/core/jobs/types";
 import { parseProbe, type MediaInfo } from "./types";
+import { isEncoderUnavailable } from "./errors";
 
 /**
  * Client du socle média. Orchestre le cycle complet d'une opération FFmpeg :
@@ -48,6 +49,23 @@ export function availableEncoders(): Promise<string[]> {
       .catch(() => []);
   }
   return encoderCache;
+}
+
+/**
+ * Teste réellement une liste d'encodeurs et renvoie ceux qui fonctionnent.
+ *
+ * Le nom d'un encodeur dans `ffmpeg -encoders` ne prouve rien : le socle natif
+ * en encode une image pour de bon. Hors application (aperçu navigateur), aucun
+ * encodeur n'est utilisable de toute façon.
+ */
+export async function probeEncoders(names: readonly string[]): Promise<string[]> {
+  if (!isTauri() || names.length === 0) return [];
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    return await invoke<string[]>("media_probe_encoders", { names: [...names] });
+  } catch {
+    return [];
+  }
 }
 
 /** Meilleur encodeur H.264 logiciel disponible (libx264 sinon libopenh264). */
@@ -115,6 +133,16 @@ export interface RunOptions {
   extraInputs?: { bytes: Uint8Array; ext: string }[];
   /** Étiquette affichée pendant l'exécution. */
   label?: string;
+  /**
+   * Variantes de repli, tentées **dans l'ordre** et **uniquement** si l'échec
+   * est reconnu comme une indisponibilité d'encodeur. La détection préalable
+   * évite normalement d'en arriver là ; ce filet couvre le cas où un encodeur
+   * s'ouvre sur une image de test mais pas sur le fichier réel (résolution,
+   * profil, mémoire vidéo).
+   */
+  alternatives?: MediaExecutable[];
+  /** Appelé quand une variante de repli a dû être employée. */
+  onFallback?: (info: { attempt: number; reason: string }) => void;
 }
 
 /** Exécute une opération média de bout en bout et renvoie le fichier produit. */
@@ -125,7 +153,7 @@ export async function runMedia(options: RunOptions, context?: OperationContext):
 
   const jobId = `media-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const staged: string[] = [];
-  let outPath: string | undefined;
+  const produced: string[] = [];
 
   const label = options.label ?? "Traitement…";
   const unlisten = await listen<{ jobId: string; ratio: number }>("media://progress", (event) => {
@@ -152,21 +180,38 @@ export async function runMedia(options: RunOptions, context?: OperationContext):
       staged.push(listPath);
       inputs.push(listPath);
     }
-    outPath = await tempPath(options.operation.outputExt);
-    const args = options.operation.buildArgs(inputs, outPath);
+    const attempts = [options.operation, ...(options.alternatives ?? [])];
+    let lastError: Error | undefined;
 
-    try {
-      await invoke("media_exec", { params: { jobId, args, totalMs: options.totalMs ?? 0 } });
-    } catch (error) {
-      if (String(error) === "cancelled" || context?.signal?.aborted) throw new JobCancelledError();
-      throw error instanceof Error ? error : new Error(String(error));
+    for (let attempt = 0; attempt < attempts.length; attempt += 1) {
+      const operation = attempts[attempt];
+      // Chaque tentative écrit dans sa propre sortie : un fichier tronqué par
+      // un encodeur qui a échoué ne doit jamais être relu comme un résultat.
+      const target = await tempPath(operation.outputExt);
+      produced.push(target);
+
+      try {
+        await invoke("media_exec", {
+          params: { jobId, args: operation.buildArgs(inputs, target), totalMs: options.totalMs ?? 0 },
+        });
+      } catch (error) {
+        if (String(error) === "cancelled" || context?.signal?.aborted) throw new JobCancelledError();
+        lastError = error instanceof Error ? error : new Error(String(error));
+        const retryable = attempt + 1 < attempts.length && isEncoderUnavailable(lastError.message);
+        if (!retryable) throw lastError;
+        options.onFallback?.({ attempt: attempt + 1, reason: lastError.message });
+        context?.report?.({ ratio: 0, label: "Reprise avec un encodeur logiciel…" });
+        continue;
+      }
+
+      const output = await invoke<ArrayBuffer>("media_read", { path: target });
+      return { name: options.outputName, bytes: new Uint8Array(output), mimeType: operation.mimeType };
     }
 
-    const output = await invoke<ArrayBuffer>("media_read", { path: outPath });
-    return { name: options.outputName, bytes: new Uint8Array(output), mimeType: options.operation.mimeType };
+    throw lastError ?? new Error("Le traitement a échoué.");
   } finally {
     unlisten();
     context?.signal?.removeEventListener("abort", onAbort);
-    await cleanup([...staged, ...(outPath ? [outPath] : [])]);
+    await cleanup([...staged, ...produced]);
   }
 }

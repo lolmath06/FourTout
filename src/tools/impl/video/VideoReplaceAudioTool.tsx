@@ -3,18 +3,12 @@ import { VideoToolShell } from "@/components/media/VideoToolShell";
 import { Field, Fieldset, OptionGroup } from "@/components/pdf/Field";
 import { Icon } from "@/components/ui/Icon";
 import { runMedia } from "@/core/media/client";
-import {
-  AUDIO_FIT_MODES,
-  addAudioTrack,
-  replaceAudio,
-  type AudioFitMode,
-} from "@/core/media/operations/video";
-import { audioCodecsFor, CONTAINER_LABEL } from "@/core/media/capabilities";
-import { audioBitrateKbps } from "@/core/media/video/presets";
+import { AUDIO_FIT_MODES, type AudioFitMode } from "@/core/media/operations/video";
+import { CONTAINER_LABEL } from "@/core/media/capabilities";
+import { addAudioTrackPipeline, replaceAudioPipeline } from "@/core/media/video/pipelines";
 import { formatTimecode } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { defaultContainer } from "./shared";
 
 type Mode = "replace" | "add";
 
@@ -49,31 +43,21 @@ export function VideoReplaceAudioTool({ tool }: ToolComponentProps) {
         const audioFile = files[audioIndex];
         const videoInfo = infos[videoIndex];
 
-        const container = mode === "add" ? "mkv" : defaultContainer(videoFile.extension, caps);
-        const codec = audioCodecsFor(container, caps)[0];
-        const encoder = codec ? caps.audio[codec] : undefined;
-        if (!encoder) throw new Error("Aucun encodeur audio n'est disponible dans le moteur installé.");
-
-        const operation =
+        const source = { caps, info: videoInfo, extension: videoFile.extension };
+        const pipeline =
           mode === "add"
-            ? addAudioTrack({
-                container,
-                audioEncoder: encoder,
-                bitrateKbps: audioBitrateKbps("high"),
-                trackIndex: videoInfo?.audioStreams.length ?? 1,
-              })
-            : replaceAudio({
-                container,
-                audioArgs: ["-c:a", encoder, "-b:a", `${audioBitrateKbps("high")}k`],
-                mode: fit,
-                videoDurationMs: videoInfo?.durationMs ?? 0,
-              });
+            ? addAudioTrackPipeline(source, {})
+            : replaceAudioPipeline(source, { mode: fit, videoDurationMs: videoInfo?.durationMs ?? 0 });
 
         const file = await runMedia(
           {
             files: [videoFile, audioFile],
-            operation,
-            outputName: outputName(videoFile.name, mode === "add" ? "multi-audio" : "nouvelle-bande-son", container),
+            operation: pipeline.operation,
+            outputName: outputName(
+              videoFile.name,
+              mode === "add" ? "multi-audio" : "nouvelle-bande-son",
+              pipeline.container,
+            ),
             totalMs: videoInfo?.durationMs,
             label: mode === "add" ? "Ajout de la piste…" : "Remplacement de la bande son…",
           },
@@ -83,7 +67,7 @@ export function VideoReplaceAudioTool({ tool }: ToolComponentProps) {
           files: [file],
           summary:
             mode === "add"
-              ? `Piste « ${audioFile.name} » ajoutée (${CONTAINER_LABEL[container]}, ${(videoInfo?.audioStreams.length ?? 0) + 1} pistes audio).`
+              ? `Piste « ${audioFile.name} » ajoutée (${CONTAINER_LABEL[pipeline.container]}, ${(videoInfo?.audioStreams.length ?? 0) + 1} pistes audio).`
               : `Bande son remplacée par « ${audioFile.name} ».`,
         };
       }}

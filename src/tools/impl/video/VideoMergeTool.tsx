@@ -3,18 +3,13 @@ import { VideoToolShell } from "@/components/media/VideoToolShell";
 import { Field, Fieldset, OptionGroup, Select } from "@/components/pdf/Field";
 import { Icon } from "@/components/ui/Icon";
 import { runMedia } from "@/core/media/client";
-import {
-  concatCompatible,
-  concatTarget,
-  concatVideoCopy,
-  concatVideoReencode,
-  type ConcatSource,
-} from "@/core/media/operations/video";
-import { audioCodecsFor, CONTAINER_LABEL, type VideoContainerId } from "@/core/media/capabilities";
+import { concatCompatible, concatTarget, type ConcatSource } from "@/core/media/operations/video";
+import { CONTAINER_LABEL, type VideoContainerId } from "@/core/media/capabilities";
+import { mergePipeline } from "@/core/media/video/pipelines";
 import { formatTimecode, type MediaInfo } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { containerOptions, defaultContainer, encodeArgsFor, totalDuration } from "./shared";
+import { containerOptions, defaultContainer, fallbackTracker, totalDuration } from "./shared";
 
 type Strategy = "auto" | "reencode";
 
@@ -55,39 +50,31 @@ export function VideoMergeTool({ tool }: ToolComponentProps) {
       hint="Déposez au moins deux vidéos, puis ordonnez-les par glisser-déposer."
       run={async ({ files, infos, caps, context }) => {
         if (files.length < 2) throw new Error("Déposez au moins deux vidéos à assembler.");
-        const sources = infos.map(sourceOf);
-        const target = defaultContainer(container ?? files[0].extension, caps);
-        const copyable = strategy === "auto" && concatCompatible(sources);
-
-        let operation;
-        if (copyable) {
-          operation = concatVideoCopy(target);
-        } else {
-          const videoCodec = (["h264", "vp9", "h265", "av1"] as const).find((codec) => caps.video[codec]);
-          if (!videoCodec) throw new Error("Aucun encodeur vidéo n'est disponible dans le moteur installé.");
-          const { videoArgs, audioArgs } = encodeArgsFor(
-            { container: target, video: videoCodec, audio: audioCodecsFor(target, caps)[0], level: "balanced" },
-            caps,
-          );
-          operation = concatVideoReencode({ sources, container: target, videoArgs, audioArgs });
-        }
-
+        const pipeline = mergePipeline(caps, {
+          infos,
+          extension: container ?? files[0].extension,
+          container,
+          forceReencode: strategy === "reencode",
+        });
+        const tracker = fallbackTracker(pipeline);
         const file = await runMedia(
           {
             files,
-            operation,
-            outputName: outputName(files[0].name, "fusion", target),
+            operation: pipeline.operation,
+            alternatives: pipeline.alternatives,
+            onFallback: tracker.onFallback,
+            outputName: outputName(files[0].name, "fusion", pipeline.container),
             totalMs: totalDuration(infos),
-            label: copyable ? "Assemblage…" : "Normalisation et assemblage…",
+            label: pipeline.copied ? "Assemblage…" : "Normalisation et assemblage…",
           },
           context,
         );
-        const size = concatTarget(sources);
         return {
           files: [file],
-          summary: copyable
+          summary: pipeline.copied
             ? `${files.length} vidéos assemblées sans réencodage (${formatTimecode(totalDuration(infos))}).`
-            : `${files.length} vidéos normalisées en ${size.width} × ${size.height} puis assemblées (${formatTimecode(totalDuration(infos))}).`,
+            : `${files.length} vidéos normalisées en ${pipeline.target.width} × ${pipeline.target.height} puis assemblées (${formatTimecode(totalDuration(infos))}).`,
+          warning: tracker.warning(),
         };
       }}
     >

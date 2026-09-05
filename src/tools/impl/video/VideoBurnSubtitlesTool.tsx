@@ -6,15 +6,14 @@ import { Icon } from "@/components/ui/Icon";
 import { runMedia } from "@/core/media/client";
 import {
   DEFAULT_BURN_STYLE,
-  burnSubtitles,
   type BurnStyle,
   type SubtitlePosition,
 } from "@/core/media/operations/video";
-import { audioCodecsFor } from "@/core/media/capabilities";
+import { burnPipeline } from "@/core/media/video/pipelines";
 import { parseHexColor, rgbToHex } from "@/core/image/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { defaultContainer, encodeArgsFor, sizeOutcome } from "./shared";
+import { fallbackTracker, sizeOutcome } from "./shared";
 
 /**
  * Incrustation des sous-titres dans l'image (« hardsub »).
@@ -41,27 +40,24 @@ export function VideoBurnSubtitlesTool({ tool }: ToolComponentProps) {
           throw new Error("Déposez une vidéo et un fichier de sous-titres (.srt, .vtt ou .ass).");
         }
         const videoFile = files[videoIndex];
-        const info = infos[videoIndex];
-        const container = defaultContainer(videoFile.extension, caps);
-        const videoCodec = (["h264", "vp9", "h265", "av1"] as const).find((codec) => caps.video[codec]);
-        if (!videoCodec) throw new Error("Aucun encodeur vidéo n'est disponible dans le moteur installé.");
-        const { videoArgs } = encodeArgsFor(
-          { container, video: videoCodec, audio: audioCodecsFor(container, caps)[0], level: "balanced" },
-          caps,
-          info,
+        const pipeline = burnPipeline(
+          { caps, info: infos[videoIndex], extension: videoFile.extension },
+          { style },
         );
-
+        const tracker = fallbackTracker(pipeline);
         const file = await runMedia(
           {
             files: [videoFile, files[subIndex]],
-            operation: burnSubtitles({ container, videoArgs, style }),
-            outputName: outputName(videoFile.name, "sous-titres-incrustes", container),
-            totalMs: info?.durationMs,
+            operation: pipeline.operation,
+            alternatives: pipeline.alternatives,
+            onFallback: tracker.onFallback,
+            outputName: outputName(videoFile.name, "sous-titres-incrustes", pipeline.container),
+            totalMs: infos[videoIndex]?.durationMs,
             label: "Incrustation…",
           },
           context,
         );
-        return sizeOutcome(videoFile.size, file, "Sous-titres incrustés :");
+        return sizeOutcome(videoFile.size, file, "Sous-titres incrustés :", tracker.warning());
       }}
     >
       {({ files }) => {

@@ -19,7 +19,7 @@ use serde::{Deserialize, Serialize};
 use tauri::ipc::{Request, Response};
 use tauri::{AppHandle, Emitter};
 
-use super::{probe_with, probe_availability, resolve_binary, temp_dir, temp_path};
+use super::{encoder_works, probe_with, probe_availability, resolve_binary, temp_dir, temp_path};
 
 #[derive(Clone)]
 struct Job {
@@ -30,6 +30,9 @@ struct Job {
 #[derive(Default)]
 pub struct MediaState {
     jobs: Mutex<HashMap<String, Job>>,
+    /// Résultat des tests d'encodeurs, pour la durée de la session : chaque
+    /// test lance un vrai FFmpeg, on ne le refait pas à chaque clic.
+    encoder_probes: Mutex<HashMap<String, bool>>,
 }
 
 /// FFmpeg est-il disponible (embarqué ou système) ?
@@ -61,6 +64,50 @@ pub fn media_encoders(app: AppHandle) -> Vec<String> {
             }
         })
         .collect()
+}
+
+/// Teste **réellement** une liste d'encodeurs vidéo et renvoie ceux qui
+/// fonctionnent dans cet environnement.
+///
+/// `media_encoders` dit ce que FFmpeg sait faire *en théorie* ; cette commande
+/// dit ce qui marche *ici*. C'est la différence entre proposer `h264_nvenc` sur
+/// un poste sans GPU exploitable et échouer une minute après le clic, et ne pas
+/// le proposer du tout.
+///
+/// Les résultats sont mémorisés pour la session : le coût (un encodage de
+/// 64×64 par candidat) n'est payé qu'une fois.
+#[tauri::command]
+pub fn media_probe_encoders(
+    app: AppHandle,
+    state: tauri::State<'_, MediaState>,
+    names: Vec<String>,
+) -> Vec<String> {
+    let ffmpeg = resolve_binary(&app, "ffmpeg");
+    let mut usable = Vec::new();
+
+    for name in names {
+        if let Some(known) = state.encoder_probes.lock().unwrap().get(&name).copied() {
+            if known {
+                usable.push(name);
+            }
+            continue;
+        }
+        // Le test tourne hors du verrou : il dure, et rien ne doit bloquer les
+        // autres commandes média pendant ce temps.
+        let works = encoder_works(&ffmpeg, &name);
+        state.encoder_probes.lock().unwrap().insert(name.clone(), works);
+        if works {
+            usable.push(name);
+        }
+    }
+    usable
+}
+
+/// Oublie les tests d'encodeurs déjà faits (matériel branché entre-temps,
+/// diagnostic). La détection repartira de zéro au prochain besoin.
+#[tauri::command]
+pub fn media_reset_encoder_probes(state: tauri::State<'_, MediaState>) {
+    state.encoder_probes.lock().unwrap().clear();
 }
 
 /// Renvoie un chemin temporaire (fichier non créé), pour une sortie FFmpeg.

@@ -18,7 +18,32 @@ interface Rule {
   message: string;
 }
 
+/**
+ * Signature d'un encodeur qui **existe** mais ne peut pas s'ouvrir ici :
+ * carte absente, pilote incompatible, périphérique inaccessible, session sans
+ * accès au GPU. C'est ce motif qui déclenche le repli logiciel automatique —
+ * volontairement étroit, pour ne pas relancer un traitement après une vraie
+ * erreur (fichier illisible, disque plein…).
+ */
+const ENCODER_UNAVAILABLE =
+  /(error while opening encoder|cannot load nvcuda|cannot load libcuda|no capable devices|no nvenc capable devices|failed to load nvenc|openencodesessionex failed|cannot open the device|failed setting up (vaapi|qsv)|device creation failed|no device available|driver does not support|operation not permitted|generic error in an external library|impossible to convert between the formats)/i;
+
+/** L'échec vient-il d'un encodeur indisponible dans cet environnement ? */
+export function isEncoderUnavailable(message: string): boolean {
+  return ENCODER_UNAVAILABLE.test(message);
+}
+
 const RULES: Rule[] = [
+  {
+    // Placé en tête : un encodeur matériel injoignable produit aussi des
+    // lignes génériques (« Operation not permitted ») qu'il ne faut pas
+    // confondre avec un problème de fichier.
+    match: ENCODER_UNAVAILABLE,
+    message:
+      "L'encodeur vidéo sélectionné n'a pas pu démarrer sur cette machine — c'est en général une " +
+      "accélération matérielle annoncée par FFmpeg mais inutilisable ici. Réessayez : FourTout " +
+      "bascule automatiquement sur un encodeur logiciel pour les préréglages automatiques.",
+  },
   {
     match: /invalid data found|moov atom not found|could not find codec parameters|end of file/i,
     message:

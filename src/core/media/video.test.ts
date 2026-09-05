@@ -33,7 +33,8 @@ import {
   trimVideo,
   type ConcatSource,
 } from "./operations/video";
-import { capabilitiesFromEncoders } from "./capabilities";
+import type { MediaCapabilities } from "./capabilities";
+import { realCapabilities, whichBinary } from "@/test/ffmpegProbe";
 import { videoEncodeArgs, audioEncodeArgs } from "./video/presets";
 import { cropRectFor } from "./video/dimensions";
 import { parseProbe, parseFrameRate, isTextSubtitle } from "./types";
@@ -213,24 +214,10 @@ describe("constructeurs d'arguments vidéo (purs)", () => {
 
 /* ------------------------------------------------ intégration FFmpeg réelle */
 
-function which(name: string): string | undefined {
-  try {
-    return execFileSync("sh", ["-c", `command -v ${name}`]).toString().trim() || undefined;
-  } catch {
-    return undefined;
-  }
-}
-const FFMPEG = which("ffmpeg");
-const FFPROBE = which("ffprobe");
+const FFMPEG = whichBinary("ffmpeg");
+const FFPROBE = whichBinary("ffprobe");
 
 const ff = (args: string[]) => execFileSync(FFMPEG!, ["-hide_banner", "-y", ...args], { stdio: "pipe" });
-const encoders = () => {
-  try {
-    return execFileSync(FFMPEG!, ["-hide_banner", "-encoders"]).toString();
-  } catch {
-    return "";
-  }
-};
 const probe = (path: string) =>
   parseProbe(
     execFileSync(FFPROBE!, [
@@ -251,7 +238,7 @@ describe.skipIf(!FFMPEG || !FFPROBE)("opérations vidéo exécutées avec le vra
   let clipPortrait: string;
   let music: string;
   let subs: string;
-  let caps: ReturnType<typeof capabilitiesFromEncoders>;
+  let caps: MediaCapabilities;
   let vcodec: string;
   let acodec: string[];
 
@@ -275,13 +262,9 @@ describe.skipIf(!FFMPEG || !FFPROBE)("opérations vidéo exécutées avec le vra
 
   beforeAll(() => {
     dir = mkdtempSync(join(tmpdir(), "ft-video-"));
-    // La liste d'encodeurs de CE FFmpeg : les tests suivent le build réel.
-    const list = encoders();
-    caps = capabilitiesFromEncoders(
-      ["libx264", "libopenh264", "libx265", "libvpx-vp9", "libsvtav1", "libaom-av1",
-       "aac", "libopus", "libmp3lame", "libvorbis", "mov_text", "srt", "webvtt", "ass"]
-        .filter((name) => new RegExp(`\\b${name.replace("+", "\\+")}\\b`).test(list)),
-    );
+    // Capacités **réellement** détectées sur cette machine, exactement comme
+    // l'application le fait : liste annoncée, puis encodage d'essai.
+    caps = realCapabilities(FFMPEG!);
     vcodec = caps.video.h264 ?? caps.video.vp9 ?? "mpeg4";
     acodec = audioEncodeArgs("aac", caps);
 

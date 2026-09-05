@@ -2,12 +2,11 @@ import { useState } from "react";
 import { VideoToolShell } from "@/components/media/VideoToolShell";
 import { Field, Fieldset, OptionGroup, Slider } from "@/components/pdf/Field";
 import { runMedia } from "@/core/media/client";
-import { VOLUME_PRESETS, adjustVolume } from "@/core/media/operations/video";
-import { audioCodecsFor } from "@/core/media/capabilities";
-import { audioEncodeArgs } from "@/core/media/video/presets";
+import { VOLUME_PRESETS } from "@/core/media/operations/video";
+import { volumePipeline } from "@/core/media/video/pipelines";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { defaultContainer, sizeOutcome } from "./shared";
+import { sizeOutcome } from "./shared";
 
 /**
  * Réglage du volume de la bande son, image recopiée telle quelle.
@@ -24,22 +23,20 @@ export function VideoVolumeTool({ tool }: ToolComponentProps) {
       actionLabel="Appliquer le volume"
       hint="Seule la piste audio est réencodée ; l'image reste intacte."
       run={async ({ files, infos, caps, context }) => {
-        const info = infos[0];
-        if (!info?.hasAudio && percent > 0) {
-          throw new Error("Cette vidéo ne contient aucune piste audio à régler.");
-        }
-        const container = defaultContainer(files[0].extension, caps);
-        const codec = audioCodecsFor(container, caps)[0];
+        const pipeline = volumePipeline(
+          { caps, info: infos[0], extension: files[0].extension },
+          percent,
+        );
         const file = await runMedia(
           {
             files: [files[0]],
-            operation: adjustVolume({
-              container,
-              percent,
-              audioArgs: audioEncodeArgs(codec, caps, "high"),
-            }),
-            outputName: outputName(files[0].name, percent === 0 ? "muette" : `volume-${percent}`, container),
-            totalMs: info?.durationMs,
+            operation: pipeline.operation,
+            outputName: outputName(
+              files[0].name,
+              percent === 0 ? "muette" : `volume-${percent}`,
+              pipeline.container,
+            ),
+            totalMs: infos[0]?.durationMs,
             label: "Réglage du volume…",
           },
           context,

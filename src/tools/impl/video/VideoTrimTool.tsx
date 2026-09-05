@@ -5,12 +5,12 @@ import { Field, Fieldset, OptionGroup, TextInput } from "@/components/pdf/Field"
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { runMedia } from "@/core/media/client";
-import { trimVideo, type TrimMode } from "@/core/media/operations/video";
-import { audioCodecsFor } from "@/core/media/capabilities";
+import type { TrimMode } from "@/core/media/operations/video";
+import { trimPipeline } from "@/core/media/video/pipelines";
 import { formatTimecode, parseTimecode } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { defaultContainer, encodeArgsFor } from "./shared";
+import { fallbackTracker } from "./shared";
 
 /**
  * Découpage d'un extrait.
@@ -41,27 +41,18 @@ export function VideoTrimTool({ tool }: ToolComponentProps) {
         if (startMs === undefined || endMs === undefined || endMs <= startMs) {
           throw new Error("L'instant de fin doit être postérieur à l'instant de début.");
         }
-        const info = infos[0];
-        const container = defaultContainer(files[0].extension, caps);
-        let operation;
-        if (mode === "fast") {
-          operation = trimVideo({ startMs, endMs, mode, container });
-        } else {
-          const videoCodec = (["h264", "vp9", "h265", "av1"] as const).find((codec) => caps.video[codec]);
-          if (!videoCodec) throw new Error("Aucun encodeur vidéo n'est disponible dans le moteur installé.");
-          const { videoArgs, audioArgs } = encodeArgsFor(
-            { container, video: videoCodec, audio: audioCodecsFor(container, caps)[0], level: "high" },
-            caps,
-            info,
-          );
-          operation = trimVideo({ startMs, endMs, mode, container, videoArgs, audioArgs });
-        }
-
+        const pipeline = trimPipeline(
+          { caps, info: infos[0], extension: files[0].extension },
+          { startMs, endMs, mode },
+        );
+        const tracker = fallbackTracker(pipeline);
         const file = await runMedia(
           {
             files: [files[0]],
-            operation,
-            outputName: outputName(files[0].name, "extrait", container),
+            operation: pipeline.operation,
+            alternatives: pipeline.alternatives,
+            onFallback: tracker.onFallback,
+            outputName: outputName(files[0].name, "extrait", pipeline.container),
             totalMs: endMs - startMs,
             label: "Découpage…",
           },
@@ -73,7 +64,7 @@ export function VideoTrimTool({ tool }: ToolComponentProps) {
           warning:
             mode === "fast"
               ? "Mode rapide : le début réel peut être décalé de quelques dixièmes de seconde, jusqu'à l'image-clé précédente."
-              : undefined,
+              : tracker.warning(),
         };
       }}
     >

@@ -9,14 +9,9 @@ import { STT_ENGINE } from "@/core/speech/stt";
 import { toSrt, type TranscriptSegment } from "@/core/speech/subtitles";
 import { runMedia } from "@/core/media/client";
 import { mediaCapabilities } from "@/core/media/capabilities";
-import { audioCodecsFor } from "@/core/media/capabilities";
+import { burnPipeline } from "@/core/media/video/pipelines";
 import { describeMediaError, MEDIA_CANCELLED } from "@/core/media/errors";
-import {
-  DEFAULT_BURN_STYLE,
-  burnSubtitles,
-  type BurnStyle,
-  type SubtitlePosition,
-} from "@/core/media/operations/video";
+import { DEFAULT_BURN_STYLE, type BurnStyle, type SubtitlePosition } from "@/core/media/operations/video";
 import { probeFile } from "@/core/media/client";
 import { outputName } from "@/core/pdf/filenames";
 import type { SelectedFile } from "@/core/files";
@@ -28,7 +23,7 @@ import {
 } from "@/features/jobs/media";
 import { useToolJob } from "@/features/jobs/hooks";
 import { notify } from "@/features/notifications/store";
-import { defaultContainer, encodeArgsFor } from "./shared";
+import { fallbackTracker } from "./shared";
 import type { ToolComponentProps } from "@/tools/implementations";
 
 /**
@@ -100,21 +95,17 @@ function BurnPanel({
         run: async (context) => {
           const caps = await mediaCapabilities();
           const info = await probeFile(file);
-          const container = defaultContainer(file.extension, caps);
-          const videoCodec = (["h264", "vp9", "h265", "av1"] as const).find((codec) => caps.video[codec]);
-          if (!videoCodec) throw new Error("Aucun encodeur vidéo n'est disponible dans le moteur installé.");
-          const { videoArgs } = encodeArgsFor(
-            { container, video: videoCodec, audio: audioCodecsFor(container, caps)[0], level: "balanced" },
-            caps,
-            info,
-          );
+          const pipeline = burnPipeline({ caps, info, extension: file.extension }, { style });
+          const tracker = fallbackTracker(pipeline);
 
           const produced = await runMedia(
             {
               files: [file],
               extraInputs: [{ bytes: new TextEncoder().encode(toSrt(segments)), ext: "srt" }],
-              operation: burnSubtitles({ container, videoArgs, style }),
-              outputName: outputName(file.name, "sous-titres-incrustes", container),
+              operation: pipeline.operation,
+              alternatives: pipeline.alternatives,
+              onFallback: tracker.onFallback,
+              outputName: outputName(file.name, "sous-titres-incrustes", pipeline.container),
               totalMs: info.durationMs,
               label: "Incrustation…",
             },
@@ -124,6 +115,7 @@ function BurnPanel({
           return {
             files: [produced],
             summary: `${segments.length} passages incrustés dans l'image.`,
+            warning: tracker.warning(),
           };
         },
       });

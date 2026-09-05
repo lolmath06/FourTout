@@ -6,8 +6,7 @@ import { Field, Fieldset, OptionGroup } from "@/components/pdf/Field";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { runMedia } from "@/core/media/client";
-import { cropFilter, encodeVideo } from "@/core/media/operations/video";
-import { audioCodecsFor } from "@/core/media/capabilities";
+import { cropPipeline } from "@/core/media/video/pipelines";
 import {
   CROP_RATIOS,
   centeredRect,
@@ -18,7 +17,7 @@ import {
 } from "@/core/media/video/dimensions";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { defaultContainer, encodeArgsFor, passthroughAudioArgs, sizeOutcome } from "./shared";
+import { fallbackTracker, sizeOutcome } from "./shared";
 
 const DEFAULT_RECT: NormalizedRect = { x: 0.1, y: 0.1, w: 0.8, h: 0.8 };
 
@@ -44,35 +43,29 @@ export function VideoCropTool({ tool }: ToolComponentProps) {
       showFileList={false}
       hint="Faites glisser la zone ou ses poignées ; le résultat correspond exactement à la sélection."
       run={async ({ files, infos, caps, context }) => {
-        const info = infos[0];
-        const source = { width: info?.width ?? 0, height: info?.height ?? 0 };
-        if (!source.width || !source.height) throw new Error("Ce fichier ne contient pas de piste vidéo lisible.");
-        const pixels = cropRectFor(source, rect);
-
-        const container = defaultContainer(files[0].extension, caps);
-        const videoCodec = (["h264", "vp9", "h265", "av1"] as const).find((codec) => caps.video[codec]);
-        if (!videoCodec) throw new Error("Aucun encodeur vidéo n'est disponible dans le moteur installé.");
-        const { videoArgs } = encodeArgsFor(
-          { container, video: videoCodec, audio: audioCodecsFor(container, caps)[0], level: "high" },
-          caps,
-          info,
+        const pipeline = cropPipeline(
+          { caps, info: infos[0], extension: files[0].extension },
+          { rect },
         );
+        const tracker = fallbackTracker(pipeline);
         const file = await runMedia(
           {
             files: [files[0]],
-            operation: encodeVideo({
-              container,
-              videoArgs,
-              audioArgs: passthroughAudioArgs(files[0].extension, info, container, caps),
-              videoFilters: [cropFilter(pixels)],
-            }),
-            outputName: outputName(files[0].name, "rognee", container),
-            totalMs: info?.durationMs,
+            operation: pipeline.operation,
+            alternatives: pipeline.alternatives,
+            onFallback: tracker.onFallback,
+            outputName: outputName(files[0].name, "rognee", pipeline.container),
+            totalMs: infos[0]?.durationMs,
             label: "Rognage…",
           },
           context,
         );
-        return sizeOutcome(files[0].size, file, `${pixels.width} × ${pixels.height} :`);
+        return sizeOutcome(
+          files[0].size,
+          file,
+          `${pipeline.rect.width} × ${pipeline.rect.height} :`,
+          tracker.warning(),
+        );
       }}
     >
       {({ files, infos }) => {

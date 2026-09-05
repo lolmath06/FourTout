@@ -99,7 +99,10 @@ if (FFMPEG) {
     const filter = quadrants(w, h, colors, moving).replaceAll("DUR", String(seconds));
     const args = ["-f", "lavfi", "-i", `color=c=black:s=${w}x${h}:r=${fps}:d=${seconds}`];
     if (audio) args.push("-f", "lavfi", "-i", audio);
-    args.push("-vf", filter, "-pix_fmt", "yuv420p", "-c:v", VCODEC, ...extra);
+    // Une image-clé par seconde : sans quoi le « découpage rapide » (recopie
+    // des flux) remonterait jusqu'à la seule image-clé du début et produirait
+    // un extrait bien plus long que demandé.
+    args.push("-vf", filter, "-pix_fmt", "yuv420p", "-c:v", VCODEC, "-g", String(fps), ...extra);
     if (audio) args.push("-c:a", "aac", "-b:a", "96k", "-shortest");
     ff(args, name);
   };

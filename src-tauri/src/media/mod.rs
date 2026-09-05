@@ -53,6 +53,66 @@ pub fn resolve_binary(app: &AppHandle, name: &str) -> PathBuf {
     PathBuf::from(&file)
 }
 
+/// Un encodeur vidéo est-il **réellement utilisable ici** ?
+///
+/// Le nom d'un encodeur dans `ffmpeg -encoders` ne prouve rien : il dit que
+/// FFmpeg a été compilé avec, pas que la machine sait s'en servir. Un
+/// `h264_nvenc` compilé sur un poste sans carte NVIDIA, sans pilote compatible,
+/// ou dans une session où le périphérique n'est pas accessible, est annoncé
+/// exactement comme un encodeur fonctionnel — puis échoue à l'ouverture,
+/// plusieurs secondes après que l'utilisateur a cliqué.
+///
+/// On l'essaie donc pour de vrai : une image de 64×64 encodée vers `null`. Si
+/// l'encodeur ne sait pas s'ouvrir dans cet environnement, FFmpeg sort en
+/// erreur et FourTout ne le proposera pas.
+///
+/// Le test est borné dans le temps : un pilote en mauvais état peut bloquer
+/// indéfiniment, et une détection ne doit jamais figer l'application.
+pub fn encoder_works(ffmpeg: &Path, name: &str) -> bool {
+    // Un nom d'encodeur ne contient que des caractères de nom : on refuse tout
+    // le reste plutôt que de passer une valeur inattendue à FFmpeg.
+    if name.is_empty() || !name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-') {
+        return false;
+    }
+
+    let spawned = Command::new(ffmpeg)
+        .args([
+            "-hide_banner", "-nostdin", "-y",
+            "-f", "lavfi", "-i", "color=c=black:s=64x64:r=5:d=1",
+            "-frames:v", "1", "-pix_fmt", "yuv420p",
+            "-c:v", name,
+            "-f", "null", "-",
+        ])
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn();
+
+    let mut child = match spawned {
+        Ok(child) => child,
+        Err(_) => return false,
+    };
+
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(PROBE_TIMEOUT_SECS);
+    loop {
+        match child.try_wait() {
+            Ok(Some(status)) => return status.success(),
+            Ok(None) => {
+                if std::time::Instant::now() >= deadline {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    return false;
+                }
+                std::thread::sleep(std::time::Duration::from_millis(25));
+            }
+            Err(_) => return false,
+        }
+    }
+}
+
+/// Durée maximale d'un test d'encodeur. Généreuse : le premier appel à un
+/// encodeur matériel peut initialiser un pilote.
+const PROBE_TIMEOUT_SECS: u64 = 12;
+
 /// FFmpeg / ffprobe sont-ils exécutables dans cet environnement ?
 pub fn probe_availability(app: &AppHandle) -> bool {
     let ffmpeg = resolve_binary(app, "ffmpeg");
@@ -137,4 +197,42 @@ pub fn run_ffmpeg(
     } else {
         message
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn ffmpeg() -> Option<PathBuf> {
+        let path = PathBuf::from(exe("ffmpeg"));
+        Command::new(&path)
+            .arg("-version")
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+            .ok()
+            .filter(|s| s.success())
+            .map(|_| path)
+    }
+
+    #[test]
+    fn rejects_encoder_names_that_are_not_names() {
+        let path = PathBuf::from("ffmpeg");
+        assert!(!encoder_works(&path, ""));
+        assert!(!encoder_works(&path, "libx264; rm -rf /"));
+        assert!(!encoder_works(&path, "../../bin/sh"));
+    }
+
+    #[test]
+    fn probes_a_real_encoder_and_an_imaginary_one() {
+        let Some(ffmpeg) = ffmpeg() else { return };
+        // Un nom inexistant ne peut pas « fonctionner ».
+        assert!(!encoder_works(&ffmpeg, "encodeur_qui_nexiste_pas"));
+        // Au moins un encodeur logiciel doit passer sur une machine de dev.
+        let software = ["libx264", "libopenh264", "libvpx-vp9", "mpeg4"];
+        assert!(
+            software.iter().any(|name| encoder_works(&ffmpeg, name)),
+            "aucun encodeur logiciel utilisable : environnement inattendu",
+        );
+    }
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { VideoToolShell } from "@/components/media/VideoToolShell";
 import { Field, Fieldset, OptionGroup, Select, Slider } from "@/components/pdf/Field";
 import { runMedia } from "@/core/media/client";
-import { encodeVideo } from "@/core/media/operations/video";
+import { convertPipeline } from "@/core/media/video/pipelines";
 import {
   CONTAINER_LABEL,
   audioCodecsFor,
@@ -27,7 +27,7 @@ import {
   audioCodecOptions,
   containerOptions,
   defaultContainer,
-  encodeArgsFor,
+  fallbackTracker,
   sizeOutcome,
   videoCodecOptions,
 } from "./shared";
@@ -53,20 +53,32 @@ export function VideoConvertTool({ tool }: ToolComponentProps) {
       actionLabel="Convertir"
       hint="Les formats proposés sont ceux que le moteur installé sait réellement produire."
       run={async ({ files, infos, caps, context }) => {
-        const choice = resolveChoice({ preset, container, videoCodec, audioCodec, crf, caps });
-        const { videoArgs, audioArgs } = encodeArgsFor(choice, caps, infos[0]);
-        const operation = encodeVideo({ container: choice.container, videoArgs, audioArgs });
+        const choice = resolveChoice({ preset, container, videoCodec, audioCodec, crf, caps, file: files[0] });
+        const pipeline = convertPipeline(
+          { caps, info: infos[0], extension: files[0].extension },
+          { container: choice.container, video: choice.video, audio: choice.audio ?? null, level: choice.level, crf: choice.crf },
+        );
+        const tracker = fallbackTracker(pipeline);
         const file = await runMedia(
           {
             files: [files[0]],
-            operation,
-            outputName: outputName(files[0].name, "", choice.container),
+            operation: pipeline.operation,
+            // En mode personnalisé, l'encodeur est un choix explicite de
+            // l'utilisateur : on ne le remplace pas dans son dos.
+            alternatives: preset === "custom" ? [] : pipeline.alternatives,
+            onFallback: tracker.onFallback,
+            outputName: outputName(files[0].name, "", pipeline.container),
             totalMs: infos[0]?.durationMs,
             label: "Conversion…",
           },
           context,
         );
-        return sizeOutcome(files[0].size, file, `${CONTAINER_LABEL[choice.container]} produit :`);
+        return sizeOutcome(
+          files[0].size,
+          file,
+          `${CONTAINER_LABEL[pipeline.container]} produit :`,
+          tracker.warning(),
+        );
       }}
     >
       {({ files, caps }) => {
@@ -215,7 +227,7 @@ function Settings({
         <p className="text-xs text-[var(--ft-text-muted)]">
           Sortie : {CONTAINER_LABEL[resolved.container]} · vidéo {resolved.video.toUpperCase()}
           {resolved.audio ? ` · audio ${resolved.audio.toUpperCase()}` : " · sans audio"} ·{" "}
-          {caps.video[resolved.video]}
+          {caps.video[resolved.video]} (testé sur cette machine)
         </p>
       )}
     </div>

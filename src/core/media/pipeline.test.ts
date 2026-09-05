@@ -176,6 +176,62 @@ describe("exécution d'une opération vidéo", () => {
     expect(native.cleaned).toContain(`${TEMP}/staged-0.bin`);
   });
 
+  it("bascule sur la variante suivante quand l'encodeur ne démarre pas", async () => {
+    let calls = 0;
+    const native = bridge({
+      media_exec: () => {
+        calls += 1;
+        // Première tentative : erreur typique d'un encodeur matériel absent.
+        return calls === 1
+          ? Promise.reject(
+              new Error(
+                "[h264_nvenc @ 0x1] Error while opening encoder - maybe incorrect parameters\nConversion failed!",
+              ),
+            )
+          : Promise.resolve(undefined);
+      },
+    });
+
+    const fallbacks: { attempt: number }[] = [];
+    const output = await runMedia({
+      files: [file("clip.mp4", "mp4")],
+      operation: encodeVideo({ container: "mp4", videoArgs: ["-c:v", "h264_nvenc"], audioArgs: ["-c:a", "aac"] }),
+      alternatives: [
+        encodeVideo({ container: "mp4", videoArgs: ["-c:v", "libopenh264"], audioArgs: ["-c:a", "aac"] }),
+      ],
+      onFallback: (info) => fallbacks.push({ attempt: info.attempt }),
+      outputName: "clip.mp4",
+    });
+
+    expect(calls).toBe(2);
+    expect(fallbacks).toEqual([{ attempt: 1 }]);
+    expect(output.bytes.length).toBeGreaterThan(0);
+    // Les deux sorties réservées sont nettoyées, y compris celle abandonnée
+    // par la tentative qui a échoué : aucun fichier tronqué ne subsiste.
+    expect(native.cleaned.filter((path) => path === `${TEMP}/out.mp4`)).toHaveLength(2);
+  });
+
+  it("ne réessaie pas après une erreur qui n'est pas un problème d'encodeur", async () => {
+    let calls = 0;
+    bridge({
+      media_exec: () => {
+        calls += 1;
+        return Promise.reject(new Error("Invalid data found when processing input"));
+      },
+    });
+
+    await expect(
+      runMedia({
+        files: [file("clip.mp4", "mp4")],
+        operation: simple(),
+        alternatives: [simple()],
+        outputName: "clip.mp4",
+      }),
+    ).rejects.toThrow(/Invalid data/);
+    // Un fichier illisible le reste : relancer serait une perte de temps.
+    expect(calls).toBe(1);
+  });
+
   it("relaie la progression du moteur sous l'étiquette de l'outil", async () => {
     bridge();
     let handler: ((event: { payload: { jobId: string; ratio: number } }) => void) | undefined;

@@ -28,7 +28,9 @@ Principes :
 | Commande | Rôle |
 | --- | --- |
 | `media_available` | FFmpeg est-il exécutable ? |
-| `media_encoders` | Liste des encodeurs disponibles (choix libx264 vs libopenh264…). |
+| `media_encoders` | Liste des encodeurs **annoncés** par le binaire. |
+| `media_probe_encoders` | Teste **réellement** des encodeurs (encodage 64x64) et renvoie ceux qui marchent ; résultat mis en cache pour la session. |
+| `media_reset_encoder_probes` | Oublie ces tests (nouveau matériel, diagnostic). |
 | `media_temp` | Chemin temporaire pour une sortie. |
 | `media_stage` | Écrit des octets d'entrée dans un temporaire, renvoie son chemin. |
 | `media_probe` | ffprobe → JSON (durée, codecs, flux). |
@@ -60,9 +62,10 @@ L'ensemble dépend du **build FFmpeg utilisé** :
 - Sous-titres : `srt` (MKV), `webvtt` (WebM), `mov_text` (MP4) — ce dernier est
   absent de plusieurs builds courants, dont celui de Fedora.
 
-`src/core/media/capabilities.ts` transforme cette liste en familles utilisables
-par conteneur : l'interface ne propose donc **que** ce qui fonctionne. Voir
-[VIDEO.md](VIDEO.md).
+`src/core/media/capabilities.ts` croise cette liste avec le résultat d'un
+**encodage d'essai** (`media_probe_encoders`) : être annoncé ne suffit pas. Un
+`h264_nvenc` compilé mais inutilisable sur la machine est écarté avant d'être
+proposé. Voir [VIDEO.md](VIDEO.md).
 
 Sur le FFmpeg de Fedora par défaut, `libx264`/`libvpx`/`libvorbis` peuvent
 manquer ; le binaire **embarqué** (build complet) les fournit — d'où l'intérêt

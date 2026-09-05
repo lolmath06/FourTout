@@ -9,7 +9,7 @@ import {
   targetBitrateKbps,
   videoEncodeArgs,
 } from "./presets";
-import { capabilitiesFromEncoders } from "../capabilities";
+import { buildCapabilities } from "../capabilities";
 
 /**
  * Le point critique de ce module : un même « niveau de qualité » doit se
@@ -58,7 +58,7 @@ describe("préréglages d'encodage", () => {
   });
 
   it("choisit l'encodeur audio disponible, ou coupe le son", () => {
-    const caps = capabilitiesFromEncoders(["aac", "libopus"]);
+    const caps = buildCapabilities({ announced: ["aac", "libopus"], usableVideo: [] });
     expect(audioEncodeArgs("aac", caps)).toEqual(["-c:a", "aac", "-b:a", "128k"]);
     expect(audioEncodeArgs("opus", caps, "high")).toEqual(["-c:a", "libopus", "-b:a", "192k"]);
     expect(audioEncodeArgs(undefined, caps)).toEqual(["-an"]);

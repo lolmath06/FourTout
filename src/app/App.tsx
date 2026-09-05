@@ -2,6 +2,7 @@ import { HashRouter, useRoutes } from "react-router-dom";
 import { useEffect } from "react";
 import { routes } from "./routes";
 import { applyTheme, useSettings } from "@/features/settings/store";
+import { warmMediaCapabilities } from "@/core/media/capabilities";
 
 function Routes() {
   return useRoutes(routes);
@@ -19,6 +20,14 @@ export function App() {
   useEffect(() => {
     applyTheme(theme);
   }, [theme]);
+
+  // Détecter les encodeurs réellement utilisables demande d'en essayer
+  // plusieurs pour de bon : quelques secondes, une fois par session. On lance
+  // la détection au démarrage pour qu'elle soit terminée avant que
+  // l'utilisateur n'ouvre un outil vidéo.
+  useEffect(() => {
+    warmMediaCapabilities();
+  }, []);
 
   return (
     <HashRouter>

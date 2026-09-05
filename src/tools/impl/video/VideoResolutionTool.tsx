@@ -3,8 +3,7 @@ import { VideoToolShell } from "@/components/media/VideoToolShell";
 import { Field, Fieldset, NumberInput, Select } from "@/components/pdf/Field";
 import { Icon } from "@/components/ui/Icon";
 import { runMedia } from "@/core/media/client";
-import { encodeVideo, scaleFilter } from "@/core/media/operations/video";
-import { audioCodecsFor } from "@/core/media/capabilities";
+import { resizePipeline } from "@/core/media/video/pipelines";
 import {
   RESOLUTION_PRESETS,
   isUpscale,
@@ -14,7 +13,7 @@ import {
 } from "@/core/media/video/dimensions";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { defaultContainer, encodeArgsFor, passthroughAudioArgs, sizeOutcome } from "./shared";
+import { fallbackTracker, sizeOutcome } from "./shared";
 
 type PresetKey = "original" | "custom" | `${number}`;
 
@@ -58,30 +57,24 @@ export function VideoResolutionTool({ tool }: ToolComponentProps) {
           );
         }
 
-        const container = defaultContainer(files[0].extension, caps);
-        const videoCodec = (["h264", "vp9", "h265", "av1"] as const).find((codec) => caps.video[codec]);
-        if (!videoCodec) throw new Error("Aucun encodeur vidéo n'est disponible dans le moteur installé.");
-        const { videoArgs } = encodeArgsFor(
-          { container, video: videoCodec, audio: audioCodecsFor(container, caps)[0], level: "balanced" },
-          caps,
-          info,
+        const pipeline = resizePipeline(
+          { caps, info, extension: files[0].extension },
+          { width: target.width, height: target.height },
         );
+        const tracker = fallbackTracker(pipeline);
         const file = await runMedia(
           {
             files: [files[0]],
-            operation: encodeVideo({
-              container,
-              videoArgs,
-              audioArgs: passthroughAudioArgs(files[0].extension, info, container, caps),
-              videoFilters: [scaleFilter(target.width, target.height)],
-            }),
-            outputName: outputName(files[0].name, `${target.height}p`, container),
+            operation: pipeline.operation,
+            alternatives: pipeline.alternatives,
+            onFallback: tracker.onFallback,
+            outputName: outputName(files[0].name, `${target.height}p`, pipeline.container),
             totalMs: info?.durationMs,
             label: "Redimensionnement…",
           },
           context,
         );
-        return sizeOutcome(files[0].size, file, `${target.width} × ${target.height} :`);
+        return sizeOutcome(files[0].size, file, `${target.width} × ${target.height} :`, tracker.warning());
       }}
     >
       {({ infos }) => {

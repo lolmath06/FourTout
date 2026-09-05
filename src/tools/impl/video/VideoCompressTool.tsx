@@ -3,13 +3,12 @@ import { VideoToolShell } from "@/components/media/VideoToolShell";
 import { Field, Fieldset, OptionGroup } from "@/components/pdf/Field";
 import { formatFileSize } from "@/core/files";
 import { runMedia } from "@/core/media/client";
-import { encodeVideo } from "@/core/media/operations/video";
-import { audioCodecsFor } from "@/core/media/capabilities";
+import { compressPipeline } from "@/core/media/video/pipelines";
 import { COMPRESSION_LABEL, type QualityLevel } from "@/core/media/video/presets";
 import { formatTimecode } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { defaultContainer, encodeArgsFor, sizeOutcome } from "./shared";
+import { fallbackTracker, sizeOutcome } from "./shared";
 
 const MODES: { value: QualityLevel; label: string; hint: string }[] = [
   { value: "high", label: COMPRESSION_LABEL.high, hint: "Presque invisible à l'œil, gain modéré." },
@@ -34,26 +33,24 @@ export function VideoCompressTool({ tool }: ToolComponentProps) {
       actionLabel="Compresser"
       hint="La vidéo est réencodée localement ; le fichier d'origine n'est jamais modifié."
       run={async ({ files, infos, caps, context }) => {
-        const info = infos[0];
-        const container = defaultContainer(files[0].extension, caps);
-        const videoCodec = (["h264", "vp9", "h265", "av1"] as const).find((codec) => caps.video[codec]);
-        if (!videoCodec) throw new Error("Aucun encodeur vidéo n'est disponible dans le moteur installé.");
-        const { videoArgs, audioArgs } = encodeArgsFor(
-          { container, video: videoCodec, audio: audioCodecsFor(container, caps)[0], level: mode },
-          caps,
-          info,
+        const pipeline = compressPipeline(
+          { caps, info: infos[0], extension: files[0].extension },
+          { level: mode },
         );
+        const tracker = fallbackTracker(pipeline);
         const file = await runMedia(
           {
             files: [files[0]],
-            operation: encodeVideo({ container, videoArgs, audioArgs }),
-            outputName: outputName(files[0].name, "compressee", container),
-            totalMs: info?.durationMs,
+            operation: pipeline.operation,
+            alternatives: pipeline.alternatives,
+            onFallback: tracker.onFallback,
+            outputName: outputName(files[0].name, "compressee", pipeline.container),
+            totalMs: infos[0]?.durationMs,
             label: "Compression…",
           },
           context,
         );
-        return sizeOutcome(files[0].size, file, `${COMPRESSION_LABEL[mode]} :`);
+        return sizeOutcome(files[0].size, file, `${COMPRESSION_LABEL[mode]} :`, tracker.warning());
       }}
     >
       {({ files, infos }) => (

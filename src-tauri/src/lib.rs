@@ -64,6 +64,8 @@ pub fn run() {
             media::command::media_available,
             media::command::media_temp,
             media::command::media_encoders,
+            media::command::media_probe_encoders,
+            media::command::media_reset_encoder_probes,
             media::command::media_stage,
             media::command::media_probe,
             media::command::media_read,

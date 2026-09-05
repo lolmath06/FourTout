@@ -12,17 +12,68 @@ sous-titres (`mov_text`). Sur le FFmpeg de Fedora, `libx264` est absent —
 H.264 passe par `libopenh264`, qui **ne comprend pas `-crf`** — et l'encodeur
 `mov_text` n'existe pas.
 
-Conséquence : rien n'est supposé. `src/core/media/capabilities.ts` lit une fois
-`ffmpeg -encoders` (commande native `media_encoders`), en déduit les familles
-disponibles, et l'interface ne propose que des combinaisons réellement
-encodables.
+### Annoncé n'est pas utilisable
+
+`ffmpeg -encoders` ne dit pas ce qui fonctionne : il dit ce avec quoi le binaire
+a été **compilé**. Le paquet FFmpeg de Fedora annonce `h264_nvenc`, `h264_vaapi`
+et `h264_qsv` sur toutes les machines, y compris celles sans GPU exploitable,
+sans pilote compatible, ou dans une session où le périphérique est hors
+d'atteinte. L'encodeur échoue alors **à l'ouverture**, plusieurs secondes après
+le clic :
+
+```
+[h264_nvenc] Error while opening encoder - maybe incorrect parameters...
+Error while filtering: Operation not permitted
+Conversion failed!
+```
+
+FourTout applique donc **deux niveaux de vérité** :
+
+1. `media_encoders` — ce que FFmpeg annonce ;
+2. `media_probe_encoders` — un **encodage réel** de test (image 64x64 vers
+   `null`, borné a 12 s) pour chaque candidat.
+
+Un encodeur vidéo absent du second niveau n'est jamais proposé, jamais choisi,
+et n'apparaît pas dans « Compatibilité maximale ». Les deux listes sont
+conservées (`usableVideo`, `rejectedVideo`) pour le diagnostic. La détection a
+lieu **une fois par session** et son résultat est mis en cache côté natif ;
+`media_reset_encoder_probes` la relance si nécessaire.
 
 | Élément | Rôle |
 | --- | --- |
-| `capabilitiesFromEncoders()` | Liste d'encodeurs → familles disponibles (fonction pure, testée) |
-| `videoCodecsFor(container)` | Codecs acceptés **par le conteneur** et présents dans le build |
+| `buildCapabilities({announced, usableVideo})` | Deux listes vers familles utilisables (fonction pure, testée) |
+| `videoEncoderCandidates()` | Encodeurs à tester réellement |
+| `videoCodecsFor(container)` | Codecs acceptés **par le conteneur** et utilisables ici |
+| `preferredVideoCodec(container)` | **Unique** point de décision du codec |
 | `mostCompatible()` | La combinaison « compatibilité maximale » réellement possible |
 | `subtitleContainers` | Conteneurs capables de porter une piste de sous-titres textuelle |
+
+### Ordre de préférence : fiabilité avant vitesse
+
+Les encodeurs logiciels passent devant les encodeurs matériels, même quand les
+deux fonctionnent :
+
+```
+h264 : libx264 > libopenh264 > h264_nvenc > h264_qsv > h264_vaapi > h264_v4l2m2m
+```
+
+Un encodeur matériel n'est retenu que s'il a passé son test **et** qu'aucun
+encodeur logiciel de la même famille n'est disponible.
+
+### Repli à l'exécution
+
+La détection écarte les encodeurs qui ne démarrent pas, mais un encodeur peut
+encore échouer sur un fichier réel (définition, profil, mémoire vidéo). Chaque
+pipeline fournit donc ses variantes de repli, et `runMedia` les essaie **dans
+l'ordre**, uniquement sur une erreur reconnue comme une indisponibilité
+d'encodeur (`isEncoderUnavailable`). Un fichier illisible ou un disque plein ne
+déclenchent aucune nouvelle tentative. Le repli est signalé à l'utilisateur :
+
+> L'accélération matérielle n'était pas disponible ; l'encodage a été refait en
+> logiciel.
+
+En mode **Personnalisé**, l'encodeur est un choix explicite de l'utilisateur :
+l'erreur est affichée plutôt que contournée dans son dos.
 
 ## Qualité : une table par encodeur, pas une valeur universelle
 
@@ -152,6 +203,22 @@ plein, accès refusé, annulation. Un message non reconnu est **conservé tel
 quel** — mieux vaut une phrase obscure qu'une explication fausse. Le détail
 technique reste accessible derrière « Détail technique ».
 
+## Un seul point de décision : `video/pipelines.ts`
+
+Chaque outil de la suite se réduit à un appel de `src/core/media/video/pipelines.ts`
+(`convertPipeline`, `compressPipeline`, `resizePipeline`, `cropPipeline`,
+`transformPipeline`, `speedPipeline`, `trimPipeline`, `mergePipeline`,
+`burnPipeline`, `softSubtitlePipeline`, `volumePipeline`, `batchPipeline`...).
+C'est **là** que sont décidés le conteneur, l'encodeur, la qualité et les
+filtres.
+
+Cette centralisation n'est pas cosmétique. Tant que chaque écran choisissait son
+encodeur dans son coin, une erreur de sélection cassait dix outils sans qu'aucun
+test ne la voie : les tests appelaient les constructeurs d'arguments avec un
+encodeur écrit en dur, donc validaient la mécanique et jamais la décision. Un
+seul point de décision, c'est un seul point à tester — et la matrice
+d'intégration exerce exactement ce que l'interface exécute.
+
 ## Ossature d'interface
 
 | Brique | Rôle |
@@ -167,14 +234,21 @@ d'outils simples.
 
 ## Tests
 
+- `src/core/media/toolMatrix.test.ts` — **la** garde de non-régression : vraie
+  détection (liste annoncée puis encodage d'essai), puis exécution de chaque
+  pipeline d'outil sur les vraies fixtures, résultat relu par ffprobe. Un
+  encodeur annoncé mais non fonctionnel y est explicitement interdit.
 - `src/core/media/video.test.ts` — constructeurs purs **et** exécution réelle de
   chaque opération sur une petite mire, résultat relu par ffprobe (dimensions,
-  durée, pistes).
+  durée, pistes). La détection des capacités y est réelle, jamais simulée
+  (`src/test/ffmpegProbe.ts` rejoue les deux étapes natives).
 - `src/core/media/pipeline.test.ts` — cycle complet avec un pont natif simulé :
   préparation, liste de concaténation, nettoyage après succès, après erreur et
   après annulation.
-- `src/core/media/capabilities.test.ts` — les deux builds réels (complet et
-  Fedora).
+- `src/core/media/capabilities.test.ts` — les environnements réels, dont celui
+  qui a cassé la phase 5 : NVENC annoncé, NVENC inutilisable.
+- `src-tauri/tests/media_integration.rs` — le test d'encodeur natif confronté à
+  un encodage 640x360 réel.
 - `src/core/media/video/dimensions.test.ts`, `presets.test.ts`,
   `src/core/media/errors.test.ts` — logique pure.
 - `src/features/jobs/mediaJobs.test.ts` — survie à la navigation, annulation,

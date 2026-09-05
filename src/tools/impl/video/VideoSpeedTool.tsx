@@ -2,18 +2,12 @@ import { useState } from "react";
 import { VideoToolShell } from "@/components/media/VideoToolShell";
 import { Field, Fieldset, OptionGroup } from "@/components/pdf/Field";
 import { runMedia } from "@/core/media/client";
-import {
-  SPEED_FACTORS,
-  encodeVideo,
-  speedAudioFilter,
-  speedDurationMs,
-  speedVideoFilter,
-} from "@/core/media/operations/video";
-import { audioCodecsFor } from "@/core/media/capabilities";
+import { SPEED_FACTORS, speedDurationMs } from "@/core/media/operations/video";
+import { speedPipeline } from "@/core/media/video/pipelines";
 import { formatTimecode } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { defaultContainer, encodeArgsFor, sizeOutcome } from "./shared";
+import { fallbackTracker, sizeOutcome } from "./shared";
 
 /**
  * Accéléré et ralenti.
@@ -32,33 +26,24 @@ export function VideoSpeedTool({ tool }: ToolComponentProps) {
       actionLabel="Changer la vitesse"
       hint="La bande son suit l'image sans changer de hauteur."
       run={async ({ files, infos, caps, context }) => {
-        const info = infos[0];
-        const container = defaultContainer(files[0].extension, caps);
-        const videoCodec = (["h264", "vp9", "h265", "av1"] as const).find((codec) => caps.video[codec]);
-        if (!videoCodec) throw new Error("Aucun encodeur vidéo n'est disponible dans le moteur installé.");
-        const audioCodec = audioCodecsFor(container, caps)[0];
-        const { videoArgs, audioArgs } = encodeArgsFor(
-          { container, video: videoCodec, audio: audioCodec, level: "balanced" },
-          caps,
-          info,
+        const pipeline = speedPipeline(
+          { caps, info: infos[0], extension: files[0].extension },
+          { factor },
         );
+        const tracker = fallbackTracker(pipeline);
         const file = await runMedia(
           {
             files: [files[0]],
-            operation: encodeVideo({
-              container,
-              videoArgs,
-              audioArgs,
-              videoFilters: [speedVideoFilter(factor)],
-              audioFilters: info?.hasAudio ? [speedAudioFilter(factor)] : [],
-            }),
-            outputName: outputName(files[0].name, `x${String(factor).replace(".", "-")}`, container),
-            totalMs: speedDurationMs(info?.durationMs ?? 0, factor),
+            operation: pipeline.operation,
+            alternatives: pipeline.alternatives,
+            onFallback: tracker.onFallback,
+            outputName: outputName(files[0].name, `x${String(factor).replace(".", "-")}`, pipeline.container),
+            totalMs: pipeline.durationMs,
             label: "Changement de vitesse…",
           },
           context,
         );
-        return sizeOutcome(files[0].size, file, `Vitesse ×${factor} :`);
+        return sizeOutcome(files[0].size, file, `Vitesse ×${factor} :`, tracker.warning());
       }}
     >
       {({ infos }) => {

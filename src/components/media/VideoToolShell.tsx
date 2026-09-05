@@ -211,9 +211,10 @@ export function VideoToolShell({
         />
       )}
 
-      {files.length > 0 && probing && (
+      {files.length > 0 && (probing || !caps) && (
         <p className="flex items-center gap-2 text-xs text-[var(--ft-text-muted)]">
-          <Icon name="Loader" size={13} className="animate-spin" /> Analyse du fichier…
+          <Icon name="Loader" size={13} className="animate-spin" />
+          {probing ? "Analyse du fichier…" : "Vérification des encodeurs disponibles sur cette machine…"}
         </p>
       )}
 
