@@ -1,26 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { computeTextStatistics } from "./textStatistics";
 import { CASE_TRANSFORMS } from "./textCase";
-import { decodeBase64, encodeBase64 } from "./base64";
-
-describe("statistiques de texte", () => {
-  it("compte mots, phrases et paragraphes", () => {
-    const stats = computeTextStatistics("Bonjour le monde. Ça va ?\n\nDeuxième paragraphe.");
-    expect(stats.words).toBe(8);
-    expect(stats.sentences).toBe(3);
-    expect(stats.paragraphs).toBe(2);
-  });
-
-  it("gère un texte vide", () => {
-    const stats = computeTextStatistics("");
-    expect(stats).toMatchObject({ words: 0, characters: 0, sentences: 0, readingTime: "—" });
-  });
-
-  it("estime un temps de lecture", () => {
-    const stats = computeTextStatistics("mot ".repeat(400));
-    expect(stats.readingTime).toBe("2 min");
-  });
-});
+import {
+  base64ToBytes,
+  bytesToBase64,
+  decodeBase64,
+  encodeBase64,
+  fromDataUri,
+  toDataUri,
+} from "./base64";
 
 describe("changement de casse", () => {
   it("applique chaque transformation", () => {
@@ -48,5 +35,34 @@ describe("base64", () => {
 
   it("rejette une entrée invalide", () => {
     expect(() => decodeBase64("ceci n'est pas du base64 !!")).toThrow();
+  });
+});
+
+describe("base64 de fichiers", () => {
+  const bytes = new Uint8Array([0, 1, 2, 250, 251, 255, 137, 80, 78, 71]);
+
+  it("fait l'aller-retour sur des octets quelconques", () => {
+    expect([...base64ToBytes(bytesToBase64(bytes))]).toEqual([...bytes]);
+  });
+
+  it("produit et relit un data URI", () => {
+    const uri = toDataUri(bytes, "image/png");
+    expect(uri.startsWith("data:image/png;base64,")).toBe(true);
+    const parsed = fromDataUri(uri);
+    expect(parsed?.mimeType).toBe("image/png");
+    expect([...(parsed?.bytes ?? [])]).toEqual([...bytes]);
+  });
+
+  it("ignore les retours à la ligne d'un Base64 collé", () => {
+    const wrapped = bytesToBase64(bytes).replace(/(.{4})/g, "$1\n");
+    expect([...base64ToBytes(wrapped)]).toEqual([...bytes]);
+  });
+
+  it("refuse une entrée qui n'est pas du Base64", () => {
+    expect(() => base64ToBytes("ceci n'est pas du base64 !")).toThrow(/invalide/i);
+  });
+
+  it("ne prend pas un texte ordinaire pour un data URI", () => {
+    expect(fromDataUri("juste du texte")).toBeNull();
   });
 });

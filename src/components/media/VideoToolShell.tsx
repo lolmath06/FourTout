@@ -17,6 +17,7 @@ import {
   startMediaJob,
 } from "@/features/jobs/media";
 import { useToolJob } from "@/features/jobs/hooks";
+import { useHandoff } from "@/features/handoff/store";
 import { VideoInfoList } from "./VideoInfoList";
 import { OutputVideoPreview } from "./VideoPreview";
 import { AudioPreview } from "./AudioPreview";
@@ -73,7 +74,10 @@ export function VideoToolShell({
   showFileList = true,
   footnote,
 }: VideoToolShellProps) {
-  const [files, setFiles] = useState<SelectedFile[]>([]);
+  // Le convertisseur universel (et tout autre outil qui passe le relais) peut
+  // nous transmettre le fichier déjà choisi : l'utilisateur ne le redépose pas.
+  const handoff = useHandoff(tool.id);
+  const [files, setFiles] = useState<SelectedFile[]>(() => handoff?.files ?? []);
   const [infos, setInfos] = useState<MediaInfo[]>([]);
   const [probing, setProbing] = useState(false);
   const [available, setAvailable] = useState<boolean | undefined>(undefined);

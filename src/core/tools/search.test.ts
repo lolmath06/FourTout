@@ -196,3 +196,55 @@ describe("recherche de l'outil de récupération de mot de passe", () => {
     );
   });
 });
+
+/**
+ * Recherche des outils Texte, Fichiers et du convertisseur universel.
+ *
+ * Ces requêtes sont formulées comme un utilisateur les taperait : c'est le
+ * seul test qui compte pour un moteur de recherche « en langage courant ».
+ */
+describe("recherche des outils Texte et Fichiers", () => {
+  const found = (query: string) => searchTools(query).map((result) => result.tool.id);
+
+  it.each([
+    ["supprimer les doublons", "text-deduplicate"],
+    ["lignes en double", "text-deduplicate"],
+    ["comparer deux textes", "text-compare"],
+    ["voir les différences entre deux versions", "text-compare"],
+    ["nettoyer un texte", "text-clean"],
+    ["trier des lignes", "text-sort-lines"],
+    ["chercher et remplacer", "text-find-replace"],
+    ["markdown en html", "markdown-convert"],
+    ["encoder une url", "url-encode"],
+    ["faux texte", "lorem-ipsum"],
+    ["normaliser unicode", "text-unicode-normalize"],
+    ["convertir crlf en lf", "text-line-endings"],
+    ["extraire le texte d'un word", "docx-extract"],
+    ["créer un zip", "archive-create"],
+    ["décompresser une archive", "archive-extract"],
+    ["dézipper", "archive-extract"],
+    ["calculer sha256", "file-hash"],
+    ["fichiers en double", "file-find-duplicates"],
+    ["diviser un gros fichier", "file-split"],
+    ["réassembler un fichier", "file-join"],
+    ["renommer 100 fichiers", "file-bulk-rename"],
+    ["taille d'un dossier", "folder-size"],
+    ["arborescence d'un dossier", "folder-tree"],
+    ["informations sur un fichier", "file-info"],
+    ["convertir n'importe quel fichier", "universal-converter"],
+  ])("« %s » trouve %s", (query, expected) => {
+    expect(found(query)).toContain(expected);
+  });
+
+  it("place le bon outil en tête pour les requêtes les plus nettes", () => {
+    expect(searchTools("supprimer les doublons")[0].tool.id).toBe("text-deduplicate");
+    expect(searchTools("comparer deux textes")[0].tool.id).toBe("text-compare");
+    expect(searchTools("calculer sha256")[0].tool.id).toBe("file-hash");
+    expect(searchTools("arborescence d'un dossier")[0].tool.id).toBe("folder-tree");
+  });
+
+  it("distingue les doublons de lignes des doublons de fichiers", () => {
+    expect(searchTools("lignes en double")[0].tool.id).toBe("text-deduplicate");
+    expect(searchTools("fichiers en double")[0].tool.id).toBe("file-find-duplicates");
+  });
+});

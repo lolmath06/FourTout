@@ -6,6 +6,7 @@
 //! doivent être natifs (ffmpeg, OCR, chiffrement, accès disque), en gardant la
 //! règle : tout se fait localement, rien n'est envoyé sur le réseau.
 
+pub mod files;
 pub mod image_native;
 pub mod media;
 pub mod microphone;
@@ -55,6 +56,7 @@ pub fn run() {
             Ok(())
         })
         .manage(recovery::command::RecoveryState::default())
+        .manage(files::FilesState::default())
         .manage(media::command::MediaState::default())
         .manage(models::command::ModelsState::default())
         .manage(speech::command::SpeechState::default())
@@ -72,6 +74,23 @@ pub fn run() {
             media::command::media_cleanup,
             media::command::media_exec,
             media::command::media_cancel,
+            files::command::files_cancel,
+            files::command::files_hash,
+            files::command::files_compare,
+            files::command::files_info,
+            files::command::files_archive_create,
+            files::command::files_archive_list,
+            files::command::files_archive_extract,
+            files::command::files_folder_stats,
+            files::command::files_tree,
+            files::command::files_duplicates,
+            files::command::files_split,
+            files::command::files_join,
+            files::command::files_rename_plan,
+            files::command::files_rename_apply,
+            files::command::files_docx_read,
+            files::command::files_read_text,
+            files::command::files_write_text,
             microphone::mic_permission_state,
             microphone::mic_request_permission,
             models::command::models_list,

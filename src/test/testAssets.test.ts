@@ -81,10 +81,21 @@ describe("générateur de test-assets", () => {
     // c'est ce qui permet de mesurer un vrai gain de compression. Les autres
     // vidéos et l'audio de remplacement dépassent la limite d'un simple document
     // sans être pour autant démesurés.
-    const DELIBERATELY_HEAVY = new Set(["pdf-large-images.pdf", "video-large.mp4"]);
+    // `large-split.bin` doit peser assez pour produire cinq morceaux de 500 Ko :
+    // c'est tout l'intérêt de la fixture de découpage.
+    const DELIBERATELY_HEAVY = new Set([
+      "pdf-large-images.pdf",
+      "video-large.mp4",
+      "large-split.bin",
+    ]);
     const MEDIA = /\.(mp4|mkv|webm|mov|wav|mp3|gif)$/i;
 
-    for (const name of readdirSync(outDir)) {
+    // Depuis la phase 6, les fixtures comportent aussi des dossiers
+    // (archives à comprimer, doublons, arborescence) : on ne pèse que les
+    // fichiers, chacun devant rester léger.
+    for (const entry of readdirSync(outDir, { withFileTypes: true })) {
+      if (!entry.isFile()) continue;
+      const name = entry.name;
       const limit = DELIBERATELY_HEAVY.has(name)
         ? 8 * 1024 * 1024
         : MEDIA.test(name)

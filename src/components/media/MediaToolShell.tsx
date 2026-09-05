@@ -11,6 +11,7 @@ import { ResultPanel, type OperationOutcome } from "@/components/pdf/ResultPanel
 import { AudioPreview } from "./AudioPreview";
 import { isMediaAvailable, probeFile } from "@/core/media/client";
 import { emptyMediaInfo, formatTimecode, type MediaInfo } from "@/core/media/types";
+import { useHandoff } from "@/features/handoff/store";
 
 /**
  * Ossature commune aux outils média (audio et petits ponts vidéo), au-dessus du
@@ -44,7 +45,10 @@ export function MediaToolShell({
   hint?: string;
   reorderable?: boolean;
 }) {
-  const [files, setFiles] = useState<SelectedFile[]>([]);
+  // Le convertisseur universel (et tout autre outil qui passe le relais) peut
+  // nous transmettre le fichier déjà choisi : l'utilisateur ne le redépose pas.
+  const handoff = useHandoff(tool.id);
+  const [files, setFiles] = useState<SelectedFile[]>(() => handoff?.files ?? []);
   const [infos, setInfos] = useState<MediaInfo[]>([]);
   const [available, setAvailable] = useState<boolean | undefined>(undefined);
   const [outcome, setOutcome] = useState<OperationOutcome | null>(null);

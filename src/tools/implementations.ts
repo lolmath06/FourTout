@@ -212,6 +212,44 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   "video-extract-subtitles": lazy(() => import("./impl/video/VideoExtractSubtitlesTool").then((m) => ({ default: m.VideoExtractSubtitlesTool }))),
   "video-generate-subtitles": lazy(() => import("./impl/video/VideoGenerateSubtitlesTool").then((m) => ({ default: m.VideoGenerateSubtitlesTool }))),
   "video-batch": lazy(() => import("./impl/video/VideoBatchTool").then((m) => ({ default: m.VideoBatchTool }))),
+
+  // Texte (phase 6)
+  "text-clean": lazy(() => import("./impl/text/TextCleanTool").then((m) => ({ default: m.TextCleanTool }))),
+  "text-deduplicate": lazy(() => import("./impl/text/TextDeduplicateTool").then((m) => ({ default: m.TextDeduplicateTool }))),
+  "text-sort-lines": lazy(() => import("./impl/text/TextSortLinesTool").then((m) => ({ default: m.TextSortLinesTool }))),
+  "text-find-replace": lazy(() => import("./impl/text/TextFindReplaceTool").then((m) => ({ default: m.TextFindReplaceTool }))),
+  "text-compare": lazy(() => import("./impl/text/TextCompareTool").then((m) => ({ default: m.TextCompareTool }))),
+  "markdown-convert": lazy(() => import("./impl/text/MarkdownConvertTool").then((m) => ({ default: m.MarkdownConvertTool }))),
+  "url-encode": lazy(() => import("./impl/text/UrlEncodeTool").then((m) => ({ default: m.UrlEncodeTool }))),
+  "lorem-ipsum": lazy(() => import("./impl/text/LoremIpsumTool").then((m) => ({ default: m.LoremIpsumTool }))),
+  "text-unicode-normalize": lazy(() => import("./impl/text/UnicodeNormalizeTool").then((m) => ({ default: m.UnicodeNormalizeTool }))),
+  "text-line-endings": lazy(() => import("./impl/text/LineEndingsTool").then((m) => ({ default: m.LineEndingsTool }))),
+  // Trois outils, une seule implémentation : seul le motif recherché change.
+  "text-extract-urls": lazy(() => import("./impl/text/TextExtractTool").then((m) => ({ default: m.TextExtractTool }))),
+  "text-extract-emails": lazy(() => import("./impl/text/TextExtractTool").then((m) => ({ default: m.TextExtractTool }))),
+  "text-extract-numbers": lazy(() => import("./impl/text/TextExtractTool").then((m) => ({ default: m.TextExtractTool }))),
+  "hash-text": lazy(() => import("./impl/dev/HashTextTool").then((m) => ({ default: m.HashTextTool }))),
+
+  // Documents (phase 6)
+  "docx-extract": lazy(() => import("./impl/documents/DocxExtractTool").then((m) => ({ default: m.DocxExtractTool }))),
+
+  // Fichiers et archives (phase 6)
+  "archive-create": lazy(() => import("./impl/files/ArchiveCreateTool").then((m) => ({ default: m.ArchiveCreateTool }))),
+  "archive-extract": lazy(() => import("./impl/files/ArchiveExtractTool").then((m) => ({ default: m.ArchiveExtractTool }))),
+  "file-hash": lazy(() => import("./impl/files/FileHashTool").then((m) => ({ default: m.FileHashTool }))),
+  "file-verify-hash": lazy(() => import("./impl/files/FileHashTool").then((m) => ({ default: m.FileHashTool }))),
+  "file-compare": lazy(() => import("./impl/files/FileCompareTool").then((m) => ({ default: m.FileCompareTool }))),
+  "file-find-duplicates": lazy(() => import("./impl/files/FileDuplicatesTool").then((m) => ({ default: m.FileDuplicatesTool }))),
+  "file-split": lazy(() => import("./impl/files/FileSplitTool").then((m) => ({ default: m.FileSplitTool }))),
+  "file-join": lazy(() => import("./impl/files/FileJoinTool").then((m) => ({ default: m.FileJoinTool }))),
+  "file-bulk-rename": lazy(() => import("./impl/files/BulkRenameTool").then((m) => ({ default: m.BulkRenameTool }))),
+  "file-clean-names": lazy(() => import("./impl/files/BulkRenameTool").then((m) => ({ default: m.BulkRenameTool }))),
+  "folder-size": lazy(() => import("./impl/files/FolderSizeTool").then((m) => ({ default: m.FolderSizeTool }))),
+  "folder-tree": lazy(() => import("./impl/files/FolderTreeTool").then((m) => ({ default: m.FolderTreeTool }))),
+  "file-info": lazy(() => import("./impl/files/FileInfoTool").then((m) => ({ default: m.FileInfoTool }))),
+
+  // Convertisseur universel (phase 6) : il route, il ne convertit pas.
+  "universal-converter": lazy(() => import("./impl/converters/UniversalConverterTool").then((m) => ({ default: m.UniversalConverterTool }))),
 };
 
 export function getToolComponent(toolId: string): ToolComponent | undefined {

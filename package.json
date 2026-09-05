@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:assets": "node scripts/generate-test-assets.mjs && node scripts/generate-image-assets.mjs && node scripts/generate-pdf-assets.mjs && node scripts/generate-recovery-fixtures.mjs && node scripts/generate-media-assets.mjs && node scripts/generate-speech-assets.mjs",
+    "test:assets": "node scripts/generate-test-assets.mjs && node scripts/generate-image-assets.mjs && node scripts/generate-pdf-assets.mjs && node scripts/generate-recovery-fixtures.mjs && node scripts/generate-media-assets.mjs && node scripts/generate-files-assets.mjs && node scripts/generate-speech-assets.mjs",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "pdfjs:assets": "node scripts/sync-pdfjs-assets.mjs",
     "ocr:assets": "node scripts/sync-tesseract-assets.mjs",

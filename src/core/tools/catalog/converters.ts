@@ -18,10 +18,10 @@ export const converterTools = defineTools([
       "n'importe quel fichier", "quel format", "convertisseur",
     ],
     aliases: ["universal converter", "convert anything", "file converter"],
-    status: "planned",
+    status: "available",
     capabilities: ["local", "batch", "produces-files", "long-running"],
     acceptedInputs: [IN.anyFile()],
     outputs: [OUT.data()],
-    note: "S'appuiera sur les entrées/sorties déclarées par chaque outil du registre : aucune table de conversion séparée à maintenir.",
+    note: "Les conversions proposées sont dérivées des entrées/sorties déclarées par les outils du registre : aucune table séparée à maintenir, et jamais de conversion annoncée sans outil derrière.",
   },
 ]);

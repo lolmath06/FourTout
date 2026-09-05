@@ -124,7 +124,7 @@ export const videoTools = defineTools([
     name: "Extraire une image d'une vidéo",
     description: "Capturer une frame précise ou des captures à intervalle régulier.",
     category: "video",
-    alsoIn: ["images"],
+    alsoIn: ["images", "converters"],
     icon: "Camera",
     keywords: ["capture", "frame", "image d'une vidéo", "screenshot", "photogramme", "miniature"],
     aliases: ["extract frame", "video screenshot", "video to image"],

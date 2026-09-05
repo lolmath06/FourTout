@@ -25,13 +25,17 @@ src/
 │   │   └── search.ts      Recherche déterministe (mots-clés + langage courant)
 │   ├── intent/            resolveToolIntent() et le point d'extension LLM
 │   ├── storage/           KeyValueStore (localStorage / mémoire)
-│   ├── files/             Types de fichiers, validation, contraintes par outil
+│   ├── files/             Fichiers déposés, chemins, client du socle natif
+│   ├── text/              Socle texte : fonctions pures, sans React ni backend
+│   ├── convert/           Graphe de conversion dérivé du registre
+│   ├── hash/              Empreintes calculées dans la WebView (texte)
 │   ├── jobs/              Traitements longs : progression, erreur, annulation
 │   └── platform/          Détection Tauri / navigateur / OS
 ├── features/              État applicatif
 │   ├── favorites/         Favoris persistants
 │   ├── recents/           Historique d'ouverture (12 entrées)
 │   ├── notifications/     Toasts : succès, erreur, avertissement, en cours
+│   ├── handoff/           Passage de relais entre outils (fichier + préréglage)
 │   └── settings/          Thème, rappels de confidentialité
 ├── components/            Composants réutilisables (ui/, tools/, files/)
 ├── layouts/AppShell.tsx   Barre latérale, en-tête, recherche globale
@@ -42,6 +46,10 @@ src/
 │   └── logic/             Logique pure, testable sans DOM
 └── app/                   Routes et racine de l'application
 src-tauri/                 Application native (Rust)
+├── src/media/             Socle FFmpeg : exécution, progression, annulation
+├── src/speech/            Synthèse (Piper) et transcription (whisper.cpp)
+├── src/recovery/          Récupération de mot de passe PDF
+└── src/files/             Archives, empreintes, doublons, découpage, renommage
 ```
 
 ## Le registre : une seule source de vérité

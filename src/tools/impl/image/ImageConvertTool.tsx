@@ -7,6 +7,7 @@ import { processImages } from "@/core/image/pipeline";
 import { formatFileSize } from "@/core/files";
 import type { ImageFormat, Rgb } from "@/core/image/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { presetString, useHandoff } from "@/features/handoff/store";
 
 const FORMATS = [
   { value: "png" as ImageFormat, label: "PNG", hint: "Sans perte, transparence" },
@@ -14,8 +15,20 @@ const FORMATS = [
   { value: "webp" as ImageFormat, label: "WebP", hint: "Compact et moderne" },
 ];
 
+/** Extension reçue du convertisseur universel → format interne. */
+function presetFormat(value: string | undefined): ImageFormat | undefined {
+  if (value === "jpg" || value === "jpeg") return "jpeg";
+  if (value === "png" || value === "webp") return value;
+  return undefined;
+}
+
 export function ImageConvertTool({ tool }: ToolComponentProps) {
-  const [format, setFormat] = useState<ImageFormat>("webp");
+  // Le convertisseur universel présélectionne le format demandé ; les réglages
+  // fins (qualité, fond) restent à la main de l'utilisateur.
+  const handoff = useHandoff(tool.id);
+  const [format, setFormat] = useState<ImageFormat>(
+    () => presetFormat(presetString(handoff, "format")) ?? "webp",
+  );
   const [quality, setQuality] = useState(85);
   const [background, setBackground] = useState<Rgb>({ r: 255, g: 255, b: 255 });
 

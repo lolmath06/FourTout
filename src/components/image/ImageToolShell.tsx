@@ -9,6 +9,7 @@ import { toImageError } from "@/core/image/errors";
 import type { OperationContext } from "@/core/pdf/types";
 import { notify } from "@/features/notifications/store";
 import { ResultPanel, type OperationOutcome } from "@/components/pdf/ResultPanel";
+import { useHandoff } from "@/features/handoff/store";
 
 /**
  * Ossature commune aux outils Image « par lot » (conversion, compression,
@@ -42,7 +43,10 @@ export function ImageToolShell({
   run,
   hint,
 }: ImageToolShellProps) {
-  const [files, setFiles] = useState<SelectedFile[]>([]);
+  // Le convertisseur universel (et tout autre outil qui passe le relais) peut
+  // nous transmettre le fichier déjà choisi : l'utilisateur ne le redépose pas.
+  const handoff = useHandoff(tool.id);
+  const [files, setFiles] = useState<SelectedFile[]>(() => handoff?.files ?? []);
   const [outcome, setOutcome] = useState<OperationOutcome | null>(null);
   const job = useJob<OperationOutcome>();
 

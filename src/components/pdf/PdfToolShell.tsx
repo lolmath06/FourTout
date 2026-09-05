@@ -11,6 +11,7 @@ import { notify } from "@/features/notifications/store";
 import { usePdfSources, type LoadedPdf } from "./usePdfSources";
 import { PdfSourceList } from "./PdfSourceList";
 import { ResultPanel, type OperationOutcome } from "./ResultPanel";
+import { useHandoff } from "@/features/handoff/store";
 
 /**
  * Ossature commune à tous les outils PDF.
@@ -66,7 +67,10 @@ export function PdfToolShell({
   reorderable = false,
   acceptProtected = false,
 }: PdfToolShellProps) {
-  const [files, setFiles] = useState<SelectedFile[]>([]);
+  // Le convertisseur universel (et tout autre outil qui passe le relais) peut
+  // nous transmettre le fichier déjà choisi : l'utilisateur ne le redépose pas.
+  const handoff = useHandoff(tool.id);
+  const [files, setFiles] = useState<SelectedFile[]>(() => handoff?.files ?? []);
   const [outcome, setOutcome] = useState<OperationOutcome | null>(null);
   const { loaded, isLoading, unlock } = usePdfSources(files);
   const job = useJob<OperationOutcome>();

@@ -23,6 +23,7 @@ import {
 } from "@/core/media/video/presets";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { presetString, useHandoff } from "@/features/handoff/store";
 import {
   audioCodecOptions,
   containerOptions,
@@ -40,9 +41,23 @@ import {
  * supposés. C'est ce qui évite le classique bouton qui échoue une minute plus
  * tard sur « Unknown encoder ».
  */
+/** Extension reçue du convertisseur universel → conteneur vidéo. */
+function presetContainer(value: string | undefined): VideoContainerId | undefined {
+  return value === "mp4" || value === "mkv" || value === "webm" || value === "mov"
+    ? value
+    : undefined;
+}
+
 export function VideoConvertTool({ tool }: ToolComponentProps) {
-  const [preset, setPreset] = useState<ConversionPreset>("compatible");
-  const [container, setContainer] = useState<VideoContainerId | undefined>(undefined);
+  const handoff = useHandoff(tool.id);
+  const handoffContainer = presetContainer(presetString(handoff, "format"));
+  // Un conteneur imposé par le convertisseur universel n'a de sens qu'en mode
+  // personnalisé : les préréglages, eux, choisissent le format le plus
+  // compatible avec le moteur installé.
+  const [preset, setPreset] = useState<ConversionPreset>(
+    handoffContainer ? "custom" : "compatible",
+  );
+  const [container, setContainer] = useState<VideoContainerId | undefined>(handoffContainer);
   const [videoCodec, setVideoCodec] = useState<VideoCodecId | undefined>(undefined);
   const [audioCodec, setAudioCodec] = useState<AudioCodecId | "none" | undefined>(undefined);
   const [crf, setCrf] = useState<number | undefined>(undefined);

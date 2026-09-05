@@ -286,7 +286,7 @@ export const pdfTools = defineTools([
     name: "Extraire le texte d'un PDF",
     description: "Récupérer le texte sélectionnable d'un PDF, page par page.",
     category: "pdf",
-    alsoIn: ["text"],
+    alsoIn: ["text", "converters"],
     icon: "FileSearch",
     keywords: ["extraire le texte", "copier le texte", "pdf en texte", "récupérer le contenu"],
     aliases: ["pdf to text", "extract text"],

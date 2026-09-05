@@ -104,6 +104,10 @@ export function OptionGroup<T extends string>({
           type="button"
           role="radio"
           aria-checked={value === option.value}
+          // `Field` enveloppe ses enfants dans un `<label>`, et un `<button>`
+          // est un élément étiquetable : sans nom explicite, la première option
+          // hériterait du libellé du champ au lieu du sien.
+          aria-label={option.label}
           title={option.hint}
           disabled={disabled}
           onClick={() => onChange(option.value)}

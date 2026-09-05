@@ -137,11 +137,60 @@ dans un MP4 demande l'encodeur `mov_text`, absent de nombreux builds FFmpeg
 réellement, ce qui est la seule façon d'éprouver honnêtement les sous-titres
 automatiques.
 
+### Texte, documents, fichiers et archives (phase 6)
+
+Toutes ces fixtures sont **déterministes** : deux générations produisent les
+mêmes octets, donc les mêmes empreintes. C'est ce qui permet aux tests de
+vérifier un SHA-256 attendu plutôt qu'un « ça a l'air correct ».
+
+#### Texte
+
+| Fichier | Contenu | Utilité |
+| --- | --- | --- |
+| `text-dirty.txt` | Espaces multiples, espaces de bord, lignes vides en série, espace insécable, caractère de largeur nulle, guillemets et tirets typographiques, CRLF mêlé au LF | **Nettoyer un texte** — chaque option a de quoi agir |
+| `text-duplicates.txt` | 10 lignes dont 3 doublons, avec variantes de casse et d'espaces | Suppression des doublons, options casse/espaces |
+| `text-sort.txt` | Lettres, accents, nombres en début de ligne, ligne vide | Tri A→Z, numérique, longueur |
+| `text-a.txt` / `text-b.txt` | Même document à deux versions : une ligne modifiée, une supprimée, une ajoutée | **Comparer deux textes** — les trois cas d'un diff |
+| `sample.md` | Titres, listes imbriquées, tableau, citation, bloc de code, lien, accents | Markdown → HTML, aperçu, Markdown → PDF |
+| `sample.html` | HTML légitime **plus** un `<script>`, un `<style>`, une `<iframe>` et un lien `javascript:` | Assainissement : rien de tout cela ne doit survivre |
+| `line-endings-lf.txt` | 3 lignes en LF | Détection et conversion des fins de ligne |
+| `line-endings-crlf.txt` | Les mêmes en CRLF | Conversion CRLF → LF |
+| `line-endings-mixed.txt` | LF, CRLF et CR dans le même fichier | Détection d'un fichier mélangé |
+
+#### Documents
+
+| Fichier | Contenu | Utilité |
+| --- | --- | --- |
+| `sample.docx` | Vrai `.docx` : titre 1, titre 2, paragraphe avec gras et italique, liste à puces, tableau 2×2, accents et esperluette échappée. Propriétés : titre « Rapport de test FourTout », auteur « Equipe FourTout » | **Word vers texte / Markdown / HTML** et lecture des propriétés |
+
+#### Archives
+
+| Fichier | Contenu | Utilité |
+| --- | --- | --- |
+| `archive-source/` | `a.txt`, `nested/b.txt`, `unicode-é.txt` | Source à archiver ; l'arborescence relative doit être conservée |
+| `sample.zip` | Les trois fichiers ci-dessus, compressés | Extraction ZIP, nom de fichier accentué |
+| `sample.tar` | Les mêmes, format TAR | Extraction TAR |
+| `sample.tar.gz` | Les mêmes, TAR compressé | Extraction TAR.GZ |
+| `evil-zip-slip.zip` | 1 entrée saine + `../../evil.txt` + `/tmp/evil-absolu.txt` | **Sécurité** : les deux entrées piégées doivent être refusées et listées, et rien écrit hors du dossier choisi |
+
+> `evil-zip-slip.zip` est une archive **volontairement piégée**. L'extraire avec
+> un autre outil qu'FourTout peut écrire des fichiers hors du dossier de
+> destination : c'est précisément ce que cette fixture sert à vérifier.
+
+#### Fichiers et dossiers
+
+| Fichier | Contenu | Utilité |
+| --- | --- | --- |
+| `duplicate-folder/` | `original.bin`, `copy.bin` et `nested/copy2.bin` identiques (64 Ko) ; `different.bin` et `same-size-different.bin` de **même taille** mais de contenu différent ; `notes.txt` | **Trouver les doublons** : un seul groupe attendu, et la même taille ne suffit pas à faire un doublon |
+| `large-split.bin` | 2 500 000 octets reproductibles | **Diviser / réassembler** : 5 morceaux de 500 Ko, empreinte vérifiable |
+| `rename-batch/` | `IMG_0001.JPG` à `IMG_0005.JPG` + `Photo de vacances (été) n°6.JPEG` | **Renommage par lot** : numérotation, casse d'extension, nettoyage des accents et des espaces |
+| `folder-tree/` | `package.json`, `README.md`, `.hidden-config`, `src/` sur 4 niveaux, `node_modules/`, `.git/` | **Arborescence** et **taille d'un dossier** : profondeur, dossiers ignorés, fichiers cachés |
+
 ## À compléter par les prochaines phases
 
 Au fur et à mesure que les outils arrivent :
 
-- archives ZIP/7z, dont une archive chiffrée ;
+- archive 7z et archive chiffrée, quand ces formats seront pris en charge ;
 - vidéo portant une piste de sous-titres **graphique** (PGS), pour vérifier le
   message qui explique qu'elle n'est pas convertible en texte ;
 - variantes corrompues contrôlées pour chaque famille.

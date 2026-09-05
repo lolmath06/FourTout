@@ -68,6 +68,9 @@ Côté natif : `cd src-tauri && cargo check` puis `cargo test --lib`.
 - [Architecture PDF](docs/PDF.md) — bibliothèques, opérations, limites
 - [Architecture média](docs/MEDIA.md) — socle FFmpeg, jobs, temporaires
 - [Architecture vidéo](docs/VIDEO.md) — codecs réels, préréglages, sous-titres
+- [Texte et documents](docs/TEXT.md) — socle texte, assainissement HTML, DOCX
+- [Fichiers et archives](docs/FILES.md) — socle natif, sécurité des archives, portabilité
+- [Convertisseur universel](docs/CONVERTERS.md) — graphe dérivé du registre, relais entre outils
 - [Récupération de mot de passe PDF](docs/PDF-RECOVERY.md) — moteur natif, corpus, règles
 - [Ajouter un outil](docs/ADDING-A-TOOL.md) — la procédure, en trois fichiers
 - [test-assets/](test-assets/README.md) — fixtures de développement
@@ -104,5 +107,20 @@ vidéo ↔ GIF, extraction d'image et traitement par lots. Les codecs proposés 
 ceux que le moteur installé sait réellement produire. Voir
 [docs/VIDEO.md](docs/VIDEO.md).
 
-Les catégories Texte, Fichiers, Développeur, Calculateurs et Sécurité
-comportent encore des outils « bientôt disponible ».
+**Phase 6** — les outils **Texte**, **Documents** et **Fichiers**, plus le
+**convertisseur universel**. Côté texte : nettoyage à options explicites,
+doublons, tri, rechercher/remplacer (regex comprise), comparaison de deux
+textes, Markdown ↔ HTML ↔ texte avec aperçu assaini, URL, Unicode, fins de
+ligne, extraction d'URL/e-mails/nombres, Lorem Ipsum, empreintes de texte, et
+lecture des documents Word. Côté fichiers, un socle natif qui travaille en flux
+sur des chemins : archives ZIP/TAR/TAR.GZ (création et extraction protégées
+contre la traversée de dossiers), empreintes, comparaison de fichiers,
+détection de doublons par contenu, découpage et réassemblage vérifié,
+renommage par lot avec aperçu, analyse de dossier, arborescence et fiche
+d'identité d'un fichier. Le convertisseur universel, lui, n'implémente rien :
+il dérive les conversions possibles du registre et ouvre l'outil spécialisé
+déjà prérempli. Voir [docs/TEXT.md](docs/TEXT.md),
+[docs/FILES.md](docs/FILES.md) et [docs/CONVERTERS.md](docs/CONVERTERS.md).
+
+Les catégories Développeur, Calculateurs et Sécurité comportent encore des
+outils « bientôt disponible ».

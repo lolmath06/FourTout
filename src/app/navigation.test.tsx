@@ -48,10 +48,12 @@ describe("navigation principale", () => {
   });
 
   it("ouvre la page d'un outil non implémenté", async () => {
-    renderApp("/tools/t/universal-converter");
+    // « Organiser un dossier » reste prévu : la vue « bientôt disponible » doit
+    // s'afficher, et surtout aucun outil `planned` ne doit paraître utilisable.
+    renderApp("/tools/t/file-organize");
 
     expect(
-      await screen.findByRole("heading", { name: /convertisseur universel/i }),
+      await screen.findByRole("heading", { name: /organiser un dossier/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Bientôt")).toBeInTheDocument();
     expect(screen.getByText("Cet outil arrive prochainement")).toBeInTheDocument();
@@ -69,7 +71,10 @@ describe("navigation principale", () => {
 
   it("ouvre la page d'un outil implémenté", async () => {
     renderApp("/tools/t/base64");
-    expect(await screen.findByRole("button", { name: "Encoder" })).toBeInTheDocument();
+    // Les modes sont des boutons radio depuis que l'outil traite aussi les
+    // fichiers : c'est le contrôle partagé par tous les outils FourTout.
+    expect(await screen.findByRole("radio", { name: "Encoder" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Fichier" })).toBeInTheDocument();
   });
 
   it("redirige vers Outils pour un identifiant d'outil inconnu", () => {
