@@ -2,9 +2,13 @@
 
 ## Vue d'ensemble
 
-Le socle média alimente les outils **Audio** et les petits ponts **Vidéo**
-(vidéo ↔ GIF, extraction d'image, extraction audio). Tout s'exécute
-**localement** via FFmpeg ; rien ne quitte la machine.
+Le socle média alimente les outils **Audio** et toute la suite **Vidéo**
+(conversion, compression, découpage, fusion, rognage, sous-titres…). Tout
+s'exécute **localement** via FFmpeg ; rien ne quitte la machine.
+
+La couche propre à la vidéo — détection des codecs réellement disponibles,
+préréglages de qualité par encodeur, calculs de dimensions, honnêteté sur la
+compression — est décrite dans [VIDEO.md](VIDEO.md).
 
 Principes :
 
@@ -39,15 +43,26 @@ Flux d'un outil (frontend `src/core/media/client.ts`) : `stage` des entrées →
 `operations/video.ts`) sont des fonctions pures, testées et exécutées contre le
 vrai FFmpeg.
 
+Trois sortes d'entrées coexistent : les fichiers de l'utilisateur (`files`), un
+contenu produit par l'application (`extraInputs` — un SRT généré, par exemple),
+et un fichier dérivé des chemins déjà préparés (`operation.stageText`, utilisé
+par la liste du démultiplexeur `concat`). Tous sont nettoyés de la même façon.
+
 ## Codecs
 
 L'ensemble dépend du **build FFmpeg utilisé** :
 
 - Audio : MP3 (libmp3lame), WAV (pcm_s16le), FLAC, OGG/Vorbis (libvorbis),
   Opus (libopus), AAC/M4A (aac).
-- Vidéo (ponts) : H.264 (libx264 **ou** libopenh264 selon disponibilité —
-  résolu à l'exécution via `media_encoders`), VP9 (libvpx) pour le WebM ; GIF
-  avec palette optimisée.
+- Vidéo : H.264 (libx264 **ou** libopenh264), H.265, VP9, AV1 (libsvtav1 ou
+  libaom-av1) — toujours **résolus à l'exécution** via `media_encoders`, jamais
+  supposés ; GIF avec palette optimisée.
+- Sous-titres : `srt` (MKV), `webvtt` (WebM), `mov_text` (MP4) — ce dernier est
+  absent de plusieurs builds courants, dont celui de Fedora.
+
+`src/core/media/capabilities.ts` transforme cette liste en familles utilisables
+par conteneur : l'interface ne propose donc **que** ce qui fonctionne. Voir
+[VIDEO.md](VIDEO.md).
 
 Sur le FFmpeg de Fedora par défaut, `libx264`/`libvpx`/`libvorbis` peuvent
 manquer ; le binaire **embarqué** (build complet) les fournit — d'où l'intérêt
@@ -109,6 +124,11 @@ téléchargés et vérifiés par le gestionnaire de modèles — voir
   sont pas installés).
 - `src-tauri/tests/media_integration.rs` — exécution/inspection réelles, chemins
   Unicode, erreur sur entrée invalide (ignorés si FFmpeg absent).
-- `src/core/media/media.test.ts` — constructeurs d'arguments (purs) **et**
-  exécution réelle FFmpeg de chaque opération, validée par ffprobe.
+- `src/core/media/media.test.ts` — constructeurs audio (purs) **et** exécution
+  réelle FFmpeg de chaque opération, validée par ffprobe.
+- `src/core/media/video.test.ts` — mêmes principes pour la suite vidéo :
+  redimensionnement, rognage, rotation, vitesse, découpage, fusion (recopie et
+  normalisation), pistes audio, sous-titres.
+- `src/core/media/pipeline.test.ts` — cycle complet avec un pont natif simulé :
+  nettoyage après succès, après erreur et après annulation.
 - `src-tauri/src/media/` — tests unitaires (parsing, garde-fou chemins).

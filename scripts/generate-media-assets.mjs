@@ -62,14 +62,98 @@ if (FFMPEG) {
     "-filter_complex", "[0][1][2]concat=n=3:v=0:a=1[a]", "-map", "[a]", "-ar", "22050",
   ], "audio-with-silences.wav");
 
-  /* ---------------------------------------------------------------- vidéo */
+  // Audio destiné à remplacer la bande son d'une vidéo : durée volontairement
+  // différente des vidéos (8 s), pour éprouver les modes « caler sur la
+  // vidéo / sur l'audio / boucler ».
   ff([
-    "-f", "lavfi", "-i", "testsrc=duration=2:size=240x160:rate=15",
-    "-f", "lavfi", "-i", "sine=frequency=440:duration=2",
-    "-pix_fmt", "yuv420p", "-c:v", VCODEC, "-c:a", "aac", "-shortest",
-  ], "video-with-audio.mp4");
-  ff(["-f", "lavfi", "-i", "testsrc=duration=1:size=160x120:rate=15", "-pix_fmt", "yuv420p", "-c:v", VCODEC], "video-short.mp4");
+    "-f", "lavfi", "-i", "sine=frequency=330:duration=8",
+    "-filter:a", "volume=0.8",
+  ], "audio-for-video.wav");
+
+  /* ---------------------------------------------------------------- vidéo */
+
+  // Mire à quatre quadrants colorés + barre en mouvement.
+  //
+  // Le contenu n'est pas décoratif : les quatre couleurs rendent une rotation,
+  // un miroir ou un rognage **immédiatement vérifiables à l'œil** (rouge en
+  // haut à gauche au départ), et la barre mobile donne du mouvement réel — sans
+  // quoi une compression ne mesurerait rien. Aucune police n'est requise, donc
+  // la fixture est identique sur toutes les machines.
+  const quadrants = (w, h, colors, moving = "horizontal") => {
+    const hw = Math.round(w / 2);
+    const hh = Math.round(h / 2);
+    const bar =
+      moving === "horizontal"
+        ? `drawbox=x='(t/DUR)*(${w}-60)':y=${Math.round(h / 2 - 10)}:w=60:h=20:color=white@1:t=fill`
+        : `drawbox=x=${Math.round(w / 2 - 10)}:y='(t/DUR)*(${h}-60)':w=20:h=60:color=white@1:t=fill`;
+    return [
+      `drawbox=x=0:y=0:w=${hw}:h=${hh}:color=${colors[0]}@1:t=fill`,
+      `drawbox=x=${hw}:y=0:w=${w - hw}:h=${hh}:color=${colors[1]}@1:t=fill`,
+      `drawbox=x=0:y=${hh}:w=${hw}:h=${h - hh}:color=${colors[2]}@1:t=fill`,
+      `drawbox=x=${hw}:y=${hh}:w=${w - hw}:h=${h - hh}:color=${colors[3]}@1:t=fill`,
+      bar,
+    ].join(",");
+  };
+
+  const mire = (name, { w, h, seconds, fps = 25, colors, moving, audio, extra = [] }) => {
+    const filter = quadrants(w, h, colors, moving).replaceAll("DUR", String(seconds));
+    const args = ["-f", "lavfi", "-i", `color=c=black:s=${w}x${h}:r=${fps}:d=${seconds}`];
+    if (audio) args.push("-f", "lavfi", "-i", audio);
+    args.push("-vf", filter, "-pix_fmt", "yuv420p", "-c:v", VCODEC, ...extra);
+    if (audio) args.push("-c:a", "aac", "-b:a", "96k", "-shortest");
+    ff(args, name);
+  };
+
+  const WARM = ["red", "green", "blue", "yellow"];
+  const COOL = ["cyan", "magenta", "orange", "purple"];
+
+  mire("video-short.mp4", { w: 640, h: 360, seconds: 5, colors: WARM, extra: ["-b:v", "300k"] });
+  mire("video-short-2.mp4", { w: 640, h: 360, seconds: 4, colors: COOL, moving: "vertical", extra: ["-b:v", "300k"] });
+  mire("video-with-audio.mp4", {
+    w: 640, h: 360, seconds: 5, colors: WARM,
+    audio: "sine=frequency=440:duration=5", extra: ["-b:v", "300k"],
+  });
+  mire("video-landscape.mp4", { w: 1280, h: 720, seconds: 3, colors: WARM, extra: ["-b:v", "600k"] });
+  mire("video-portrait.mp4", { w: 720, h: 1280, seconds: 3, colors: COOL, moving: "vertical", extra: ["-b:v", "600k"] });
+
+  // Vidéo volontairement lourde, encodée à haut débit : c'est la seule façon de
+  // mesurer un gain de compression **réel**. Une mire plate à 300 kb/s est déjà
+  // au plancher — la compresser ne prouverait rien.
+  ff([
+    "-f", "lavfi", "-i", "mandelbrot=s=1280x720:rate=30", "-t", "4",
+    "-vf", "format=yuv420p", "-c:v", VCODEC, "-b:v", "8000k",
+  ], "video-large.mp4");
+
   ff(["-f", "lavfi", "-i", "testsrc2=duration=2:size=240x160:rate=15", "-pix_fmt", "yuv420p", "-c:v", VCODEC], "video-for-gif.mp4");
+
+  /* ---------------------------------------------------------- sous-titres */
+
+  const SRT = [
+    "1", "00:00:00,500 --> 00:00:02,000", "Première ligne de sous-titre.", "",
+    "2", "00:00:02,200 --> 00:00:03,800", "Deuxième ligne, avec accents : éàçù.", "",
+    "3", "00:00:04,000 --> 00:00:04,900", "Fin du test FourTout.", "",
+  ].join("\n");
+  writeFileSync(path("sample.srt"), SRT);
+  written.push("sample.srt");
+
+  writeFileSync(
+    path("sample.vtt"),
+    "WEBVTT\n\n" +
+      [
+        "00:00:00.500 --> 00:00:02.000", "Première ligne de sous-titre.", "",
+        "00:00:02.200 --> 00:00:03.800", "Deuxième ligne, avec accents : éàçù.", "",
+        "00:00:04.000 --> 00:00:04.900", "Fin du test FourTout.", "",
+      ].join("\n"),
+  );
+  written.push("sample.vtt");
+
+  // MKV portant une vraie piste de sous-titres (le MP4 exigerait `mov_text`,
+  // absent de nombreux builds : on écrit donc le conteneur qui convient).
+  ff([
+    "-i", path("video-with-audio.mp4"), "-i", path("sample.srt"),
+    "-map", "0", "-map", "1:0", "-c", "copy", "-c:s", "srt",
+    "-metadata:s:s:0", "language=fra", "-metadata:s:s:0", "title=Test FourTout",
+  ], "video-subtitles.mkv");
 } else {
   console.warn("FFmpeg absent : fixtures audio/vidéo non générées.");
 }

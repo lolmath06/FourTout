@@ -16,6 +16,12 @@ export interface MediaExecutable {
   buildArgs: (inputs: string[], output: string) => string[];
   outputExt: string;
   mimeType: string;
+  /**
+   * Fichier texte à préparer à partir des entrées déjà déposées (liste de
+   * concaténation…). Son chemin est ajouté à la fin des entrées avant l'appel à
+   * `buildArgs`, et supprimé comme les autres temporaires.
+   */
+  stageText?: (inputs: string[]) => { content: string; ext: string };
 }
 
 let availability: Promise<boolean> | undefined;
@@ -102,6 +108,13 @@ export interface RunOptions {
   outputName: string;
   /** Durée totale en ms, pour la progression (0 = indéterminée). */
   totalMs?: number;
+  /**
+   * Entrées supplémentaires produites par l'application (sous-titres générés,
+   * audio synthétisé…), ajoutées après les fichiers de l'utilisateur.
+   */
+  extraInputs?: { bytes: Uint8Array; ext: string }[];
+  /** Étiquette affichée pendant l'exécution. */
+  label?: string;
 }
 
 /** Exécute une opération média de bout en bout et renvoie le fichier produit. */
@@ -114,8 +127,9 @@ export async function runMedia(options: RunOptions, context?: OperationContext):
   const staged: string[] = [];
   let outPath: string | undefined;
 
+  const label = options.label ?? "Traitement…";
   const unlisten = await listen<{ jobId: string; ratio: number }>("media://progress", (event) => {
-    if (event.payload.jobId === jobId) context?.report?.({ ratio: event.payload.ratio, label: "Traitement…" });
+    if (event.payload.jobId === jobId) context?.report?.({ ratio: event.payload.ratio, label });
   });
 
   const onAbort = () => {
@@ -128,8 +142,18 @@ export async function runMedia(options: RunOptions, context?: OperationContext):
       const bytes = await readBytes(file);
       staged.push(await stage(bytes, file.extension || "bin"));
     }
+    for (const extra of options.extraInputs ?? []) {
+      staged.push(await stage(extra.bytes, extra.ext));
+    }
+    const inputs = [...staged];
+    const text = options.operation.stageText?.(inputs);
+    if (text) {
+      const listPath = await stage(new TextEncoder().encode(text.content), text.ext);
+      staged.push(listPath);
+      inputs.push(listPath);
+    }
     outPath = await tempPath(options.operation.outputExt);
-    const args = options.operation.buildArgs(staged, outPath);
+    const args = options.operation.buildArgs(inputs, outPath);
 
     try {
       await invoke("media_exec", { params: { jobId, args, totalMs: options.totalMs ?? 0 } });

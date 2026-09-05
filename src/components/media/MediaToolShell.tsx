@@ -10,7 +10,7 @@ import { notify } from "@/features/notifications/store";
 import { ResultPanel, type OperationOutcome } from "@/components/pdf/ResultPanel";
 import { AudioPreview } from "./AudioPreview";
 import { isMediaAvailable, probeFile } from "@/core/media/client";
-import { formatTimecode, type MediaInfo } from "@/core/media/types";
+import { emptyMediaInfo, formatTimecode, type MediaInfo } from "@/core/media/types";
 
 /**
  * Ossature commune aux outils média (audio et petits ponts vidéo), au-dessus du
@@ -66,7 +66,7 @@ export function MediaToolShell({
         try {
           results.push(await probeFile(file));
         } catch {
-          results.push({ durationMs: 0, formatName: "", streams: [], hasAudio: false, hasVideo: false });
+          results.push(emptyMediaInfo());
         }
       }
       if (!cancelled) setInfos(results);

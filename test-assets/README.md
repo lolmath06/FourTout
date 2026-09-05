@@ -105,15 +105,45 @@ transcription doit savoir relire. Le script ne télécharge rien ; il s'arrête
 sans erreur si les moteurs de parole ne sont pas encore installés (voir
 [docs/MODELS.md](../docs/MODELS.md)).
 
+### Vidéo (phase 5)
+
+Les mires vidéo portent **quatre quadrants de couleurs différentes** et une
+barre en mouvement. Ce n'est pas décoratif : une rotation, un miroir ou un
+rognage se vérifient d'un coup d'œil (le rouge part en haut à gauche), et le
+mouvement donne de la matière réelle à compresser. Aucune police n'est
+nécessaire, donc les fixtures sont identiques sur toutes les machines.
+
+| Fichier | Contenu | Utilité |
+| --- | --- | --- |
+| `video-short.mp4` | 640 × 360, 5 s, 25 img/s, quadrants rouge/vert/bleu/jaune, **sans audio** | Rotation, rognage, redimensionnement, découpage, fusion |
+| `video-short-2.mp4` | 640 × 360, 4 s, quadrants cyan/magenta/orange/violet, barre verticale | Fusion (mêmes réglages que la précédente → assemblage sans réencodage) |
+| `video-with-audio.mp4` | 640 × 360, 5 s, quadrants + **tonalité 440 Hz audible** | Volume, suppression du son, remplacement de bande son, vitesse |
+| `video-landscape.mp4` | 1280 × 720 (16:9), 3 s | Redimensionnement, agrandissement refusé, rognage 9:16 |
+| `video-portrait.mp4` | 720 × 1280 (9:16), 3 s | Orientation verticale, fusion hétérogène avec `video-short.mp4` |
+| `video-large.mp4` | 1280 × 720, 4 s, ~4 Mo à 8 000 kb/s | **Compression** — le seul fichier qui montre un gain réel |
+| `video-subtitles.mkv` | `video-with-audio` + piste SubRip `fra` intitulée « Test FourTout » | Extraction des sous-titres existants |
+| `video-speech-fr.mp4` | 640 × 360 + **vraie parole française** (voix Piper) | Sous-titres automatiques, transcription vidéo |
+| `video-for-gif.mp4` | 240 × 160, 2 s, mire animée | Vidéo vers GIF |
+| `sample.srt` | 3 répliques horodatées, avec accents | Incrustation, ajout de piste de sous-titres |
+| `sample.vtt` | Les mêmes répliques au format WebVTT | Incrustation depuis un VTT |
+| `audio-for-video.wav` | Tonalité 330 Hz de **8 s** (plus longue que les vidéos) | Remplacement de bande son : couper / caler / boucler |
+
+`video-subtitles` est un **MKV** et non un MP4 : écrire une piste de sous-titres
+dans un MP4 demande l'encodeur `mov_text`, absent de nombreux builds FFmpeg
+(dont celui de Fedora). Le MKV utilise `srt`, présent partout.
+
+`video-speech-fr.mp4` est produit par `pnpm speech:assets` à partir de
+`audio-speech-fr.wav` : une fixture nommée « avec parole » en contient donc
+réellement, ce qui est la seule façon d'éprouver honnêtement les sous-titres
+automatiques.
+
 ## À compléter par les prochaines phases
 
 Au fur et à mesure que les outils arrivent :
 
-- GIF animé, image avec EXIF/GPS, image très grande ;
-- PDF scanné (image de texte, sans texte sélectionnable) pour l'OCR ;
-- audio court (MP3, WAV) et audio avec silences ;
-- vidéo courte (MP4, MKV) avec et sans piste audio ;
 - archives ZIP/7z, dont une archive chiffrée ;
+- vidéo portant une piste de sous-titres **graphique** (PGS), pour vérifier le
+  message qui explique qu'elle n'est pas convertible en texte ;
 - variantes corrompues contrôlées pour chaque famille.
 
 Règle : privilégier la **génération** à l'ajout de binaires. Si un fichier doit

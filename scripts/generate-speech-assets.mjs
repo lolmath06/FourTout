@@ -33,6 +33,15 @@ const VOICES = [
   { file: "en_US-lessac-medium.onnx", source: "tts-short-en.txt", out: "audio-speech-en.wav" },
 ];
 
+/** FFmpeg du système, pour habiller la voix synthétisée d'une image. */
+function which(name) {
+  try {
+    return spawnSync("sh", ["-c", `command -v ${name}`]).stdout.toString().trim() || null;
+  } catch {
+    return null;
+  }
+}
+
 if (!existsSync(piper)) {
   console.log(
     "Moteur Piper absent : fixtures de parole ignorées.\n" +
@@ -62,6 +71,38 @@ for (const voice of VOICES) {
     process.exit(1);
   }
   written.push([voice.out, statSync(output).size]);
+}
+
+/* --------------------------------------------------- vidéo avec de la parole
+ *
+ * Une fixture nommée « avec parole » doit réellement en contenir : c'est la
+ * seule façon d'éprouver honnêtement les sous-titres automatiques. On habille
+ * donc la voix Piper française d'une image fixe reconnaissable — ce qui donne
+ * une vraie vidéo, avec une vraie bande son parlée, entièrement locale.
+ */
+const ffmpeg = which("ffmpeg");
+const speechWav = join(OUT, "audio-speech-fr.wav");
+if (ffmpeg && existsSync(speechWav)) {
+  const out = join(OUT, "video-speech-fr.mp4");
+  const filter = [
+    "drawbox=x=0:y=0:w=320:h=180:color=red@1:t=fill",
+    "drawbox=x=320:y=0:w=320:h=180:color=green@1:t=fill",
+    "drawbox=x=0:y=180:w=320:h=180:color=blue@1:t=fill",
+    "drawbox=x=320:y=180:w=320:h=180:color=yellow@1:t=fill",
+  ].join(",");
+  const encoders = spawnSync(ffmpeg, ["-hide_banner", "-encoders"]).stdout.toString();
+  const vcodec = encoders.includes("libx264") ? "libx264" : "libopenh264";
+  const result = spawnSync(ffmpeg, [
+    "-hide_banner", "-y",
+    "-f", "lavfi", "-i", "color=c=black:s=640x360:r=25",
+    "-i", speechWav,
+    "-vf", filter, "-pix_fmt", "yuv420p", "-c:v", vcodec, "-b:v", "300k",
+    "-c:a", "aac", "-b:a", "96k", "-shortest", out,
+  ]);
+  if (result.status === 0 && existsSync(out)) written.push(["video-speech-fr.mp4", statSync(out).size]);
+  else console.error("Échec de la génération de video-speech-fr.mp4.");
+} else if (!ffmpeg) {
+  console.log("FFmpeg absent : video-speech-fr.mp4 ignoré.");
 }
 
 console.log("Fixtures de parole generees dans test-assets/generated/ :");

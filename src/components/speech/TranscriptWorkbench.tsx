@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Field, Fieldset, Select } from "@/components/pdf/Field";
@@ -40,11 +40,24 @@ export function TranscriptWorkbench({
   tool,
   assets,
   focus,
+  dropLabel,
+  renderExtras,
 }: {
   tool: ToolDefinition;
   assets: SpeechAsset[];
   /** `text` met en avant le texte, `subtitles` les fichiers de sous-titres. */
   focus: "text" | "subtitles";
+  /** Libellé de la zone de dépôt, quand l'outil n'accepte pas tout. */
+  dropLabel?: string;
+  /**
+   * Actions supplémentaires proposées une fois la transcription obtenue, à
+   * partir des passages **corrigés** et du fichier source (incrustation dans la
+   * vidéo, par exemple). Rendues sous la liste des passages.
+   */
+  renderExtras?: (context: {
+    segments: TranscriptSegment[];
+    file: SelectedFile | undefined;
+  }) => ReactNode;
 }) {
   const installedModels = useMemo(
     () => STT_MODELS.filter((model) => assets.find((asset) => asset.id === model.id)?.installed),
@@ -148,7 +161,7 @@ export function TranscriptWorkbench({
         constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
         files={files}
         onChange={setFiles}
-        label="Déposez un fichier audio ou vidéo"
+        label={dropLabel ?? "Déposez un fichier audio ou vidéo"}
         hint="La bande son d'une vidéo est extraite automatiquement."
         disabled={running}
       />
@@ -259,6 +272,8 @@ export function TranscriptWorkbench({
             Corrigez librement un passage : les horodatages restent inchangés et les fichiers
             exportés reprennent le texte affiché.
           </p>
+
+          {renderExtras?.({ segments, file: files[0] })}
         </div>
       )}
     </div>

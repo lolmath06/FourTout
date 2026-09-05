@@ -9,6 +9,51 @@ export interface MediaStream {
   width?: number;
   height?: number;
   bitRate?: number;
+  /** Images par seconde (flux vidéo), déduit de `avg_frame_rate`. */
+  frameRate?: number;
+  /** Format de pixels (`yuv420p`…), utile pour juger la compatibilité. */
+  pixelFormat?: string;
+  /** Code langue ISO du flux (`fra`, `eng`…), tel que déclaré. */
+  language?: string;
+  /** Titre du flux, tel que déclaré (« Commentaire », « Forced »…). */
+  title?: string;
+}
+
+/** Une piste de sous-titres telle qu'exposée à l'utilisateur. */
+export interface SubtitleTrack {
+  /** Index **relatif** parmi les pistes de sous-titres (0 = la première). */
+  order: number;
+  /** Index absolu dans le fichier. */
+  index: number;
+  codecName?: string;
+  language?: string;
+  title?: string;
+  /**
+   * Piste textuelle (SubRip, ASS, WebVTT, mov_text) ? Les pistes graphiques
+   * (PGS, DVD, DVB) sont des images : elles ne sont pas convertibles en texte
+   * sans reconnaissance de caractères, ce que cet outil ne fait pas.
+   */
+  textBased: boolean;
+}
+
+/** Codecs de sous-titres réellement textuels (extractibles tels quels). */
+const TEXT_SUBTITLE_CODECS = new Set([
+  "subrip", "srt", "ass", "ssa", "webvtt", "mov_text", "text", "microdvd",
+  "jacosub", "sami", "realtext", "stl", "subviewer", "subviewer1", "vplayer", "pjs", "mpl2",
+]);
+
+/** Une piste de sous-titres est-elle textuelle (par opposition à graphique) ? */
+export function isTextSubtitle(codecName: string | undefined): boolean {
+  return TEXT_SUBTITLE_CODECS.has((codecName ?? "").toLowerCase());
+}
+
+/** `30000/1001` → 29.97. Renvoie `undefined` si la fraction est vide ou nulle. */
+export function parseFrameRate(value: unknown): number | undefined {
+  if (typeof value !== "string" || value === "") return undefined;
+  const [num, den] = value.split("/").map(Number);
+  if (!Number.isFinite(num) || num <= 0) return undefined;
+  const divisor = Number.isFinite(den) && den !== 0 ? den : 1;
+  return Math.round((num / divisor) * 1000) / 1000;
 }
 
 export interface MediaInfo {
@@ -27,6 +72,16 @@ export interface MediaInfo {
   sampleRate?: number;
   width?: number;
   height?: number;
+  /** Images par seconde du flux vidéo principal. */
+  frameRate?: number;
+  /** Format de pixels du flux vidéo principal. */
+  pixelFormat?: string;
+  /** Débit du flux vidéo principal, si déclaré. */
+  videoBitRate?: number;
+  /** Toutes les pistes audio, dans l'ordre du fichier. */
+  audioStreams: MediaStream[];
+  /** Toutes les pistes de sous-titres, décrites pour l'interface. */
+  subtitles: SubtitleTrack[];
 }
 
 /** Une opération FFmpeg prête à lancer : arguments entre l'entrée et la sortie. */
@@ -47,16 +102,23 @@ export function parseProbe(json: string): MediaInfo {
     format?: { duration?: string; format_name?: string; bit_rate?: string };
     streams?: Array<Record<string, unknown>>;
   };
-  const streams: MediaStream[] = (data.streams ?? []).map((s) => ({
-    index: Number(s.index ?? 0),
-    codecType: String(s.codec_type ?? ""),
-    codecName: s.codec_name ? String(s.codec_name) : undefined,
-    channels: s.channels != null ? Number(s.channels) : undefined,
-    sampleRate: s.sample_rate != null ? Number(s.sample_rate) : undefined,
-    width: s.width != null ? Number(s.width) : undefined,
-    height: s.height != null ? Number(s.height) : undefined,
-    bitRate: s.bit_rate != null ? Number(s.bit_rate) : undefined,
-  }));
+  const streams: MediaStream[] = (data.streams ?? []).map((s) => {
+    const tags = (s.tags ?? {}) as Record<string, unknown>;
+    return {
+      index: Number(s.index ?? 0),
+      codecType: String(s.codec_type ?? ""),
+      codecName: s.codec_name ? String(s.codec_name) : undefined,
+      channels: s.channels != null ? Number(s.channels) : undefined,
+      sampleRate: s.sample_rate != null ? Number(s.sample_rate) : undefined,
+      width: s.width != null ? Number(s.width) : undefined,
+      height: s.height != null ? Number(s.height) : undefined,
+      bitRate: s.bit_rate != null ? Number(s.bit_rate) : undefined,
+      frameRate: parseFrameRate(s.avg_frame_rate) ?? parseFrameRate(s.r_frame_rate),
+      pixelFormat: s.pix_fmt ? String(s.pix_fmt) : undefined,
+      language: tags.language ? String(tags.language) : undefined,
+      title: tags.title ? String(tags.title) : undefined,
+    };
+  });
   const audio = streams.find((s) => s.codecType === "audio");
   const video = streams.find((s) => s.codecType === "video");
   const durationSec = Number(data.format?.duration ?? 0);
@@ -73,6 +135,33 @@ export function parseProbe(json: string): MediaInfo {
     sampleRate: audio?.sampleRate,
     width: video?.width,
     height: video?.height,
+    frameRate: video?.frameRate,
+    pixelFormat: video?.pixelFormat,
+    videoBitRate: video?.bitRate,
+    audioStreams: streams.filter((s) => s.codecType === "audio"),
+    subtitles: streams
+      .filter((s) => s.codecType === "subtitle")
+      .map((s, order) => ({
+        order,
+        index: s.index,
+        codecName: s.codecName,
+        language: s.language,
+        title: s.title,
+        textBased: isTextSubtitle(s.codecName),
+      })),
+  };
+}
+
+/** Informations vides, utilisées quand ffprobe échoue sur un fichier. */
+export function emptyMediaInfo(): MediaInfo {
+  return {
+    durationMs: 0,
+    formatName: "",
+    streams: [],
+    hasAudio: false,
+    hasVideo: false,
+    audioStreams: [],
+    subtitles: [],
   };
 }
 

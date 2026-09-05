@@ -194,6 +194,24 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   "video-to-gif": lazy(() => import("./impl/video/VideoToGifTool").then((m) => ({ default: m.VideoToGifTool }))),
   "gif-to-video": lazy(() => import("./impl/video/GifToVideoTool").then((m) => ({ default: m.GifToVideoTool }))),
   "video-extract-frame": lazy(() => import("./impl/video/VideoExtractFrameTool").then((m) => ({ default: m.VideoExtractFrameTool }))),
+
+  // Suite vidéo complète (phase 5)
+  "video-convert": lazy(() => import("./impl/video/VideoConvertTool").then((m) => ({ default: m.VideoConvertTool }))),
+  "video-compress": lazy(() => import("./impl/video/VideoCompressTool").then((m) => ({ default: m.VideoCompressTool }))),
+  "video-resolution": lazy(() => import("./impl/video/VideoResolutionTool").then((m) => ({ default: m.VideoResolutionTool }))),
+  "video-trim": lazy(() => import("./impl/video/VideoTrimTool").then((m) => ({ default: m.VideoTrimTool }))),
+  "video-merge": lazy(() => import("./impl/video/VideoMergeTool").then((m) => ({ default: m.VideoMergeTool }))),
+  "video-crop": lazy(() => import("./impl/video/VideoCropTool").then((m) => ({ default: m.VideoCropTool }))),
+  "video-rotate": lazy(() => import("./impl/video/VideoRotateTool").then((m) => ({ default: m.VideoRotateTool }))),
+  "video-speed": lazy(() => import("./impl/video/VideoSpeedTool").then((m) => ({ default: m.VideoSpeedTool }))),
+  "video-remove-audio": lazy(() => import("./impl/video/VideoRemoveAudioTool").then((m) => ({ default: m.VideoRemoveAudioTool }))),
+  "video-replace-audio": lazy(() => import("./impl/video/VideoReplaceAudioTool").then((m) => ({ default: m.VideoReplaceAudioTool }))),
+  "video-volume": lazy(() => import("./impl/video/VideoVolumeTool").then((m) => ({ default: m.VideoVolumeTool }))),
+  "video-add-subtitles": lazy(() => import("./impl/video/VideoAddSubtitlesTool").then((m) => ({ default: m.VideoAddSubtitlesTool }))),
+  "video-burn-subtitles": lazy(() => import("./impl/video/VideoBurnSubtitlesTool").then((m) => ({ default: m.VideoBurnSubtitlesTool }))),
+  "video-extract-subtitles": lazy(() => import("./impl/video/VideoExtractSubtitlesTool").then((m) => ({ default: m.VideoExtractSubtitlesTool }))),
+  "video-generate-subtitles": lazy(() => import("./impl/video/VideoGenerateSubtitlesTool").then((m) => ({ default: m.VideoGenerateSubtitlesTool }))),
+  "video-batch": lazy(() => import("./impl/video/VideoBatchTool").then((m) => ({ default: m.VideoBatchTool }))),
 };
 
 export function getToolComponent(toolId: string): ToolComponent | undefined {

@@ -25,7 +25,9 @@ export type JobKind =
   /** Synthèse vocale (texte, TXT ou PDF vers audio). */
   | "speech-synthesis"
   /** Transcription vocale (texte, sous-titres). */
-  | "speech-transcription";
+  | "speech-transcription"
+  /** Traitement vidéo local (conversion, compression, montage simple…). */
+  | "video-processing";
 
 export interface Job {
   id: string;

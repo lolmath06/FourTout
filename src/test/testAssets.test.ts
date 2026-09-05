@@ -77,10 +77,19 @@ describe("générateur de test-assets", () => {
     // Git) : la contrainte porte sur le temps de génération et l'espace disque.
     // `pdf-large-images.pdf` est volontairement lourd — c'est ce qui permet de
     // mesurer un vrai gain de compression.
-    const DELIBERATELY_HEAVY = new Set(["pdf-large-images.pdf"]);
+    // `pdf-large-images.pdf` et `video-large.mp4` sont volontairement lourds —
+    // c'est ce qui permet de mesurer un vrai gain de compression. Les autres
+    // vidéos et l'audio de remplacement dépassent la limite d'un simple document
+    // sans être pour autant démesurés.
+    const DELIBERATELY_HEAVY = new Set(["pdf-large-images.pdf", "video-large.mp4"]);
+    const MEDIA = /\.(mp4|mkv|webm|mov|wav|mp3|gif)$/i;
 
     for (const name of readdirSync(outDir)) {
-      const limit = DELIBERATELY_HEAVY.has(name) ? 8 * 1024 * 1024 : 512 * 1024;
+      const limit = DELIBERATELY_HEAVY.has(name)
+        ? 8 * 1024 * 1024
+        : MEDIA.test(name)
+          ? 2 * 1024 * 1024
+          : 512 * 1024;
       expect(read(name).length, `${name} est trop volumineux`).toBeLessThan(limit);
     }
   });

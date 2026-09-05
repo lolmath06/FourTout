@@ -48,10 +48,10 @@ describe("navigation principale", () => {
   });
 
   it("ouvre la page d'un outil non implémenté", async () => {
-    renderApp("/tools/t/video-convert");
+    renderApp("/tools/t/universal-converter");
 
     expect(
-      await screen.findByRole("heading", { name: /vidéo/i }),
+      await screen.findByRole("heading", { name: /convertisseur universel/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Bientôt")).toBeInTheDocument();
     expect(screen.getByText("Cet outil arrive prochainement")).toBeInTheDocument();
