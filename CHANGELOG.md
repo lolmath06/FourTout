@@ -10,7 +10,7 @@ change pour lui. Pour l'historique détaillé du code, `git log`.
 
 ## [Non publié]
 
-Première version complète de FourTout : **151 outils, tous utilisables**,
+Première version complète de FourTout : **152 outils, tous utilisables**,
 répartis en dix catégories.
 
 ### PDF — 23 outils
@@ -26,7 +26,7 @@ Côté sécurité : protection et déverrouillage par mot de passe, **caviardage
 qui supprime réellement le contenu** plutôt que de le recouvrir, et
 récupération locale d'un mot de passe oublié par dictionnaire et règles.
 
-### Images — 20 outils
+### Images — 21 outils
 
 Conversion, compression, redimensionnement, rognage visuel, rotation et
 miroir, niveaux de gris, réglages (luminosité, contraste, saturation, gamma),
@@ -34,6 +34,11 @@ flou et pixellisation par zone, transparence. Reconnaissance de texte locale,
 texte sur image, filigrane, palette de couleurs, favicon et jeux d'icônes,
 traitement par lots. Lecture et **suppression des métadonnées EXIF et GPS**
 avant partage.
+
+**Retirer l'arrière-plan** : le sujet d'une photo est reconnu et détouré
+automatiquement, le fond devient transparent. Le modèle (U²-Net, Apache 2.0)
+s'installe une fois puis tourne sur la machine — l'image n'est jamais envoyée
+sur un serveur, contrairement aux services en ligne équivalents.
 
 ### Audio — 15 outils
 

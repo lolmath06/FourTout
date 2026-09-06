@@ -1,5 +1,7 @@
 # Traitements longs et jobs globaux
 
+[← Documentation](../README.md)
+
 Un traitement long (récupération de mot de passe aujourd'hui ; transcodage,
 OCR, transcription demain) ne doit **pas** appartenir au cycle de vie du
 composant React qui l'a lancé. Quitter la page de l'outil ne doit ni l'arrêter

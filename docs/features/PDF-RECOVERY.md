@@ -1,5 +1,20 @@
 # Récupération de mot de passe PDF
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Où le calcul a lieu, et pourquoi](#où-le-calcul-a-lieu-et-pourquoi)
+- [Le vérificateur](#le-vérificateur)
+- [Le corpus et les règles](#le-corpus-et-les-règles)
+- [Les niveaux](#les-niveaux)
+- [Déroulement](#déroulement)
+- [Fixtures de test](#fixtures-de-test)
+- [Tests](#tests)
+- [Limites](#limites)
+
+---
+
 Outil `pdf-recover-password` : retrouver le mot de passe **oublié** d'un PDF que
 l'on est autorisé à ouvrir, par dictionnaire et règles, **entièrement en local**.
 

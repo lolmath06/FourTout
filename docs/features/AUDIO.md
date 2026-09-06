@@ -1,5 +1,17 @@
 # Bloc Audio + voix
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Outils audio disponibles](#outils-audio-disponibles)
+- [Synthèse vocale (TTS) — `available`](#synthèse-vocale-tts--available)
+- [Transcription (STT) + sous-titres — `available`](#transcription-stt--sous-titres--available)
+- [PDF vers audio](#pdf-vers-audio)
+- [Fixtures](#fixtures)
+
+---
+
 ## Outils audio disponibles
 
 Tous reposent sur le socle FFmpeg (voir [MEDIA.md](MEDIA.md)) — 100 % local,
@@ -67,7 +79,7 @@ dialogue.
 ## Synthèse vocale (TTS) — `available`
 
 Moteur : **Piper**, voix `fr_FR-siwis-medium` et `en_US-lessac-medium`.
-Installation, poids, licences et mesures : voir [MODELS.md](MODELS.md).
+Installation, poids, licences et mesures : voir [MODELS.md](../technical/MODELS.md).
 
 ### Pipeline
 
@@ -106,12 +118,12 @@ taille, voix et format.
 
 Débit mesuré sur Fedora (i9-14900HX) : **339 caractères/seconde** sur le
 pipeline complet, soit environ **20× plus vite que la lecture**. Chiffres
-détaillés dans [MODELS.md](MODELS.md).
+détaillés dans [MODELS.md](../technical/MODELS.md).
 
 ## Transcription (STT) + sous-titres — `available`
 
 Moteur : **whisper.cpp**, modèles `base` (*Rapide*, par défaut) et `small`
-(*Précis*, facultatif). Le compromis est chiffré dans [MODELS.md](MODELS.md).
+(*Précis*, facultatif). Le compromis est chiffré dans [MODELS.md](../technical/MODELS.md).
 
 ### Pipeline
 

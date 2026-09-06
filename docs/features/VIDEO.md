@@ -1,5 +1,24 @@
 # Architecture Vidéo
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Principe directeur : ne jamais proposer ce que le moteur ne sait pas faire](#principe-directeur--ne-jamais-proposer-ce-que-le-moteur-ne-sait-pas-faire)
+- [Qualité : une table par encodeur, pas une valeur universelle](#qualité--une-table-par-encodeur-pas-une-valeur-universelle)
+- [Honnêteté sur la compression](#honnêteté-sur-la-compression)
+- [Dimensions](#dimensions)
+- [Fusion : jamais de concaténation naïve](#fusion--jamais-de-concaténation-naïve)
+- [Sous-titres](#sous-titres)
+- [Jobs : survivre à la navigation](#jobs--survivre-à-la-navigation)
+- [Fichiers temporaires](#fichiers-temporaires)
+- [Erreurs](#erreurs)
+- [Un seul point de décision : `video/pipelines.ts`](#un-seul-point-de-décision--videopipelinests)
+- [Ossature d'interface](#ossature-dinterface)
+- [Tests](#tests)
+
+---
+
 La suite Vidéo est bâtie **au-dessus du socle média** décrit dans
 [MEDIA.md](MEDIA.md) : mêmes commandes natives, mêmes fichiers temporaires,
 même annulation. Ce document décrit ce que la phase 5 ajoute par-dessus.

@@ -1,5 +1,20 @@
 # Développement
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Prérequis](#prérequis)
+- [Démarrer](#démarrer)
+- [Commandes](#commandes)
+- [Organisation du dépôt](#organisation-du-dépôt)
+- [Le registre : la seule source de vérité](#le-registre--la-seule-source-de-vérité)
+- [Écrire des tests](#écrire-des-tests)
+- [Conventions](#conventions)
+- [Pièges connus de l'environnement](#pièges-connus-de-lenvironnement)
+
+---
+
 ## Prérequis
 
 | Outil | Version testée | Installation |
@@ -122,6 +137,7 @@ src/
   components/   Composants réutilisables (ui/, tools/, pdf/, media/, files/, calc/…)
   core/         Logique métier, sans React
     tools/      Registre des outils : catalogue, catégories, recherche
+    image/      Traitement d'images, dont le détourage (background, segmentation)
     pdf/ media/ files/ text/ code/ calc/ units/ security/ currency/ convert/
     jobs/       Travaux longs, progression, annulation
   features/     État applicatif (favoris, récents, paramètres, jobs, notifications)
@@ -133,13 +149,25 @@ src-tauri/
   src/
     files/      Archives, empreintes, découpage, chiffrement, effacement, organisation
     media/      Pilotage de FFmpeg, détection réelle des codecs
-    models/     Gestionnaire de modèles de parole
+    models/     Gestionnaire de modèles (parole, détourage)
     recovery/   Récupération de mot de passe PDF
     rates.rs    Taux BCE — la seule sortie réseau de l'application
   tests/        Tests d'intégration natifs
 
-docs/           Cette documentation
-scripts/        Générateurs de fixtures et synchronisation des ressources
+docs/
+  guides/       Documentation utilisateur (installation, usage, dépannage)
+  technical/    Développement, architecture, construction, publication
+  features/     Architecture par domaine (PDF, images, média, texte…)
+  legal/        Confidentialité et sécurité
+  assets/       Identité visuelle et captures d'écran
+
+scripts/        Générateurs de fixtures (`generate-*`) et synchronisation des
+                ressources embarquées (`sync-*`). Volontairement à plat : les
+                deux préfixes suffisent à s'y retrouver, et onze fichiers ne
+                justifient pas une arborescence.
+
+test-assets/    `generated/` uniquement : toutes les fixtures sont produites
+                par `pnpm test:assets` et donc exclues de Git.
 ```
 
 ---
@@ -155,7 +183,7 @@ pas d'état « bientôt disponible ». Un outil incomplet n'est simplement pas
 enregistré, et un test garde le catalogue et la table des implémentations
 exactement alignés.
 
-Un outil futur vit dans [ROADMAP.md](../ROADMAP.md) ou dans un ticket, pas
+Un outil futur vit dans [ROADMAP.md](../../ROADMAP.md) ou dans un ticket, pas
 dans l'interface.
 
 Ajouter un outil : [ADDING-A-TOOL.md](ADDING-A-TOOL.md).
@@ -205,8 +233,8 @@ Ils sont documentés pour éviter de les redécouvrir.
 
 | Piège | Détail |
 | --- | --- |
-| **WebKitGTK et `toBlob` en WebP** | La WebView de Linux ne sait pas encoder en WebP côté canvas. L'export passe par le moteur natif. Voir [IMAGES.md](IMAGES.md). |
-| **WebKitGTK et `container-type: size`** | Effondre les aperçus. À éviter. Voir [PDF.md](PDF.md). |
+| **WebKitGTK et `toBlob` en WebP** | La WebView de Linux ne sait pas encoder en WebP côté canvas. L'export passe par le moteur natif. Voir [IMAGES.md](../features/IMAGES.md). |
+| **WebKitGTK et `container-type: size`** | Effondre les aperçus. À éviter. Voir [PDF.md](../features/PDF.md). |
 | **Workers de type module** | Ne sont pas garantis sur toutes les WebView visées. Les workers de FourTout sont bundlés en script classique (`worker.format: "iife"` dans `vite.config.ts`). |
-| **Encodeurs FFmpeg annoncés** | `ffmpeg -encoders` liste ce avec quoi FFmpeg a été compilé, pas ce que la machine sait faire. FourTout éprouve chaque encodeur par un encodage d'essai. Voir [VIDEO.md](VIDEO.md). |
-| **Permission microphone** | WebKitGTK demande un arbitrage natif. Voir [AUDIO.md](AUDIO.md). |
+| **Encodeurs FFmpeg annoncés** | `ffmpeg -encoders` liste ce avec quoi FFmpeg a été compilé, pas ce que la machine sait faire. FourTout éprouve chaque encodeur par un encodage d'essai. Voir [VIDEO.md](../features/VIDEO.md). |
+| **Permission microphone** | WebKitGTK demande un arbitrage natif. Voir [AUDIO.md](../features/AUDIO.md). |

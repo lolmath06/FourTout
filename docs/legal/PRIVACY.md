@@ -1,5 +1,19 @@
 # Confidentialité
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Ce qui ne quitte jamais votre machine](#ce-qui-ne-quitte-jamais-votre-machine)
+- [Ce qui sort, et pourquoi](#ce-qui-sort-et-pourquoi)
+- [Ce que FourTout n'a pas](#ce-que-fourtout-na-pas)
+- [Ce que FourTout stocke localement](#ce-que-fourtout-stocke-localement)
+- [Fichiers temporaires](#fichiers-temporaires)
+- [Ce que FourTout ne peut pas protéger](#ce-que-fourtout-ne-peut-pas-protéger)
+- [Vérifier ces affirmations](#vérifier-ces-affirmations)
+
+---
+
 FourTout traite vos fichiers sur votre machine. Cette page dit exactement ce
 qui sort du poste, et ce qui n'en sort jamais — pas les intentions du projet,
 mais ce que fait le code.
@@ -26,6 +40,7 @@ peut ouvrir une connexion, même par erreur.
 | **Mots de passe** | La génération utilise le générateur cryptographique du système. L'analyse de robustesse (zxcvbn) tourne dans l'application : le mot de passe saisi n'est jamais transmis. |
 | **JWT** | Décodé localement. Le token n'est envoyé nulle part — c'est exactement ce que ne garantissent pas les décodeurs JWT en ligne. |
 | **Parole** | Une fois les modèles installés, la synthèse et la transcription s'exécutent sur votre machine. |
+| **Détourage** | Le modèle de suppression d'arrière-plan tourne dans l'application, sur votre machine. L'image n'est envoyée nulle part — c'est précisément ce que ne font pas les services en ligne équivalents. |
 
 ---
 
@@ -56,20 +71,20 @@ n'affiche aucun chiffre. Aucun taux n'est jamais inventé.
 catalogue à porter la capacité « réseau », et l'interface l'annonce sur sa
 page.
 
-### 2. Modèles de synthèse et de transcription vocale
+### 2. Modèles (parole et détourage)
 
 **Ce qui part :** un téléchargement depuis GitHub (moteurs Piper et
-whisper.cpp) et Hugging Face (voix et modèles), **à votre demande explicite**,
-depuis Paramètres → Modèles.
+whisper.cpp, modèles U²-Net) et Hugging Face (voix et modèles de
+transcription), **à votre demande explicite**, depuis Paramètres → Modèles.
 
 **Ce qui ne part pas :** le texte que vous faites lire, l'audio que vous faites
-transcrire. Une fois le modèle installé, la synthèse et la transcription
-s'exécutent entièrement sur votre machine, même sans connexion.
+transcrire, l'image que vous faites détourer. Une fois le modèle installé, tout
+s'exécute entièrement sur votre machine, même sans connexion.
 
 Chaque téléchargement est vérifié par empreinte avant installation ; un fichier
 dont l'empreinte ne correspond pas est rejeté et rien n'est installé.
 
-Détails : [MODELS.md](MODELS.md).
+Détails : [MODELS.md](../technical/MODELS.md).
 
 ---
 
@@ -95,7 +110,7 @@ Détails : [MODELS.md](MODELS.md).
 | Favoris | Identifiants d'outils | idem |
 | Récemment utilisés | Identifiants d'outils et horodatages | idem |
 | Taux de change | Dernier relevé BCE et sa date | idem |
-| Modèles de parole | Fichiers téléchargés | Dossier de données de l'application |
+| Modèles (parole, détourage) | Fichiers téléchargés | Dossier de données de l'application |
 
 | Système | Chemin |
 | --- | --- |

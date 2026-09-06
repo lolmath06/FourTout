@@ -15,7 +15,7 @@ pnpm app:dev
 ```
 
 Prérequis complets (Node, Rust, bibliothèques système) :
-[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+[docs/DEVELOPMENT.md](docs/technical/DEVELOPMENT.md).
 
 ---
 
@@ -102,7 +102,7 @@ Ni de couleur en dur : les composants utilisent les jetons CSS `--ft-*`.
 ## Ajouter un outil
 
 Trois fichiers, dans cet ordre. La procédure détaillée est dans
-[docs/ADDING-A-TOOL.md](docs/ADDING-A-TOOL.md).
+[docs/ADDING-A-TOOL.md](docs/technical/ADDING-A-TOOL.md).
 
 1. **Le catalogue** — `src/core/tools/catalog/<catégorie>.ts`. Nom,
    description, icône, mots-clés (en langage courant : c'est ce que
@@ -137,12 +137,25 @@ d'exploitation, étapes de reproduction, comportement attendu et constaté.
 
 **Une vulnérabilité de sécurité ne s'ouvre pas en ticket public.** Utilisez
 l'onglet Security → Report a vulnerability. Voir
-[docs/SECURITY.md](docs/SECURITY.md#signaler-une-vulnérabilité).
+[docs/SECURITY.md](docs/legal/SECURITY.md#signaler-une-vulnérabilité).
 
 ---
 
 ## Licence des contributions
 
-La licence de FourTout n'est pas encore arrêtée — voir le `README.md`. Tant
-qu'elle ne l'est pas, ouvrez un ticket avant d'engager un travail important :
-il serait dommage d'écrire beaucoup de code dans l'incertitude.
+**FourTout est un logiciel propriétaire** — voir [LICENSE](LICENSE). Le code
+est publié pour être lu et audité, pas pour être réutilisé.
+
+Cela ne ferme pas la porte aux contributions, mais cela en change le cadre :
+**soumettre une contribution ne change pas la licence de FourTout.** En
+proposant une modification, vous accordez au titulaire des droits le droit de
+l'utiliser, de la modifier et de la distribuer au sein de FourTout, sous cette
+licence.
+
+Aucun accord de contribution formel (*CLA*) n'est demandé à ce jour. Si le
+projet accepte un jour des contributions extérieures régulières, un tel accord
+pourrait devenir nécessaire ; ce sera une décision du propriétaire du projet,
+annoncée ici. Rien n'est signé par défaut aujourd'hui.
+
+Avant d'engager un travail important, ouvrez un ticket : c'est vrai de tout
+projet, et particulièrement de celui-ci.

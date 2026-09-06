@@ -22,6 +22,8 @@ jobs:
   verify:
     name: Vérifier avant de publier
     runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.value }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -35,6 +37,22 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:assets
       - run: pnpm verify
+
+      # Les trois manifestes doivent porter le même numéro. Un désaccord ici
+      # produirait des fichiers dont le nom ment sur leur contenu.
+      - name: Version, et cohérence des manifestes
+        id: version
+        run: |
+          set -euo pipefail
+          pkg=$(node -p "require('./package.json').version")
+          tauri=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          cargo=$(grep -m1 '^version = ' src-tauri/Cargo.toml | cut -d'"' -f2)
+          echo "package.json=$pkg tauri.conf.json=$tauri Cargo.toml=$cargo"
+          if [ "$pkg" != "$tauri" ] || [ "$pkg" != "$cargo" ]; then
+            echo "::error::Les versions des manifestes diffèrent."
+            exit 1
+          fi
+          echo "value=$pkg" >> "$GITHUB_OUTPUT"
 
   build:
     name: Construire (${{ matrix.os }})
@@ -76,23 +94,67 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # Signature Windows : rien n'est signé tant qu'aucun certificat n'a été
+      # déposé dans les secrets du dépôt. Aucune clé n'est versionnée, aucune
+      # n'est générée ici, et l'absence de certificat n'échoue pas la
+      # construction — elle produit simplement un installeur non signé, ce que
+      # la documentation annonce.
+      - name: Certificat de signature Windows (si fourni)
+        if: runner.os == 'Windows' && env.WINDOWS_CERTIFICATE != ''
+        env:
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+        shell: pwsh
+        run: |
+          $bytes = [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE)
+          [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\fourtout.pfx", $bytes)
+          echo "WINDOWS_CERTIFICATE_FILE=$env:RUNNER_TEMP\fourtout.pfx" >> $env:GITHUB_ENV
+
       - name: Construire les paquets
-        # Les deux variables de signature restent vides tant qu'aucun
-        # certificat n'a été déposé dans les secrets du dépôt. Aucune clé
-        # n'est versionnée, et aucune n'est générée ici.
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
         run: pnpm tauri build
 
-      - name: Rassembler les paquets
+      # Renommage en noms de publication : ce que l'utilisateur télécharge doit
+      # dire son système et son architecture, pas la convention de l'empaqueteur.
+      - name: Rassembler et nommer les paquets
         shell: bash
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
         run: |
+          set -euo pipefail
           mkdir -p artefacts
-          find src-tauri/target/release/bundle \
-            -type f \( -name '*.rpm' -o -name '*.deb' -o -name '*.AppImage' \
-                       -o -name '*-setup.exe' -o -name '*.msi' \) \
-            -exec cp {} artefacts/ \;
+          B=src-tauri/target/release/bundle
+
+          copy() {  # copy <motif> <nom final>
+            local found
+            found=$(find "$B" -type f -name "$1" | head -1)
+            if [ -n "$found" ]; then
+              cp "$found" "artefacts/$2"
+              echo "  $2"
+            fi
+          }
+
+          copy '*.rpm'      "FourTout-${VERSION}-Fedora-x86_64.rpm"
+          copy '*.deb'      "FourTout-${VERSION}-Linux-amd64.deb"
+          copy '*.AppImage' "FourTout-${VERSION}-Linux-x86_64.AppImage"
+          copy '*-setup.exe' "FourTout-${VERSION}-Windows-x64-Setup.exe"
+          copy '*.msi'      "FourTout-${VERSION}-Windows-x64.msi"
+
+          # Version portable Windows : l'exécutable et ses ressources, sans
+          # installeur. Produite seulement si l'exécutable existe — pas de ZIP
+          # vide juste pour avoir un fichier de plus.
+          if [ -f "src-tauri/target/release/FourTout.exe" ]; then
+            mkdir -p portable/FourTout
+            cp "src-tauri/target/release/FourTout.exe" portable/FourTout/
+            if [ -d "src-tauri/target/release/resources" ]; then
+              cp -r "src-tauri/target/release/resources" portable/FourTout/
+            fi
+            (cd portable && 7z a -tzip "../artefacts/FourTout-${VERSION}-Windows-x64-Portable.zip" FourTout >/dev/null)
+            echo "  FourTout-${VERSION}-Windows-x64-Portable.zip"
+          fi
+
           ls -la artefacts
 
       - uses: actions/upload-artifact@v4
@@ -132,12 +194,16 @@ jobs:
 
             | Système | Fichier |
             | --- | --- |
-            | Windows 10 / 11 | `FourTout_*_x64-setup.exe` |
-            | Fedora, RHEL | `FourTout-*.x86_64.rpm` |
-            | Debian, Ubuntu | `FourTout_*_amd64.deb` |
-            | Autres Linux | `FourTout_*_amd64.AppImage` |
+            | Windows 10 / 11 | `FourTout-*-Windows-x64-Setup.exe` |
+            | Fedora, RHEL | `FourTout-*-Fedora-x86_64.rpm` |
+            | Debian, Ubuntu | `FourTout-*-Linux-amd64.deb` |
+            | Autres Linux | `FourTout-*-Linux-x86_64.AppImage` |
 
-            Instructions détaillées : [docs/INSTALLATION.md](docs/INSTALLATION.md).
+            N'utilisez pas « Code → Download ZIP » : cette archive contient le
+            code source, pas l'application.
+
+            Instructions détaillées :
+            [docs/guides/INSTALLATION.md](docs/guides/INSTALLATION.md).
 
             ## Vérifier votre téléchargement
 

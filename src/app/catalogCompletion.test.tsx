@@ -10,16 +10,20 @@ import { storeRates } from "@/core/currency";
 import { appStore } from "@/core/storage";
 
 /**
- * Recette de la phase 7.
+ * Recette du catalogue complet.
  *
  * Trois garanties, dans cet ordre d'importance :
  *
- *  1. **Aucun outil « bientôt »** : le catalogue est entièrement livré, et
- *     chaque carte annoncée disponible a une implémentation branchée.
- *  2. **Chaque outil de la phase s'ouvre et fonctionne** : on ne se contente
- *     pas de vérifier qu'il monte, on lui donne une entrée et on lit sa sortie.
- *     Sans cela, l'utilisateur découvrirait trente-neuf fois la même panne.
+ *  1. **Catalogue et implémentations coïncident exactement.** Figurer au
+ *     catalogue de FourTout, c'est fonctionner : il n'existe pas d'outil
+ *     « bientôt disponible » derrière lequel se réfugier.
+ *  2. **Chaque outil s'ouvre et fonctionne** : on ne se contente pas de
+ *     vérifier qu'il monte, on lui donne une entrée et on lit sa sortie. Sans
+ *     cela, l'utilisateur découvrirait quarante fois la même panne.
  *  3. **Chaque outil se trouve** en tapant ce qu'on cherche, en français.
+ *
+ * Le bloc central couvre les trente-neuf outils du dernier lot fonctionnel,
+ * puis le détourage automatique livré ensuite.
  */
 
 function open(path: string) {
@@ -40,8 +44,8 @@ async function openTool(id: string) {
   return tool!;
 }
 
-/** Les trente-neuf identifiants livrés par cette phase. */
-const PHASE_7_TOOLS = [
+/** Les trente-neuf identifiants du dernier lot fonctionnel. */
+const LAST_BATCH = [
   "docx-to-pdf",
   "archive-encrypted",
   "file-organize",
@@ -103,17 +107,17 @@ describe("état final du catalogue", () => {
     expect(orphans).toEqual([]);
   });
 
-  it("livre bien les trente-neuf outils de la phase", () => {
-    expect(PHASE_7_TOOLS).toHaveLength(39);
-    for (const id of PHASE_7_TOOLS) {
+  it("livre bien les trente-neuf outils du dernier lot", () => {
+    expect(LAST_BATCH).toHaveLength(39);
+    for (const id of LAST_BATCH) {
       expect(toolRegistry.get(id), id).toBeDefined();
       expect(id in TOOL_IMPLEMENTATIONS, id).toBe(true);
     }
   });
 });
 
-describe("chaque outil de la phase s'ouvre", () => {
-  it.each(PHASE_7_TOOLS)("%s", async (id) => {
+describe("chaque outil du dernier lot s'ouvre", () => {
+  it.each(LAST_BATCH)("%s", async (id) => {
     await openTool(id);
   });
 });
@@ -497,6 +501,33 @@ describe("le nettoyage de métadonnées route vers le bon outil", () => {
   });
 });
 
+describe("le détourage automatique", () => {
+  it("s'ouvre, et explique honnêtement ce qu'il lui faut", async () => {
+    const tool = await openTool("image-remove-background");
+    expect(tool.category).toBe("images");
+
+    // Hors application, aucun modèle ne peut être installé : l'écran doit le
+    // dire, pas se contenter de rester vide.
+    await waitFor(() =>
+      expect(screen.getByText(/Application installée requise/)).toBeInTheDocument(),
+    );
+    expect(screen.getByText(/détourage automatique/i)).toBeInTheDocument();
+  });
+
+  it("promet le local, et ne se confond pas avec l'effacement d'une couleur", () => {
+    const background = toolRegistry.get("image-remove-background")!;
+    const colour = toolRegistry.get("image-color-transparent")!;
+
+    // Deux outils distincts, deux promesses distinctes.
+    expect(background.id).not.toBe(colour.id);
+    expect(background.capabilities).toContain("local");
+    expect(background.capabilities).not.toContain("network");
+    expect(background.note).toMatch(/jamais envoyée sur un serveur/);
+    // Et la note dit aussi ce que l'outil rate, pas seulement ce qu'il réussit.
+    expect(background.note).toMatch(/se trompe/);
+  });
+});
+
 /* ====================================================================== */
 /* Recherche                                                               */
 /* ====================================================================== */
@@ -541,6 +572,13 @@ describe("recherche en langage courant", () => {
     ["ranger un dossier", "file-organize"],
     ["suppression sécurisée", "file-secure-delete"],
     ["formater html css", "web-beautify"],
+    // Le détourage automatique, livré après les trente-neuf : c'est le
+    // vocabulaire de l'utilisateur qui doit le trouver, pas son nom d'outil.
+    ["supprimer arrière plan", "image-remove-background"],
+    ["retirer fond image", "image-remove-background"],
+    ["remove background", "image-remove-background"],
+    ["fond transparent", "image-remove-background"],
+    ["détourer photo", "image-remove-background"],
   ];
 
   it.each(QUERIES)("« %s » trouve %s", (query, expected) => {

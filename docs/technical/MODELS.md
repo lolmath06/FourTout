@@ -1,5 +1,20 @@
 # Moteurs et modèles de parole
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Pourquoi ces moteurs](#pourquoi-ces-moteurs)
+- [Catalogue](#catalogue)
+- [Où vivent les fichiers](#où-vivent-les-fichiers)
+- [Installation](#installation)
+- [Fonctionnement hors ligne](#fonctionnement-hors-ligne)
+- [Empaquetage Windows et Fedora](#empaquetage-windows-et-fedora)
+- [Limites connues](#limites-connues)
+- [Modèles de détourage](#modèles-de-détourage)
+
+---
+
 FourTout parle et transcrit **localement**. Rien n'est envoyé sur le réseau
 pendant l'usage : le seul accès à Internet est le téléchargement initial des
 moteurs et des modèles, déclenché par l'utilisateur, une fois pour toutes.
@@ -140,3 +155,29 @@ l'utilisateur final.
 - Aucune accélération GPU : les binaires retenus sont les versions processeur,
   seules réellement portables. La transcription utilise la moitié des cœurs
   (8 au maximum) pour laisser la machine utilisable.
+
+---
+
+## Modèles de détourage
+
+L'outil **Retirer l'arrière-plan** utilise **U²-Net**, exécuté par ONNX Runtime
+dans la WebView. Deux variantes sont proposées :
+
+| Élément | Fichier | Taille | Licence |
+| --- | --- | --- | --- |
+| `seg-u2netp` — Détourage rapide | `segmentation/u2netp.onnx` | 4,6 Mo | Apache 2.0 |
+| `seg-u2net` — Détourage précis | `segmentation/u2net.onnx` | 176 Mo | Apache 2.0 |
+
+Comme les moteurs de parole, ils sont déclarés dans
+`src-tauri/src/models/mod.rs` avec leur URL officielle, leur empreinte SHA-256
+et leur taille, et installés uniquement à la demande.
+
+Une différence toutefois : les moteurs de parole s'exécutent **côté natif** et
+lisent leurs modèles eux-mêmes, tandis que le détourage s'exécute **dans la
+WebView**. Il lui faut donc les octets du modèle. C'est le rôle de la commande
+`models_read_file`, qui n'accepte pas un chemin libre mais un identifiant du
+catalogue et un fichier que cet élément déclare : elle ne peut lire que ce que
+FourTout a lui-même installé.
+
+Le choix d'U²-Net est un choix de licence autant que de qualité : voir
+[THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md).

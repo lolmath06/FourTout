@@ -1,5 +1,18 @@
 # Ajouter un outil
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [En résumé](#en-résumé)
+- [1. Déclarer l'outil au catalogue](#1-déclarer-loutil-au-catalogue)
+- [2. Écrire la logique métier](#2-écrire-la-logique-métier)
+- [3. Écrire l'interface et la brancher](#3-écrire-linterface-et-la-brancher)
+- [Ajouter une catégorie](#ajouter-une-catégorie)
+- [Tests](#tests)
+
+---
+
 ## En résumé
 
 Un outil au catalogue = **1 fichier modifié**.
@@ -33,7 +46,7 @@ Ouvrez le fichier de sa catégorie dans `src/core/tools/catalog/` (par exemple
 > produit est que figurer au catalogue, c'est fonctionner : il n'existe pas
 > d'état « bientôt disponible », et un test échouera si le catalogue et la
 > table des implémentations divergent. Un outil futur vit dans
-> [ROADMAP.md](../ROADMAP.md) ou dans un ticket, pas dans l'interface.
+> [ROADMAP.md](../../ROADMAP.md) ou dans un ticket, pas dans l'interface.
 
 Une fois les trois fichiers en place, l'outil apparaît dans sa catégorie, dans
 la recherche, dans l'accueil et sur sa propre page
@@ -109,13 +122,13 @@ contient que l'outil lui-même.
 | Besoin | À utiliser |
 | --- | --- |
 | Recevoir des fichiers | `FileDropZone` + `constraintsForTool(tool)` |
-| Écrire un outil PDF | `PdfToolShell` — voir [PDF.md](PDF.md) |
-| Écrire un outil Image par lot | `ImageToolShell` (`@/components/image`) — voir [IMAGES.md](IMAGES.md) |
+| Écrire un outil PDF | `PdfToolShell` — voir [PDF.md](../features/PDF.md) |
+| Écrire un outil Image par lot | `ImageToolShell` (`@/components/image`) — voir [IMAGES.md](../features/IMAGES.md) |
 | Traiter une image | `processImage` / `processImages` (`@/core/image`) |
 | Aperçu d'image (dont temps réel) | `ImagePreview`, `useSourceCanvas`, `useProcessedPreview` |
 | Reconnaître du texte (OCR) | `recognizeImages` (`@/core/ocr`) |
-| Traiter un audio (FFmpeg) | `runMedia` (`@/core/media`) + `MediaToolShell` — voir [MEDIA.md](MEDIA.md) |
-| Écrire un outil vidéo | `VideoToolShell` (`@/components/media`) — voir [VIDEO.md](VIDEO.md) |
+| Traiter un audio (FFmpeg) | `runMedia` (`@/core/media`) + `MediaToolShell` — voir [MEDIA.md](../features/MEDIA.md) |
+| Écrire un outil vidéo | `VideoToolShell` (`@/components/media`) — voir [VIDEO.md](../features/VIDEO.md) |
 | Savoir quels codecs existent vraiment | `mediaCapabilities()` (`@/core/media/capabilities`) |
 | Lecteur / sélection visuelle sur une vidéo | `VideoPreview`, `CropOverlay` (`@/components/media`) |
 | Traitement long survivant à la navigation | `startBackgroundJob` (`@/features/jobs/background`) |
@@ -156,5 +169,5 @@ Pour un nouvel outil, ajoutez au minimum :
 - si la formulation compte, une assertion de recherche dans
   `src/core/tools/search.test.ts`.
 
-Les fixtures d'essai sont dans [`test-assets/`](../test-assets/README.md)
+Les fixtures d'essai sont dans [`test-assets/`](../../test-assets/README.md)
 (`pnpm test:assets` pour les régénérer).

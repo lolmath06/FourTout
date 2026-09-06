@@ -1,5 +1,21 @@
 # Texte et documents
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Principe : instantané, local, sans backend](#principe--instantané-local-sans-backend)
+- [Une seule ossature d'interface](#une-seule-ossature-dinterface)
+- [Sécurité du HTML : jamais exécuté, toujours reconstruit](#sécurité-du-html--jamais-exécuté-toujours-reconstruit)
+- [Nettoyage : aucune transformation implicite](#nettoyage--aucune-transformation-implicite)
+- [Comparaison de deux textes](#comparaison-de-deux-textes)
+- [Statistiques : ce sont des estimations, et c'est écrit](#statistiques--ce-sont-des-estimations-et-cest-écrit)
+- [Documents](#documents)
+- [Fins de ligne](#fins-de-ligne)
+- [Ce que le socle texte ne fait pas](#ce-que-le-socle-texte-ne-fait-pas)
+
+---
+
 Cette page décrit le socle Texte de FourTout : ce qu'il fait, comment il est
 organisé, et ce qu'il ne promet pas.
 

@@ -1,5 +1,21 @@
 # Guide d'utilisation
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Trouver un outil](#trouver-un-outil)
+- [Déposer des fichiers](#déposer-des-fichiers)
+- [Opérations longues](#opérations-longues)
+- [Enregistrer un résultat](#enregistrer-un-résultat)
+- [Taille de l'interface](#taille-de-linterface)
+- [Paramètres](#paramètres)
+- [Confidentialité, en une ligne](#confidentialité-en-une-ligne)
+- [Quelques outils qui méritent une explication](#quelques-outils-qui-méritent-une-explication)
+- [Un problème ?](#un-problème-)
+
+---
+
 FourTout s'utilise sans lire de mode d'emploi. Cette page est là pour les
 détails qui ne se devinent pas.
 
@@ -137,9 +153,9 @@ masquer une fois lu.
 
 ### Modèles
 
-La synthèse vocale et la transcription ont besoin d'un modèle, téléchargé à
-votre demande. Cette page permet de les installer, de voir leur taille et
-leur licence, et de les supprimer. Voir [MODELS.md](MODELS.md).
+La synthèse vocale, la transcription et le détourage d'image ont besoin d'un
+modèle, téléchargé à votre demande. Cette page permet de les installer, de voir
+leur taille et leur licence, et de les supprimer. Voir [MODELS.md](../technical/MODELS.md).
 
 ### Données locales
 
@@ -153,7 +169,7 @@ le dernier relevé de taux de change. Cette page permet de tout effacer.
 Tout se passe sur votre machine, sauf le **convertisseur de devises** (taux de
 la Banque centrale européenne) et le **téléchargement initial des modèles de
 parole**. Les deux le disent dans l'interface. Le détail :
-[PRIVACY.md](PRIVACY.md).
+[PRIVACY.md](../legal/PRIVACY.md).
 
 ---
 
@@ -189,6 +205,22 @@ Reprend le contenu et sa structure — titres, paragraphes, gras, italique,
 listes, tableaux simples. La maquette Word (colonnes, zones flottantes,
 en-têtes, polices spécifiques, images) peut différer. Pour un rendu fidèle au
 pixel, exportez depuis Word ou LibreOffice.
+
+### Retirer l'arrière-plan
+
+À ne pas confondre avec « Rendre une couleur transparente », qui efface une
+couleur que vous désignez. Celui-ci **reconnaît le sujet** — une personne, un
+animal, un objet — et rend transparent tout le reste, sans rien décrire.
+
+Le modèle s'installe une fois (Paramètres → Modèles), puis tout se passe sur
+votre machine : la photo n'est envoyée nulle part. Il fonctionne bien quand le
+sujet est net et se détache du fond ; il se trompe sur les scènes sans sujet
+évident, les fonds de la couleur du sujet, et les détails très fins comme une
+mèche de cheveux isolée. Les deux réglages — adoucir le bord, corriger le
+seuil — rattrapent les petits écarts.
+
+La sortie est en **PNG** : c'est le seul format courant qui conserve la
+transparence.
 
 ### Convertisseur de devises
 

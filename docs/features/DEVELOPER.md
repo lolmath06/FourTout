@@ -1,5 +1,24 @@
 # Outils développeur
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Le principe commun](#le-principe-commun)
+- [JSON — `src/core/code/data.ts`](#json--srccorecodedatats)
+- [XML — `src/core/code/data.ts`](#xml--srccorecodedatats)
+- [YAML — `src/core/code/yaml.ts`](#yaml--srccorecodeyamlts)
+- [SQL — `src/core/code/sql.ts`](#sql--srccorecodesqlts)
+- [JWT — `src/core/code/tokens.ts`](#jwt--srccorecodetokensts)
+- [UUID — `src/core/code/tokens.ts`](#uuid--srccorecodetokensts)
+- [Timestamp Unix et bases numériques](#timestamp-unix-et-bases-numériques)
+- [Expressions régulières — `src/core/code/regex.ts`, `regexRunner.ts`](#expressions-régulières--srccorecoderegexts-regexrunnerts)
+- [Formatage et minification web — `src/core/code/web.ts`](#formatage-et-minification-web--srccorecodewebts)
+- [Cron — `src/core/code/cron.ts`](#cron--srccorecodecronts)
+- [Diff de code](#diff-de-code)
+
+---
+
 Dix-huit outils, tous locaux. Ce document décrit les choix qui ne se devinent
 pas : le traitement des entrées non fiables, et pourquoi certaines protections
 sont là où elles sont.

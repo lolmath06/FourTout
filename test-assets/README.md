@@ -103,7 +103,7 @@ Les deux fichiers `audio-speech-*.wav` sont générés par `pnpm speech:assets` 
 partir des textes ci-dessus : ce sont exactement les fichiers que la
 transcription doit savoir relire. Le script ne télécharge rien ; il s'arrête
 sans erreur si les moteurs de parole ne sont pas encore installés (voir
-[docs/MODELS.md](../docs/MODELS.md)).
+[docs/MODELS.md](../docs/technical/MODELS.md)).
 
 ### Vidéo (phase 5)
 

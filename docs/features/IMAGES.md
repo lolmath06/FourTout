@@ -1,5 +1,23 @@
 # Architecture Image & OCR
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Vue d'ensemble](#vue-densemble)
+- [Bibliothèques](#bibliothèques)
+- [Traitement d'image](#traitement-dimage)
+- [OCR](#ocr)
+- [Batch](#batch)
+- [Sécurité SVG](#sécurité-svg)
+- [Composants d'interface réutilisables](#composants-dinterface-réutilisables)
+- [Outils de finition (Phase 4)](#outils-de-finition-phase-4)
+- [Limitations réelles](#limitations-réelles)
+- [Tests](#tests)
+- [Retirer l'arrière-plan (`image-remove-background`)](#retirer-larrière-plan-image-remove-background)
+
+---
+
 ## Vue d'ensemble
 
 Le bloc Image de FourTout couvre la conversion, la compression, le
@@ -220,3 +238,69 @@ relèvent du socle média (voir [MEDIA.md](MEDIA.md)).
 - `src/test/imageAssets.test.ts` — présence et validité des fixtures.
 - `scripts/generate-image-assets.mjs` — fixtures images (dont textes OCR
   vérifiables, JPEG avec EXIF, SVG, GIF animé).
+
+---
+
+## Retirer l'arrière-plan (`image-remove-background`)
+
+Le seul outil Image qui s'appuie sur un modèle appris. Il ne faut pas le
+confondre avec `image-color-transparent`, qui efface une couleur qu'on lui
+désigne et ne sait rien du contenu de l'image.
+
+### Le modèle
+
+**U²-Net**, exécuté par ONNX Runtime Web (WebAssembly) dans la WebView, avec un
+seul fil : le multi-fil exige `SharedArrayBuffer`, donc des en-têtes
+d'isolation d'origine que FourTout ne sert pas. Le binaire WebAssembly est
+servi depuis `public/ort/`, copié depuis node_modules par
+`scripts/sync-onnx-assets.mjs` — jamais depuis un CDN, que la politique de
+sécurité de contenu interdirait de toute façon.
+
+Le choix d'U²-Net tient d'abord à sa **licence** : code et poids sous Apache
+2.0. RMBG (BRIA) et MODNet sont souvent meilleurs, mais réservent leurs poids à
+un usage non commercial — incompatible avec la distribution de FourTout.
+
+### Le traitement
+
+`src/core/image/background.ts` ne connaît rien d'ONNX : il reçoit une session
+et une fabrique de tenseurs. C'est ce qui permet de l'éprouver en Node avec le
+vrai modèle, sans embarquer la mécanique Tauri dans les tests.
+
+1. **Entrée** — l'image est réduite à 320×320 (taille imposée par le réseau),
+   normalisée avec les statistiques ImageNet, et réorganisée en trois plans
+   R, V, B séparés.
+2. **Inférence** — le réseau rend sept cartes de saillance ; seule la première
+   est utilisée, les six autres servent à l'entraînement.
+3. **Masque** — les scores n'ont pas d'échelle garantie : ils sont ramenés sur
+   [0, 1] par min-max **avant** toute décision, sans quoi un seuil ne voudrait
+   rien dire d'une image à l'autre. Une carte uniforme — le réseau n'a rien
+   distingué — donne un masque entièrement opaque : effacer l'image entière
+   serait le pire des comportements.
+4. **Adoucissement** *(optionnel)* — moyenne glissante séparable, à la
+   résolution du masque : `2n` au lieu de `n²`, et un rendu identique quelle que
+   soit la taille de l'image.
+5. **Rééchantillonnage** — bilinéaire vers la taille d'origine. **La résolution
+   de l'image n'est jamais réduite** : seule l'analyse travaille en 320×320.
+6. **Application** — le masque devient l'alpha, combiné à l'alpha existant. Les
+   couleurs ne sont jamais touchées.
+
+### Ce que les tests garantissent
+
+`src/core/image/background.test.ts` exécute le **vrai modèle** sur trois
+fixtures (silhouette, objet en JPEG, bords durs avec un trou) et regarde les
+pixels : résolution conservée, alpha réellement présent, sujet opaque au
+centre, coins transparents, PNG relu depuis ses octets qui porte encore sa
+transparence, seuil sévère qui garde moins que le seuil permissif,
+adoucissement qui crée de vrais pixels intermédiaires, annulation qui ne rend
+rien, et sortie de taille inattendue refusée plutôt que transformée en masque
+inventé.
+
+Les tests d'inférence s'ignorent proprement quand le modèle n'est pas installé,
+en disant comment l'obtenir.
+
+### Limites, dites dans l'interface
+
+Le modèle cherche un **sujet principal**. Il se trompe sur les scènes sans
+sujet évident, les fonds de la couleur du sujet, et les détails très fins. La
+note du catalogue et un encart sur la page le disent, plutôt que de laisser
+l'utilisateur le découvrir.

@@ -1,5 +1,23 @@
 # Fichiers, dossiers et archives
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Pourquoi le natif, et pas la WebView](#pourquoi-le-natif-et-pas-la-webview)
+- [Progression et annulation](#progression-et-annulation)
+- [Sécurité des archives](#sécurité-des-archives)
+- [Formats d'archive](#formats-darchive)
+- [Empreintes](#empreintes)
+- [Doublons](#doublons)
+- [Découpage et réassemblage](#découpage-et-réassemblage)
+- [Renommage par lot](#renommage-par-lot)
+- [Analyse de dossier et arborescence](#analyse-de-dossier-et-arborescence)
+- [Portabilité Windows / Fedora](#portabilité-windows--fedora)
+- [Tests](#tests)
+
+---
+
 Les outils Fichiers manipulent des **chemins**, pas des octets. C'est la
 différence structurante avec les autres familles d'outils de FourTout.
 

@@ -1,5 +1,20 @@
 # Installation
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Windows 10 et 11](#windows-10-et-11)
+- [Fedora, RHEL, CentOS Stream](#fedora-rhel-centos-stream)
+- [Autres distributions Linux](#autres-distributions-linux)
+- [FFmpeg (audio et vidéo)](#ffmpeg-audio-et-vidéo)
+- [Modèles de parole (facultatif)](#modèles-de-parole-facultatif)
+- [Vérifier un téléchargement](#vérifier-un-téléchargement)
+- [Où sont mes données ?](#où-sont-mes-données-)
+- [Problème d'installation ?](#problème-dinstallation-)
+
+---
+
 FourTout est une application desktop. Il n'y a rien à configurer : téléchargez
 le paquet correspondant à votre système, installez-le, lancez-le.
 
@@ -11,7 +26,11 @@ téléchargé.
 
 ## Windows 10 et 11
 
-**Fichier recommandé :** `FourTout_<version>_x64-setup.exe` (installeur NSIS).
+**Fichier recommandé :** `FourTout-<version>-Windows-x64-Setup.exe`
+(installeur NSIS), sur la page **Releases** du dépôt.
+
+> **N'utilisez pas « Code → Download ZIP ».** Cette archive contient le code
+> source, pas l'application.
 
 1. Téléchargez le `.exe`.
 2. Double-cliquez.
@@ -49,17 +68,57 @@ l'utilisateur découvrir l'avertissement.
 Paramètres → Applications → FourTout → Désinstaller. Ou l'entrée
 « Désinstaller FourTout » du menu Démarrer.
 
+### Vérifier une installation Windows
+
+Liste à cocher, à faire une fois sur une machine Windows après une
+publication. Elle ne demande ni Node, ni Rust, ni ligne de commande.
+
+1. **Télécharger** `FourTout-<version>-Windows-x64-Setup.exe` depuis la page
+   Releases. Vérifier son empreinte SHA-256 :
+   ```powershell
+   Get-FileHash .\FourTout-<version>-Windows-x64-Setup.exe -Algorithm SHA256
+   ```
+   et la comparer à la ligne correspondante de `SHA256SUMS.txt`.
+2. **Installer** par double-clic. Passer l'avertissement SmartScreen
+   (*Informations complémentaires* → *Exécuter quand même*) tant que
+   l'installeur n'est pas signé.
+   → **Aucune fenêtre de contrôle de compte d'utilisateur ne doit apparaître :**
+   l'installation se fait pour l'utilisateur courant.
+3. **Menu Démarrer** — FourTout apparaît, avec son icône (carré bleu marine,
+   F blanc). Pas d'icône générique, pas de logo Tauri.
+4. **Lancer** — la fenêtre s'ouvre, son icône de barre des tâches est la bonne,
+   et le titre est « FourTout ».
+5. **Trois outils sans dépendance externe** : *Calculs de pourcentages*,
+   *JSON — formater et valider*, *Fusionner des PDF*. Ils doivent fonctionner
+   immédiatement, sans rien installer d'autre.
+6. **Un outil vidéo** — sans FFmpeg dans le `PATH`, l'écran doit **le dire
+   clairement**, pas échouer en silence. Installer FFmpeg
+   (`winget install Gyan.FFmpeg`), **redémarrer FourTout**, et vérifier que
+   l'outil devient utilisable.
+7. **Un outil à modèle** — ouvrir *Retirer l'arrière-plan* : l'écran doit
+   proposer le téléchargement, avec taille, source et licence. Installer,
+   détourer une photo, vérifier le PNG produit.
+8. **Zoom** — `Ctrl` `+`, `Ctrl` `-`, `Ctrl` `0`. Fermer, rouvrir : l'échelle
+   est conservée.
+9. **Désinstaller** depuis Paramètres → Applications. L'entrée du menu Démarrer
+   disparaît.
+
+Le dossier de données (`%APPDATA%\app.fourtout.desktop\`) survit à la
+désinstallation : c'est voulu, il contient vos préférences et vos modèles.
+Supprimez-le à la main pour repartir de zéro.
+
 ---
 
 ## Fedora, RHEL, CentOS Stream
 
-**Fichier recommandé :** `FourTout-<version>-1.x86_64.rpm`.
+**Fichier recommandé :** `FourTout-<version>-Fedora-x86_64.rpm`, sur la page
+**Releases** du dépôt.
 
 Un double-clic sur le `.rpm` ouvre GNOME Logiciels (ou le gestionnaire de
 paquets de votre bureau), qui propose l'installation. En ligne de commande :
 
 ```bash
-sudo dnf install ./FourTout-<version>-1.x86_64.rpm
+sudo dnf install ./FourTout-<version>-Fedora-x86_64.rpm
 ```
 
 FourTout apparaît ensuite dans le menu Applications, catégorie *Utilitaires*.
@@ -81,11 +140,11 @@ sudo dnf remove four-tout
 
 ## Autres distributions Linux
 
-**Fichier recommandé :** `FourTout_<version>_amd64.AppImage`.
+**Fichier recommandé :** `FourTout-<version>-Linux-x86_64.AppImage`.
 
 ```bash
-chmod +x FourTout_<version>_amd64.AppImage
-./FourTout_<version>_amd64.AppImage
+chmod +x FourTout-<version>-Linux-x86_64.AppImage
+./FourTout-<version>-Linux-x86_64.AppImage
 ```
 
 L'AppImage est autonome : elle n'installe rien et ne demande aucun droit
@@ -141,7 +200,7 @@ Le gestionnaire de modèles de FourTout (Paramètres → Modèles) les télécha
 votre demande explicite, vérifie leur empreinte, et les installe dans le
 dossier de données de l'application. Ensuite, tout fonctionne hors ligne.
 
-Détails : [MODELS.md](MODELS.md).
+Détails : [MODELS.md](../technical/MODELS.md).
 
 ---
 
@@ -156,7 +215,7 @@ sha256sum -c SHA256SUMS.txt --ignore-missing
 
 ```powershell
 # Windows PowerShell
-Get-FileHash .\FourTout_0.1.0_x64-setup.exe -Algorithm SHA256
+Get-FileHash .\FourTout-0.1.0-Windows-x64-Setup.exe -Algorithm SHA256
 ```
 
 Comparez l'empreinte obtenue à celle du fichier. FourTout sait aussi le faire :

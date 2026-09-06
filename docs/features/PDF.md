@@ -1,5 +1,21 @@
 # Architecture PDF
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Bibliothèques retenues](#bibliothèques-retenues)
+- [Organisation du code](#organisation-du-code)
+- [Interface](#interface)
+- [Ajouter une opération PDF](#ajouter-une-opération-pdf)
+- [Limites connues](#limites-connues)
+- [Modifier le texte d'un PDF (`pdf-edit-text`)](#modifier-le-texte-dun-pdf-pdf-edit-text)
+- [PDF vers audio (`pdf-to-audio`)](#pdf-vers-audio-pdf-to-audio)
+- [Ressources pdf.js](#ressources-pdfjs)
+- [Comportement Windows / Fedora](#comportement-windows--fedora)
+
+---
+
 ## Bibliothèques retenues
 
 | Bibliothèque | Licence | Rôle |
@@ -196,7 +212,7 @@ est irréversible sur le fichier produit.
 
 Les vingt-trois outils PDF du catalogue sont livrés, `pdf-to-audio` compris —
 ce dernier s'appuie sur le moteur de synthèse vocale local (voir
-[MODELS.md](MODELS.md)).
+[MODELS.md](../technical/MODELS.md)).
 
 ## Modifier le texte d'un PDF (`pdf-edit-text`)
 

@@ -1,5 +1,17 @@
 # Calculateurs
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Le moteur d'unités — `src/core/units/index.ts`](#le-moteur-dunités--srccoreunitsindexts)
+- [La calculatrice scientifique — `src/core/calc/expression.ts`](#la-calculatrice-scientifique--srccorecalcexpressionts)
+- [Dates, durées et âge — `src/core/calc/datetime.ts`](#dates-durées-et-âge--srccorecalcdatetimets)
+- [Pourcentages et règle de trois — `src/core/calc/arithmetic.ts`](#pourcentages-et-règle-de-trois--srccorecalcarithmeticts)
+- [Convertisseur de devises — `src/core/currency/`, `src-tauri/src/rates.rs`](#convertisseur-de-devises--srccorecurrency-src-taurisrcratesrs)
+
+---
+
 Dix-sept outils : dix convertisseurs d'unités, cinq calculateurs, une
 calculatrice scientifique, un convertisseur de devises.
 

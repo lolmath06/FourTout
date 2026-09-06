@@ -1,5 +1,20 @@
 # Construire les paquets
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Principe](#principe)
+- [Vérifier avant de construire](#vérifier-avant-de-construire)
+- [Construire](#construire)
+- [Où atterrissent les fichiers](#où-atterrissent-les-fichiers)
+- [Vérifier un paquet Linux sans l'installer](#vérifier-un-paquet-linux-sans-linstaller)
+- [Dépendances déclarées](#dépendances-déclarées)
+- [Windows](#windows)
+- [Reproductibilité](#reproductibilité)
+
+---
+
 Construire FourTout produit un exécutable et des installeurs. Cette page
 décrit ce qui est produit, sur quelle machine, et ce qui reste à faire à la
 main.
@@ -127,7 +142,7 @@ chmod +x src-tauri/target/release/bundle/appimage/FourTout_0.1.0_amd64.AppImage
 FFmpeg **n'est pas embarqué** dans les paquets : il est cherché dans les
 ressources de l'application (`resources/ffmpeg/`) puis dans le `PATH`. Ce
 choix évite de redistribuer FFmpeg et les obligations de licence qui vont
-avec — voir [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
+avec — voir [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md).
 
 Pour produire un paquet **autonome** contenant FFmpeg, placez les binaires
 dans `src-tauri/resources/ffmpeg/` et ajoutez-les à `bundle.resources` : la
@@ -145,18 +160,33 @@ redistribuez FFmpeg, avec les obligations LGPL ou GPL correspondantes.
   FourTout s'installe dans le dossier de l'utilisateur et apparaît au menu
   Démarrer. Sélecteur de langue désactivé, français et anglais disponibles.
 - **MSI** — pour les déploiements par stratégie de groupe.
+- **ZIP portable** — assemblé par le workflow de publication à partir de
+  `FourTout.exe` et de ses ressources : on décompresse, on lance. Il n'est
+  produit que si l'exécutable existe réellement ; le workflow ne fabrique pas
+  une archive vide pour avoir un fichier de plus. Les modèles téléchargés à la
+  demande atterrissent dans `%APPDATA%`, comme pour une installation normale.
 
 ### Signature
 
 Les installeurs ne sont **pas signés**. Sans certificat de signature de code,
 SmartScreen affiche un avertissement au premier lancement. C'est dit dans
-[INSTALLATION.md](INSTALLATION.md).
+[INSTALLATION.md](../guides/INSTALLATION.md).
 
-Mettre en place la signature ne demande **aucune modification du code** :
-Tauri lit les variables d'environnement `TAURI_SIGNING_PRIVATE_KEY` et
-`TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. Le workflow de publication est déjà
-écrit pour les recevoir depuis les secrets GitHub. **Aucune clé n'est générée
-ni versionnée dans ce dépôt.**
+Mettre en place la signature ne demande **aucune modification du code**. Le
+workflow de publication est déjà écrit pour recevoir, depuis les secrets
+GitHub :
+
+| Secret | Contenu |
+| --- | --- |
+| `WINDOWS_CERTIFICATE` | Le certificat `.pfx`, encodé en base64 |
+| `WINDOWS_CERTIFICATE_PASSWORD` | Son mot de passe |
+| `TAURI_SIGNING_PRIVATE_KEY` | Clé de signature des mises à jour Tauri, si un jour elles sont activées |
+| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Son mot de passe |
+
+Tant que `WINDOWS_CERTIFICATE` est absent, l'étape est simplement sautée et la
+construction produit un installeur non signé — ce que la documentation annonce.
+
+**Aucune clé n'est générée ni versionnée dans ce dépôt.**
 
 ---
 

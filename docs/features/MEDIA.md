@@ -1,5 +1,7 @@
 # Architecture média (FFmpeg)
 
+[← Documentation](../README.md)
+
 ## Vue d'ensemble
 
 Le socle média alimente les outils **Audio** et toute la suite **Vidéo**
@@ -115,7 +117,7 @@ transcription, ou pour l'export MP3 après synthèse.
 
 Ce qui diffère : les binaires ne sont pas supposés installés. Ils sont déclarés,
 téléchargés et vérifiés par le gestionnaire de modèles — voir
-[MODELS.md](MODELS.md). Commandes : `tts_speak`, `tts_concat`, `stt_transcribe`,
+[MODELS.md](../technical/MODELS.md). Commandes : `tts_speak`, `tts_concat`, `stt_transcribe`,
 `speech_cancel`, et `models_list` / `models_install` / `models_cancel` /
 `models_remove` / `models_dir`.
 

@@ -1,6 +1,8 @@
 # Tous les outils de FourTout
 
-151 outils, répartis en dix catégories. Chaque outil de cette liste est
+[← Documentation](../README.md)
+
+152 outils, répartis en dix catégories. Chaque outil de cette liste est
 **utilisable** : FourTout n'enregistre pas d'outil incomplet, et il n'existe
 donc pas d'état « bientôt disponible ».
 
@@ -14,7 +16,7 @@ aussi dans l'application, sur la page de l'outil.
 ## Sommaire
 
 - [PDF](#pdf-23)
-- [Images](#images-20)
+- [Images](#images-21)
 - [Audio](#audio-15)
 - [Vidéo](#vidéo-19)
 - [Texte & Documents](#texte--documents-16)
@@ -57,7 +59,7 @@ _Fusionner, découper, compresser, convertir et sécuriser des PDF._
 - **Comparer deux PDF** — Mettre en évidence les différences entre deux versions d'un document. · aussi dans *Texte*
 - **Caviarder un PDF** — Masquer définitivement des zones sensibles, contenu supprimé et non simplement recouvert. · aussi dans *Sécurité*
 
-### Images (20)
+### Images (21)
 
 _Convertir, compresser, redimensionner et nettoyer des images._
 
@@ -71,6 +73,8 @@ _Convertir, compresser, redimensionner et nettoyer des images._
 - **Ajuster une image** — Régler luminosité, contraste, saturation et gamma, avec aperçu en temps réel.
 - **Flouter ou pixelliser** — Masquer une information : flou ou mosaïque, sur toute l'image ou une zone dessinée. · aussi dans *Sécurité*
 - **Supprimer la transparence** — Aplatir un PNG ou WebP transparent sur un fond uni (blanc, noir ou couleur).
+- **Retirer l'arrière-plan** — Détourer automatiquement le sujet d'une photo et rendre le fond transparent. · aussi dans *Sécurité*
+  <br>_Le modèle de détourage s'installe une fois depuis Paramètres → Modèles, puis fonctionne hors ligne : l'image n'est jamais envoyée sur un serveur. Il reconnaît un sujet principal net et détaché ; il se trompe sur les scènes sans sujet évident et sur les détails très fins._
 - **Rendre une couleur transparente** — Effacer une couleur unie (fond) et la remplacer par de la transparence.
 - **Extraire le texte d'une image (OCR)** — Reconnaître le texte d'une image, en français ou en anglais, 100 % en local. · aussi dans *Texte*
 - **Texte sur une image** — Écrire du texte sur une image : légende, mème, annotation, avec placement au doigt.
@@ -256,7 +260,8 @@ Un seul outil de cette liste a besoin d'Internet : **Convertisseur de
 devises**, pour récupérer les taux de référence de la Banque centrale
 européenne. Tous les autres travaillent hors ligne.
 
-Les outils de parole (**Texte vers parole**, **Transcription audio**,
-**Générer des sous-titres**, **PDF vers audio**) téléchargent leur modèle une
-fois, à votre demande, puis fonctionnent hors ligne. Voir
-[MODELS.md](MODELS.md).
+Les outils qui s'appuient sur un modèle — **Texte vers parole**,
+**Transcription audio**, **Générer des sous-titres**, **PDF vers audio** et
+**Retirer l'arrière-plan** — téléchargent le leur une fois, à votre demande,
+puis fonctionnent hors ligne. Voir
+[MODELS.md](../technical/MODELS.md).

@@ -1,5 +1,24 @@
 # Dépannage
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [L'application ne démarre pas](#lapplication-ne-démarre-pas)
+- [Les outils audio ou vidéo sont indisponibles](#les-outils-audio-ou-vidéo-sont-indisponibles)
+- [La reconnaissance vocale ou la synthèse ne marche pas](#la-reconnaissance-vocale-ou-la-synthèse-ne-marche-pas)
+- [Le micro ne fonctionne pas (Linux)](#le-micro-ne-fonctionne-pas-linux)
+- [Une opération est très lente](#une-opération-est-très-lente)
+- [« Mot de passe incorrect » alors qu'il est bon](#-mot-de-passe-incorrect--alors-quil-est-bon)
+- [Le convertisseur de devises n'affiche rien](#le-convertisseur-de-devises-naffiche-rien)
+- [Une archive protégée ne s'ouvre pas ailleurs](#une-archive-protégée-ne-souvre-pas-ailleurs)
+- [Une conversion Word vers PDF ne ressemble pas au document](#une-conversion-word-vers-pdf-ne-ressemble-pas-au-document)
+- [L'interface est trop grande ou trop petite](#linterface-est-trop-grande-ou-trop-petite)
+- [Repartir de zéro](#repartir-de-zéro)
+- [Signaler un problème](#signaler-un-problème)
+
+---
+
 ---
 
 ## L'application ne démarre pas
@@ -83,7 +102,7 @@ FFmpeg complet, ajoutez le dépôt RPM Fusion.
 
 Ces outils ont besoin d'un modèle, qui n'est pas livré avec l'application.
 **Paramètres → Modèles** permet de l'installer. Il faut une connexion pour ce
-téléchargement, une seule fois. Voir [MODELS.md](MODELS.md).
+téléchargement, une seule fois. Voir [MODELS.md](../technical/MODELS.md).
 
 Si un téléchargement échoue avec une erreur d'empreinte, rien n'est installé :
 c'est la vérification qui a fait son travail. Relancez le téléchargement.
@@ -207,4 +226,4 @@ Ouvrez un ticket sur GitHub avec la version de FourTout, votre système, les
 étapes de reproduction et le message d'erreur exact.
 
 **Une vulnérabilité de sécurité ne s'ouvre pas en ticket public** : voir
-[SECURITY.md](SECURITY.md#signaler-une-vulnérabilité).
+[SECURITY.md](../legal/SECURITY.md#signaler-une-vulnérabilité).

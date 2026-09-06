@@ -1,7 +1,11 @@
 # Composants tiers
 
-FourTout s'appuie sur des logiciels libres. Cette page inventorie ceux qui
-comptent : ce qui est **embarqué** dans les paquets distribués, ce qui est
+**FourTout est un logiciel propriétaire. Les composants listés ici ne le sont
+pas** : chacun reste sous sa propre licence, que la licence de FourTout ne
+remplace pas et ne peut pas remplacer. Ce document existe pour que ces
+licences soient respectées et visibles.
+
+Cette page inventorie les composants qui comptent : ce qui est **embarqué** dans les paquets distribués, ce qui est
 **appelé** sur la machine de l'utilisateur, ce qui est **téléchargé à la
 demande**, et les briques significatives utilisées à la construction.
 
@@ -31,6 +35,7 @@ présence change quelque chose pour l'utilisateur ou pour un juriste.
 | [pdf.js](https://mozilla.github.io/pdf.js/) | 6.3 | Apache-2.0 | Lecture, rendu et extraction de texte PDF |
 | [@cantoo/pdf-lib](https://github.com/cantoo-scribe/pdf-lib) | 2.9 | MIT | Écriture PDF (fork maintenu de `pdf-lib`) |
 | [tesseract.js](https://tesseract.projectnaptha.com) | 6.0 | Apache-2.0 | Reconnaissance de texte (OCR), exécutée localement |
+| [ONNX Runtime Web](https://onnxruntime.ai) | 1.29 | MIT | Exécution locale du modèle de détourage (WebAssembly) |
 | Données `tessdata` (fra, eng) | — | Apache-2.0 | Modèles OCR embarqués |
 | [image](https://crates.io/crates/image) (Rust) | 0.25 | MIT / Apache-2.0 | Décodage et encodage d'images côté natif |
 | [qrcode](https://github.com/soldair/node-qrcode) | 1.5 | MIT | Génération de QR codes |
@@ -122,6 +127,24 @@ téléchargement. La voix anglaise ne convient pas à un usage commercial : c'es
 `ggml-base` et `ggml-small`, publiés sous licence **MIT** sur
 [huggingface.co/ggerganov/whisper.cpp](https://huggingface.co/ggerganov/whisper.cpp).
 
+### Modèles de détourage
+
+**U²-Net**, licence **Apache 2.0** — code *et* poids.
+Projet : [github.com/xuebinqin/U-2-Net](https://github.com/xuebinqin/U-2-Net).
+Les conversions ONNX utilisées sont celles publiées par
+[rembg](https://github.com/danielgatis/rembg) (MIT).
+
+| Modèle | Taille | Licence |
+| --- | --- | --- |
+| `u2netp.onnx` (Détourage — Rapide) | 4,6 Mo | Apache 2.0 |
+| `u2net.onnx` (Détourage — Précis) | 176 Mo | Apache 2.0 |
+
+**Le choix du modèle est un choix de licence autant qu'un choix de qualité.**
+Les modèles de segmentation plus récents et souvent meilleurs — RMBG 1.4 et 2.0
+de BRIA, MODNet — réservent leurs poids à un usage **non commercial**. Ils sont
+donc incompatibles avec la distribution de FourTout, et n'ont pas été retenus,
+même à qualité supérieure.
+
 ---
 
 ## Données embarquées
@@ -140,4 +163,4 @@ téléchargement. La voix anglaise ne convient pas à un usage commercial : c'es
 | [Banque centrale européenne](https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml) | Taux de change de référence | Aucune : requête `GET` sans paramètre. Le montant à convertir ne quitte jamais la machine. |
 | GitHub, Hugging Face | Téléchargement des moteurs et modèles de parole | Aucune, hors la requête elle-même |
 
-Aucun autre appel réseau n'existe dans FourTout. Voir [docs/PRIVACY.md](docs/PRIVACY.md).
+Aucun autre appel réseau n'existe dans FourTout. Voir [docs/PRIVACY.md](docs/legal/PRIVACY.md).

@@ -1,5 +1,22 @@
 # Architecture de FourTout
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Choix techniques](#choix-techniques)
+- [Structure](#structure)
+- [Le registre : une seule source de vérité](#le-registre--une-seule-source-de-vérité)
+- [Recherche et intention](#recherche-et-intention)
+- [Traitements longs](#traitements-longs)
+- [Erreurs et retours utilisateur](#erreurs-et-retours-utilisateur)
+- [Fichiers](#fichiers)
+- [Confidentialité](#confidentialité)
+- [Échelle de l'interface](#échelle-de-linterface)
+- [Ce qui reste ouvert](#ce-qui-reste-ouvert)
+
+---
+
 ## Choix techniques
 
 | Choix | Pourquoi |
@@ -182,4 +199,4 @@ la racine du document — pas par un second système de classes.
   déterministe reste alors le repli, et le registre reste l'autorité sur ce qui
   existe.
 
-Le reste du chantier ouvert est dans [ROADMAP.md](../ROADMAP.md).
+Le reste du chantier ouvert est dans [ROADMAP.md](../../ROADMAP.md).

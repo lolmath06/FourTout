@@ -1,5 +1,23 @@
 # Sécurité
 
+[← Documentation](../README.md)
+
+## Sommaire
+
+- [Signaler une vulnérabilité](#signaler-une-vulnérabilité)
+- [Modèle de menace](#modèle-de-menace)
+- [Chiffrement de fichiers](#chiffrement-de-fichiers)
+- [Archives protégées par mot de passe](#archives-protégées-par-mot-de-passe)
+- [Traitement des entrées non fiables](#traitement-des-entrées-non-fiables)
+- [Générateurs aléatoires](#générateurs-aléatoires)
+- [Effacement sécurisé : ce qu'il vaut](#effacement-sécurisé--ce-quil-vaut)
+- [Récupération de mot de passe PDF](#récupération-de-mot-de-passe-pdf)
+- [Décodage JWT](#décodage-jwt)
+- [Intégrité de la chaîne de construction](#intégrité-de-la-chaîne-de-construction)
+- [Périmètre couvert par les tests](#périmètre-couvert-par-les-tests)
+
+---
+
 Cette page décrit le modèle de sécurité de FourTout : ce qu'il protège, ce
 qu'il ne protège pas, les choix cryptographiques réels, et comment signaler
 une vulnérabilité.
@@ -257,7 +275,7 @@ ne garantissent pas les décodeurs JWT en ligne.
 
 Les installeurs **ne sont pas encore signés**. Sur Windows, SmartScreen
 affichera un avertissement au premier lancement. C'est écrit dans
-[INSTALLATION.md](INSTALLATION.md) plutôt que laissé à découvrir.
+[INSTALLATION.md](../guides/INSTALLATION.md) plutôt que laissé à découvrir.
 
 En attendant la signature, chaque publication est accompagnée d'un fichier
 `SHA256SUMS.txt`. Vérifiez-le.
