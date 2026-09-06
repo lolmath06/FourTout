@@ -22,7 +22,6 @@ Ouvrez le fichier de sa catégorie dans `src/core/tools/catalog/` (par exemple
   icon: "Minimize2",                      // nom lucide, voir plus bas
   keywords: ["réduire la taille", "trop lourd", "alléger"],  // langage courant
   aliases: ["compress pdf", "reduce pdf size"],              // autres noms, anglais inclus
-  status: "planned",                      // "planned" | "beta" | "available"
   capabilities: ["local", "produces-files", "long-running"],
   acceptedInputs: [IN.pdf()],
   outputs: [OUT.pdf()],
@@ -30,9 +29,15 @@ Ouvrez le fichier de sa catégorie dans `src/core/tools/catalog/` (par exemple
 }
 ```
 
-L'outil apparaît immédiatement dans sa catégorie, dans la recherche, dans
-l'accueil et sur sa propre page (`/tools/t/pdf-compress`), avec la vue
-« bientôt disponible ».
+> **N'ajoutez cette déclaration que lorsque l'outil fonctionne.** La règle du
+> produit est que figurer au catalogue, c'est fonctionner : il n'existe pas
+> d'état « bientôt disponible », et un test échouera si le catalogue et la
+> table des implémentations divergent. Un outil futur vit dans
+> [ROADMAP.md](../ROADMAP.md) ou dans un ticket, pas dans l'interface.
+
+Une fois les trois fichiers en place, l'outil apparaît dans sa catégorie, dans
+la recherche, dans l'accueil et sur sa propre page
+(`/tools/t/pdf-compress`).
 
 ### Bien choisir les `keywords` et `aliases`
 
@@ -88,10 +93,9 @@ Puis déclarez-le dans `src/tools/implementations.ts` :
 ),
 ```
 
-Enfin, passez son `status` à `"available"` dans le catalogue.
-
-> Un test vérifie que la liste des outils `available` correspond exactement à
-> la liste des implémentations : impossible d'oublier l'un des deux.
+> Un test vérifie que le catalogue et la table des implémentations
+> correspondent **exactement** : impossible d'oublier l'un des deux, ni
+> d'enregistrer un outil qui n'existe pas encore.
 
 ### Ce que la page d'outil fournit déjà
 

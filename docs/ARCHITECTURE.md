@@ -26,17 +26,29 @@ src/
 │   ├── intent/            resolveToolIntent() et le point d'extension LLM
 │   ├── storage/           KeyValueStore (localStorage / mémoire)
 │   ├── files/             Fichiers déposés, chemins, client du socle natif
+│   ├── pdf/               Lecture, rendu, écriture et opérations PDF
+│   ├── image/             Traitement d'images dans la WebView
+│   ├── media/             Pilotage FFmpeg côté interface, capacités réelles
+│   ├── ocr/               Reconnaissance de texte (tesseract.js)
+│   ├── speech/            Synthèse et transcription, gestionnaire de modèles
 │   ├── text/              Socle texte : fonctions pures, sans React ni backend
+│   ├── code/              Outils développeur : JSON, XML, YAML, SQL, JWT, regex, cron, web
+│   ├── calc/              Calculatrice, pourcentages, dates, durées, âge
+│   ├── units/             Moteur d'unités partagé par les dix convertisseurs
+│   ├── security/          Génération et évaluation de mots de passe
+│   ├── currency/          Taux de change : cache, conversion, datation
 │   ├── convert/           Graphe de conversion dérivé du registre
 │   ├── hash/              Empreintes calculées dans la WebView (texte)
 │   ├── jobs/              Traitements longs : progression, erreur, annulation
+│   ├── ui/                Échelle de l'interface (zoom)
 │   └── platform/          Détection Tauri / navigateur / OS
 ├── features/              État applicatif
 │   ├── favorites/         Favoris persistants
 │   ├── recents/           Historique d'ouverture (12 entrées)
 │   ├── notifications/     Toasts : succès, erreur, avertissement, en cours
 │   ├── handoff/           Passage de relais entre outils (fichier + préréglage)
-│   └── settings/          Thème, rappels de confidentialité
+│   ├── jobs/              Travaux de fond, barre de progression globale
+│   └── settings/          Thème, échelle, densité, animations, confidentialité
 ├── components/            Composants réutilisables (ui/, tools/, files/)
 ├── layouts/AppShell.tsx   Barre latérale, en-tête, recherche globale
 ├── pages/                 Une page par route
@@ -48,8 +60,11 @@ src/
 src-tauri/                 Application native (Rust)
 ├── src/media/             Socle FFmpeg : exécution, progression, annulation
 ├── src/speech/            Synthèse (Piper) et transcription (whisper.cpp)
+├── src/models/            Téléchargement vérifié et installation des modèles
 ├── src/recovery/          Récupération de mot de passe PDF
-└── src/files/             Archives, empreintes, doublons, découpage, renommage
+├── src/rates.rs           Taux BCE — la seule sortie réseau de l'application
+└── src/files/             Archives, empreintes, doublons, découpage, renommage,
+                           chiffrement, effacement, organisation de dossier
 ```
 
 ## Le registre : une seule source de vérité
@@ -61,10 +76,16 @@ définition alimente :
 - la recherche (nom, alias, mots-clés, catégorie, description) ;
 - les favoris et les récents (qui ne stockent que des identifiants) ;
 - la route `/tools/t/:id` ;
-- la disponibilité (`status`) ;
 - les contraintes de fichiers de la zone de dépôt (`acceptedInputs`) ;
-- le futur convertisseur universel (`acceptedInputs` / `outputs`) ;
+- le convertisseur universel, qui dérive ses arêtes des `acceptedInputs` et
+  `outputs` déclarés ;
 - le futur assistant local (mots-clés, alias, capacités).
+
+**Figurer au catalogue, c'est fonctionner.** Le modèle ne porte plus d'état de
+disponibilité : il en avait un tant que des cartes existaient sans
+implémentation, ce qui n'est plus le cas. Un outil incomplet n'est simplement
+pas enregistré, et un test garde le catalogue et la table des implémentations
+exactement alignés.
 
 Un outil peut apparaître dans plusieurs catégories via `alsoIn`, **sans être
 dupliqué** : une seule définition, plusieurs points d'entrée. Le registre
@@ -107,9 +128,14 @@ d'être affichés, et le résolveur déterministe reste le repli.
 
 `useJob()` (`core/jobs`) donne à chaque futur outil : `status`, `progress`,
 `result`, `error`, `cancel()`. Le traitement reçoit un `JobContext` avec
-`report()`, un `AbortSignal` et `throwIfCancelled()`. Rien n'est encore branché
-dessus, mais le contrat est fixé pour que compression vidéo, OCR, transcription
-et TTS ne réinventent pas chacun leur mécanique.
+`report()`, un `AbortSignal` et `throwIfCancelled()`. Compression vidéo, OCR,
+transcription, synthèse, empreintes, chiffrement et récupération de mot de
+passe passent tous par ce contrat : une seule mécanique de progression et
+d'annulation, et une barre de tâches globale qui survit au changement de page.
+
+Une annulation est une vraie annulation : le processus natif est arrêté, les
+fichiers temporaires sont supprimés, et **aucun résultat partiel n'est
+présenté comme un résultat**. Voir [JOBS.md](JOBS.md).
 
 ## Erreurs et retours utilisateur
 
@@ -129,16 +155,31 @@ validation eux-mêmes.
 
 - `PrivacyNote` affiche « Traitement local — vos fichiers restent sur votre
   appareil » sur les pages d'outil (désactivable dans les Paramètres).
-- La capacité `network` marque explicitement le seul outil qui aura besoin
+- La capacité `network` marque explicitement le seul outil qui a besoin
   d'Internet (taux de change). Un test vérifie que c'est bien le seul.
 - La CSP de `tauri.conf.json` interdit toute connexion sortante non prévue.
 
-## Ce qui reste à faire pour les phases suivantes
+## Échelle de l'interface
 
-- Brancher les traitements natifs (ffmpeg, OCR, chiffrement) côté Rust et les
-  exposer via `invoke`, en s'appuyant sur `useJob` pour la progression.
-- Remplacer `LocalStorageStore` par un store fichier Tauri si l'on veut que
-  favoris et récents survivent à un nettoyage de la WebView.
-- Implémenter les outils du catalogue, un par un (voir `ADDING-A-TOOL.md`).
-- Brancher le convertisseur universel sur `acceptedInputs` / `outputs`.
-- Brancher l'assistant local via `registerIntentResolver`.
+`core/ui/zoom.ts` applique l'échelle en demandant à la **WebView elle-même** de
+zoomer (`setZoom`) : la page est remise en page, le texte reste net, et les
+coordonnées de pointeur restent justes — ce qui compte pour le rognage
+d'image, le rognage vidéo, l'éditeur PDF et la réorganisation des pages.
+
+`transform: scale()` est proscrit : il floute le texte, décale les
+coordonnées et laisse le viewport à sa taille d'origine. Hors application
+(navigateur, tests), le repli est la propriété CSS `zoom`, qui remet aussi en
+page.
+
+Densité et animations se règlent par jetons CSS, commutés par un attribut sur
+la racine du document — pas par un second système de classes.
+
+## Ce qui reste ouvert
+
+- Remplacer `LocalStorageStore` par un store fichier Tauri, pour que favoris et
+  récents survivent à un nettoyage de la WebView.
+- Brancher l'assistant local via `registerIntentResolver` : le résolveur
+  déterministe reste alors le repli, et le registre reste l'autorité sur ce qui
+  existe.
+
+Le reste du chantier ouvert est dans [ROADMAP.md](../ROADMAP.md).

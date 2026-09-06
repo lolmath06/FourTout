@@ -113,11 +113,12 @@ contrôles (`Field`, `OptionGroup`, `Slider`, `PositionPicker`, `PageRangeInput`
    `src/test/pdfFixtures.ts` — pas sur des octets factices.
 3. Créer le composant dans `src/tools/impl/pdf/`, en enveloppant les réglages
    dans `PdfToolShell`.
-4. L'enregistrer dans `src/tools/implementations.ts` et passer son `status` à
-   `"available"` dans `src/core/tools/catalog/pdf.ts`.
+4. L'enregistrer dans `src/tools/implementations.ts` **et** dans
+   `src/core/tools/catalog/pdf.ts`.
 
-Un test vérifie que la liste des outils `available` correspond exactement à la
-liste des implémentations : impossible d'annoncer un outil non branché.
+Un test vérifie que le catalogue et la table des implémentations correspondent
+exactement : impossible d'annoncer un outil non branché, ni d'oublier
+d'annoncer un outil branché.
 
 ## Limites connues
 
@@ -191,10 +192,11 @@ le secret n'est plus extractible **ni** présent dans les octets bruts du fichie
 Les pages sans zone masquée restent vectorielles (texte conservé). L'opération
 est irréversible sur le fichier produit.
 
-### Ce qui reste `planned`
+### État
 
-`pdf-to-audio` uniquement : il dépend du moteur de synthèse vocale local, qui
-sera introduit avec le bloc Audio/TTS.
+Les vingt-trois outils PDF du catalogue sont livrés, `pdf-to-audio` compris —
+ce dernier s'appuie sur le moteur de synthèse vocale local (voir
+[MODELS.md](MODELS.md)).
 
 ## Modifier le texte d'un PDF (`pdf-edit-text`)
 

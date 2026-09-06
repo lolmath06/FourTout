@@ -33,7 +33,8 @@ Une arête `from → to` existe si et seulement si un outil :
 Conséquences directes, et c'est tout l'intérêt :
 
 - rendre un outil disponible suffit à l'exposer dans le convertisseur ;
-- un outil `planned` n'y apparaît **jamais** ;
+- une arête n'existe que si l'outil qui la porte est au catalogue, et donc
+  implémenté — le graphe ne peut pas proposer une conversion inexécutable ;
 - retirer un outil retire ses conversions, sans autre modification.
 
 Quand deux outils produisent le même format cible, le premier du catalogue

@@ -1,126 +1,147 @@
 # FourTout
 
-Boîte à outils desktop, gratuite et **locale**.
+**Une seule application desktop pour les petits outils du quotidien.**
 
-FourTout rassemble dans une seule application les petits outils que l'on va
-habituellement chercher sur des sites remplis de publicités ou payants : PDF,
-images, audio, vidéo, texte, fichiers, outils développeur, calculateurs,
-sécurité.
+FourTout rassemble 151 utilitaires — PDF, images, audio, vidéo, texte,
+fichiers, développeur, calculateurs, sécurité — dans une application qui
+s'installe et fonctionne sur votre machine. Pas de site couvert de publicités,
+pas de compte, pas de fichier téléversé sur le serveur de quelqu'un d'autre.
 
-**Local-first** : lorsqu'une opération peut être faite sur votre machine, vos
-fichiers n'en sortent pas. Aucune télémétrie, aucun compte, aucun serveur.
+<!-- Captures d'écran : docs/assets/screenshots/ -->
 
 ---
 
-## Démarrage rapide
+## Pourquoi FourTout ?
 
-```bash
-pnpm install          # dépendances Node
-pnpm app:dev          # lance l'application desktop (Tauri + Vite)
-```
+Compresser un PDF, convertir une image en WebP, extraire le son d'une vidéo,
+formater du JSON, convertir des kilomètres en miles : chacune de ces tâches
+prend trente secondes. Les trouver prend plus longtemps, et le site gratuit qui
+les propose demande souvent de téléverser le fichier.
 
-Pour travailler uniquement sur l'interface, sans compiler la partie native :
+FourTout part de l'idée inverse : **si l'opération peut se faire sur votre
+machine, elle s'y fait.** Un PDF confidentiel, une photo de famille, un
+enregistrement vocal — rien ne part sur le réseau.
 
-```bash
-pnpm dev              # http://localhost:1420 dans un navigateur
-```
+Trois principes tiennent le produit :
 
-### Prérequis
+1. **Ce qui est au catalogue fonctionne.** Il n'y a pas d'outil « bientôt
+   disponible » : un outil incomplet n'est pas enregistré.
+2. **Aucune promesse invérifiable.** Quand un outil a une limite — un
+   effacement qui n'est pas physique, une conversion Word qui n'est pas
+   fidèle au pixel, un JWT décodé mais pas vérifié — l'interface le dit, à
+   l'endroit où l'utilisateur en a besoin.
+3. **Rien n'est inventé.** La recherche ne propose que des outils réellement
+   présents, et le convertisseur de devises affiche la date du relevé plutôt
+   qu'un taux d'origine inconnue.
 
-| Outil | Version testée |
+## Fonctionnalités
+
+| Catégorie | Outils | Exemples |
+| --- | --- | --- |
+| **PDF** | 23 | Fusionner, séparer, compresser, caviarder, OCR, retrouver un mot de passe oublié |
+| **Images** | 20 | Convertir, compresser, rogner, filigrane, OCR, retirer les métadonnées EXIF |
+| **Audio** | 15 | Convertir, normaliser, couper les silences, synthèse vocale, transcription |
+| **Vidéo** | 19 | Convertir, compresser, rogner, sous-titrer, incruster, vidéo ↔ GIF |
+| **Texte & Documents** | 16 | Nettoyer, comparer, Markdown ↔ HTML, lire un DOCX |
+| **Fichiers & Archives** | 16 | Archives, empreintes, doublons, renommage par lot, organiser un dossier |
+| **Convertisseurs** | 1 | Convertisseur universel : déposez un fichier, FourTout propose les conversions |
+| **Développeur** | 18 | JSON, XML, YAML, SQL, JWT, UUID, regex, cron, diff, minification |
+| **Calculateurs** | 17 | Unités, pourcentages, dates, durées, âge, calculatrice, devises |
+| **Sécurité** | 6 | Mots de passe, chiffrement de fichiers, suppression des métadonnées |
+
+La liste complète, outil par outil : **[docs/FEATURES.md](docs/FEATURES.md)**.
+
+## Local-first, et ce que cela veut dire exactement
+
+Tout le traitement de fichiers est local : PDF, images, audio, vidéo, texte,
+archives, empreintes, chiffrement. Aucun fichier n'est téléversé, il n'y a ni
+compte, ni analytique, ni télémétrie.
+
+Deux fonctions font exception, et les deux le disent dans l'interface :
+
+- **le convertisseur de devises** interroge le flux de référence quotidien de
+  la Banque centrale européenne. C'est une requête `GET` sans paramètre : le
+  montant à convertir ne quitte jamais la machine, la conversion se fait
+  localement à partir des taux. Hors ligne, le dernier relevé connu est
+  réutilisé **et daté** ;
+- **les moteurs de parole** (synthèse Piper, transcription whisper.cpp)
+  téléchargent leur modèle une seule fois, à votre demande explicite. Ensuite,
+  tout s'exécute sur la machine.
+
+Le détail, fonction par fonction : **[docs/PRIVACY.md](docs/PRIVACY.md)**.
+
+## Installation
+
+| Système | Format recommandé |
 | --- | --- |
-| Node.js | 22.x |
-| pnpm | 11.x (`corepack enable`) |
-| Rust | 1.98 (`rustup`) |
+| **Fedora / RHEL** | `FourTout-<version>-1.x86_64.rpm` |
+| **Autres Linux** | `FourTout_<version>_amd64.AppImage` |
+| **Windows 10/11** | `FourTout_<version>_x64-setup.exe` |
 
-Sur **Fedora**, les bibliothèques système de Tauri v2 :
+Les instructions détaillées, prérequis compris, sont dans
+**[docs/INSTALLATION.md](docs/INSTALLATION.md)**.
+
+> Les installeurs Windows ne sont pas encore signés : SmartScreen affichera un
+> avertissement au premier lancement. C'est attendu et documenté dans
+> [docs/INSTALLATION.md](docs/INSTALLATION.md).
+
+## Développement
 
 ```bash
-sudo dnf install webkit2gtk4.1-devel libsoup3-devel gtk3-devel \
-                 librsvg2-devel openssl-devel curl wget file
+pnpm install     # dépendances Node
+pnpm app:dev     # lance l'application desktop (Tauri + Vite)
+pnpm verify      # lint + typecheck + tests + build
 ```
 
-Sur **Windows**, il faut WebView2 (présent depuis Windows 11) et les
-Build Tools Visual Studio (C++).
+Prérequis, commandes et conventions : **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**.
+Construire les installeurs : **[docs/BUILD.md](docs/BUILD.md)**.
 
-## Commandes
+## Architecture
 
-| Commande | Rôle |
+| Couche | Technologie |
 | --- | --- |
-| `pnpm dev` | Interface seule, dans le navigateur |
-| `pnpm app:dev` | Application desktop complète |
-| `pnpm build` | Vérification TypeScript + build du frontend |
-| `pnpm app:build` | Construit les installeurs (deb, rpm, AppImage, nsis, msi) |
-| `pnpm test` | Tests automatisés (Vitest) |
-| `pnpm test:watch` | Tests en mode watch |
-| `pnpm lint` | ESLint |
-| `pnpm typecheck` | TypeScript sans émission |
-| `pnpm test:assets` | Régénère `test-assets/generated/` (fixtures PDF incluses) |
-| `pnpm pdfjs:assets` | Recopie les ressources pdf.js dans `public/` |
-| `pnpm wordlist` | Régénère le corpus de récupération (`src-tauri/resources/wordlists/`) |
-| `pnpm verify` | lint + typecheck + tests + build |
+| Interface | React 19, TypeScript, Tailwind CSS 4, Vite 7 |
+| Application desktop | Tauri 2 (WebKitGTK sur Linux, WebView2 sur Windows) |
+| Traitements natifs | Rust — fichiers, archives, chiffrement, empreintes, sidecars |
+| PDF | pdf.js (lecture, rendu), @cantoo/pdf-lib (écriture) |
+| Média | FFmpeg (système ou embarqué), codecs éprouvés à l'exécution |
+| OCR | tesseract.js, entièrement local |
+| Parole | Piper (synthèse), whisper.cpp (transcription) |
 
-Côté natif : `cd src-tauri && cargo check` puis `cargo test --lib`.
+Tous les outils dérivent d'un **registre central** : catalogue, navigation,
+recherche, convertisseur universel et routage par glisser-déposer lisent la
+même source. Détails : **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+
+## Sécurité
+
+Le chiffrement de fichiers utilise **Argon2id** pour dériver la clé et
+**XChaCha20-Poly1305** pour chiffrer, par blocs authentifiés. Les archives
+protégées utilisent **WinZip AES-256**, lisible par 7-Zip, WinRAR et
+l'Explorateur Windows.
+
+Le modèle de menace, le format de fichier chiffré, les limites de l'effacement
+sécurisé et la procédure de signalement d'une vulnérabilité sont documentés
+dans **[docs/SECURITY.md](docs/SECURITY.md)**.
 
 ## Documentation
 
-- [Architecture](docs/ARCHITECTURE.md) — structure du projet et décisions
-- [Architecture PDF](docs/PDF.md) — bibliothèques, opérations, limites
-- [Architecture média](docs/MEDIA.md) — socle FFmpeg, jobs, temporaires
-- [Architecture vidéo](docs/VIDEO.md) — codecs réels, préréglages, sous-titres
-- [Texte et documents](docs/TEXT.md) — socle texte, assainissement HTML, DOCX
-- [Fichiers et archives](docs/FILES.md) — socle natif, sécurité des archives, portabilité
-- [Convertisseur universel](docs/CONVERTERS.md) — graphe dérivé du registre, relais entre outils
-- [Récupération de mot de passe PDF](docs/PDF-RECOVERY.md) — moteur natif, corpus, règles
-- [Ajouter un outil](docs/ADDING-A-TOOL.md) — la procédure, en trois fichiers
-- [test-assets/](test-assets/README.md) — fixtures de développement
+L'index complet : **[docs/README.md](docs/README.md)**.
 
-## État actuel
+| Pour | Document |
+| --- | --- |
+| Installer | [INSTALLATION.md](docs/INSTALLATION.md) |
+| Utiliser | [USER_GUIDE.md](docs/USER_GUIDE.md) |
+| Voir tous les outils | [FEATURES.md](docs/FEATURES.md) |
+| Comprendre la confidentialité | [PRIVACY.md](docs/PRIVACY.md) |
+| Comprendre la sécurité | [SECURITY.md](docs/SECURITY.md) |
+| Contribuer | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Résoudre un problème | [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) |
 
-**Phase 1** — la fondation : catalogue central de 131 outils, navigation,
-recherche en langage courant, favoris, récents, notifications.
+## Licence
 
-**Phase 2** — les outils PDF : seize opérations réellement utilisables,
-entièrement locales (fusion, découpage, extraction, suppression,
-réorganisation, rotation, images ↔ PDF, filigrane, numérotation, métadonnées,
-extraction de texte et d'images, protection et déverrouillage par mot de passe,
-compression, et récupération locale d'un mot de passe oublié). Voir
-[docs/PDF.md](docs/PDF.md) et [docs/PDF-RECOVERY.md](docs/PDF-RECOVERY.md).
+**Licence à décider.** Aucun fichier `LICENSE` n'a encore été choisi : le code
+est donc, par défaut, sous droit d'auteur réservé. Ce point doit être tranché
+avant toute publication en source ouverte.
 
-**Phase 3** — les outils **Images** : conversion, compression, redimensionnement,
-rognage, rotation, filigrane, métadonnées, palette, favicon, et reconnaissance
-de texte (OCR) locale. Voir [docs/IMAGES.md](docs/IMAGES.md).
-
-**Phase 4** — le socle **média** (FFmpeg local, jobs annulables, fichiers
-temporaires) et les outils **Audio** : conversion, compression, découpage,
-fusion, volume, normalisation, vitesse, suppression des silences,
-enregistrement au micro. Puis la **parole locale** : synthèse (Piper),
-transcription (whisper.cpp), sous-titres, PDF vers audio. Voir
-[docs/MEDIA.md](docs/MEDIA.md), [docs/AUDIO.md](docs/AUDIO.md) et
-[docs/MODELS.md](docs/MODELS.md).
-
-**Phase 5** — la suite **Vidéo** complète : conversion, compression,
-redimensionnement, découpage, fusion, rognage visuel, rotation et miroir,
-vitesse, gestion des pistes audio (suppression, remplacement, ajout, volume),
-sous-titres (ajout de piste, incrustation, extraction, génération automatique),
-vidéo ↔ GIF, extraction d'image et traitement par lots. Les codecs proposés sont
-ceux que le moteur installé sait réellement produire. Voir
-[docs/VIDEO.md](docs/VIDEO.md).
-
-**Phase 6** — les outils **Texte**, **Documents** et **Fichiers**, plus le
-**convertisseur universel**. Côté texte : nettoyage à options explicites,
-doublons, tri, rechercher/remplacer (regex comprise), comparaison de deux
-textes, Markdown ↔ HTML ↔ texte avec aperçu assaini, URL, Unicode, fins de
-ligne, extraction d'URL/e-mails/nombres, Lorem Ipsum, empreintes de texte, et
-lecture des documents Word. Côté fichiers, un socle natif qui travaille en flux
-sur des chemins : archives ZIP/TAR/TAR.GZ (création et extraction protégées
-contre la traversée de dossiers), empreintes, comparaison de fichiers,
-détection de doublons par contenu, découpage et réassemblage vérifié,
-renommage par lot avec aperçu, analyse de dossier, arborescence et fiche
-d'identité d'un fichier. Le convertisseur universel, lui, n'implémente rien :
-il dérive les conversions possibles du registre et ouvre l'outil spécialisé
-déjà prérempli. Voir [docs/TEXT.md](docs/TEXT.md),
-[docs/FILES.md](docs/FILES.md) et [docs/CONVERTERS.md](docs/CONVERTERS.md).
-
-Les catégories Développeur, Calculateurs et Sécurité comportent encore des
-outils « bientôt disponible ».
+Les composants tiers embarqués ou utilisés par FourTout, avec leurs licences,
+sont inventoriés dans **[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)**.

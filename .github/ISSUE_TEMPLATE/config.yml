@@ -1,0 +1,8 @@
+# Les tickets vides sont désactivés : les deux modèles couvrent les cas réels,
+# et un ticket structuré se traite beaucoup plus vite.
+#
+# Pas de `contact_links` ici : GitHub exige des URL absolues, qui dépendent du
+# propriétaire et du nom du dépôt. Le renvoi vers le signalement privé de
+# vulnérabilité est écrit dans le modèle de défaut, et GitHub affiche de
+# lui-même l'onglet « Security » à partir de `docs/SECURITY.md`.
+blank_issues_enabled: false

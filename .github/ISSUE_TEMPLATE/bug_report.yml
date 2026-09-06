@@ -1,0 +1,89 @@
+name: Signaler un défaut
+description: Quelque chose ne fonctionne pas comme annoncé
+labels: ["défaut"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de prendre le temps. Un signalement précis se corrige beaucoup
+        plus vite.
+
+        **Une vulnérabilité de sécurité ne s'ouvre pas ici** : utilisez
+        l'onglet Security → Report a vulnerability.
+
+  - type: input
+    id: outil
+    attributes:
+      label: Quel outil ?
+      description: Le nom affiché dans FourTout.
+      placeholder: Compresser un PDF
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Comment le reproduire
+      description: >-
+        Les étapes exactes, et le type de fichier utilisé. Si le fichier n'est
+        pas confidentiel, joignez-le.
+      placeholder: |
+        1. Ouvrir « Compresser un PDF »
+        2. Déposer un PDF de 12 Mo contenant des images scannées
+        3. Choisir la qualité « Écran »
+        4. Cliquer sur Compresser
+    validations:
+      required: true
+
+  - type: textarea
+    id: attendu
+    attributes:
+      label: Ce que vous attendiez, et ce qui s'est passé
+      placeholder: |
+        Attendu : un PDF plus léger, lisible.
+        Constaté : « L'opération a échoué — Lecture impossible ».
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version de FourTout
+      description: Paramètres → Moteurs et traitement, ou le nom du fichier installé.
+      placeholder: 0.1.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: systeme
+    attributes:
+      label: Système
+      options:
+        - Windows 11
+        - Windows 10
+        - Fedora
+        - Debian ou Ubuntu
+        - Autre Linux
+        - Autre
+    validations:
+      required: true
+
+  - type: input
+    id: installation
+    attributes:
+      label: Comment FourTout a-t-il été installé ?
+      placeholder: RPM, AppImage, installeur Windows, construit depuis les sources…
+
+  - type: textarea
+    id: ffmpeg
+    attributes:
+      label: Sortie de `ffmpeg -version`
+      description: >-
+        Uniquement pour un défaut audio ou vidéo. Laissez vide sinon.
+      render: shell
+
+  - type: textarea
+    id: complement
+    attributes:
+      label: Autre chose ?
+      description: Capture d'écran, message d'erreur complet, contexte particulier.

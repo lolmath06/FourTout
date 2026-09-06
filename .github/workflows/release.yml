@@ -1,0 +1,155 @@
+name: Publication
+
+# Déclenché par une étiquette de version. Rien ne part sans étiquette, et la
+# publication est créée **en brouillon** : c'est un humain qui la rend
+# publique, après avoir testé les artefacts.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Étiquette à publier (ex. v1.0.0)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  verify:
+    name: Vérifier avant de publier
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:assets
+      - run: pnpm verify
+
+  build:
+    name: Construire (${{ matrix.os }})
+    needs: verify
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            artefact: linux
+          - os: windows-2022
+            artefact: windows
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Dépendances système (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev libsoup-3.0-dev libgtk-3-dev \
+            librsvg2-dev libssl-dev patchelf rpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Construire les paquets
+        # Les deux variables de signature restent vides tant qu'aucun
+        # certificat n'a été déposé dans les secrets du dépôt. Aucune clé
+        # n'est versionnée, et aucune n'est générée ici.
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: pnpm tauri build
+
+      - name: Rassembler les paquets
+        shell: bash
+        run: |
+          mkdir -p artefacts
+          find src-tauri/target/release/bundle \
+            -type f \( -name '*.rpm' -o -name '*.deb' -o -name '*.AppImage' \
+                       -o -name '*-setup.exe' -o -name '*.msi' \) \
+            -exec cp {} artefacts/ \;
+          ls -la artefacts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: paquets-${{ matrix.artefact }}
+          if-no-files-found: error
+          path: artefacts/*
+
+  publish:
+    name: Créer la publication (brouillon)
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: telechargements
+          merge-multiple: true
+
+      - name: Empreintes SHA-256
+        working-directory: telechargements
+        run: |
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Publication en brouillon
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          # Brouillon : un humain vérifie les artefacts avant de publier.
+          draft: true
+          generate_release_notes: true
+          files: telechargements/*
+          body: |
+            ## Installation
+
+            | Système | Fichier |
+            | --- | --- |
+            | Windows 10 / 11 | `FourTout_*_x64-setup.exe` |
+            | Fedora, RHEL | `FourTout-*.x86_64.rpm` |
+            | Debian, Ubuntu | `FourTout_*_amd64.deb` |
+            | Autres Linux | `FourTout_*_amd64.AppImage` |
+
+            Instructions détaillées : [docs/INSTALLATION.md](docs/INSTALLATION.md).
+
+            ## Vérifier votre téléchargement
+
+            `SHA256SUMS.txt` contient l'empreinte de chaque fichier.
+
+            ```bash
+            sha256sum -c SHA256SUMS.txt --ignore-missing
+            ```
+
+            ## Windows : avertissement SmartScreen
+
+            Les installeurs ne sont pas encore signés par un certificat de
+            signature de code. Windows affichera un avertissement au premier
+            lancement — c'est attendu. Vérifiez l'empreinte SHA-256 avant
+            d'installer.

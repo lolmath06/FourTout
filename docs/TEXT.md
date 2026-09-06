@@ -129,21 +129,28 @@ et embarquer une bibliothèque XML complète pour une dizaine de balises ne se
 justifie pas. Les paragraphes situés dans un tableau ne sont comptés qu'une
 fois, à leur place dans le document.
 
-### DOCX → PDF : `planned`, et voici pourquoi
+### DOCX → PDF : le contenu, pas la maquette
 
-L'outil `docx-to-pdf` existe au catalogue avec le statut `planned`. La
-conversion serait techniquement faisable (DOCX → HTML → `documentToPdf`), mais
-elle perdrait les images, les tableaux mis en forme, les colonnes, les polices
-du document, les en-têtes/pieds de page et la pagination d'origine.
+`docx-to-pdf` enchaîne les deux moteurs déjà en place : le lecteur DOCX natif
+produit du Markdown, `documentToPdf` le met en page. Titres, paragraphes,
+gras, italique, listes et tableaux simples passent ; l'UTF-8 aussi.
 
-Autrement dit : le PDF produit ne ressemblerait pas au document ouvert dans
-Word, sans que l'utilisateur puisse le prévoir. Reproduire fidèlement une mise
-en page Word demande un moteur de rendu complet (LibreOffice), c'est-à-dire une
-dépendance externe lourde qui casserait la promesse « tout est embarqué ».
+Ce qui ne passe pas : images, colonnes, zones flottantes, en-têtes et pieds de
+page, polices du document, pagination d'origine. Reproduire fidèlement une
+mise en page Word demanderait un moteur de rendu complet (LibreOffice),
+c'est-à-dire une dépendance externe lourde qui casserait la promesse « tout est
+embarqué ».
 
-Un outil absent est préférable à un faux convertisseur Word. En attendant :
-« Word vers texte, Markdown ou HTML », puis « Document vers PDF » — deux étapes
-explicites, dont l'utilisateur voit le résultat intermédiaire.
+L'outil existe donc, **et il le dit** : un encart permanent, la note du
+catalogue et le nombre d'images non reprises annoncés dans le résultat. Pour un
+rendu fidèle au pixel, l'utilisateur est renvoyé vers l'export PDF de Word ou
+de LibreOffice.
+
+La recette couvre les deux moitiés séparément : côté Rust,
+`reads_the_generated_docx` vérifie la lecture de la fixture ; côté frontend,
+`src/core/pdf/operations/docxToPdf.test.ts` part du Markdown **réellement**
+produit par le lecteur natif sur cette même fixture, construit le PDF, puis le
+**relit avec pdf.js** — nombre de pages, titres, listes, tableau, accents.
 
 ## Fins de ligne
 
@@ -151,10 +158,13 @@ explicites, dont l'utilisateur voit le résultat intermédiaire.
 de chacun, puis convertit. La détection précède toujours la conversion : c'est
 elle qui explique les `^M` d'un fichier venu de Windows.
 
-## Ce que la phase 6 ne fait pas
+## Ce que le socle texte ne fait pas
 
-| Sujet | État | Raison |
-| --- | --- | --- |
-| `docx-to-pdf` | `planned` | Fidélité impossible sans moteur de rendu Word |
-| JSON / YAML / XML / SQL | `planned` | Outils développeur, phase suivante |
-| Éditeur de texte riche | hors périmètre | FourTout transforme, il n'édite pas |
+| Sujet | Raison |
+| --- | --- |
+| Rendu Word fidèle au pixel | Demanderait un moteur de mise en page Word ; l'outil reprend le contenu et sa structure, et l'annonce |
+| Éditeur de texte riche | Hors périmètre : FourTout transforme, il n'édite pas |
+| Lecture des `.doc` (Word 97) | Format binaire distinct du `.docx` ; seul le `.docx` est lu |
+
+Les formats techniques — JSON, YAML, XML, SQL — sont traités par la catégorie
+Développeur, voir [DEVELOPER.md](DEVELOPER.md).

@@ -187,7 +187,7 @@ cumulent.
 
 ## Outils de finition (Phase 4)
 
-Ajoutés en fin de bloc Images — plus aucun outil `planned` dans la catégorie :
+Ajoutés en fin de bloc Images, qui complètent la catégorie :
 
 - **Conversion par lot** — UX explicitement batch (résumé réussites/échecs).
 - **Filigrane** — texte et/ou logo PNG transparent, position, opacité, rotation ; à l'unité ou par lot.

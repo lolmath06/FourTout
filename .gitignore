@@ -1,4 +1,18 @@
-# Logs
+# ---------------------------------------------------------------- dépendances
+node_modules
+.pnpm-store/
+
+# ------------------------------------------------------------------- produits
+# Sortie du bundler frontend et de Cargo. `src-tauri/target/` est également
+# ignoré par `src-tauri/.gitignore`.
+dist
+dist-ssr
+src-tauri/target/
+src-tauri/gen/schemas
+coverage
+*.tsbuildinfo
+
+# ---------------------------------------------------------------------- logs
 logs
 *.log
 npm-debug.log*
@@ -7,32 +21,55 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# ------------------------------------------------------------------- secrets
+# FourTout n'a besoin d'aucune clé pour fonctionner. Ces règles existent pour
+# qu'un fichier d'environnement local ne parte jamais par accident.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
 
-# Editor directories and files
+# -------------------------------------------------------------- fichiers temporaires
+*.tmp
+*.part
+*.local
+tmp/
+temp/
+outputs/
+
+# -------------------------------------------------------- ressources régénérables
+# Fixtures de test : régénérables par `pnpm test:assets`.
+test-assets/generated/
+# Ressources pdf.js copiées depuis node_modules (scripts/sync-pdfjs-assets.mjs).
+public/pdfjs/
+# Ressources OCR copiées ou téléchargées (scripts/sync-tesseract-assets.mjs).
+public/tesseract/
+public/tessdata/
+# Modèles de parole (Piper, whisper.cpp) : installés à la demande par le
+# gestionnaire de modèles, dans le dossier de données de l'application.
+models/
+*.onnx
+*.gguf
+
+# ------------------------------------------------------------------- éditeurs
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# FourTout
-coverage
-*.tsbuildinfo
+# ------------------------------------------------------------------- systèmes
+.DS_Store
+Thumbs.db
 
-# Fixtures générées (régénérables via `pnpm test:assets`)
-test-assets/generated/
-
-# Ressources pdf.js copiées depuis node_modules (voir scripts/sync-pdfjs-assets.mjs)
-public/pdfjs/
-
-# Ressources OCR copiées/téléchargées (voir scripts/sync-tesseract-assets.mjs)
-public/tesseract/
-public/tessdata/
+# ----------------------------------------------- assistants de développement
+# Notes et configurations propres à un poste de travail : elles n'aident ni un
+# développeur ni un utilisateur du dépôt public.
+.claude/
+CLAUDE.local.md

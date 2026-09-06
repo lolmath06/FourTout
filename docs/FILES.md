@@ -105,11 +105,20 @@ clarté de licence requises pour être embarquée, et passer par un binaire
 externe casserait la promesse « tout est embarqué, rien à installer ». L'outil
 `archive-create` le dit dans sa note plutôt que de le proposer à moitié.
 
-**Archive chiffrée** (`archive-encrypted`, `planned`) : le chiffrement
-historique du ZIP (ZipCrypto) se casse en quelques secondes. Proposer une
-« archive protégée » qui ne protège pas serait trompeur. L'AES-256 du ZIP
-demande une brique de chiffrement à part, prévue avec les outils de chiffrement
-de fichiers.
+**Archive chiffrée** (`archive-encrypted`) : **WinZip AES-256**. Le chiffrement
+historique du ZIP (ZipCrypto) se casse en quelques secondes à partir de
+quelques octets de clair connu ; il n'est jamais employé, car une « archive
+protégée » qui ne protège pas serait trompeuse.
+
+L'interopérabilité est vérifiée en relisant l'archive avec **7-Zip**, pas avec
+le code qui l'a écrite (`src-tauri/tests/files_integration.rs`) : le test
+contrôle que l'outil externe annonce bien « AES-256 », qu'il refuse un mauvais
+mot de passe, et qu'avec le bon il restitue les octets exacts — sous-dossier et
+nom accentué compris.
+
+Limite du format ZIP, dite dans la note de l'outil : les **noms de fichiers**
+restent lisibles sans le mot de passe. Seul le contenu est chiffré. Pour cacher
+aussi les noms, il faut chiffrer l'archive elle-même avec `file-encrypt`.
 
 ## Empreintes
 
