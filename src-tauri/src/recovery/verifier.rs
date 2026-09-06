@@ -54,7 +54,7 @@ impl PasswordVerifier {
     /// Le mot de passe ouvre-t-il le document ? (mot de passe utilisateur)
     pub fn verify(&self, password: &str) -> bool {
         match self.params.revision {
-            2 | 3 | 4 => self.verify_legacy(password),
+            2..=4 => self.verify_legacy(password),
             5 | 6 => self.verify_r6(password),
             _ => false,
         }

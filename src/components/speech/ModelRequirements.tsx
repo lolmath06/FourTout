@@ -23,12 +23,12 @@ import { notify } from "@/features/notifications/store";
  * vérifiée par empreinte, annulable, et réversible.
  */
 
-/** Message affiché hors application (aucun moteur natif dans un navigateur). */
-function NativeOnly() {
+/** Message affiché hors application (aucun modèle installé dans un navigateur). */
+function NativeOnly({ what }: { what: string }) {
   return (
-    <Callout tone="info" title="Traitement local requis">
-      La synthèse et la transcription vocales s'appuient sur des moteurs locaux et nécessitent
-      l'application FourTout installée. Elles ne sont pas disponibles dans l'aperçu navigateur.
+    <Callout tone="info" title="Application installée requise">
+      {what} s'appuie sur un modèle local, installé par FourTout. Ce n'est pas disponible dans
+      l'aperçu navigateur.
     </Callout>
   );
 }
@@ -38,10 +38,24 @@ export interface ModelRequirementsProps {
   required: readonly string[];
   /** Éléments proposés en option (autres voix, modèle plus précis). */
   optional?: readonly string[];
+  /**
+   * Ce dont l'outil a besoin, à la première personne du singulier
+   * (« La synthèse vocale », « Le détourage automatique ») : sert aux messages
+   * affichés hors application et dans le repli de gestion.
+   */
+  what?: string;
+  /** Libellé du replieur de gestion des modèles. */
+  manageLabel?: string;
   children: (assets: SpeechAsset[]) => ReactNode;
 }
 
-export function ModelRequirements({ required, optional = [], children }: ModelRequirementsProps) {
+export function ModelRequirements({
+  required,
+  optional = [],
+  what = "Cette fonction",
+  manageLabel = "Gérer les moteurs, voix et modèles",
+  children,
+}: ModelRequirementsProps) {
   const [assets, setAssets] = useState<SpeechAsset[] | undefined>(undefined);
   const [directory, setDirectory] = useState("");
   const [busy, setBusy] = useState<string | undefined>(undefined);
@@ -64,7 +78,7 @@ export function ModelRequirements({ required, optional = [], children }: ModelRe
     return () => abortRef.current?.abort();
   }, [refresh]);
 
-  if (!isTauri()) return <NativeOnly />;
+  if (!isTauri()) return <NativeOnly what={what} />;
   if (!assets) return null;
 
   const missing = missingAssets(assets, required);
@@ -177,7 +191,7 @@ export function ModelRequirements({ required, optional = [], children }: ModelRe
           className="flex items-center gap-1.5 text-xs text-[var(--ft-text-muted)] hover:text-[var(--ft-text)]"
         >
           <Icon name={manage ? "ChevronDown" : "ChevronRight"} size={13} />
-          Gérer les moteurs, voix et modèles
+          {manageLabel}
         </button>
         {manage && (
           <div className="mt-2 space-y-2">

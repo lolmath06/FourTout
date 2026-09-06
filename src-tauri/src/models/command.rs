@@ -117,3 +117,26 @@ pub fn models_remove(app: AppHandle, id: String) -> Result<(), String> {
     let entry = asset(&id).ok_or_else(|| format!("Élément inconnu : {id}"))?;
     download::remove(&root(&app), entry)
 }
+
+/// Lit le contenu d'un fichier appartenant à un élément installé.
+///
+/// Les moteurs de parole s'exécutent côté natif : ils lisent leurs modèles
+/// eux-mêmes. La suppression d'arrière-plan, elle, fait tourner son modèle
+/// dans la WebView — il lui faut donc les octets.
+///
+/// Cette commande ne prend **pas** un chemin : elle prend un identifiant du
+/// catalogue et un chemin déclaré par cet élément. Elle ne peut donc lire que
+/// des fichiers que FourTout a lui-même installés, et jamais un fichier
+/// quelconque du disque, ce qu'aurait autorisé une permission de lecture large
+/// donnée au greffon système de fichiers.
+#[tauri::command]
+pub fn models_read_file(app: AppHandle, id: String, relative: String) -> Result<Vec<u8>, String> {
+    let entry = asset(&id).ok_or_else(|| format!("Élément inconnu : {id}"))?;
+    if !entry.check.contains(&relative.as_str()) {
+        return Err(format!("« {relative} » n'appartient pas à l'élément {id}."));
+    }
+    let path = root(&app).join(&relative);
+    std::fs::read(&path).map_err(|error| {
+        format!("Modèle « {} » illisible : {error}. Réinstallez-le depuis Paramètres.", entry.label)
+    })
+}

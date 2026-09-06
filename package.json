@@ -2,6 +2,8 @@
   "name": "fourtout",
   "private": true,
   "version": "0.1.0",
+  "author": "Matheo Dolmen",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "description": "Boîte à outils desktop locale et gratuite : PDF, image, audio, vidéo, texte, fichiers, développeur, calculateurs.",
   "scripts": {
@@ -20,11 +22,12 @@
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "pdfjs:assets": "node scripts/sync-pdfjs-assets.mjs",
     "ocr:assets": "node scripts/sync-tesseract-assets.mjs",
-    "predev": "node scripts/sync-pdfjs-assets.mjs && node scripts/sync-tesseract-assets.mjs",
-    "prebuild": "node scripts/sync-pdfjs-assets.mjs && node scripts/sync-tesseract-assets.mjs",
-    "pretest": "node scripts/sync-pdfjs-assets.mjs && node scripts/sync-tesseract-assets.mjs",
+    "predev": "node scripts/sync-pdfjs-assets.mjs && node scripts/sync-tesseract-assets.mjs && node scripts/sync-onnx-assets.mjs",
+    "prebuild": "node scripts/sync-pdfjs-assets.mjs && node scripts/sync-tesseract-assets.mjs && node scripts/sync-onnx-assets.mjs",
+    "pretest": "node scripts/sync-pdfjs-assets.mjs && node scripts/sync-tesseract-assets.mjs && node scripts/sync-onnx-assets.mjs",
     "wordlist": "node scripts/generate-wordlist.mjs",
-    "speech:assets": "node scripts/generate-speech-assets.mjs"
+    "speech:assets": "node scripts/generate-speech-assets.mjs",
+    "onnx:assets": "node scripts/sync-onnx-assets.mjs"
   },
   "dependencies": {
     "@cantoo/pdf-lib": "^2.9.1",
@@ -42,6 +45,7 @@
     "js-yaml": "^5.4.1",
     "jsqr": "^1.4.0",
     "lucide-react": "^0.544.0",
+    "onnxruntime-web": "^1.29.0",
     "pdfjs-dist": "^6.3.289",
     "prettier": "^3.9.6",
     "qrcode": "^1.5.4",

@@ -141,7 +141,7 @@ fn french_speech_survives_a_round_trip() {
     assert!(text.contains("bonjour"), "« bonjour » attendu dans : {text}");
     assert!(text.contains("test"), "« test » attendu dans : {text}");
     assert!(
-        text.replace('-', "").replace(' ', "").contains("fourtout"),
+        text.replace(['-', ' '], "").contains("fourtout"),
         "« FourTout » attendu dans : {text}"
     );
 
@@ -173,7 +173,7 @@ fn english_speech_survives_a_round_trip() {
     assert!(text.contains("voice"), "« voice » attendu dans : {text}");
     assert!(text.contains("2026"), "« 2026 » attendu dans : {text}");
     assert!(
-        text.replace('-', "").replace(' ', "").contains("fourtout"),
+        text.replace(['-', ' '], "").contains("fourtout"),
         "« FourTout » attendu dans : {text}"
     );
 

@@ -461,10 +461,7 @@ fn rollback(created: Vec<PathBuf>, error: String) -> String {
 
 fn check_entry(name: &str, is_dir: bool) -> Option<String> {
     let _ = is_dir;
-    match safe_relative_path(name) {
-        Ok(_) => None,
-        Err(message) => Some(message),
-    }
+    safe_relative_path(name).err()
 }
 
 #[derive(Debug, Serialize)]

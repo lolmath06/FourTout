@@ -118,7 +118,7 @@ pub fn hash_file(
 
     let digests = algorithms
         .iter()
-        .zip(hashers.into_iter())
+        .zip(hashers)
         .map(|(algorithm, hasher)| (algorithm.label().to_string(), hasher.finish()))
         .collect();
 

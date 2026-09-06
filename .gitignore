@@ -48,11 +48,19 @@ public/pdfjs/
 # Ressources OCR copiées ou téléchargées (scripts/sync-tesseract-assets.mjs).
 public/tesseract/
 public/tessdata/
-# Modèles de parole (Piper, whisper.cpp) : installés à la demande par le
-# gestionnaire de modèles, dans le dossier de données de l'application.
-models/
+# Moteur d'inférence ONNX copié depuis node_modules (scripts/sync-onnx-assets.mjs).
+public/ort/
+# Modèles (parole, détourage) : installés à la demande par le gestionnaire de
+# modèles, dans le dossier de données de l'application — jamais dans le dépôt.
+# Les motifs sont ancrés à la racine : un simple `models/` masquerait aussi
+# `src-tauri/src/models/`, qui est du code source.
+/models/
+/test-assets/models/
 *.onnx
 *.gguf
+
+# NB : `docs/assets/branding/` et `src-tauri/icons/` sont versionnés — ce sont
+# l'identité visuelle et les icônes nécessaires à l'empaquetage.
 
 # ------------------------------------------------------------------- éditeurs
 .vscode/*
@@ -68,8 +76,11 @@ models/
 .DS_Store
 Thumbs.db
 
-# ----------------------------------------------- assistants de développement
-# Notes et configurations propres à un poste de travail : elles n'aident ni un
-# développeur ni un utilisateur du dépôt public.
+# -------------------------------------------------------- outillage de poste
+# Configurations d'outils propres à une machine de développement. Elles
+# n'aident ni un développeur ni un utilisateur du dépôt public, et ne doivent
+# donc jamais y arriver.
 .claude/
-CLAUDE.local.md
+.aider*
+.cursor/
+*.local.md

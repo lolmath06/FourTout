@@ -92,9 +92,3 @@ export function PasswordField({
     </>
   );
 }
-
-/** Le mot de passe est-il utilisable pour lancer l'opération ? */
-export function passwordReady(value: string, confirmation?: string): boolean {
-  if (value.length === 0) return false;
-  return confirmation === undefined || confirmation === value;
-}

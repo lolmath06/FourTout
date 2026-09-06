@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NativeToolShell } from "@/components/files/NativeToolShell";
-import { PasswordField, passwordReady } from "@/components/files/PasswordField";
+import { PasswordField } from "@/components/files/PasswordField";
+import { passwordReady } from "@/components/files/passwordReady";
 import { Field, Fieldset, OptionGroup, Slider, TextInput } from "@/components/pdf/Field";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";

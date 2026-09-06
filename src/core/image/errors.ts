@@ -15,6 +15,8 @@ export type ImageErrorCode =
   | "invalid-crop"
   | "no-text-found"
   | "ocr-unavailable"
+  | "segmentation-unavailable"
+  | "segmentation-failed"
   | "cancelled"
   | "unknown";
 
@@ -29,6 +31,9 @@ const MESSAGES: Record<ImageErrorCode, string> = {
   "invalid-crop": "La zone de recadrage est vide ou hors de l'image.",
   "no-text-found": "Aucun texte n'a été détecté sur cette image.",
   "ocr-unavailable": "Le moteur de reconnaissance de texte n'est pas disponible.",
+  "segmentation-unavailable":
+    "Le modèle de détourage n'est pas disponible. Installez-le depuis Paramètres → Modèles.",
+  "segmentation-failed": "Le détourage a échoué.",
   cancelled: "Opération annulée.",
   unknown: "Une erreur inattendue est survenue.",
 };

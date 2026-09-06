@@ -100,7 +100,7 @@ fn announced(ffmpeg: &Path) -> Vec<String> {
     String::from_utf8_lossy(&output.stdout)
         .lines()
         .filter_map(|line| {
-            let mut parts = line.trim_start().split_whitespace();
+            let mut parts = line.split_whitespace();
             let flags = parts.next()?;
             if flags.len() == 6 && flags.chars().all(|c| "AVSFXBDL.".contains(c)) {
                 parts.next().map(str::to_string)

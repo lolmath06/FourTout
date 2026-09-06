@@ -153,6 +153,11 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   "image-remove-transparency": lazy(() =>
     import("./impl/image/ImageRemoveTransparencyTool").then((m) => ({ default: m.ImageRemoveTransparencyTool })),
   ),
+  "image-remove-background": lazy(() =>
+    import("./impl/image/ImageRemoveBackgroundTool").then((m) => ({
+      default: m.ImageRemoveBackgroundTool,
+    })),
+  ),
   "image-color-transparent": lazy(() =>
     import("./impl/image/ImageColorTransparentTool").then((m) => ({ default: m.ImageColorTransparentTool })),
   ),

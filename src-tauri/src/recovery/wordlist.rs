@@ -23,7 +23,11 @@ pub fn read_seeds(
     let reader = BufReader::new(GzDecoder::new(file));
     let iter = reader
         .lines()
-        .filter_map(|line| line.ok())
+        // `map_while` et non `filter_map` : sur un flux qui rendrait des
+        // erreurs en boucle — archive gzip abîmée, lecture disque qui échoue —
+        // `filter_map` tournerait indéfiniment. On s'arrête à la première
+        // erreur, la recherche échoue au lieu de figer.
+        .map_while(Result::ok)
         .map(|line| line.trim_end().to_string())
         .filter(|line| !line.is_empty());
 

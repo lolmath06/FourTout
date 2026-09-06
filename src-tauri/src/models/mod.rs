@@ -48,6 +48,8 @@ pub enum AssetKind {
     Voice,
     /// Modèle de reconnaissance vocale.
     SttModel,
+    /// Modèle de segmentation d'image (suppression d'arrière-plan).
+    Segmentation,
 }
 
 /// Un élément installable, tel que présenté à l'utilisateur.
@@ -188,6 +190,32 @@ const STT_SMALL_FILES: &[AssetFile] = &[AssetFile {
     archive: None,
 }];
 
+// --- Segmentation d'image (suppression d'arrière-plan) ----------------------
+//
+// U²-Net, publié sous licence Apache 2.0 — code **et** poids. C'est ce qui l'a
+// fait retenir : les modèles plus récents et souvent meilleurs (RMBG de BRIA,
+// MODNet) interdisent l'usage commercial de leurs poids, ce qui est
+// incompatible avec la distribution de FourTout.
+//
+// Les fichiers sont ceux publiés par le projet `rembg`, qui héberge les
+// conversions ONNX officielles de U²-Net.
+
+const SEG_U2NETP_FILES: &[AssetFile] = &[AssetFile {
+    url: "https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2netp.onnx",
+    sha256: "309c8469258dda742793dce0ebea8e6dd393174f89934733ecc8b14c76f4ddd8",
+    size: 4_574_861,
+    target: "segmentation/u2netp.onnx",
+    archive: None,
+}];
+
+const SEG_U2NET_FILES: &[AssetFile] = &[AssetFile {
+    url: "https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.onnx",
+    sha256: "8d10d2f3bb75ae3b6d527c77944fc5e7dcd94b29809d47a739a7a728a912b491",
+    size: 175_997_641,
+    target: "segmentation/u2net.onnx",
+    archive: None,
+}];
+
 /// Catalogue complet des éléments installables.
 pub const CATALOG: &[Asset] = &[
     Asset {
@@ -255,6 +283,28 @@ pub const CATALOG: &[Asset] = &[
         check: &["stt/ggml-small.bin"],
         license: "MIT",
         source: "https://huggingface.co/ggerganov/whisper.cpp",
+    },
+    Asset {
+        id: "seg-u2netp",
+        kind: AssetKind::Segmentation,
+        label: "Détourage — Rapide",
+        detail: "U²-Net allégé : quelques secondes par image, suffisant pour un sujet net.",
+        language: None,
+        files: SEG_U2NETP_FILES,
+        check: &["segmentation/u2netp.onnx"],
+        license: "Apache 2.0",
+        source: "https://github.com/xuebinqin/U-2-Net",
+    },
+    Asset {
+        id: "seg-u2net",
+        kind: AssetKind::Segmentation,
+        label: "Détourage — Précis",
+        detail: "U²-Net complet : bords plus fins (cheveux, poils), nettement plus lourd.",
+        language: None,
+        files: SEG_U2NET_FILES,
+        check: &["segmentation/u2net.onnx"],
+        license: "Apache 2.0",
+        source: "https://github.com/xuebinqin/U-2-Net",
     },
 ];
 

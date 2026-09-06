@@ -66,7 +66,7 @@ fn round_trips_a_real_folder_through_every_format() {
 
     for format in [Format::Zip, Format::Tar, Format::TarGz] {
         let dir = workspace(&format!("roundtrip-{}", format.extension().replace('.', "-")));
-        let members = archive::collect_members(&[source.clone()], &Reporter::silent()).unwrap();
+        let members = archive::collect_members(std::slice::from_ref(&source), &Reporter::silent()).unwrap();
         let output = dir.join(format!("archive.{}", format.extension()));
         archive::create(&members, &output, format, 6, &Reporter::silent()).unwrap();
 

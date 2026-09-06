@@ -2,4 +2,8 @@
 # esbuild est une dépendance de Vite : son script d'installation est légitime.
 allowBuilds:
   esbuild: true
+  # Dépendance d'onnxruntime-web. Son script d'installation ne sert qu'aux
+  # chemins Node du paquet ; FourTout n'utilise que le moteur WebAssembly, et
+  # tout fonctionne sans l'exécuter.
+  protobufjs: false
   tesseract.js: false

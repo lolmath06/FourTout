@@ -118,7 +118,7 @@ export function UnitConverterTool({ dimensionId }: { dimensionId: DimensionId })
  * Fabrique le composant d'un outil à partir de sa dimension. Le catalogue
  * référence dix identifiants ; ils pointent tous ici.
  */
-export function unitTool(dimensionId: DimensionId) {
+function unitTool(dimensionId: DimensionId) {
   return function UnitTool(_props: ToolComponentProps) {
     return <UnitConverterTool dimensionId={dimensionId} />;
   };

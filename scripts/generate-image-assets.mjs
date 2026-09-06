@@ -397,6 +397,73 @@ function encodeLzw(indices, minCodeSize) {
   return Buffer.from(out);
 }
 
+/* ------------------------------------------------- détourage (segmentation) */
+
+/**
+ * Fixtures de l'outil « Retirer l'arrière-plan ».
+ *
+ * Un modèle de segmentation cherche le **sujet saillant** : il lui faut donc
+ * une forme bien détachée d'un fond distinct, sinon la fixture ne prouve rien.
+ * Trois cas volontairement différents : une silhouette de personne, un objet
+ * compact, et une forme à bords durs avec un trou — le trou est ce qui casse
+ * les détoureurs qui se contentent d'un contour extérieur.
+ */
+function backgroundScene(width, height, paint) {
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext("2d");
+  // Fond dégradé, comme un mur éclairé : uniforme serait trop facile.
+  const sky = ctx.createLinearGradient(0, 0, 0, height);
+  sky.addColorStop(0, "#b9d8f2");
+  sky.addColorStop(1, "#7fa9cc");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, width, height);
+  paint(ctx, width, height);
+  return canvas;
+}
+
+{
+  // Silhouette : tête, épaules, buste. De loin, c'est une personne.
+  const c = backgroundScene(360, 480, (ctx, w, h) => {
+    ctx.fillStyle = "#2f2a26";
+    ctx.beginPath();
+    ctx.arc(w / 2, h * 0.24, 62, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(w / 2 - 118, h);
+    ctx.quadraticCurveTo(w / 2 - 108, h * 0.44, w / 2, h * 0.40);
+    ctx.quadraticCurveTo(w / 2 + 108, h * 0.44, w / 2 + 118, h);
+    ctx.closePath();
+    ctx.fill();
+  });
+  write("background-person.png", c.toBuffer("image/png"));
+}
+
+{
+  // Objet compact et saturé, encodé en JPEG : le décodeur doit aussi passer.
+  const c = backgroundScene(400, 300, (ctx, w, h) => {
+    ctx.fillStyle = "#d94f2b";
+    ctx.beginPath();
+    ctx.ellipse(w / 2, h / 2, 104, 82, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#7a2f18";
+    ctx.fillRect(w / 2 - 8, h / 2 - 110, 16, 34);
+  });
+  write("background-object.jpg", c.toBuffer("image/jpeg", 92));
+}
+
+{
+  // Bords durs et trou central : un contour extérieur seul le raterait.
+  const c = backgroundScene(360, 360, (ctx, w, h) => {
+    ctx.fillStyle = "#1d2f5c";
+    ctx.fillRect(w * 0.2, h * 0.2, w * 0.6, h * 0.6);
+    ctx.fillStyle = "#b9d8f2";
+    ctx.beginPath();
+    ctx.arc(w / 2, h / 2, 52, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  write("background-hard-edges.png", c.toBuffer("image/png"));
+}
+
 console.log("Fixtures images générées dans test-assets/generated/ :");
 for (const [name, size] of written.sort()) {
   console.log(`  ${name.padEnd(24)} ${String(size).padStart(8)} octets`);

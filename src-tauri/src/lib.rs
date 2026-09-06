@@ -107,6 +107,7 @@ pub fn run() {
             models::command::models_install,
             models::command::models_cancel,
             models::command::models_remove,
+            models::command::models_read_file,
             speech::command::tts_speak,
             speech::command::tts_concat,
             speech::command::stt_transcribe,

@@ -9,7 +9,7 @@ import { isTauri } from "@/core/platform";
  * défaire. Une fois installés, les moteurs fonctionnent entièrement hors ligne.
  */
 
-export type SpeechAssetKind = "engine" | "voice" | "stt-model";
+export type SpeechAssetKind = "engine" | "voice" | "stt-model" | "segmentation";
 
 export interface SpeechAsset {
   id: string;
@@ -42,6 +42,22 @@ export async function listAssets(): Promise<SpeechAsset[]> {
   if (!isTauri()) return [];
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<SpeechAsset[]>("models_list");
+}
+
+/**
+ * Lit un fichier appartenant à un élément installé.
+ *
+ * Les moteurs de parole lisent leurs modèles eux-mêmes, côté natif. La
+ * suppression d'arrière-plan fait tourner le sien dans la WebView : il lui faut
+ * les octets. La commande native n'accepte pas un chemin libre, mais un
+ * identifiant du catalogue et un fichier que cet élément déclare — elle ne peut
+ * donc lire que ce que FourTout a installé.
+ */
+export async function readAssetFile(id: string, relative: string): Promise<Uint8Array> {
+  if (!isTauri()) throw new Error("Les modèles ne sont disponibles que dans l'application installée.");
+  const { invoke } = await import("@tauri-apps/api/core");
+  const bytes = await invoke<number[]>("models_read_file", { id, relative });
+  return new Uint8Array(bytes);
 }
 
 /** Emplacement de stockage, montré à l'utilisateur. */
