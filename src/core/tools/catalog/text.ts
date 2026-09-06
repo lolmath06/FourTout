@@ -230,7 +230,7 @@ export const textTools = defineTools([
     icon: "FileOutput",
     keywords: ["docx en pdf", "word en pdf", "convertir un word", "document en pdf"],
     aliases: ["docx to pdf", "word to pdf"],
-    status: "planned",
+    status: "available",
     capabilities: ["local", "produces-files"],
     acceptedInputs: [{ kind: "document", extensions: ["docx"] }],
     outputs: [OUT.pdf()],

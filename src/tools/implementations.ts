@@ -250,6 +250,57 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
 
   // Convertisseur universel (phase 6) : il route, il ne convertit pas.
   "universal-converter": lazy(() => import("./impl/converters/UniversalConverterTool").then((m) => ({ default: m.UniversalConverterTool }))),
+
+  // --------------------------------------------------------------- phase 7
+  // Développeur : formats de données, code, jetons, expressions, planification.
+  "json-tools": lazy(() => import("./impl/dev/DataFormatTools").then((m) => ({ default: m.JsonTool }))),
+  "yaml-format": lazy(() => import("./impl/dev/DataFormatTools").then((m) => ({ default: m.YamlTool }))),
+  "xml-format": lazy(() => import("./impl/dev/DataFormatTools").then((m) => ({ default: m.XmlTool }))),
+  "sql-format": lazy(() => import("./impl/dev/CodeFormatTools").then((m) => ({ default: m.SqlFormatTool }))),
+  "web-beautify": lazy(() => import("./impl/dev/CodeFormatTools").then((m) => ({ default: m.WebBeautifyTool }))),
+  "web-minify": lazy(() => import("./impl/dev/CodeFormatTools").then((m) => ({ default: m.WebMinifyTool }))),
+  "jwt-decode": lazy(() => import("./impl/dev/TokenTools").then((m) => ({ default: m.JwtDecodeTool }))),
+  "uuid-generate": lazy(() => import("./impl/dev/TokenTools").then((m) => ({ default: m.UuidTool }))),
+  "timestamp-convert": lazy(() => import("./impl/dev/TokenTools").then((m) => ({ default: m.TimestampTool }))),
+  "number-base-convert": lazy(() => import("./impl/dev/TokenTools").then((m) => ({ default: m.NumberBaseTool }))),
+  "regex-tester": lazy(() => import("./impl/dev/RegexCronTools").then((m) => ({ default: m.RegexTesterTool }))),
+  "cron-helper": lazy(() => import("./impl/dev/RegexCronTools").then((m) => ({ default: m.CronTool }))),
+  "code-diff": lazy(() => import("./impl/dev/CodeDiffTool").then((m) => ({ default: m.CodeDiffTool }))),
+
+  // Calculateurs : dix convertisseurs d'unités sur un seul moteur, puis les
+  // calculs du quotidien.
+  "unit-length": lazy(() => import("./impl/calculators/UnitConverterTool").then((m) => ({ default: m.UnitLengthTool }))),
+  "unit-weight": lazy(() => import("./impl/calculators/UnitConverterTool").then((m) => ({ default: m.UnitMassTool }))),
+  "unit-temperature": lazy(() => import("./impl/calculators/UnitConverterTool").then((m) => ({ default: m.UnitTemperatureTool }))),
+  "unit-volume": lazy(() => import("./impl/calculators/UnitConverterTool").then((m) => ({ default: m.UnitVolumeTool }))),
+  "unit-area": lazy(() => import("./impl/calculators/UnitConverterTool").then((m) => ({ default: m.UnitAreaTool }))),
+  "unit-speed": lazy(() => import("./impl/calculators/UnitConverterTool").then((m) => ({ default: m.UnitSpeedTool }))),
+  "unit-pressure": lazy(() => import("./impl/calculators/UnitConverterTool").then((m) => ({ default: m.UnitPressureTool }))),
+  "unit-energy": lazy(() => import("./impl/calculators/UnitConverterTool").then((m) => ({ default: m.UnitEnergyTool }))),
+  "unit-power": lazy(() => import("./impl/calculators/UnitConverterTool").then((m) => ({ default: m.UnitPowerTool }))),
+  "unit-data": lazy(() => import("./impl/calculators/UnitConverterTool").then((m) => ({ default: m.UnitDataTool }))),
+  "calc-percentage": lazy(() => import("./impl/calculators/ArithmeticTools").then((m) => ({ default: m.PercentageTool }))),
+  "calc-proportion": lazy(() => import("./impl/calculators/ArithmeticTools").then((m) => ({ default: m.ProportionTool }))),
+  "calc-date-difference": lazy(() => import("./impl/calculators/DateTools").then((m) => ({ default: m.DateDifferenceTool }))),
+  "calc-duration": lazy(() => import("./impl/calculators/DateTools").then((m) => ({ default: m.DurationTool }))),
+  "calc-age": lazy(() => import("./impl/calculators/DateTools").then((m) => ({ default: m.AgeTool }))),
+  "calc-scientific": lazy(() => import("./impl/calculators/ScientificTool").then((m) => ({ default: m.ScientificCalculatorTool }))),
+  "calc-currency": lazy(() => import("./impl/calculators/CurrencyTool").then((m) => ({ default: m.CurrencyTool }))),
+
+  // Sécurité : mots de passe, chiffrement de fichiers, métadonnées.
+  "password-generate": lazy(() => import("./impl/security/PasswordTools").then((m) => ({ default: m.PasswordGenerateTool }))),
+  "password-strength": lazy(() => import("./impl/security/PasswordTools").then((m) => ({ default: m.PasswordStrengthTool }))),
+  "file-encrypt": lazy(() => import("./impl/security/FileCryptoTools").then((m) => ({ default: m.FileEncryptTool }))),
+  "file-decrypt": lazy(() => import("./impl/security/FileCryptoTools").then((m) => ({ default: m.FileDecryptTool }))),
+  "metadata-strip-any": lazy(() => import("./impl/security/MetadataStripTool").then((m) => ({ default: m.MetadataStripTool }))),
+
+  // Fichiers : archive protégée, rangement, effacement renforcé.
+  "archive-encrypted": lazy(() => import("./impl/files/EncryptedArchiveTool").then((m) => ({ default: m.EncryptedArchiveTool }))),
+  "file-organize": lazy(() => import("./impl/files/OrganizeFolderTool").then((m) => ({ default: m.OrganizeFolderTool }))),
+  "file-secure-delete": lazy(() => import("./impl/files/SecureDeleteTool").then((m) => ({ default: m.SecureDeleteTool }))),
+
+  // Documents : Word vers PDF, en réutilisant le lecteur DOCX et le moteur PDF.
+  "docx-to-pdf": lazy(() => import("./impl/documents/DocxToPdfTool").then((m) => ({ default: m.DocxToPdfTool }))),
 };
 
 export function getToolComponent(toolId: string): ToolComponent | undefined {

@@ -85,6 +85,8 @@ export interface ArchiveListing {
   archiveSize: number;
   rejected: number;
   suspicious: boolean;
+  /** Au moins une entrée est protégée par mot de passe. */
+  encrypted: boolean;
 }
 
 export interface ExtractSummary {
@@ -359,6 +361,180 @@ export function extractArchive(
     "extract",
     "files_archive_extract",
     (jobId) => ({ jobId, path, destination, overwrite }),
+    context,
+  );
+}
+
+/* ------------------------------------------------ archives protégées */
+
+/**
+ * Archive ZIP chiffrée en **WinZip AES-256**, le format que lisent 7-Zip,
+ * WinRAR, PeaZip et l'Explorateur de Windows. Le « ZipCrypto » historique
+ * n'est jamais utilisé : il se casse à partir de quelques octets de clair connu.
+ *
+ * Le mot de passe traverse l'IPC une seule fois et n'est jamais conservé.
+ */
+export function createEncryptedArchive(
+  paths: string[],
+  output: string,
+  level: number,
+  password: string,
+  context?: OperationContext,
+): Promise<ArchiveSummary> {
+  return runJob(
+    "archive-aes",
+    "files_archive_create_encrypted",
+    (jobId) => ({ params: { jobId, paths, output, level, password } }),
+    context,
+  );
+}
+
+export function extractEncryptedArchive(
+  path: string,
+  destination: string,
+  overwrite: boolean,
+  password: string,
+  context?: OperationContext,
+): Promise<ExtractSummary> {
+  return runJob(
+    "extract-aes",
+    "files_archive_extract_encrypted",
+    (jobId) => ({ jobId, path, destination, overwrite, password }),
+    context,
+  );
+}
+
+/* ------------------------------------------------------------ chiffrement */
+
+export interface CryptoSummary {
+  path: string;
+  inputBytes: number;
+  outputBytes: number;
+}
+
+/** Extension des fichiers produits par le chiffrement. */
+export const ENCRYPTED_EXTENSION = "ftenc";
+
+export function encryptFiles(
+  sources: string[],
+  destination: string | undefined,
+  password: string,
+  context?: OperationContext,
+): Promise<CryptoSummary[]> {
+  return runJob(
+    "encrypt",
+    "files_encrypt",
+    (jobId) => ({ jobId, request: { sources, destination, password } }),
+    context,
+  );
+}
+
+export function decryptFiles(
+  sources: string[],
+  destination: string | undefined,
+  password: string,
+  context?: OperationContext,
+): Promise<CryptoSummary[]> {
+  return runJob(
+    "decrypt",
+    "files_decrypt",
+    (jobId) => ({ jobId, request: { sources, destination, password } }),
+    context,
+  );
+}
+
+/* ------------------------------------------------- rangement et effacement */
+
+export interface OrganizeMove {
+  name: string;
+  from: string;
+  category: string;
+  /** Chemin relatif au dossier analysé, séparateurs `/`. */
+  to: string;
+  size: number;
+}
+
+export interface OrganizeCategory {
+  name: string;
+  files: number;
+  bytes: number;
+}
+
+export interface OrganizePlan {
+  root: string;
+  moves: OrganizeMove[];
+  skipped: string[];
+  categories: OrganizeCategory[];
+}
+
+export interface OrganizeSummary {
+  moved: number;
+  renamed: number;
+  failed: string[];
+}
+
+/** Analyse un dossier et **propose** un rangement. Rien n'est déplacé. */
+export function organizePlan(
+  root: string,
+  recursive: boolean,
+  context?: OperationContext,
+): Promise<OrganizePlan> {
+  return runJob(
+    "organize-plan",
+    "files_organize_plan",
+    (jobId) => ({ jobId, request: { root, recursive } }),
+    context,
+  );
+}
+
+/** Applique un plan validé par l'utilisateur, et lui seul. */
+export function organizeApply(
+  root: string,
+  moves: { from: string; to: string }[],
+  context?: OperationContext,
+): Promise<OrganizeSummary> {
+  return runJob(
+    "organize-apply",
+    "files_organize_apply",
+    (jobId) => ({ jobId, request: { root, moves } }),
+    context,
+  );
+}
+
+export type WipeMode = "random" | "three-pass" | "none";
+
+export interface WipeOutcome {
+  path: string;
+  bytes: number;
+  passes: number;
+  error: string | null;
+}
+
+export interface WipeSummary {
+  deleted: number;
+  failed: number;
+  bytes: number;
+  results: WipeOutcome[];
+  notice: string;
+}
+
+/**
+ * Phrase de confirmation exigée par la couche native. Elle voyage jusqu'au
+ * processus natif pour qu'un effacement ne puisse pas être déclenché par un
+ * simple clic égaré depuis l'interface.
+ */
+export const WIPE_CONFIRMATION = "SUPPRIMER DEFINITIVEMENT";
+
+export function secureDelete(
+  paths: string[],
+  mode: WipeMode,
+  confirmation: string,
+  context?: OperationContext,
+): Promise<WipeSummary> {
+  return runJob(
+    "wipe",
+    "files_secure_delete",
+    (jobId) => ({ jobId, request: { paths, mode, confirmation } }),
     context,
   );
 }

@@ -121,6 +121,49 @@ fn walk_into(
     Ok(())
 }
 
+/// Crée une archive **protégée par mot de passe**.
+///
+/// Seul le ZIP est proposé : TAR n'a pas de chiffrement natif, et le
+/// « tar.gz.gpg » qu'on voit parfois demande un outil tiers pour être relu.
+pub fn create_encrypted(
+    members: &[Member],
+    output: &Path,
+    level: u32,
+    password: &str,
+    reporter: &Reporter,
+) -> Result<ArchiveSummary, String> {
+    if password.is_empty() {
+        return Err("Le mot de passe ne peut pas être vide.".into());
+    }
+    if members.is_empty() {
+        return Err("Aucun fichier à archiver.".into());
+    }
+    let total: u64 = members
+        .iter()
+        .map(|m| fs::metadata(&m.source).map(|meta| meta.len()).unwrap_or(0))
+        .sum();
+    if let Some(parent) = output.parent() {
+        fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+
+    if let Err(error) =
+        write_zip_maybe_encrypted(members, output, level, total, Some(password), reporter)
+    {
+        // Une archive partielle protégée par mot de passe serait pire qu'aucune
+        // archive : impossible de savoir ce qu'elle contient vraiment.
+        let _ = fs::remove_file(output);
+        return Err(error);
+    }
+
+    let output_bytes = fs::metadata(output).map(|m| m.len()).unwrap_or(0);
+    Ok(ArchiveSummary {
+        path: output.to_string_lossy().to_string(),
+        files: members.len(),
+        input_bytes: total,
+        output_bytes,
+    })
+}
+
 /// Crée une archive à partir de membres déjà résolus.
 pub fn create(
     members: &[Member],
@@ -163,9 +206,26 @@ fn write_zip(
     total: u64,
     reporter: &Reporter,
 ) -> Result<(), String> {
+    write_zip_maybe_encrypted(members, output, level, total, None, reporter)
+}
+
+/// Écrit une archive ZIP, éventuellement chiffrée.
+///
+/// Le chiffrement utilisé est **WinZip AES-256**, celui que lisent 7-Zip,
+/// WinRAR, PeaZip, Keka et l'Explorateur de fichiers moderne. Le « ZipCrypto »
+/// historique n'est jamais employé : il est cassé depuis les années 1990 et se
+/// déchiffre à partir de quelques octets de clair connu.
+fn write_zip_maybe_encrypted(
+    members: &[Member],
+    output: &Path,
+    level: u32,
+    total: u64,
+    password: Option<&str>,
+    reporter: &Reporter,
+) -> Result<(), String> {
     let file = File::create(output).map_err(|e| format!("Création impossible : {e}"))?;
     let mut writer = zip::ZipWriter::new(BufWriter::new(file));
-    let options: zip::write::FileOptions<'_, ()> = zip::write::FileOptions::default()
+    let mut options: zip::write::FileOptions<'_, ()> = zip::write::FileOptions::default()
         .compression_method(if level == 0 {
             zip::CompressionMethod::Stored
         } else {
@@ -173,6 +233,9 @@ fn write_zip(
         })
         .compression_level(if level == 0 { None } else { Some(level as i64) })
         .large_file(true);
+    if let Some(password) = password {
+        options = options.with_aes_encryption(zip::AesMode::Aes256, password);
+    }
 
     let mut done = 0_u64;
     let mut buffer = vec![0_u8; 256 * 1024];
@@ -267,6 +330,8 @@ pub struct ArchiveListing {
     pub rejected: usize,
     /// L'archive présente-t-elle un rapport de compression anormal ?
     pub suspicious: bool,
+    /// Au moins une entrée est protégée par mot de passe.
+    pub encrypted: bool,
 }
 
 /// Rapport de compression au-delà duquel on prévient l'utilisateur.
@@ -283,6 +348,7 @@ pub fn list(path: &Path) -> Result<ArchiveListing, String> {
     })?;
     let archive_size = fs::metadata(path).map(|m| m.len()).unwrap_or(0);
     let mut entries: Vec<ArchiveEntry> = Vec::new();
+    let mut encrypted = false;
 
     match format {
         Format::Zip => {
@@ -290,9 +356,17 @@ pub fn list(path: &Path) -> Result<ArchiveListing, String> {
             let mut archive = zip::ZipArchive::new(BufReader::new(file))
                 .map_err(|e| format!("Archive ZIP illisible : {e}"))?;
             for index in 0..archive.len() {
-                let entry = archive.by_index(index).map_err(|e| e.to_string())?;
+                // `by_index_raw` lit l'en-tête sans décompresser ni déchiffrer :
+                // c'est ce qui permet de décrire une archive protégée par mot de
+                // passe sans le demander.
+                let entry = archive
+                    .by_index_raw(index)
+                    .map_err(|error| describe_zip_error(error, false))?;
                 let raw = entry.name().to_string();
                 let is_dir = entry.is_dir();
+                if entry.encrypted() {
+                    encrypted = true;
+                }
                 entries.push(ArchiveEntry {
                     rejected: check_entry(&raw, is_dir),
                     name: raw,
@@ -348,7 +422,41 @@ pub fn list(path: &Path) -> Result<ArchiveListing, String> {
         archive_size,
         rejected,
         suspicious,
+        encrypted,
     })
+}
+
+/// Traduit une erreur de la bibliothèque ZIP en message utile.
+fn describe_zip_error(error: zip::result::ZipError, password_given: bool) -> String {
+    match error {
+        zip::result::ZipError::InvalidPassword if password_given => {
+            "Mot de passe incorrect : l'archive n'a pas été extraite.".to_string()
+        }
+        zip::result::ZipError::InvalidPassword => {
+            "Cette archive est protégée par un mot de passe.".to_string()
+        }
+        zip::result::ZipError::UnsupportedArchive(reason)
+            if reason.to_lowercase().contains("password") =>
+        {
+            if password_given {
+                "Mot de passe incorrect : l'archive n'a pas été extraite.".to_string()
+            } else {
+                "Cette archive est protégée par un mot de passe.".to_string()
+            }
+        }
+        zip::result::ZipError::UnsupportedArchive(reason) => {
+            format!("Archive non prise en charge : {reason}")
+        }
+        other => format!("Archive ZIP illisible : {other}"),
+    }
+}
+
+/// Retire les fichiers déjà écrits avant de propager l'erreur.
+fn rollback(created: Vec<PathBuf>, error: String) -> String {
+    for path in created {
+        let _ = fs::remove_file(path);
+    }
+    error
 }
 
 fn check_entry(name: &str, is_dir: bool) -> Option<String> {
@@ -359,7 +467,7 @@ fn check_entry(name: &str, is_dir: bool) -> Option<String> {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtractSummary {
     pub destination: String,
@@ -373,6 +481,21 @@ pub fn extract(
     path: &Path,
     destination: &Path,
     overwrite: bool,
+    reporter: &Reporter,
+) -> Result<ExtractSummary, String> {
+    extract_with_password(path, destination, overwrite, None, reporter)
+}
+
+/// Extrait une archive, éventuellement protégée par mot de passe.
+///
+/// Un mot de passe erroné doit produire un message clair et **aucun fichier** :
+/// une extraction à moitié faite laisserait croire que l'archive est corrompue
+/// alors qu'il ne manquait qu'un mot de passe.
+pub fn extract_with_password(
+    path: &Path,
+    destination: &Path,
+    overwrite: bool,
+    password: Option<&str>,
     reporter: &Reporter,
 ) -> Result<ExtractSummary, String> {
     let listing = list(path)?;
@@ -390,6 +513,10 @@ pub fn extract(
     let mut extracted = 0_usize;
     let mut bytes = 0_u64;
     let total = listing.total_size;
+    // Fichiers réellement créés : si l'extraction échoue en route (mot de passe
+    // refusé sur une entrée, archive tronquée), on ne laisse pas derrière nous
+    // une extraction à moitié faite qu'on prendrait pour un résultat.
+    let mut created: Vec<PathBuf> = Vec::new();
 
     // `skipped` est passé en paramètre plutôt que capturé : la boucle
     // d'extraction doit pouvoir y ajouter ses propres refus (liens
@@ -399,7 +526,8 @@ pub fn extract(
                        reader: &mut dyn Read,
                        reporter: &Reporter,
                        bytes: &mut u64,
-                       skipped: &mut Vec<String>|
+                       skipped: &mut Vec<String>,
+                       created: &mut Vec<PathBuf>|
      -> Result<bool, String> {
         reporter.check()?;
         let target = match resolve_inside(&destination, name) {
@@ -420,6 +548,7 @@ pub fn extract(
         // soit le fichier est écrit à côté sous un nom libre.
         let final_path = if overwrite { target } else { unique_path(&target) };
         let mut out = BufWriter::new(File::create(&final_path).map_err(|e| e.to_string())?);
+        created.push(final_path.clone());
         let mut buffer = vec![0_u8; 256 * 1024];
         loop {
             reporter.check()?;
@@ -440,11 +569,28 @@ pub fn extract(
             let file = File::open(path).map_err(|e| e.to_string())?;
             let mut archive = zip::ZipArchive::new(BufReader::new(file)).map_err(|e| e.to_string())?;
             for index in 0..archive.len() {
-                let mut entry = archive.by_index(index).map_err(|e| e.to_string())?;
+                let mut entry = match password {
+                    Some(password) => archive
+                        .by_index_decrypt(index, password.as_bytes())
+                        .map_err(|error| describe_zip_error(error, true))?,
+                    None => archive
+                        .by_index(index)
+                        .map_err(|error| describe_zip_error(error, false))?,
+                };
                 let name = entry.name().to_string();
                 let is_dir = entry.is_dir();
-                if write_entry(&name, is_dir, &mut entry, reporter, &mut bytes, &mut skipped)? {
-                    extracted += 1;
+                match write_entry(
+                    &name,
+                    is_dir,
+                    &mut entry,
+                    reporter,
+                    &mut bytes,
+                    &mut skipped,
+                    &mut created,
+                ) {
+                    Ok(true) => extracted += 1,
+                    Ok(false) => {}
+                    Err(error) => return Err(rollback(created, error)),
                 }
             }
         }
@@ -469,8 +615,18 @@ pub fn extract(
                     skipped.push(format!("{name} — entrée spéciale ignorée"));
                     continue;
                 }
-                if write_entry(&name, is_dir, &mut entry, reporter, &mut bytes, &mut skipped)? {
-                    extracted += 1;
+                match write_entry(
+                    &name,
+                    is_dir,
+                    &mut entry,
+                    reporter,
+                    &mut bytes,
+                    &mut skipped,
+                    &mut created,
+                ) {
+                    Ok(true) => extracted += 1,
+                    Ok(false) => {}
+                    Err(error) => return Err(rollback(created, error)),
                 }
             }
         }
@@ -570,6 +726,62 @@ mod tests {
         assert!(destination.join("sain.txt").exists());
         assert!(!root.join("evil.txt").exists());
         assert!(!root.parent().unwrap().join("evil.txt").exists());
+    }
+
+    #[test]
+    fn encrypted_archive_round_trip() {
+        let root = workspace("aes");
+        seed(&root);
+        let members = collect_members(&[root.join("source")], &Reporter::silent()).unwrap();
+        let output = root.join("protege.zip");
+        create_encrypted(&members, &output, 6, "mot de passe fort", &Reporter::silent()).unwrap();
+
+        // Le contenu ne doit pas être lisible sans mot de passe.
+        let destination = root.join("sans-mdp");
+        let error = extract(&output, &destination, true, &Reporter::silent()).unwrap_err();
+        assert!(error.contains("mot de passe"), "message inattendu : {error}");
+
+        // Mauvais mot de passe : message clair, et aucun fichier extrait.
+        let wrong_dir = root.join("mauvais");
+        let error = extract_with_password(
+            &output,
+            &wrong_dir,
+            true,
+            Some("mauvais"),
+            &Reporter::silent(),
+        )
+        .unwrap_err();
+        assert!(error.contains("Mot de passe incorrect"), "message inattendu : {error}");
+        let leftovers: Vec<_> = fs::read_dir(&wrong_dir)
+            .map(|entries| entries.filter_map(|e| e.ok()).collect())
+            .unwrap_or_default();
+        assert!(leftovers.is_empty(), "des fichiers ont survécu à un mot de passe faux");
+
+        // Bon mot de passe : contenu identique à l'original.
+        let good_dir = root.join("bon");
+        let summary = extract_with_password(
+            &output,
+            &good_dir,
+            true,
+            Some("mot de passe fort"),
+            &Reporter::silent(),
+        )
+        .unwrap();
+        assert!(summary.extracted >= 1);
+        assert_eq!(
+            fs::read(good_dir.join("source/a.txt")).unwrap(),
+            fs::read(root.join("source/a.txt")).unwrap()
+        );
+    }
+
+    #[test]
+    fn encrypted_archive_refuses_an_empty_password() {
+        let root = workspace("aes-empty");
+        seed(&root);
+        let members = collect_members(&[root.join("source/a.txt")], &Reporter::silent()).unwrap();
+        assert!(
+            create_encrypted(&members, &root.join("x.zip"), 6, "", &Reporter::silent()).is_err()
+        );
     }
 
     #[test]

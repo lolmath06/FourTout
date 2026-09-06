@@ -11,6 +11,7 @@ pub mod image_native;
 pub mod media;
 pub mod microphone;
 pub mod models;
+pub mod rates;
 pub mod recovery;
 pub mod speech;
 
@@ -81,6 +82,14 @@ pub fn run() {
             files::command::files_archive_create,
             files::command::files_archive_list,
             files::command::files_archive_extract,
+            files::command::files_archive_create_encrypted,
+            files::command::files_archive_extract_encrypted,
+            files::command::files_encrypt,
+            files::command::files_decrypt,
+            files::command::files_organize_plan,
+            files::command::files_organize_apply,
+            files::command::files_secure_delete,
+            rates::currency_rates,
             files::command::files_folder_stats,
             files::command::files_tree,
             files::command::files_duplicates,

@@ -14,10 +14,12 @@
 
 pub mod archive;
 pub mod command;
+pub mod crypto;
 pub mod docx;
 pub mod hash;
 pub mod rename;
 pub mod scan;
+pub mod secure;
 pub mod split;
 
 use std::collections::HashMap;
@@ -84,6 +86,13 @@ impl Reporter {
     /// Rapporteur muet, pour les tests et les appels sans interface.
     pub fn silent() -> Self {
         Self { app: None, job_id: String::new(), cancel: Arc::new(AtomicBool::new(false)) }
+    }
+
+    /// Rapporteur muet **déjà annulé**, pour éprouver les chemins d'annulation
+    /// sans avoir à faire courir un second fil d'exécution.
+    #[cfg(test)]
+    pub fn silent_cancelled() -> Self {
+        Self { app: None, job_id: String::new(), cancel: Arc::new(AtomicBool::new(true)) }
     }
 
     pub fn cancelled(&self) -> bool {

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { applyZoom, formatZoom, stepZoom, ZOOM_DEFAULT } from "@/core/ui/zoom";
 import { useNotifications } from "@/features/notifications/store";
 import { applyDensity, applyMotion, applyTheme, useSettings } from "./store";
@@ -20,11 +20,6 @@ export function useUiScale(): void {
   const motion = useSettings((state) => state.motion);
   const theme = useSettings((state) => state.theme);
   const set = useSettings((state) => state.set);
-
-  // Le raccourci lit la valeur courante sans réabonner les écouteurs à chaque
-  // changement d'échelle.
-  const zoomRef = useRef(zoom);
-  zoomRef.current = zoom;
 
   useEffect(() => {
     void applyZoom(zoom);
@@ -58,14 +53,17 @@ export function useUiScale(): void {
       });
     };
 
+    /**
+     * L'échelle courante est lue **dans le store**, jamais dans une valeur
+     * capturée au rendu : deux gestes rapprochés ne doivent pas repartir de la
+     * même valeur parce que React n'a pas encore rendu entre les deux.
+     */
     const change = (next: number) => {
-      if (next === zoomRef.current) {
-        announce(next);
-        return;
-      }
-      set("zoom", next);
+      if (next !== useSettings.getState().zoom) set("zoom", next);
       announce(next);
     };
+
+    const current = () => useSettings.getState().zoom;
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
@@ -75,10 +73,10 @@ export function useUiScale(): void {
       const code = event.code;
       if (key === "+" || key === "=" || code === "NumpadAdd" || code === "Equal") {
         event.preventDefault();
-        change(stepZoom(zoomRef.current, 1));
+        change(stepZoom(current(), 1));
       } else if (key === "-" || key === "_" || code === "NumpadSubtract" || code === "Minus") {
         event.preventDefault();
-        change(stepZoom(zoomRef.current, -1));
+        change(stepZoom(current(), -1));
       } else if (key === "0" || code === "Numpad0" || code === "Digit0") {
         event.preventDefault();
         change(ZOOM_DEFAULT);
@@ -90,7 +88,7 @@ export function useUiScale(): void {
       if (event.deltaY === 0) return;
       event.preventDefault();
       // Un cran (5 %) : la molette est un geste plus fin que le clavier.
-      change(stepZoom(zoomRef.current, event.deltaY < 0 ? 1 : -1, 1));
+      change(stepZoom(current(), event.deltaY < 0 ? 1 : -1, 1));
     };
 
     window.addEventListener("keydown", onKeyDown);

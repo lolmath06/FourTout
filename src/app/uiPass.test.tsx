@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routes } from "./routes";
+import { StatusBadge } from "@/components/ui/Badge";
 
 /**
  * Passe visuelle — garde de non-régression.
@@ -65,8 +66,17 @@ describe("motifs retirés par la passe visuelle", () => {
     expect(screen.getAllByText(/restent sur votre appareil/i)).toHaveLength(1);
   });
 
-  it("signale toujours « Bientôt » sur un outil non implémenté", () => {
-    open("/tools/t/file-organize");
+  it("garde le marqueur « Bientôt » utilisable, même si plus aucun outil ne l'est", () => {
+    // Le catalogue est entièrement livré depuis la phase 7 : plus aucun outil
+    // n'est « bientôt disponible ». La machinerie doit néanmoins rester juste,
+    // parce qu'un futur outil s'y appuiera — on la teste donc sur le composant,
+    // pas sur l'état du catalogue.
+    render(<StatusBadge status="planned" />);
     expect(screen.getByText("Bientôt")).toBeInTheDocument();
+
+    cleanup();
+    render(<StatusBadge status="available" />);
+    expect(screen.queryByText("Bientôt")).not.toBeInTheDocument();
+    expect(screen.getByText("Disponible")).toBeInTheDocument();
   });
 });

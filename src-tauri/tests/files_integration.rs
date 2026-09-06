@@ -238,3 +238,112 @@ fn detects_a_missing_part_on_a_real_split() {
     assert!(error.contains("manquant"), "message inattendu : {error}");
     assert!(!dir.join("out/large-split.bin").exists(), "aucun fichier trompeur ne doit rester");
 }
+
+/// La carte « Archive protégée par mot de passe » promet une archive lisible par
+/// 7-Zip, WinRAR et l'Explorateur Windows. Cette promesse ne se vérifie pas en
+/// relisant l'archive avec le code qui l'a écrite : on la relit avec un outil
+/// extérieur. Le test est ignoré si aucun `7z` n'est installé.
+#[test]
+fn an_encrypted_archive_is_readable_by_an_external_tool() {
+    let Some(root) = fixtures() else { return };
+    let dir = workspace("aes-interop");
+
+    let source = root.join("archive-source");
+    let members = archive::collect_members(&[source], &Reporter::silent()).unwrap();
+    let output = dir.join("protege.zip");
+    archive::create_encrypted(&members, &output, 6, "test-password-123", &Reporter::silent())
+        .unwrap();
+
+    let Some(seven_zip) = ["7z", "7za"]
+        .into_iter()
+        .find(|tool| std::process::Command::new(tool).arg("i").output().is_ok())
+    else {
+        eprintln!("7z absent : test d'interopérabilité ignoré");
+        return;
+    };
+
+    // 1. L'outil externe voit bien du chiffrement AES, et non le « ZipCrypto »
+    //    historique, cassé depuis les années 1990.
+    let listing = std::process::Command::new(seven_zip)
+        .args(["l", "-slt", "-ptest-password-123"])
+        .arg(&output)
+        .output()
+        .unwrap();
+    let listing = String::from_utf8_lossy(&listing.stdout);
+    assert!(
+        listing.contains("AES-256"),
+        "7z n'annonce pas AES-256 :\n{listing}"
+    );
+
+    // 2. Un mauvais mot de passe ne rend rien à l'outil externe non plus.
+    let extracted_wrong = dir.join("mauvais");
+    let refused = std::process::Command::new(seven_zip)
+        .args(["x", "-y", "-pmauvais-mot-de-passe"])
+        .arg(&output)
+        .arg(format!("-o{}", extracted_wrong.display()))
+        .output()
+        .unwrap();
+    assert!(!refused.status.success(), "7z a accepté un mauvais mot de passe");
+
+    // 3. Avec le bon mot de passe, l'outil externe restitue les octets exacts,
+    //    sous-dossier et nom accentué compris.
+    let extracted = dir.join("bon");
+    let ok = std::process::Command::new(seven_zip)
+        .args(["x", "-y", "-ptest-password-123"])
+        .arg(&output)
+        .arg(format!("-o{}", extracted.display()))
+        .output()
+        .unwrap();
+    assert!(
+        ok.status.success(),
+        "7z n'a pas su extraire :\n{}",
+        String::from_utf8_lossy(&ok.stdout)
+    );
+    for member in &members {
+        let original = hash::sha256_file(&member.source).unwrap();
+        let rebuilt = hash::sha256_file(&extracted.join(&member.name))
+            .unwrap_or_else(|e| panic!("{} : {e}", member.name));
+        assert_eq!(original, rebuilt, "{}", member.name);
+    }
+}
+
+/// Une archive protégée dont un octet a changé ne doit pas livrer de contenu
+/// silencieusement tronqué.
+#[test]
+fn a_corrupted_encrypted_archive_is_refused() {
+    let Some(root) = fixtures() else { return };
+    let dir = workspace("aes-corrupt");
+
+    let members =
+        archive::collect_members(&[root.join("archive-source")], &Reporter::silent()).unwrap();
+    let output = dir.join("protege.zip");
+    archive::create_encrypted(&members, &output, 6, "test-password-123", &Reporter::silent())
+        .unwrap();
+
+    // On abîme le corps de l'archive, après l'en-tête de la première entrée.
+    let mut bytes = fs::read(&output).unwrap();
+    let middle = bytes.len() / 2;
+    bytes[middle] ^= 0xff;
+    fs::write(&output, &bytes).unwrap();
+
+    let destination = dir.join("out");
+    let outcome = archive::extract_with_password(
+        &output,
+        &destination,
+        true,
+        Some("test-password-123"),
+        &Reporter::silent(),
+    );
+    match outcome {
+        Err(_) => {}
+        Ok(summary) => {
+            // Certaines altérations ne touchent qu'une entrée : celles qui
+            // passent doivent alors être signalées comme ignorées, jamais
+            // livrées comme un contenu fidèle.
+            assert!(
+                !summary.skipped.is_empty() || summary.extracted < members.len(),
+                "une archive abîmée a été extraite comme si de rien n'était"
+            );
+        }
+    }
+}

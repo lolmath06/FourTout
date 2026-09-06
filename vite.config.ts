@@ -26,6 +26,13 @@ export default defineConfig({
       ignored: ["**/src-tauri/**", "**/test-assets/**"],
     },
   },
+  // Le worker du testeur d'expressions régulières est bundlé en script
+  // classique : les workers de type module ne sont pas garantis sur toutes les
+  // WebView visées (WebKitGTK), et un worker qui ne démarre pas ferait retomber
+  // l'outil sur l'exécution synchrone, sans protection réelle.
+  worker: {
+    format: "iife",
+  },
   build: {
     // Tauri uses Chromium on Windows and WebKit on macOS/Linux.
     target: "es2022",

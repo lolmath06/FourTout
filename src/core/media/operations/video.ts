@@ -406,6 +406,39 @@ export function removeAudio(container: VideoContainerId): VideoOp {
   };
 }
 
+/**
+ * Recopie les pistes en retirant toutes les métadonnées du conteneur.
+ *
+ * `-map_metadata -1` efface les métadonnées globales, `-map_chapters -1` les
+ * chapitres, et `-c copy` garantit qu'**aucune piste n'est réencodée** : la
+ * qualité d'origine est conservée au bit près, seul l'emballage change.
+ *
+ * Ce que cela retire : titre, auteur, logiciel d'encodage, date, commentaires,
+ * coordonnées GPS des vidéos de téléphone. Ce que cela ne retire pas : ce qui
+ * est *dans l'image* — un horodatage incrusté reste visible.
+ */
+export function stripMediaMetadata(extension: string, mimeType: string): VideoOp {
+  const container = extension.toLowerCase();
+  // `+faststart` n'a de sens que pour les conteneurs MPEG-4 ; ailleurs, FFmpeg
+  // refuserait l'option. On ne l'ajoute donc que là où elle s'applique.
+  const extra = container === "mp4" || container === "mov" || container === "m4a"
+    ? ["-movflags", "+faststart"]
+    : [];
+  return {
+    outputExt: container,
+    mimeType,
+    buildArgs: (inputs, output) => [
+      "-i", inputs[0],
+      "-map", "0",
+      "-c", "copy",
+      "-map_metadata", "-1",
+      "-map_chapters", "-1",
+      ...extra,
+      output,
+    ],
+  };
+}
+
 /** Que faire quand la vidéo et l'audio n'ont pas la même durée. */
 export type AudioFitMode = "video" | "audio" | "loop";
 

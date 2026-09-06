@@ -3,6 +3,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routes } from "./routes";
+import { toolRegistry } from "@/core/tools/registry";
 import { useFavorites } from "@/features/favorites/store";
 import { useRecents } from "@/features/recents/store";
 import { useNotifications } from "@/features/notifications/store";
@@ -47,17 +48,14 @@ describe("navigation principale", () => {
     expect(screen.getByTestId("tool-row-pdf-compress")).toBeInTheDocument();
   });
 
-  it("ouvre la page d'un outil non implémenté", async () => {
-    // « Organiser un dossier » reste prévu : la vue « bientôt disponible » doit
-    // s'afficher, et surtout aucun outil `planned` ne doit paraître utilisable.
-    renderApp("/tools/t/file-organize");
-
-    expect(
-      await screen.findByRole("heading", { name: /organiser un dossier/i }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Bientôt")).toBeInTheDocument();
-    expect(screen.getByText("Cet outil arrive prochainement")).toBeInTheDocument();
-    expect(screen.getByText(/vos fichiers restent sur votre appareil/i)).toBeInTheDocument();
+  it("n'affiche plus aucun outil « bientôt disponible »", () => {
+    // Depuis la phase 7, le catalogue est entièrement livré. Ce test garde
+    // l'invariant qui compte : un outil visible est un outil qui marche.
+    // La machinerie « bientôt disponible » reste testée à part, sur le
+    // composant lui-même (`ToolPlaceholder`), pour ne pas dépendre de
+    // l'existence d'un outil non livré dans le catalogue.
+    const planned = toolRegistry.all().filter((tool) => tool.status !== "available");
+    expect(planned.map((tool) => tool.id)).toEqual([]);
   });
 
   it("ouvre un outil PDF réellement implémenté", async () => {

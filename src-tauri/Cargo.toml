@@ -32,7 +32,10 @@ image = { version = "0.25", default-features = false, features = ["png", "jpeg",
 # Installation des moteurs de parole : téléchargement vérifié puis extraction.
 ureq = "2.12"
 tar = "0.4"
-zip = { version = "2", default-features = false, features = ["deflate"] }
+zip = { version = "2", default-features = false, features = ["aes-crypto", "deflate"] }
+argon2 = "0.5.3"
+chacha20poly1305 = "0.10.1"
+getrandom = "0.3.4"
 
 # Arbitrage des permissions de la WebView (microphone). La version est figée sur
 # celle de wry : c'est la même WebView qui est manipulée.

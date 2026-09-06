@@ -97,9 +97,25 @@ describe("conversions proposées par format", () => {
     expect(conversionsFor("xyz")).toEqual([]);
   });
 
-  it("ne propose pas DOCX vers PDF tant que l'outil est prévu et non livré", () => {
-    expect(toolsFor("docx")).not.toContain("docx-to-pdf");
-    expect(toolRegistry.get("docx-to-pdf")?.status).toBe("planned");
+  it("ne propose que des outils réellement livrés", () => {
+    // L'invariant du graphe, et la seule chose qui compte : une conversion
+    // proposée doit toujours pouvoir être exécutée. Ce test tenait autrefois
+    // sur le seul cas DOCX → PDF, resté « prévu » ; il vaut maintenant pour
+    // toutes les extensions du catalogue, et survivra à l'arrivée de nouveaux
+    // outils comme au passage d'un outil en « bientôt ».
+    for (const extension of convertibleExtensions()) {
+      for (const target of conversionsFor(extension)) {
+        expect(
+          toolRegistry.get(target.toolId)?.status,
+          `${extension} → ${target.to} via ${target.toolId}`,
+        ).toBe("available");
+      }
+    }
+  });
+
+  it("propose désormais DOCX vers PDF, puisque l'outil est livré", () => {
+    expect(toolsFor("docx")).toContain("docx-to-pdf");
+    expect(toolRegistry.get("docx-to-pdf")?.status).toBe("available");
   });
 });
 

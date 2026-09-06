@@ -25,6 +25,7 @@ import {
   removeAudio,
   replaceAudio,
   scaleFilter,
+  stripMediaMetadata,
   speedAudioFilter,
   speedDurationMs,
   speedVideoFilter,
@@ -527,5 +528,76 @@ describe.skipIf(!FFMPEG || !FFPROBE)("opérations vidéo exécutées avec le vra
 
     const vtt = readFileSync(run(extractSubtitleTrack(0, "vtt"), [withTrack], "extracted-vtt"), "utf-8");
     expect(vtt.startsWith("WEBVTT")).toBe(true);
+  });
+
+  it("retire les métadonnées d'une vidéo sans réencoder ni perdre de piste", () => {
+    // Une vidéo comme en produit un téléphone : titre, auteur, commentaire et
+    // même des coordonnées GPS.
+    const tagged = join(dir, "tagged.mp4");
+    ff([
+      "-i", clip,
+      "-c", "copy",
+      "-metadata", "title=Vacances 2026",
+      "-metadata", "artist=Marie Durand",
+      "-metadata", "comment=chez moi",
+      "-metadata", "location=+48.8566+002.3522/",
+      tagged,
+    ]);
+
+    const before = execFileSync(FFPROBE!, [
+      "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", tagged,
+    ]).toString();
+    expect(before).toContain("Vacances 2026");
+    expect(before).toContain("Marie Durand");
+
+    const cleaned = run(stripMediaMetadata("mp4", "video/mp4"), [tagged], "stripped");
+    const after = execFileSync(FFPROBE!, [
+      "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", cleaned,
+    ]).toString();
+
+    // Plus aucune trace des étiquettes, GPS compris.
+    expect(after).not.toContain("Vacances 2026");
+    expect(after).not.toContain("Marie Durand");
+    expect(after).not.toContain("chez moi");
+    expect(after).not.toContain("48.8566");
+
+    // Les pistes sont toutes là, dans les mêmes codecs : rien n'a été réencodé.
+    const source = probe(tagged);
+    const result = probe(cleaned);
+    expect(result.videoCodec).toBe(source.videoCodec);
+    expect(result.hasAudio).toBe(source.hasAudio);
+    expect(result.audioCodec).toBe(source.audioCodec);
+    expect(result.width).toBe(source.width);
+    expect(result.height).toBe(source.height);
+    expect(Math.abs(result.durationMs - source.durationMs)).toBeLessThan(120);
+  });
+
+  it("retire les métadonnées d'un fichier audio sans toucher au signal", () => {
+    const tagged = join(dir, "tagged.mp3");
+    ff([
+      "-i", music,
+      "-c:a", "libmp3lame", "-q:a", "5",
+      "-metadata", "title=Titre prive",
+      "-metadata", "artist=Interprete prive",
+      "-metadata", "album=Album prive",
+      tagged,
+    ]);
+    const before = execFileSync(FFPROBE!, [
+      "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", tagged,
+    ]).toString();
+    expect(before).toContain("Titre prive");
+
+    const cleaned = run(stripMediaMetadata("mp3", "audio/mpeg"), [tagged], "stripped-audio");
+    const after = execFileSync(FFPROBE!, [
+      "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", cleaned,
+    ]).toString();
+    expect(after).not.toContain("Titre prive");
+    expect(after).not.toContain("Interprete prive");
+    expect(after).not.toContain("Album prive");
+
+    const source = probe(tagged);
+    const result = probe(cleaned);
+    expect(result.audioCodec).toBe(source.audioCodec);
+    expect(Math.abs(result.durationMs - source.durationMs)).toBeLessThan(120);
   });
 });

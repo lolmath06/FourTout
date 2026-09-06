@@ -16,10 +16,12 @@ use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 
 use super::archive::{self, Format};
+use super::crypto;
 use super::docx;
 use super::hash::{self, Algorithm};
 use super::rename::{self, RenameRules};
 use super::scan::{self, DuplicateOptions, TreeOptions};
+use super::secure;
 use super::split;
 use super::{FilesState, Reporter};
 
@@ -374,6 +376,139 @@ pub fn files_archive_extract(
     with_reporter(app, &state, &job_id, |reporter| {
         archive::extract(Path::new(&path), Path::new(&destination), overwrite, reporter)
     })
+}
+
+/// Création d'une archive protégée par mot de passe.
+///
+/// Le mot de passe traverse l'IPC une seule fois, n'est jamais journalisé et
+/// n'est stocké nulle part : il sert à dériver la clé, puis disparaît avec la
+/// fin de l'appel.
+#[tauri::command]
+pub fn files_archive_create_encrypted(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    params: ArchiveEncryptParams,
+) -> Result<archive::ArchiveSummary, String> {
+    with_reporter(app, &state, &params.job_id, |reporter| {
+        let sources: Vec<PathBuf> = params.paths.iter().map(PathBuf::from).collect();
+        let members = archive::collect_members(&sources, reporter)?;
+        archive::create_encrypted(
+            &members,
+            Path::new(&params.output),
+            params.level,
+            &params.password,
+            reporter,
+        )
+    })
+}
+
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ArchiveEncryptParams {
+    pub job_id: String,
+    pub paths: Vec<String>,
+    pub output: String,
+    pub level: u32,
+    pub password: String,
+}
+
+#[tauri::command]
+pub fn files_archive_extract_encrypted(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    path: String,
+    destination: String,
+    overwrite: bool,
+    password: String,
+) -> Result<archive::ExtractSummary, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        archive::extract_with_password(
+            Path::new(&path),
+            Path::new(&destination),
+            overwrite,
+            Some(password.as_str()),
+            reporter,
+        )
+    })
+}
+
+/* --------------------------------------------------------- chiffrement */
+
+#[tauri::command]
+pub fn files_encrypt(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    request: crypto::EncryptRequest,
+) -> Result<Vec<crypto::CryptoSummary>, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        let mut results = Vec::with_capacity(request.sources.len());
+        for source in &request.sources {
+            reporter.check()?;
+            results.push(crypto::encrypt_file(
+                Path::new(source),
+                request.destination.as_deref(),
+                &request.password,
+                reporter,
+            )?);
+        }
+        Ok(results)
+    })
+}
+
+#[tauri::command]
+pub fn files_decrypt(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    request: crypto::DecryptRequest,
+) -> Result<Vec<crypto::CryptoSummary>, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        let mut results = Vec::with_capacity(request.sources.len());
+        for source in &request.sources {
+            reporter.check()?;
+            results.push(crypto::decrypt_file(
+                Path::new(source),
+                request.destination.as_deref(),
+                &request.password,
+                reporter,
+            )?);
+        }
+        Ok(results)
+    })
+}
+
+/* ------------------------------------------------- rangement et effacement */
+
+#[tauri::command]
+pub fn files_organize_plan(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    request: secure::OrganizeRequest,
+) -> Result<secure::OrganizePlan, String> {
+    with_reporter(app, &state, &job_id, |reporter| secure::plan(&request, reporter))
+}
+
+#[tauri::command]
+pub fn files_organize_apply(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    request: secure::OrganizeApplyRequest,
+) -> Result<secure::OrganizeSummary, String> {
+    with_reporter(app, &state, &job_id, |reporter| secure::apply(&request, reporter))
+}
+
+#[tauri::command]
+pub fn files_secure_delete(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    request: secure::WipeRequest,
+) -> Result<secure::WipeSummary, String> {
+    with_reporter(app, &state, &job_id, |reporter| secure::wipe(&request, reporter))
 }
 
 /* ----------------------------------------------------------- dossiers */
