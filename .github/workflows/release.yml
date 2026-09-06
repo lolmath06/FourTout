@@ -58,6 +58,16 @@ jobs:
     name: Construire (${{ matrix.os }})
     needs: verify
     runs-on: ${{ matrix.os }}
+    # Les secrets sont déclarés au niveau du job, et non de l'étape : le
+    # contexte `env` d'un `if` d'étape ne voit pas le bloc `env` de cette même
+    # étape, et la condition serait toujours fausse. Aucun secret n'existe
+    # aujourd'hui : ces variables restent vides, et la construction produit un
+    # installeur non signé — ce que la documentation annonce.
+    env:
+      WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+      WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
     strategy:
       fail-fast: false
       matrix:
@@ -94,26 +104,17 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Signature Windows : rien n'est signé tant qu'aucun certificat n'a été
-      # déposé dans les secrets du dépôt. Aucune clé n'est versionnée, aucune
-      # n'est générée ici, et l'absence de certificat n'échoue pas la
-      # construction — elle produit simplement un installeur non signé, ce que
-      # la documentation annonce.
+      # Rien n'est signé tant qu'aucun certificat n'a été déposé dans les
+      # secrets du dépôt. Aucune clé n'est versionnée, aucune n'est générée ici.
       - name: Certificat de signature Windows (si fourni)
         if: runner.os == 'Windows' && env.WINDOWS_CERTIFICATE != ''
-        env:
-          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
         shell: pwsh
         run: |
           $bytes = [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE)
           [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\fourtout.pfx", $bytes)
-          echo "WINDOWS_CERTIFICATE_FILE=$env:RUNNER_TEMP\fourtout.pfx" >> $env:GITHUB_ENV
+          "WINDOWS_CERTIFICATE_FILE=$env:RUNNER_TEMP\fourtout.pfx" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Construire les paquets
-        env:
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
         run: pnpm tauri build
 
       # Renommage en noms de publication : ce que l'utilisateur télécharge doit
