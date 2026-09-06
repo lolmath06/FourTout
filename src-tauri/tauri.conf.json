@@ -39,8 +39,11 @@
     "longDescription": "FourTout regroupe dans une seule application desktop les petits outils du quotidien (PDF, images, audio, vidéo, texte, fichiers, développeur, calculateurs). Les traitements sont réalisés localement : vos fichiers ne quittent pas votre appareil.",
     "icon": [
       "icons/32x32.png",
+      "icons/64x64.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
+      "icons/256x256.png",
+      "icons/512x512.png",
       "icons/icon.icns",
       "icons/icon.ico"
     ],
@@ -48,22 +51,31 @@
       "resources/wordlists/seeds.txt.gz",
       "resources/wordlists/seeds.meta"
     ],
-    "publisher": "FourTout",
-    "copyright": "© 2026 FourTout",
+    "publisher": "Matheo Dolmen",
+    "copyright": "© 2026 Matheo Dolmen. Tous droits réservés.",
     "linux": {
       "rpm": {
-        "recommends": ["ffmpeg-free"]
+        "recommends": [
+          "ffmpeg-free"
+        ]
       },
       "deb": {
-        "recommends": ["ffmpeg"]
+        "recommends": [
+          "ffmpeg"
+        ]
       }
     },
     "windows": {
       "nsis": {
         "installMode": "currentUser",
         "displayLanguageSelector": false,
-        "languages": ["French", "English"]
+        "languages": [
+          "French",
+          "English"
+        ]
       }
-    }
+    },
+    "license": "Proprietary",
+    "licenseFile": "../LICENSE"
   }
 }
