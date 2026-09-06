@@ -20,9 +20,9 @@ describe("dérivation du graphe depuis le registre", () => {
     }
   });
 
-  it("ne propose jamais un outil « planned »", () => {
+  it("ne propose jamais une arête sans outil au catalogue", () => {
     for (const edge of buildConversionEdges()) {
-      expect(toolRegistry.get(edge.toolId)?.status).toBe("available");
+      expect(toolRegistry.get(edge.toolId), edge.toolId).toBeDefined();
     }
   });
 
@@ -97,25 +97,24 @@ describe("conversions proposées par format", () => {
     expect(conversionsFor("xyz")).toEqual([]);
   });
 
-  it("ne propose que des outils réellement livrés", () => {
+  it("ne propose que des conversions réellement exécutables", () => {
+    const implemented = new Set(implementedToolIds());
     // L'invariant du graphe, et la seule chose qui compte : une conversion
-    // proposée doit toujours pouvoir être exécutée. Ce test tenait autrefois
-    // sur le seul cas DOCX → PDF, resté « prévu » ; il vaut maintenant pour
-    // toutes les extensions du catalogue, et survivra à l'arrivée de nouveaux
-    // outils comme au passage d'un outil en « bientôt ».
+    // proposée doit toujours pouvoir être exécutée. Comme le catalogue ne
+    // contient plus que des outils livrés, il suffit que la cible existe et
+    // porte une implémentation.
     for (const extension of convertibleExtensions()) {
       for (const target of conversionsFor(extension)) {
         expect(
-          toolRegistry.get(target.toolId)?.status,
+          implemented.has(target.toolId),
           `${extension} → ${target.to} via ${target.toolId}`,
-        ).toBe("available");
+        ).toBe(true);
       }
     }
   });
 
-  it("propose désormais DOCX vers PDF, puisque l'outil est livré", () => {
+  it("propose DOCX vers PDF", () => {
     expect(toolsFor("docx")).toContain("docx-to-pdf");
-    expect(toolRegistry.get("docx-to-pdf")?.status).toBe("available");
   });
 });
 

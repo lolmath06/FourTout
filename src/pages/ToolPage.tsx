@@ -7,11 +7,9 @@ import { getToolComponent } from "@/tools/implementations";
 import { useRecents } from "@/features/recents/store";
 import { useSettings } from "@/features/settings/store";
 import { Icon } from "@/components/ui/Icon";
-import { StatusBadge } from "@/components/ui/Badge";
 import { Page } from "@/components/ui/PageHeader";
 import { PrivacyNote } from "@/components/ui/PrivacyNote";
 import { FavoriteButton } from "@/components/tools/FavoriteButton";
-import { ToolPlaceholder } from "@/components/tools/ToolPlaceholder";
 import { CapabilityList } from "@/components/tools/CapabilityList";
 
 /**
@@ -41,7 +39,9 @@ const WIDE_TOOLS = new Set([
  *
  * Il fournit l'en-tête, les favoris, l'enregistrement dans les récents et le
  * rappel de confidentialité, puis délègue le contenu à l'implémentation de
- * l'outil — ou à la vue « bientôt disponible » s'il n'y en a pas encore.
+ * l'outil. Figurer au catalogue, c'est fonctionner : un identifiant sans
+ * implémentation n'est pas un outil « à venir », c'est un lien mort — il
+ * ramène donc à la liste, comme un identifiant inconnu.
  */
 export function ToolPage() {
   const { toolId } = useParams();
@@ -58,7 +58,7 @@ export function ToolPage() {
     if (tool) record(tool.id);
   }, [tool, record]);
 
-  if (!tool) return <Navigate to="/tools" replace />;
+  if (!tool || !Implementation) return <Navigate to="/tools" replace />;
 
   const category = getCategory(tool.category);
   const needsNetwork = tool.capabilities.includes("network");
@@ -89,7 +89,6 @@ export function ToolPage() {
               <Icon name={tool.icon} size={17} />
             </span>
             <h1 className="ft-page-title min-w-0 flex-1 truncate">{tool.name}</h1>
-            {tool.status !== "available" && <StatusBadge status={tool.status} />}
             <FavoriteButton toolId={tool.id} size={14} />
           </div>
           <p className="mt-1 text-[13px] leading-5 text-[var(--ft-text-muted)]">
@@ -106,20 +105,16 @@ export function ToolPage() {
         </p>
       )}
 
-      {Implementation ? (
-        <Suspense
-          fallback={
-            <div className="ft-meta flex items-center gap-2 py-8">
-              <Icon name="Loader" size={14} className="animate-spin" />
-              Chargement de l'outil…
-            </div>
-          }
-        >
-          <Implementation tool={tool} />
-        </Suspense>
-      ) : (
-        <ToolPlaceholder tool={tool} />
-      )}
+      <Suspense
+        fallback={
+          <div className="ft-meta flex items-center gap-2 py-8">
+            <Icon name="Loader" size={14} className="animate-spin" />
+            Chargement de l'outil…
+          </div>
+        }
+      >
+        <Implementation tool={tool} />
+      </Suspense>
 
       {showPrivacyNotes && (
         <div className="mt-6 border-t border-[var(--ft-rule)] pt-2.5">

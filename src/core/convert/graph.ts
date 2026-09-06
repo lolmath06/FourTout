@@ -11,7 +11,7 @@ import type { DataKind, ToolDefinition } from "@/core/tools/types";
  * disponible, ses arêtes apparaissent ici.
  *
  * Conséquence directe : rendre un outil disponible suffit à l'exposer dans le
- * convertisseur universel, et un outil `planned` n'y apparaît jamais.
+ * convertisseur universel : toute arête proposée est donc exécutable.
  */
 
 export interface ConversionTarget {
@@ -61,7 +61,6 @@ export function buildConversionEdges(registry: ToolRegistry = toolRegistry): Con
   const edges: ConversionEdge[] = [];
 
   for (const tool of registry.all()) {
-    if (tool.status !== "available") continue;
     if (EXCLUDED_TOOLS.has(tool.id)) continue;
     if (!isConverter(tool)) continue;
 

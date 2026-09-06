@@ -170,8 +170,7 @@ export function SettingsPage() {
         <MediaDiagnostics />
         <Row label="Catalogue" description="Ce que FourTout embarque.">
           <span className="ft-value text-[var(--ft-text-muted)]">
-            {toolRegistry.all().length} outils · {toolRegistry.withStatus("available").length}{" "}
-            utilisables · {toolRegistry.categories().length} catégories
+            {toolRegistry.all().length} outils · {toolRegistry.categories().length} catégories
           </span>
         </Row>
         <Row label="Environnement" description="Contexte d'exécution détecté.">

@@ -43,7 +43,6 @@ export function HomePage() {
   );
   const categories = useMemo(() => toolRegistry.categories(), []);
   const counts = useMemo(() => toolRegistry.countsByCategory(), []);
-  const availableCount = useMemo(() => toolRegistry.withStatus("available").length, []);
 
   const openFirst = () => {
     const first = intent?.candidates[0];
@@ -204,8 +203,8 @@ export function HomePage() {
 
           <p className="mt-6 flex items-center gap-1.5 border-t border-[var(--ft-rule)] pt-3 text-[11.5px] text-[var(--ft-text-faint)]">
             <Icon name="ShieldCheck" size={13} />
-            {toolRegistry.all().length} outils au catalogue, dont {availableCount} déjà utilisables —
-            traitement local, vos fichiers restent sur votre appareil.
+            {toolRegistry.all().length} outils, tous utilisables — traitement local, vos fichiers
+            restent sur votre appareil.
           </p>
         </>
       )}

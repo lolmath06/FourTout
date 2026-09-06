@@ -2,13 +2,11 @@ import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toolRegistry } from "@/core/tools/registry";
 import { searchTools } from "@/core/tools/search";
-import type { ToolStatus } from "@/core/tools/types";
 import { Page, PageHeader } from "@/components/ui/PageHeader";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CategoryTile } from "@/components/tools/CategoryTile";
 import { ToolList } from "@/components/tools/ToolRow";
-import { StatusFilter } from "@/components/tools/StatusFilter";
 
 /**
  * Page Outils : vue d'ensemble des catégories, et recherche transversale.
@@ -18,30 +16,20 @@ import { StatusFilter } from "@/components/tools/StatusFilter";
 export function ToolsPage() {
   const [params, setParams] = useSearchParams();
   const query = params.get("q") ?? "";
-  const status = (params.get("status") as ToolStatus | null) ?? undefined;
 
-  const update = (next: { q?: string; status?: ToolStatus | undefined }) => {
+  const update = (next: { q: string }) => {
     const draft = new URLSearchParams(params);
-    if (next.q !== undefined) {
-      if (next.q) draft.set("q", next.q);
-      else draft.delete("q");
-    }
-    if ("status" in next) {
-      if (next.status) draft.set("status", next.status);
-      else draft.delete("status");
-    }
+    if (next.q) draft.set("q", next.q);
+    else draft.delete("q");
     setParams(draft, { replace: true });
   };
 
   const categories = useMemo(() => toolRegistry.categories(), []);
   const counts = useMemo(() => toolRegistry.countsByCategory(), []);
 
-  const results = useMemo(
-    () => searchTools(query, { limit: 200, status }),
-    [query, status],
-  );
+  const results = useMemo(() => searchTools(query, { limit: 200 }), [query]);
 
-  const isSearching = query.trim().length > 0 || status !== undefined;
+  const isSearching = query.trim().length > 0;
 
   return (
     <Page width="wide">
@@ -58,7 +46,6 @@ export function ToolsPage() {
           placeholder="Rechercher : « réduire taille pdf », « gif en vidéo »…"
           className="min-w-64 flex-1"
         />
-        <StatusFilter value={status} onChange={(next) => update({ status: next })} />
       </div>
 
       {isSearching ? (
@@ -83,11 +70,6 @@ export function ToolsPage() {
               key={category.id}
               category={category}
               count={counts[category.id]}
-              availableCount={
-                toolRegistry
-                  .byCategoryId(category.id)
-                  .filter((tool) => tool.status === "available").length
-              }
             />
           ))}
         </div>

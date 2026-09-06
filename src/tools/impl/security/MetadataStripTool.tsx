@@ -123,11 +123,13 @@ export function MetadataStripTool(_props: ToolComponentProps) {
     const kind = kindOfExtension(file.extension);
     const capability = CAPABILITIES[kind];
     const target = capability?.toolId ? toolRegistry.get(capability.toolId) : undefined;
-    const usable = capability && (!capability.toolId || target?.status === "available");
+    // Un outil spécialisé annoncé mais absent du registre est une promesse en
+    // l'air : on préfère ne rien proposer que router vers une page inexistante.
+    const usable = capability && (!capability.toolId || target !== undefined);
     return {
       kind,
       capability: usable ? capability : undefined,
-      target: target?.status === "available" ? target : undefined,
+      target,
       unsupported: UNSUPPORTED[kind],
     };
   }, [file]);

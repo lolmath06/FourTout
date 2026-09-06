@@ -34,7 +34,8 @@ async function openTool(id: string) {
   await waitFor(() =>
     expect(screen.getByRole("heading", { name: tool!.name })).toBeInTheDocument(),
   );
-  // La vue « bientôt disponible » ne doit jamais apparaître pour ces outils.
+  // La vue « bientôt disponible » n'existe plus : aucun outil ne doit pouvoir
+  // la faire réapparaître.
   expect(screen.queryByText("Cet outil arrive prochainement")).not.toBeInTheDocument();
   return tool!;
 }
@@ -87,15 +88,12 @@ beforeEach(() => {
 });
 
 describe("état final du catalogue", () => {
-  it("ne compte plus aucun outil « bientôt »", () => {
-    const planned = toolRegistry.all().filter((tool) => tool.status !== "available");
-    expect(planned.map((tool) => tool.id)).toEqual([]);
-  });
-
-  it("branche une implémentation derrière chaque outil disponible", () => {
+  it("branche une implémentation derrière chaque outil du catalogue", () => {
+    // La règle : figurer au catalogue, c'est fonctionner. Il n'existe plus
+    // d'état « bientôt » derrière lequel se réfugier.
     const missing = toolRegistry
       .all()
-      .filter((tool) => tool.status === "available" && !(tool.id in TOOL_IMPLEMENTATIONS))
+      .filter((tool) => !(tool.id in TOOL_IMPLEMENTATIONS))
       .map((tool) => tool.id);
     expect(missing).toEqual([]);
   });
@@ -108,7 +106,8 @@ describe("état final du catalogue", () => {
   it("livre bien les trente-neuf outils de la phase", () => {
     expect(PHASE_7_TOOLS).toHaveLength(39);
     for (const id of PHASE_7_TOOLS) {
-      expect(toolRegistry.get(id)?.status, id).toBe("available");
+      expect(toolRegistry.get(id), id).toBeDefined();
+      expect(id in TOOL_IMPLEMENTATIONS, id).toBe(true);
     }
   });
 });
@@ -549,10 +548,13 @@ describe("recherche en langage courant", () => {
     expect(results, `résultats : ${results.join(", ")}`).toContain(expected);
   });
 
-  it("ne remonte jamais un outil indisponible", () => {
+  it("ne remonte jamais un outil sans implémentation", () => {
     for (const [query] of QUERIES) {
       for (const result of searchTools(query)) {
-        expect(result.tool.status, `${query} → ${result.tool.id}`).toBe("available");
+        expect(
+          result.tool.id in TOOL_IMPLEMENTATIONS,
+          `${query} → ${result.tool.id}`,
+        ).toBe(true);
       }
     }
   });

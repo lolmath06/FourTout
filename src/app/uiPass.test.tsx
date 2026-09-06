@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routes } from "./routes";
-import { StatusBadge } from "@/components/ui/Badge";
 
 /**
  * Passe visuelle — garde de non-régression.
@@ -66,17 +65,19 @@ describe("motifs retirés par la passe visuelle", () => {
     expect(screen.getAllByText(/restent sur votre appareil/i)).toHaveLength(1);
   });
 
-  it("garde le marqueur « Bientôt » utilisable, même si plus aucun outil ne l'est", () => {
-    // Le catalogue est entièrement livré depuis la phase 7 : plus aucun outil
-    // n'est « bientôt disponible ». La machinerie doit néanmoins rester juste,
-    // parce qu'un futur outil s'y appuiera — on la teste donc sur le composant,
-    // pas sur l'état du catalogue.
-    render(<StatusBadge status="planned" />);
-    expect(screen.getByText("Bientôt")).toBeInTheDocument();
+  it("n'annonce plus l'état de développement d'un outil", () => {
+    // Un outil présent au catalogue est un outil utilisable : la carte n'a plus
+    // à annoncer qu'elle fonctionne. Les marqueurs « Disponible » et
+    // « Bientôt » ont disparu de la liste comme de la page d'outil.
+    open("/tools/t/pdf-compress");
+    expect(screen.queryByText("Bientôt")).not.toBeInTheDocument();
+    expect(screen.queryByText("Disponible")).not.toBeInTheDocument();
 
     cleanup();
-    render(<StatusBadge status="available" />);
+    open("/tools");
     expect(screen.queryByText("Bientôt")).not.toBeInTheDocument();
-    expect(screen.getByText("Disponible")).toBeInTheDocument();
+    expect(screen.queryByText("Disponible")).not.toBeInTheDocument();
+    // Et plus aucun sélecteur d'état ne subsiste sur la page Outils.
+    expect(screen.queryByRole("group", { name: /disponibilité/i })).not.toBeInTheDocument();
   });
 });

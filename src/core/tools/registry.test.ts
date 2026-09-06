@@ -93,10 +93,12 @@ describe("registre des outils", () => {
     expect(Object.keys(counts)).toHaveLength(CATEGORIES.length);
   });
 
-  it("garde le statut « available » synchronisé avec les implémentations", () => {
-    const available = toolRegistry.withStatus("available").map((tool) => tool.id).sort();
+  it("garde le catalogue et les implémentations exactement alignés", () => {
+    // La règle du produit : figurer au catalogue, c'est fonctionner. Ni outil
+    // sans implémentation, ni implémentation sans outil.
+    const catalogued = toolRegistry.all().map((tool) => tool.id).sort();
     const implemented = [...implementedToolIds()].sort();
-    expect(available).toEqual(implemented);
+    expect(catalogued).toEqual(implemented);
   });
 
   it("construit des routes cohérentes", () => {

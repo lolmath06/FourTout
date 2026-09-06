@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routes } from "./routes";
 import { toolRegistry } from "@/core/tools/registry";
+import { TOOL_IMPLEMENTATIONS } from "@/tools/implementations";
 import { useFavorites } from "@/features/favorites/store";
 import { useRecents } from "@/features/recents/store";
 import { useNotifications } from "@/features/notifications/store";
@@ -48,14 +49,15 @@ describe("navigation principale", () => {
     expect(screen.getByTestId("tool-row-pdf-compress")).toBeInTheDocument();
   });
 
-  it("n'affiche plus aucun outil « bientôt disponible »", () => {
-    // Depuis la phase 7, le catalogue est entièrement livré. Ce test garde
-    // l'invariant qui compte : un outil visible est un outil qui marche.
-    // La machinerie « bientôt disponible » reste testée à part, sur le
-    // composant lui-même (`ToolPlaceholder`), pour ne pas dépendre de
-    // l'existence d'un outil non livré dans le catalogue.
-    const planned = toolRegistry.all().filter((tool) => tool.status !== "available");
-    expect(planned.map((tool) => tool.id)).toEqual([]);
+  it("n'expose aucun outil sans implémentation", () => {
+    // La règle du catalogue depuis la phase 7 : y figurer, c'est fonctionner.
+    // Il n'y a plus d'état « bientôt » à afficher — un outil incomplet n'est
+    // simplement pas enregistré.
+    const orphans = toolRegistry
+      .all()
+      .filter((tool) => !(tool.id in TOOL_IMPLEMENTATIONS))
+      .map((tool) => tool.id);
+    expect(orphans).toEqual([]);
   });
 
   it("ouvre un outil PDF réellement implémenté", async () => {

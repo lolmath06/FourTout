@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { getCategory } from "@/core/tools/categories";
 import { toolRoute, type ToolDefinition } from "@/core/tools/types";
 import { Icon } from "@/components/ui/Icon";
-import { StatusBadge } from "@/components/ui/Badge";
 import { FavoriteButton } from "./FavoriteButton";
 
 /**
@@ -40,7 +39,6 @@ export function ToolRow({
         <span className="shrink-0 truncate text-[13px] font-medium text-[var(--ft-text)]">
           {tool.name}
         </span>
-        {tool.status !== "available" && <StatusBadge status={tool.status} />}
         <span className="ft-meta min-w-0 truncate">
           {showCategory && category && (
             <span className="text-[var(--ft-text-faint)]">{category.name} · </span>

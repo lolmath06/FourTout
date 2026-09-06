@@ -5,12 +5,14 @@ import type { ToolDefinition } from "@/core/tools/types";
  * Table des implémentations d'outils.
  *
  * Le registre (`core/tools`) dit ce qui existe ; cette table dit ce qui est
- * réellement branché. Un outil absent d'ici s'affiche avec la vue « bientôt
- * disponible » : c'est le point d'extension des prochaines phases.
+ * réellement branché. Les deux listes doivent coïncider exactement : figurer
+ * au catalogue de FourTout, c'est fonctionner. Un outil encore incomplet ne
+ * s'annonce pas « bientôt » — il n'est simplement pas enregistré, et son
+ * arrivée vit dans `ROADMAP.md`, pas dans l'interface.
  *
- * Ajouter un outil implémenté = créer son composant dans `src/tools/impl/`,
- * l'ajouter ici, et passer son `status` à `"available"` dans le catalogue.
- * Un test vérifie que ces deux listes restent cohérentes.
+ * Ajouter un outil = créer son composant dans `src/tools/impl/`, l'ajouter ici
+ * et l'ajouter au catalogue. Un test vérifie que les deux listes restent
+ * alignées.
  */
 export interface ToolComponentProps {
   tool: ToolDefinition;

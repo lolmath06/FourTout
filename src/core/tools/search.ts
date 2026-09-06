@@ -1,7 +1,7 @@
 import { getCategory } from "./categories";
 import type { ToolRegistry } from "./registry";
 import { toolRegistry } from "./registry";
-import type { CategoryId, ToolDefinition, ToolStatus } from "./types";
+import type { CategoryId, ToolDefinition } from "./types";
 
 /**
  * Recherche déterministe sur le registre.
@@ -24,7 +24,6 @@ export interface SearchResult {
 export interface SearchOptions {
   limit?: number;
   category?: CategoryId;
-  status?: ToolStatus;
   /** Score minimal pour être retenu. */
   minScore?: number;
   /** Part minimale des mots de la requête devant être retrouvés. */
@@ -143,8 +142,12 @@ export class ToolSearchEngine {
     const {
       limit = 20,
       category,
-      status,
-      minScore = 6,
+      /**
+       * Le seuil absorbe la prime d'un et demi qui allait autrefois à tout
+       * outil livré : elle s'appliquait à tous, elle ne départageait plus rien
+       * depuis que le catalogue est entièrement livré.
+       */
+      minScore = 4.5,
       minCoverage = 0.5,
     } = options;
 
@@ -155,7 +158,7 @@ export class ToolSearchEngine {
     // permet à la page Outils d'utiliser le même chemin de code.
     if (tokens.length === 0) {
       return this.index
-        .filter(({ tool }) => matchesFilters(tool, category, status))
+        .filter(({ tool }) => matchesFilters(tool, category))
         .slice(0, limit)
         .map(({ tool }) => ({ tool, score: 0, coverage: 0, matchedOn: [] }));
     }
@@ -164,7 +167,7 @@ export class ToolSearchEngine {
     const results: SearchResult[] = [];
 
     for (const entry of this.index) {
-      if (!matchesFilters(entry.tool, category, status)) continue;
+      if (!matchesFilters(entry.tool, category)) continue;
 
       let score = 0;
       let matchedTokens = 0;
@@ -210,9 +213,6 @@ export class ToolSearchEngine {
         }
       }
 
-      // À pertinence égale, un outil utilisable passe devant un outil prévu.
-      if (entry.tool.status === "available") score += 1.5;
-
       const coverage = matchedTokens / tokens.length;
       if (coverage < minCoverage || score < minScore) continue;
 
@@ -225,13 +225,8 @@ export class ToolSearchEngine {
   }
 }
 
-function matchesFilters(
-  tool: ToolDefinition,
-  category?: CategoryId,
-  status?: ToolStatus,
-): boolean {
+function matchesFilters(tool: ToolDefinition, category?: CategoryId): boolean {
   if (category && tool.category !== category && !tool.alsoIn?.includes(category)) return false;
-  if (status && tool.status !== status) return false;
   return true;
 }
 

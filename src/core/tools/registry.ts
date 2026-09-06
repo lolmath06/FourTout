@@ -6,7 +6,6 @@ import type {
   DataKind,
   ToolCapability,
   ToolDefinition,
-  ToolStatus,
 } from "./types";
 
 /**
@@ -86,17 +85,8 @@ export class ToolRegistry {
     return counts;
   }
 
-  withStatus(status: ToolStatus): ToolDefinition[] {
-    return this.tools.filter((tool) => tool.status === status);
-  }
-
   withCapability(capability: ToolCapability): ToolDefinition[] {
     return this.tools.filter((tool) => tool.capabilities.includes(capability));
-  }
-
-  /** Un outil est-il utilisable dès maintenant ? */
-  isAvailable(id: string): boolean {
-    return this.get(id)?.status === "available";
   }
 
   /**

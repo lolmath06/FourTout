@@ -20,15 +20,6 @@ export type CategoryId =
   | "calculators"
   | "security";
 
-/** Cycle de vie d'un outil. */
-export type ToolStatus =
-  /** Utilisable dès maintenant. */
-  | "available"
-  /** Implémentation en cours, visible mais pas encore utilisable. */
-  | "beta"
-  /** Prévu au catalogue, page placeholder. */
-  | "planned";
-
 /**
  * Capacités transverses d'un outil. Elles servent à filtrer, à afficher les
  * bons badges et, plus tard, à laisser l'assistant local raisonner sur ce
@@ -104,7 +95,6 @@ export interface ToolDefinition {
   keywords?: string[];
   /** Autres noms de l'outil, y compris en anglais. */
   aliases?: string[];
-  status: ToolStatus;
   capabilities: ToolCapability[];
   acceptedInputs: ToolInput[];
   outputs: ToolOutput[];

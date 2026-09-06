@@ -18,11 +18,6 @@ const implemented = new Set(implementedToolIds());
 const fakeFile = (name: string, type: string) => new File([new Uint8Array([0, 1, 2, 3])], name, { type });
 
 describe("catégorie Vidéo", () => {
-  it("n'annonce aucun outil « à venir » : la suite est complète", () => {
-    const planned = videoTools.filter((tool) => tool.status !== "available");
-    expect(planned.map((tool) => tool.id)).toEqual([]);
-  });
-
   it("branche une implémentation derrière chaque outil vidéo", () => {
     for (const tool of videoTools) {
       expect(implemented.has(tool.id), `implémentation manquante : ${tool.id}`).toBe(true);

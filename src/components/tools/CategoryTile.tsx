@@ -12,11 +12,9 @@ import { Icon } from "@/components/ui/Icon";
 export function CategoryTile({
   category,
   count,
-  availableCount,
 }: {
   category: CategoryDefinition;
   count: number;
-  availableCount: number;
 }) {
   return (
     <Link
@@ -36,13 +34,8 @@ export function CategoryTile({
         <span className="ft-title min-w-0 flex-1 truncate">{category.name}</span>
         <span className="ft-num shrink-0 text-[11.5px] text-[var(--ft-text-faint)]">{count}</span>
       </div>
-      <p className="line-clamp-2 text-[11.5px] leading-4 text-[var(--ft-text-muted)]">
+      <p className="mt-auto line-clamp-2 text-[11.5px] leading-4 text-[var(--ft-text-muted)]">
         {category.description}
-      </p>
-      <p className="ft-num mt-auto pt-0.5 text-[11px] text-[var(--ft-text-faint)]">
-        {availableCount > 0
-          ? `${availableCount} disponible${availableCount > 1 ? "s" : ""}`
-          : "à venir"}
       </p>
     </Link>
   );

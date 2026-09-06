@@ -119,12 +119,6 @@ describe("filtres", () => {
     }
   });
 
-  it("restreint à un statut", () => {
-    const results = searchTools("", { status: "available", limit: 500 });
-    expect(results.length).toBeGreaterThan(0);
-    for (const result of results) expect(result.tool.status).toBe("available");
-  });
-
   it("renvoie le catalogue filtré quand la requête est vide", () => {
     expect(searchTools("", { limit: 500 }).length).toBeGreaterThan(100);
   });
@@ -173,9 +167,9 @@ describe("recherche des outils PDF de la phase 2", () => {
     expect(first("enlever le mot de passe d'un pdf")).toBe("pdf-unlock");
   });
 
-  it("classe les outils disponibles avant ceux encore prévus", () => {
+  it("classe d'abord l'outil dont le nom porte le terme cherché", () => {
     const results = searchTools("pdf", { limit: 5 });
-    expect(results[0].tool.status).toBe("available");
+    expect(results[0].tool.category === "pdf" || results[0].tool.alsoIn?.includes("pdf")).toBe(true);
   });
 });
 

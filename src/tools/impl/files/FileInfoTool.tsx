@@ -56,9 +56,7 @@ export function FileInfoTool(_props: ToolComponentProps) {
       }}
       renderResult={({ info, sha256 }) => {
         const kind = kindOfExtension(info.extension);
-        const related = toolRegistry
-          .resolveMany(RELATED_TOOLS[kind] ?? [])
-          .filter((entry) => entry.status === "available");
+        const related = toolRegistry.resolveMany(RELATED_TOOLS[kind] ?? []);
 
         return (
           <div className="space-y-3" data-testid="file-info">

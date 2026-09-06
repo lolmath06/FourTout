@@ -18,7 +18,6 @@ export const converterTools = defineTools([
       "n'importe quel fichier", "quel format", "convertisseur",
     ],
     aliases: ["universal converter", "convert anything", "file converter"],
-    status: "available",
     capabilities: ["local", "batch", "produces-files", "long-running"],
     acceptedInputs: [IN.anyFile()],
     outputs: [OUT.data()],
