@@ -47,6 +47,23 @@
     "resources": [
       "resources/wordlists/seeds.txt.gz",
       "resources/wordlists/seeds.meta"
-    ]
+    ],
+    "publisher": "FourTout",
+    "copyright": "© 2026 FourTout",
+    "linux": {
+      "rpm": {
+        "recommends": ["ffmpeg-free"]
+      },
+      "deb": {
+        "recommends": ["ffmpeg"]
+      }
+    },
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "displayLanguageSelector": false,
+        "languages": ["French", "English"]
+      }
+    }
   }
 }

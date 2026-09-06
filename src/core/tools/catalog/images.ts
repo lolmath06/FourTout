@@ -196,7 +196,6 @@ export const imageTools = defineTools([
     outputs: [OUT.image(["png", "jpg", "webp"])],
   },
 
-  // ------------------------------------------------------------------ à venir
   {
     id: "image-batch-convert",
     name: "Conversion d'images par lots",

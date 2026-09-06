@@ -45,7 +45,7 @@ export const fileTools = defineTools([
     capabilities: ["local", "produces-files", "long-running"],
     acceptedInputs: [IN.anyFile(), IN.archive()],
     outputs: [OUT.archive()],
-    note: "Non disponible : le chiffrement historique du ZIP (ZipCrypto) est cassable en quelques secondes, et proposer une « archive protégée » qui ne protège pas serait trompeur. L'AES-256 du ZIP demande une brique de chiffrement supplémentaire, prévue avec les outils de chiffrement de fichiers.",
+    note: "Chiffrement WinZip AES-256 : l'archive s'ouvre avec 7-Zip, WinRAR, PeaZip, Keka et l'Explorateur Windows. Le « ZipCrypto » historique, cassable en quelques secondes, n'est jamais employé. Les noms de fichiers, eux, restent lisibles sans le mot de passe — c'est une limite du format ZIP.",
   },
   {
     id: "file-hash",

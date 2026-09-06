@@ -209,7 +209,7 @@ export const textTools = defineTools([
   {
     id: "docx-to-pdf",
     name: "Word (DOCX) vers PDF",
-    description: "Convertir un document Word en PDF en conservant sa mise en page.",
+    description: "Convertir un document Word en PDF : titres, paragraphes, listes et tableaux simples.",
     category: "text",
     alsoIn: ["pdf", "converters"],
     icon: "FileOutput",
@@ -218,6 +218,6 @@ export const textTools = defineTools([
     capabilities: ["local", "produces-files"],
     acceptedInputs: [{ kind: "document", extensions: ["docx"] }],
     outputs: [OUT.pdf()],
-    note: "Non disponible tant que la fidélité n'est pas au rendez-vous : sans moteur de mise en page Word, les tableaux, images, colonnes, polices et sauts de page seraient perdus. Un PDF qui ne ressemble pas au document d'origine serait pire que pas de conversion du tout. En attendant : « Word vers texte, Markdown ou HTML », puis « Document vers PDF ».",
+    note: "FourTout reprend le contenu et sa structure — titres, paragraphes, gras, italique, listes, tableaux simples — mais pas la maquette Word : colonnes, zones flottantes, en-têtes et pieds de page, polices spécifiques et images peuvent différer ou disparaître. Pour un rendu fidèle au pixel, exportez en PDF depuis Word ou LibreOffice.",
   },
 ]);
