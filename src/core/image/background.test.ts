@@ -15,6 +15,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
+import { ENGINE_TIMEOUT } from "@/test/timeouts";
 import { nodeRasterBackend } from "@/test/nodeRaster";
 import { getRasterBackend, setRasterBackend, type RasterCanvas } from "@/core/pdf/raster/types";
 import { JobCancelledError } from "@/core/jobs/types";
@@ -192,7 +193,9 @@ describe("catalogue des modèles de détourage", () => {
 
 /* ------------------------------------------------- inférence, vrai modèle */
 
-describe.skipIf(!MODEL)("détourage avec le vrai modèle U²-Net", () => {
+// Chargement du modèle puis inférence réelle en WebAssembly, sans accélération
+// matérielle : le délai d'un test unitaire n'a aucun sens ici.
+describe.skipIf(!MODEL)("détourage avec le vrai modèle U²-Net", { timeout: ENGINE_TIMEOUT }, () => {
   let session: SegmentationSession;
   let tensor: (data: Float32Array, dims: number[]) => SegmentationTensor;
 
@@ -209,7 +212,7 @@ describe.skipIf(!MODEL)("détourage avec le vrai modèle U²-Net", () => {
       executionProviders: ["wasm"],
     })) as unknown as SegmentationSession;
     tensor = (data, dims) => new ort.Tensor("float32", data, dims);
-  }, 120_000);
+  }, ENGINE_TIMEOUT);
 
   it(
     "détoure une silhouette : le sujet reste, le fond disparaît",
@@ -233,7 +236,6 @@ describe.skipIf(!MODEL)("détourage avec le vrai modèle U²-Net", () => {
       expect(stats.at(6, 6)).toBeLessThan(60);
       expect(stats.at(stats.width - 7, 6)).toBeLessThan(60);
     },
-    120_000,
   );
 
   it(
@@ -247,7 +249,6 @@ describe.skipIf(!MODEL)("détourage avec le vrai modèle U²-Net", () => {
       expect(stats.at(5, stats.height - 6)).toBeLessThan(60);
       expect(stats.transparent).toBeGreaterThan(0.2);
     },
-    120_000,
   );
 
   it(
@@ -260,7 +261,6 @@ describe.skipIf(!MODEL)("détourage avec le vrai modèle U²-Net", () => {
       expect(stats.at(Math.round(stats.width * 0.28), Math.round(stats.height * 0.28))).toBeGreaterThan(200);
       expect(stats.at(4, 4)).toBeLessThan(60);
     },
-    120_000,
   );
 
   it(
@@ -281,7 +281,6 @@ describe.skipIf(!MODEL)("détourage avec le vrai modèle U²-Net", () => {
       expect(stats.width).toBe(source.width);
       expect(stats.transparent).toBeGreaterThan(0.1);
     },
-    120_000,
   );
 
   it(

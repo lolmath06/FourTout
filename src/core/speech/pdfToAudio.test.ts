@@ -6,6 +6,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { extractText } from "@/core/pdf/operations/extractText";
 import { setRasterBackend } from "@/core/pdf/raster/types";
 import { configurePdfJsForNode, nodeRasterBackend } from "@/test/nodeRaster";
+import { HEAVY_TIMEOUT } from "@/test/timeouts";
 import { cleanPdfText } from "./pdfText";
 import { segmentText } from "./segment";
 
@@ -24,9 +25,10 @@ beforeAll(() => {
   execFileSync(process.execPath, [join(process.cwd(), "scripts/generate-pdf-assets.mjs")], {
     stdio: "ignore",
   });
-}, 60_000);
+}, HEAVY_TIMEOUT);
 
-describe("PDF vers audio", () => {
+// Extraction réelle du texte de fixtures PDF par pdf.js.
+describe("PDF vers audio", { timeout: HEAVY_TIMEOUT }, () => {
   it("extrait, nettoie et segmente la fixture livrée", async () => {
     const bytes = new Uint8Array(readFileSync(join(DIR, "pdf-to-audio.pdf")));
     const extracted = await extractText({ name: "pdf-to-audio.pdf", bytes });
@@ -49,7 +51,7 @@ describe("PDF vers audio", () => {
     expect(segments.length).toBeGreaterThanOrEqual(3);
     expect(segments[0]).toContain("Bienvenue dans FourTout.");
     expect(segments.every((segment) => segment.trim().length > 0)).toBe(true);
-  }, 30_000);
+  });
 
   it("signale un PDF sans couche texte au lieu de produire un audio vide", async () => {
     const bytes = new Uint8Array(readFileSync(join(DIR, "pdf-scan-fr.pdf")));
@@ -57,5 +59,5 @@ describe("PDF vers audio", () => {
     const cleaned = cleanPdfText(extracted.pages);
     expect(cleaned.text.trim()).toBe("");
     expect(segmentText(cleaned.text)).toEqual([]);
-  }, 30_000);
+  });
 });

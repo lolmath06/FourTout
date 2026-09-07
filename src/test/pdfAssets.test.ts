@@ -17,6 +17,7 @@ import { outputName } from "@/core/pdf/filenames";
 import { setRasterBackend } from "@/core/pdf/raster/types";
 import { nodeRasterBackend, configurePdfJsForNode } from "./nodeRaster";
 import { readPageLabels } from "./pdfFixtures";
+import { HEAVY_TIMEOUT } from "./timeouts";
 
 /**
  * Vérifie les fixtures livrées à l'utilisateur.
@@ -38,7 +39,7 @@ beforeAll(() => {
   execFileSync(process.execPath, [join(process.cwd(), "scripts/generate-pdf-assets.mjs")], {
     stdio: "ignore",
   });
-}, 60_000);
+}, HEAVY_TIMEOUT);
 
 describe("fixtures PDF livrées", () => {
   it("génère tous les fichiers annoncés", () => {
@@ -171,7 +172,7 @@ describe("scénarios des tests manuels", () => {
     // Le document produit reste parfaitement lisible.
     const reloaded = await PDFDocument.load(result.output.bytes);
     expect(reloaded.getPageCount()).toBe(4);
-  }, 60_000);
+  }, HEAVY_TIMEOUT);
 
   it("extraction d'images : récupère l'image embarquée", async () => {
     const result = await extractImages(asset("pdf-with-image.pdf"));

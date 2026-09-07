@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
+import { HEAVY_TIMEOUT } from "./timeouts";
 
 /**
  * Le générateur de fixtures est du code comme un autre : s'il produit des
@@ -17,7 +18,7 @@ describe("générateur de test-assets", () => {
     execFileSync(process.execPath, [join(process.cwd(), "scripts/generate-test-assets.mjs")], {
       stdio: "ignore",
     });
-  });
+  }, HEAVY_TIMEOUT);
 
   const read = (name: string) => readFileSync(join(outDir, name));
 

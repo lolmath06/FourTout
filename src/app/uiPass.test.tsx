@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routes } from "./routes";
+import { APP_TIMEOUT } from "@/test/timeouts";
 
 /**
  * Passe visuelle — garde de non-régression.
@@ -27,7 +28,8 @@ function open(path: string) {
   return render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />);
 }
 
-describe("écrans représentatifs après la passe visuelle", () => {
+// Chaque test monte l'application entière et inspecte le rendu réel.
+describe("écrans représentatifs après la passe visuelle", { timeout: APP_TIMEOUT }, () => {
   it.each(SCREENS)("%s se monte sans erreur", async (path, heading) => {
     open(path);
     await waitFor(() =>
@@ -36,7 +38,7 @@ describe("écrans représentatifs après la passe visuelle", () => {
   });
 });
 
-describe("motifs retirés par la passe visuelle", () => {
+describe("motifs retirés par la passe visuelle", { timeout: APP_TIMEOUT }, () => {
   it("n'affiche plus de marqueur d'état sur un outil disponible", () => {
     open("/tools/t/pdf-merge");
     // « Disponible » est la norme : l'afficher partout n'informait personne.

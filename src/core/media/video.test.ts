@@ -36,6 +36,7 @@ import {
 } from "./operations/video";
 import type { MediaCapabilities } from "./capabilities";
 import { realCapabilities, whichBinary } from "@/test/ffmpegProbe";
+import { HEAVY_TIMEOUT } from "@/test/timeouts";
 import { videoEncodeArgs, audioEncodeArgs } from "./video/presets";
 import { cropRectFor } from "./video/dimensions";
 import { parseProbe, parseFrameRate, isTextSubtitle } from "./types";
@@ -232,372 +233,378 @@ const probe = (path: string) =>
  * de la suite vidéo est donc lancée sur une petite mire, puis le résultat est
  * relu par ffprobe — dimensions, durée, pistes.
  */
-describe.skipIf(!FFMPEG || !FFPROBE)("opérations vidéo exécutées avec le vrai FFmpeg", () => {
-  let dir: string;
-  let clip: string;
-  let clipSilent: string;
-  let clipPortrait: string;
-  let music: string;
-  let subs: string;
-  let caps: MediaCapabilities;
-  let vcodec: string;
-  let acodec: string[];
+describe.skipIf(!FFMPEG || !FFPROBE)(
+  "opérations vidéo exécutées avec le vrai FFmpeg",
+  { timeout: HEAVY_TIMEOUT },
+  () => {
+    let dir: string;
+    let clip: string;
+    let clipSilent: string;
+    let clipPortrait: string;
+    let music: string;
+    let subs: string;
+    let caps: MediaCapabilities;
+    let vcodec: string;
+    let acodec: string[];
 
-  const run = (
-    op: { buildArgs: (i: string[], o: string) => string[]; outputExt: string; stageText?: (i: string[]) => { content: string; ext: string } },
-    inputs: string[],
-    name: string,
-  ) => {
-    const out = join(dir, `${name}.${op.outputExt}`);
-    const all = [...inputs];
-    const text = op.stageText?.(all);
-    if (text) {
-      const listPath = join(dir, `${name}-list.${text.ext}`);
-      writeFileSync(listPath, text.content);
-      all.push(listPath);
-    }
-    ff(op.buildArgs(all, out));
-    expect(existsSync(out) && statSync(out).size > 0, `${name} produit un fichier`).toBe(true);
-    return out;
-  };
+    const run = (
+      op: { buildArgs: (i: string[], o: string) => string[]; outputExt: string; stageText?: (i: string[]) => { content: string; ext: string } },
+      inputs: string[],
+      name: string,
+    ) => {
+      const out = join(dir, `${name}.${op.outputExt}`);
+      const all = [...inputs];
+      const text = op.stageText?.(all);
+      if (text) {
+        const listPath = join(dir, `${name}-list.${text.ext}`);
+        writeFileSync(listPath, text.content);
+        all.push(listPath);
+      }
+      ff(op.buildArgs(all, out));
+      expect(existsSync(out) && statSync(out).size > 0, `${name} produit un fichier`).toBe(true);
+      return out;
+    };
 
-  beforeAll(() => {
-    dir = mkdtempSync(join(tmpdir(), "ft-video-"));
-    // Capacités **réellement** détectées sur cette machine, exactement comme
-    // l'application le fait : liste annoncée, puis encodage d'essai.
-    caps = realCapabilities(FFMPEG!);
-    vcodec = caps.video.h264 ?? caps.video.vp9 ?? "mpeg4";
-    acodec = audioEncodeArgs("aac", caps);
+    // Le délai d'une suite ne couvre pas ses hooks, et celui-ci détecte les
+    // encodeurs — un encodage d'essai par candidat — puis fabrique les fixtures.
+    beforeAll(() => {
+      dir = mkdtempSync(join(tmpdir(), "ft-video-"));
+      // Capacités **réellement** détectées sur cette machine, exactement comme
+      // l'application le fait : liste annoncée, puis encodage d'essai.
+      caps = realCapabilities(FFMPEG!);
+      vcodec = caps.video.h264 ?? caps.video.vp9 ?? "mpeg4";
+      acodec = audioEncodeArgs("aac", caps);
 
-    clip = join(dir, "clip.mp4");
-    clipSilent = join(dir, "silent.mp4");
-    clipPortrait = join(dir, "portrait.mp4");
-    music = join(dir, "music.wav");
-    subs = join(dir, "subs.srt");
+      clip = join(dir, "clip.mp4");
+      clipSilent = join(dir, "silent.mp4");
+      clipPortrait = join(dir, "portrait.mp4");
+      music = join(dir, "music.wav");
+      subs = join(dir, "subs.srt");
 
-    const mire = (colors: string) =>
-      `drawbox=x=0:y=0:w=160:h=120:color=${colors}@1:t=fill,drawbox=x=160:y=0:w=160:h=120:color=green@1:t=fill`;
+      const mire = (colors: string) =>
+        `drawbox=x=0:y=0:w=160:h=120:color=${colors}@1:t=fill,drawbox=x=160:y=0:w=160:h=120:color=green@1:t=fill`;
 
-    ff(["-f", "lavfi", "-i", "color=c=black:s=320x240:r=25:d=2",
-        "-f", "lavfi", "-i", "sine=frequency=440:duration=2",
-        "-vf", mire("red"), "-pix_fmt", "yuv420p", "-c:v", vcodec, ...acodec, "-shortest", clip]);
-    ff(["-f", "lavfi", "-i", "color=c=black:s=320x240:r=25:d=2",
-        "-vf", mire("blue"), "-pix_fmt", "yuv420p", "-c:v", vcodec, clipSilent]);
-    ff(["-f", "lavfi", "-i", "color=c=black:s=180x320:r=30:d=2",
-        "-vf", "drawbox=x=0:y=0:w=180:h=160:color=yellow@1:t=fill",
-        "-pix_fmt", "yuv420p", "-c:v", vcodec, clipPortrait]);
-    ff(["-f", "lavfi", "-i", "sine=frequency=330:duration=4", music]);
-    writeFileSync(
-      subs,
-      "1\n00:00:00,200 --> 00:00:01,000\nBonjour FourTout.\n\n2\n00:00:01,200 --> 00:00:01,900\nDeuxième ligne.\n",
-    );
-  });
+      ff(["-f", "lavfi", "-i", "color=c=black:s=320x240:r=25:d=2",
+          "-f", "lavfi", "-i", "sine=frequency=440:duration=2",
+          "-vf", mire("red"), "-pix_fmt", "yuv420p", "-c:v", vcodec, ...acodec, "-shortest", clip]);
+      ff(["-f", "lavfi", "-i", "color=c=black:s=320x240:r=25:d=2",
+          "-vf", mire("blue"), "-pix_fmt", "yuv420p", "-c:v", vcodec, clipSilent]);
+      ff(["-f", "lavfi", "-i", "color=c=black:s=180x320:r=30:d=2",
+          "-vf", "drawbox=x=0:y=0:w=180:h=160:color=yellow@1:t=fill",
+          "-pix_fmt", "yuv420p", "-c:v", vcodec, clipPortrait]);
+      ff(["-f", "lavfi", "-i", "sine=frequency=330:duration=4", music]);
+      writeFileSync(
+        subs,
+        "1\n00:00:00,200 --> 00:00:01,000\nBonjour FourTout.\n\n2\n00:00:01,200 --> 00:00:01,900\nDeuxième ligne.\n",
+      );
+    }, HEAVY_TIMEOUT);
 
-  it("réencode vers un autre conteneur avec les codecs disponibles", () => {
-    const target = caps.video.vp9 ? "webm" : "mkv";
-    const codec = caps.video.vp9 ?? caps.video.h264!;
-    const out = run(
-      encodeVideo({
-        container: target,
-        videoArgs: videoEncodeArgs({ encoder: codec, level: "small", source: { videoBitRate: 500_000 } }),
-        audioArgs: audioEncodeArgs(target === "webm" ? "opus" : "aac", caps),
-      }),
-      [clip],
-      "convert",
-    );
-    const info = probe(out);
-    expect(info.hasVideo).toBe(true);
-    expect(info.hasAudio).toBe(true);
-    expect(info.durationMs).toBeGreaterThan(1500);
-  });
-
-  it("redimensionne exactement aux dimensions demandées", () => {
-    const out = run(
-      encodeVideo({
-        container: "mp4",
-        videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
-        audioArgs: ["-c:a", "copy"],
-        videoFilters: [scaleFilter(160, 120)],
-      }),
-      [clip],
-      "resize",
-    );
-    expect(probe(out).width).toBe(160);
-    expect(probe(out).height).toBe(120);
-  });
-
-  it("rogne exactement la zone sélectionnée", () => {
-    const source = { width: 320, height: 240 };
-    const rect = cropRectFor(source, { x: 0.25, y: 0.25, w: 0.5, h: 0.5 });
-    const out = run(
-      encodeVideo({
-        container: "mp4",
-        videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
-        audioArgs: ["-an"],
-        videoFilters: [cropFilter(rect)],
-      }),
-      [clip],
-      "crop",
-    );
-    const info = probe(out);
-    expect(info.width).toBe(rect.width);
-    expect(info.height).toBe(rect.height);
-    expect(info.hasAudio).toBe(false);
-  });
-
-  it("pivote de 90° en échangeant largeur et hauteur", () => {
-    const out = run(
-      encodeVideo({
-        container: "mp4",
-        videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
-        audioArgs: ["-an"],
-        videoFilters: [transformFilter("rotate-right")],
-      }),
-      [clip],
-      "rotate",
-    );
-    expect(probe(out).width).toBe(240);
-    expect(probe(out).height).toBe(320);
-  });
-
-  it("accélère l'image et le son de façon cohérente", () => {
-    const out = run(
-      encodeVideo({
-        container: "mp4",
-        videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
-        audioArgs: acodec,
-        videoFilters: [speedVideoFilter(2)],
-        audioFilters: [speedAudioFilter(2)],
-      }),
-      [clip],
-      "speed",
-    );
-    const info = probe(out);
-    expect(info.durationMs).toBeGreaterThan(700);
-    expect(info.durationMs).toBeLessThan(1400); // ~1 s pour 2 s à 2×
-    expect(info.hasAudio).toBe(true);
-  });
-
-  it("découpe un extrait, en mode rapide comme en mode précis", () => {
-    const fast = probe(run(trimVideo({ startMs: 500, endMs: 1500, mode: "fast", container: "mp4" }), [clip], "trim-fast"));
-    expect(fast.durationMs).toBeGreaterThan(400);
-    expect(fast.durationMs).toBeLessThan(2100);
-
-    const precise = probe(
-      run(
-        trimVideo({
-          startMs: 500, endMs: 1500, mode: "precise", container: "mp4",
-          videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
-          audioArgs: acodec,
+    it("réencode vers un autre conteneur avec les codecs disponibles", () => {
+      const target = caps.video.vp9 ? "webm" : "mkv";
+      const codec = caps.video.vp9 ?? caps.video.h264!;
+      const out = run(
+        encodeVideo({
+          container: target,
+          videoArgs: videoEncodeArgs({ encoder: codec, level: "small", source: { videoBitRate: 500_000 } }),
+          audioArgs: audioEncodeArgs(target === "webm" ? "opus" : "aac", caps),
         }),
         [clip],
-        "trim-precise",
-      ),
-    );
-    expect(precise.durationMs).toBeGreaterThan(900);
-    expect(precise.durationMs).toBeLessThan(1150);
-  });
+        "convert",
+      );
+      const info = probe(out);
+      expect(info.hasVideo).toBe(true);
+      expect(info.hasAudio).toBe(true);
+      expect(info.durationMs).toBeGreaterThan(1500);
+    });
 
-  it("assemble sans réencodage deux fichiers identiques", () => {
-    const copy = join(dir, "clip-copy.mp4");
-    ff(["-i", clip, "-c", "copy", copy]);
-    const out = run(concatVideoCopy("mp4"), [clip, copy], "concat-copy");
-    expect(probe(out).durationMs).toBeGreaterThan(3500);
-  });
+    it("redimensionne exactement aux dimensions demandées", () => {
+      const out = run(
+        encodeVideo({
+          container: "mp4",
+          videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
+          audioArgs: ["-c:a", "copy"],
+          videoFilters: [scaleFilter(160, 120)],
+        }),
+        [clip],
+        "resize",
+      );
+      expect(probe(out).width).toBe(160);
+      expect(probe(out).height).toBe(120);
+    });
 
-  it("normalise puis assemble des sources de tailles, cadences et pistes différentes", () => {
-    const sources: ConcatSource[] = [probe(clip), probe(clipPortrait)].map((info) => ({
-      width: info.width, height: info.height, frameRate: info.frameRate,
-      hasAudio: info.hasAudio, durationMs: info.durationMs,
-      videoCodec: info.videoCodec, audioCodec: info.audioCodec,
-      sampleRate: info.sampleRate, channels: info.channels,
-    }));
-    expect(concatCompatible(sources)).toBe(false);
+    it("rogne exactement la zone sélectionnée", () => {
+      const source = { width: 320, height: 240 };
+      const rect = cropRectFor(source, { x: 0.25, y: 0.25, w: 0.5, h: 0.5 });
+      const out = run(
+        encodeVideo({
+          container: "mp4",
+          videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
+          audioArgs: ["-an"],
+          videoFilters: [cropFilter(rect)],
+        }),
+        [clip],
+        "crop",
+      );
+      const info = probe(out);
+      expect(info.width).toBe(rect.width);
+      expect(info.height).toBe(rect.height);
+      expect(info.hasAudio).toBe(false);
+    });
 
-    const target = concatTarget(sources);
-    const out = run(
-      concatVideoReencode({
-        sources, container: "mp4",
-        videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 500_000 } }),
-        audioArgs: acodec,
-      }),
-      [clip, clipPortrait],
-      "concat-mix",
-    );
-    const info = probe(out);
-    expect(info.width).toBe(target.width);
-    expect(info.height).toBe(target.height);
-    expect(info.durationMs).toBeGreaterThan(3500);
-    // La source muette a reçu un silence : la piste audio reste continue.
-    expect(info.hasAudio).toBe(true);
-  });
+    it("pivote de 90° en échangeant largeur et hauteur", () => {
+      const out = run(
+        encodeVideo({
+          container: "mp4",
+          videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
+          audioArgs: ["-an"],
+          videoFilters: [transformFilter("rotate-right")],
+        }),
+        [clip],
+        "rotate",
+      );
+      expect(probe(out).width).toBe(240);
+      expect(probe(out).height).toBe(320);
+    });
 
-  it("supprime la piste audio en recopiant l'image", () => {
-    const out = run(removeAudio("mp4"), [clip], "mute");
-    const info = probe(out);
-    expect(info.hasAudio).toBe(false);
-    expect(info.videoCodec).toBe(probe(clip).videoCodec);
-  });
+    it("accélère l'image et le son de façon cohérente", () => {
+      const out = run(
+        encodeVideo({
+          container: "mp4",
+          videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
+          audioArgs: acodec,
+          videoFilters: [speedVideoFilter(2)],
+          audioFilters: [speedAudioFilter(2)],
+        }),
+        [clip],
+        "speed",
+      );
+      const info = probe(out);
+      expect(info.durationMs).toBeGreaterThan(700);
+      expect(info.durationMs).toBeLessThan(1400); // ~1 s pour 2 s à 2×
+      expect(info.hasAudio).toBe(true);
+    });
 
-  it("remplace la bande son en se calant sur la vidéo", () => {
-    const out = run(
-      replaceAudio({ container: "mp4", audioArgs: acodec, mode: "video", videoDurationMs: 2000 }),
-      [clip, music],
-      "replace-audio",
-    );
-    const info = probe(out);
-    expect(info.hasAudio).toBe(true);
-    // La musique dure 4 s, la vidéo 2 s : la sortie suit la vidéo.
-    expect(info.durationMs).toBeLessThan(2600);
-  });
+    it("découpe un extrait, en mode rapide comme en mode précis", () => {
+      const fast = probe(run(trimVideo({ startMs: 500, endMs: 1500, mode: "fast", container: "mp4" }), [clip], "trim-fast"));
+      expect(fast.durationMs).toBeGreaterThan(400);
+      expect(fast.durationMs).toBeLessThan(2100);
 
-  it("ajoute une seconde piste audio sans supprimer la première", () => {
-    const encoder = caps.audio.aac ?? caps.audio.opus!;
-    const out = run(
-      addAudioTrack({ container: "mkv", audioEncoder: encoder, trackIndex: 1, language: "fra" }),
-      [clip, music],
-      "add-track",
-    );
-    expect(probe(out).audioStreams).toHaveLength(2);
-  });
+      const precise = probe(
+        run(
+          trimVideo({
+            startMs: 500, endMs: 1500, mode: "precise", container: "mp4",
+            videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
+            audioArgs: acodec,
+          }),
+          [clip],
+          "trim-precise",
+        ),
+      );
+      expect(precise.durationMs).toBeGreaterThan(900);
+      expect(precise.durationMs).toBeLessThan(1150);
+    });
 
-  it("règle le volume sans toucher à l'image", () => {
-    const out = run(
-      adjustVolume({ container: "mp4", percent: 200, audioArgs: acodec }),
-      [clip],
-      "volume",
-    );
-    expect(probe(out).hasAudio).toBe(true);
-    expect(probe(out).videoCodec).toBe(probe(clip).videoCodec);
-  });
+    it("assemble sans réencodage deux fichiers identiques", () => {
+      const copy = join(dir, "clip-copy.mp4");
+      ff(["-i", clip, "-c", "copy", copy]);
+      const out = run(concatVideoCopy("mp4"), [clip, copy], "concat-copy");
+      expect(probe(out).durationMs).toBeGreaterThan(3500);
+    });
 
-  it("incruste des sous-titres dans l'image", () => {
-    const out = run(
-      burnSubtitles({
-        container: "mp4",
-        videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
-        style: DEFAULT_BURN_STYLE,
-      }),
-      [clip, subs],
-      "burn",
-    );
-    const info = probe(out);
-    expect(info.hasVideo).toBe(true);
-    // Aucune piste de sous-titres : le texte fait désormais partie des pixels.
-    expect(info.subtitles).toHaveLength(0);
-  });
+    it("normalise puis assemble des sources de tailles, cadences et pistes différentes", () => {
+      const sources: ConcatSource[] = [probe(clip), probe(clipPortrait)].map((info) => ({
+        width: info.width, height: info.height, frameRate: info.frameRate,
+        hasAudio: info.hasAudio, durationMs: info.durationMs,
+        videoCodec: info.videoCodec, audioCodec: info.audioCodec,
+        sampleRate: info.sampleRate, channels: info.channels,
+      }));
+      expect(concatCompatible(sources)).toBe(false);
 
-  it("attache des sous-titres WebVTT à un WebM sans réencoder", () => {
-    if (!caps.video.vp9) return; // build sans VP9 : rien à vérifier
-    const webm = join(dir, "clip.webm");
-    ff(["-f", "lavfi", "-i", "color=c=red:s=96x64:r=10:d=1",
-        "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "40", "-pix_fmt", "yuv420p", webm]);
-    const out = run(addSubtitleTrack({ container: "webm", language: "fra" }), [webm, subs], "webm-softsub");
-    const info = probe(out);
-    expect(info.videoCodec).toBe("vp9");
-    expect(info.subtitles).toHaveLength(1);
-    expect(info.subtitles[0].codecName).toBe("webvtt");
-  });
+      const target = concatTarget(sources);
+      const out = run(
+        concatVideoReencode({
+          sources, container: "mp4",
+          videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 500_000 } }),
+          audioArgs: acodec,
+        }),
+        [clip, clipPortrait],
+        "concat-mix",
+      );
+      const info = probe(out);
+      expect(info.width).toBe(target.width);
+      expect(info.height).toBe(target.height);
+      expect(info.durationMs).toBeGreaterThan(3500);
+      // La source muette a reçu un silence : la piste audio reste continue.
+      expect(info.hasAudio).toBe(true);
+    });
 
-  it("boucle une bande son plus courte que la vidéo", () => {
-    const shortMusic = join(dir, "short.wav");
-    ff(["-f", "lavfi", "-i", "sine=frequency=550:duration=0.5", shortMusic]);
-    const out = run(
-      replaceAudio({ container: "mp4", audioArgs: acodec, mode: "loop", videoDurationMs: 2000 }),
-      [clip, shortMusic],
-      "loop-audio",
-    );
-    const info = probe(out);
-    expect(info.hasAudio).toBe(true);
-    // La boucle couvre toute la vidéo : la sortie garde sa durée de 2 s.
-    expect(info.durationMs).toBeGreaterThan(1700);
-    expect(info.durationMs).toBeLessThan(2600);
-  });
+    it("supprime la piste audio en recopiant l'image", () => {
+      const out = run(removeAudio("mp4"), [clip], "mute");
+      const info = probe(out);
+      expect(info.hasAudio).toBe(false);
+      expect(info.videoCodec).toBe(probe(clip).videoCodec);
+    });
 
-  it("attache puis réextrait une piste de sous-titres", () => {
-    const withTrack = run(addSubtitleTrack({ container: "mkv", language: "fra" }), [clip, subs], "softsub");
-    const info = probe(withTrack);
-    expect(info.subtitles).toHaveLength(1);
-    expect(info.subtitles[0].textBased).toBe(true);
-    expect(info.subtitles[0].language).toBe("fra");
+    it("remplace la bande son en se calant sur la vidéo", () => {
+      const out = run(
+        replaceAudio({ container: "mp4", audioArgs: acodec, mode: "video", videoDurationMs: 2000 }),
+        [clip, music],
+        "replace-audio",
+      );
+      const info = probe(out);
+      expect(info.hasAudio).toBe(true);
+      // La musique dure 4 s, la vidéo 2 s : la sortie suit la vidéo.
+      expect(info.durationMs).toBeLessThan(2600);
+    });
 
-    const extracted = run(extractSubtitleTrack(0, "srt"), [withTrack], "extracted");
-    const text = readFileSync(extracted, "utf-8");
-    expect(text).toContain("Bonjour FourTout.");
-    expect(text).toContain("-->");
+    it("ajoute une seconde piste audio sans supprimer la première", () => {
+      const encoder = caps.audio.aac ?? caps.audio.opus!;
+      const out = run(
+        addAudioTrack({ container: "mkv", audioEncoder: encoder, trackIndex: 1, language: "fra" }),
+        [clip, music],
+        "add-track",
+      );
+      expect(probe(out).audioStreams).toHaveLength(2);
+    });
 
-    const vtt = readFileSync(run(extractSubtitleTrack(0, "vtt"), [withTrack], "extracted-vtt"), "utf-8");
-    expect(vtt.startsWith("WEBVTT")).toBe(true);
-  });
+    it("règle le volume sans toucher à l'image", () => {
+      const out = run(
+        adjustVolume({ container: "mp4", percent: 200, audioArgs: acodec }),
+        [clip],
+        "volume",
+      );
+      expect(probe(out).hasAudio).toBe(true);
+      expect(probe(out).videoCodec).toBe(probe(clip).videoCodec);
+    });
 
-  it("retire les métadonnées d'une vidéo sans réencoder ni perdre de piste", () => {
-    // Une vidéo comme en produit un téléphone : titre, auteur, commentaire et
-    // même des coordonnées GPS.
-    const tagged = join(dir, "tagged.mp4");
-    ff([
-      "-i", clip,
-      "-c", "copy",
-      "-metadata", "title=Vacances 2026",
-      "-metadata", "artist=Marie Durand",
-      "-metadata", "comment=chez moi",
-      "-metadata", "location=+48.8566+002.3522/",
-      tagged,
-    ]);
+    it("incruste des sous-titres dans l'image", () => {
+      const out = run(
+        burnSubtitles({
+          container: "mp4",
+          videoArgs: videoEncodeArgs({ encoder: vcodec, level: "balanced", source: { videoBitRate: 400_000 } }),
+          style: DEFAULT_BURN_STYLE,
+        }),
+        [clip, subs],
+        "burn",
+      );
+      const info = probe(out);
+      expect(info.hasVideo).toBe(true);
+      // Aucune piste de sous-titres : le texte fait désormais partie des pixels.
+      expect(info.subtitles).toHaveLength(0);
+    });
 
-    const before = execFileSync(FFPROBE!, [
-      "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", tagged,
-    ]).toString();
-    expect(before).toContain("Vacances 2026");
-    expect(before).toContain("Marie Durand");
+    it("attache des sous-titres WebVTT à un WebM sans réencoder", () => {
+      if (!caps.video.vp9) return; // build sans VP9 : rien à vérifier
+      const webm = join(dir, "clip.webm");
+      ff(["-f", "lavfi", "-i", "color=c=red:s=96x64:r=10:d=1",
+          "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "40", "-pix_fmt", "yuv420p", webm]);
+      const out = run(addSubtitleTrack({ container: "webm", language: "fra" }), [webm, subs], "webm-softsub");
+      const info = probe(out);
+      expect(info.videoCodec).toBe("vp9");
+      expect(info.subtitles).toHaveLength(1);
+      expect(info.subtitles[0].codecName).toBe("webvtt");
+    });
 
-    const cleaned = run(stripMediaMetadata("mp4", "video/mp4"), [tagged], "stripped");
-    const after = execFileSync(FFPROBE!, [
-      "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", cleaned,
-    ]).toString();
+    it("boucle une bande son plus courte que la vidéo", () => {
+      const shortMusic = join(dir, "short.wav");
+      ff(["-f", "lavfi", "-i", "sine=frequency=550:duration=0.5", shortMusic]);
+      const out = run(
+        replaceAudio({ container: "mp4", audioArgs: acodec, mode: "loop", videoDurationMs: 2000 }),
+        [clip, shortMusic],
+        "loop-audio",
+      );
+      const info = probe(out);
+      expect(info.hasAudio).toBe(true);
+      // La boucle couvre toute la vidéo : la sortie garde sa durée de 2 s.
+      expect(info.durationMs).toBeGreaterThan(1700);
+      expect(info.durationMs).toBeLessThan(2600);
+    });
 
-    // Plus aucune trace des étiquettes, GPS compris.
-    expect(after).not.toContain("Vacances 2026");
-    expect(after).not.toContain("Marie Durand");
-    expect(after).not.toContain("chez moi");
-    expect(after).not.toContain("48.8566");
+    it("attache puis réextrait une piste de sous-titres", () => {
+      const withTrack = run(addSubtitleTrack({ container: "mkv", language: "fra" }), [clip, subs], "softsub");
+      const info = probe(withTrack);
+      expect(info.subtitles).toHaveLength(1);
+      expect(info.subtitles[0].textBased).toBe(true);
+      expect(info.subtitles[0].language).toBe("fra");
 
-    // Les pistes sont toutes là, dans les mêmes codecs : rien n'a été réencodé.
-    const source = probe(tagged);
-    const result = probe(cleaned);
-    expect(result.videoCodec).toBe(source.videoCodec);
-    expect(result.hasAudio).toBe(source.hasAudio);
-    expect(result.audioCodec).toBe(source.audioCodec);
-    expect(result.width).toBe(source.width);
-    expect(result.height).toBe(source.height);
-    expect(Math.abs(result.durationMs - source.durationMs)).toBeLessThan(120);
-  });
+      const extracted = run(extractSubtitleTrack(0, "srt"), [withTrack], "extracted");
+      const text = readFileSync(extracted, "utf-8");
+      expect(text).toContain("Bonjour FourTout.");
+      expect(text).toContain("-->");
 
-  it("retire les métadonnées d'un fichier audio sans toucher au signal", () => {
-    const tagged = join(dir, "tagged.mp3");
-    ff([
-      "-i", music,
-      "-c:a", "libmp3lame", "-q:a", "5",
-      "-metadata", "title=Titre prive",
-      "-metadata", "artist=Interprete prive",
-      "-metadata", "album=Album prive",
-      tagged,
-    ]);
-    const before = execFileSync(FFPROBE!, [
-      "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", tagged,
-    ]).toString();
-    expect(before).toContain("Titre prive");
+      const vtt = readFileSync(run(extractSubtitleTrack(0, "vtt"), [withTrack], "extracted-vtt"), "utf-8");
+      expect(vtt.startsWith("WEBVTT")).toBe(true);
+    });
 
-    const cleaned = run(stripMediaMetadata("mp3", "audio/mpeg"), [tagged], "stripped-audio");
-    const after = execFileSync(FFPROBE!, [
-      "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", cleaned,
-    ]).toString();
-    expect(after).not.toContain("Titre prive");
-    expect(after).not.toContain("Interprete prive");
-    expect(after).not.toContain("Album prive");
+    it("retire les métadonnées d'une vidéo sans réencoder ni perdre de piste", () => {
+      // Une vidéo comme en produit un téléphone : titre, auteur, commentaire et
+      // même des coordonnées GPS.
+      const tagged = join(dir, "tagged.mp4");
+      ff([
+        "-i", clip,
+        "-c", "copy",
+        "-metadata", "title=Vacances 2026",
+        "-metadata", "artist=Marie Durand",
+        "-metadata", "comment=chez moi",
+        "-metadata", "location=+48.8566+002.3522/",
+        tagged,
+      ]);
 
-    const source = probe(tagged);
-    const result = probe(cleaned);
-    expect(result.audioCodec).toBe(source.audioCodec);
-    expect(Math.abs(result.durationMs - source.durationMs)).toBeLessThan(120);
-  });
-});
+      const before = execFileSync(FFPROBE!, [
+        "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", tagged,
+      ]).toString();
+      expect(before).toContain("Vacances 2026");
+      expect(before).toContain("Marie Durand");
+
+      const cleaned = run(stripMediaMetadata("mp4", "video/mp4"), [tagged], "stripped");
+      const after = execFileSync(FFPROBE!, [
+        "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", cleaned,
+      ]).toString();
+
+      // Plus aucune trace des étiquettes, GPS compris.
+      expect(after).not.toContain("Vacances 2026");
+      expect(after).not.toContain("Marie Durand");
+      expect(after).not.toContain("chez moi");
+      expect(after).not.toContain("48.8566");
+
+      // Les pistes sont toutes là, dans les mêmes codecs : rien n'a été réencodé.
+      const source = probe(tagged);
+      const result = probe(cleaned);
+      expect(result.videoCodec).toBe(source.videoCodec);
+      expect(result.hasAudio).toBe(source.hasAudio);
+      expect(result.audioCodec).toBe(source.audioCodec);
+      expect(result.width).toBe(source.width);
+      expect(result.height).toBe(source.height);
+      expect(Math.abs(result.durationMs - source.durationMs)).toBeLessThan(120);
+    });
+
+    it("retire les métadonnées d'un fichier audio sans toucher au signal", () => {
+      const tagged = join(dir, "tagged.mp3");
+      ff([
+        "-i", music,
+        "-c:a", "libmp3lame", "-q:a", "5",
+        "-metadata", "title=Titre prive",
+        "-metadata", "artist=Interprete prive",
+        "-metadata", "album=Album prive",
+        tagged,
+      ]);
+      const before = execFileSync(FFPROBE!, [
+        "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", tagged,
+      ]).toString();
+      expect(before).toContain("Titre prive");
+
+      const cleaned = run(stripMediaMetadata("mp3", "audio/mpeg"), [tagged], "stripped-audio");
+      const after = execFileSync(FFPROBE!, [
+        "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", cleaned,
+      ]).toString();
+      expect(after).not.toContain("Titre prive");
+      expect(after).not.toContain("Interprete prive");
+      expect(after).not.toContain("Album prive");
+
+      const source = probe(tagged);
+      const result = probe(cleaned);
+      expect(result.audioCodec).toBe(source.audioCodec);
+      expect(Math.abs(result.durationMs - source.durationMs)).toBeLessThan(120);
+    });
+  },
+);

@@ -29,6 +29,7 @@ import {
 import { compileRegex, MAX_MATCHES, RegexError, replaceAll, runRegex, TIME_BUDGET_MS } from "./regex";
 import { buildCron, CronError, explainCron, splitCron } from "./cron";
 import { detectLanguage, formatWeb, languageForExtension, minifyWeb } from "./web";
+import { HEAVY_TIMEOUT } from "@/test/timeouts";
 
 /* ------------------------------------------------------------------------ */
 
@@ -668,7 +669,7 @@ describe("expressions régulières — protection réelle", () => {
       const elapsed = Date.now() - started;
       expect(elapsed).toBeGreaterThan(TIME_BUDGET_MS);
     },
-    20_000,
+    HEAVY_TIMEOUT,
   );
 
   it("borne le nombre d'itérations d'une recherche globale coûteuse", () => {

@@ -207,6 +207,15 @@ n'est pas un fichier qui se lit.
 tests qui ont besoin de FFmpeg, de `7z` ou des fixtures générées s'ignorent
 proprement en expliquant pourquoi.
 
+**Donner son vrai délai à un test lourd.** Le délai par défaut de Vitest — cinq
+secondes — est taillé pour un test unitaire. Un test qui lance FFmpeg, un moteur
+d'inférence ou l'application entière déclare le sien avec les constantes de
+`src/test/timeouts.ts`, sur la suite (`describe(nom, { timeout: … }, …)`) et sur
+ses hooks, qui ne l'héritent pas. Un exécutant d'intégration partagé est
+plusieurs fois plus lent qu'une machine de développement : sans cela, il échoue
+sur le délai au lieu d'échouer sur le code. Les tests unitaires, eux, gardent le
+délai court, qui les protège des boucles infinies.
+
 **Ne jamais ajuster une assertion pour faire vert.** Si un test échoue, c'est
 soit le code qui a tort, soit l'assertion qui était imprécise — et dans le
 second cas, la corriger doit rendre le test *plus* strict, pas moins.
