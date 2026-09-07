@@ -69,7 +69,10 @@ const probe = (path: string): MediaInfo =>
   );
 
 describe.skipIf(!FFMPEG || !FFPROBE)("détection des encodeurs sur cette machine", () => {
-  it("n'accepte jamais un encodeur annoncé mais incapable d'encoder", () => {
+  // Chaque candidat déclenche un encodage d'essai réel : autant de processus
+  // FFmpeg lancés à la suite. Le délai par défaut de cinq secondes suffit sur
+  // une machine au repos, mais pas quand la suite complète tourne en parallèle.
+  it("n'accepte jamais un encodeur annoncé mais incapable d'encoder", { timeout: 60_000 }, () => {
     const announced = announcedEncoders(FFMPEG!);
     const candidates = videoEncoderCandidates().filter((name) => announced.includes(name));
     const caps = realCapabilities(FFMPEG!);
@@ -85,7 +88,7 @@ describe.skipIf(!FFMPEG || !FFPROBE)("détection des encodeurs sur cette machine
     }
   });
 
-  it("choisit pour « Compatibilité maximale » un encodeur qui démarre vraiment", () => {
+  it("choisit pour « Compatibilité maximale » un encodeur qui démarre vraiment", { timeout: 60_000 }, () => {
     const caps = realCapabilities(FFMPEG!);
     const choice = mostCompatible(caps);
     expect(choice, "aucun encodage vidéo possible sur cette machine").toBeDefined();

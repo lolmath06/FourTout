@@ -4,6 +4,7 @@
 //! ne sont jamais suivis (un lien vers `/` ferait tourner l'analyse à l'infini)
 //! et chaque étape vérifie l'annulation.
 
+use std::cmp::Reverse;
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -109,7 +110,7 @@ fn walk(path: &Path, accumulator: &mut Accumulator, reporter: &Reporter) -> Resu
                 size,
             });
             if accumulator.largest.len() > LARGEST_KEPT * 4 {
-                accumulator.largest.sort_by(|a, b| b.size.cmp(&a.size));
+                accumulator.largest.sort_by_key(|entry| Reverse(entry.size));
                 accumulator.largest.truncate(LARGEST_KEPT);
             }
             if accumulator.files % 200 == 0 {
@@ -173,16 +174,16 @@ pub fn folder_stats(root: &Path, reporter: &Reporter) -> Result<FolderStats, Str
         }
     }
 
-    accumulator.largest.sort_by(|a, b| b.size.cmp(&a.size));
+    accumulator.largest.sort_by_key(|entry| Reverse(entry.size));
     accumulator.largest.truncate(LARGEST_KEPT);
-    children.sort_by(|a, b| b.size.cmp(&a.size));
+    children.sort_by_key(|child| Reverse(child.size));
 
     let mut by_extension: Vec<ExtensionStat> = accumulator
         .by_extension
         .into_iter()
         .map(|(extension, (files, bytes))| ExtensionStat { extension, files, bytes })
         .collect();
-    by_extension.sort_by(|a, b| b.bytes.cmp(&a.bytes));
+    by_extension.sort_by_key(|stat| Reverse(stat.bytes));
     by_extension.truncate(30);
 
     Ok(FolderStats {
@@ -477,7 +478,7 @@ pub fn find_duplicates(
         }
     }
 
-    groups.sort_by(|a, b| b.reclaimable.cmp(&a.reclaimable));
+    groups.sort_by_key(|group| Reverse(group.reclaimable));
     let duplicate_files = groups.iter().map(|g| g.files.len() - 1).sum();
     let reclaimable = groups.iter().map(|g| g.reclaimable).sum();
 
@@ -554,8 +555,7 @@ mod tests {
         fs::write(root.join("src/deep/deeper/z.ts"), b"x").unwrap();
         fs::write(root.join("node_modules/pkg/index.js"), b"x").unwrap();
 
-        let mut options = TreeOptions::default();
-        options.max_depth = 2;
+        let options = TreeOptions { max_depth: 2, ..Default::default() };
         let result = tree(&root, &options, &Reporter::silent()).unwrap();
         assert!(result.text.contains("src/"));
         assert!(result.text.contains("main.ts"));

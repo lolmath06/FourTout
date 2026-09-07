@@ -251,10 +251,46 @@ désigne et ne sait rien du contenu de l'image.
 
 **U²-Net**, exécuté par ONNX Runtime Web (WebAssembly) dans la WebView, avec un
 seul fil : le multi-fil exige `SharedArrayBuffer`, donc des en-têtes
-d'isolation d'origine que FourTout ne sert pas. Le binaire WebAssembly est
-servi depuis `public/ort/`, copié depuis node_modules par
-`scripts/sync-onnx-assets.mjs` — jamais depuis un CDN, que la politique de
-sécurité de contenu interdirait de toute façon.
+d'isolation d'origine que FourTout ne sert pas. Le runtime est servi depuis
+`public/ort/`, copié depuis node_modules par `scripts/sync-onnx-assets.mjs` —
+jamais depuis un CDN, que la politique de sécurité de contenu interdirait de
+toute façon.
+
+#### Deux fichiers, et le point d'entrée qui va avec
+
+Le runtime tient en **deux** fichiers, pas un. ONNX Runtime importe d'abord une
+glu JavaScript, `ort-wasm-simd-threaded.mjs`, qui instancie ensuite le
+`.wasm`. Cet import est marqué `@vite-ignore` dans la bibliothèque : Vite ne le
+suit donc pas, et le fichier **doit** être servi à l'exécution. S'il manque, la
+requête tombe sur le repli SPA, qui répond `index.html` en `text/html` ; ONNX
+affiche alors « 'text/html' is not a valid JavaScript MIME type » puis « no
+available backend found », sans jamais nommer le fichier absent.
+
+L'import passe par le sous-chemin **`onnxruntime-web/wasm`**, et non par le
+paquet. Le point d'entrée par défaut vise la variante *JSEP* du runtime —
+27,8 Mo de WebAssembly destinés à WebGPU et WebNN, que FourTout n'utilise pas,
+et dont le nom de fichier diffère de celui qui est copié. Le sous-chemin vise
+le runtime simple : 13,9 Mo, et les noms attendus.
+
+Les deux chemins sont donnés explicitement à `env.wasm.wasmPaths`, en URL
+absolues construites depuis `window.location` — l'origine change selon le
+contexte (`localhost:1420` en développement, `tauri://localhost` dans
+l'application). Un simple préfixe fonctionnerait, mais laisserait le moteur
+deviner les noms ; les nommer rend la panne lisible.
+
+Trois garde-fous protègent cette mécanique :
+
+- `assertRuntimeServed` teste le type de contenu des deux fichiers avant de
+  démarrer le moteur, et transforme le message énigmatique en phrase utile. Il
+  n'échoue que sur ce cas précis : toute autre difficulté laisse ONNX tenter sa
+  chance, un diagnostic ne devant pas bloquer un outil qui aurait marché ;
+- `onnxAssets.test.ts` vérifie que les fichiers sont copiés dans `public/` et
+  dans `dist/`, à l'identique, et qu'ils sont bien un module JavaScript et un
+  binaire WebAssembly ;
+- `onnxServing.test.ts` monte un serveur sur le build de production **avec le
+  même repli SPA** que l'application, et vérifie les types de contenu reçus.
+  Un test qui lirait le disque ne verrait pas ce repli, et laisserait passer
+  exactement le défaut qu'il doit attraper.
 
 Le choix d'U²-Net tient d'abord à sa **licence** : code et poids sous Apache
 2.0. RMBG (BRIA) et MODNet sont souvent meilleurs, mais réservent leurs poids à

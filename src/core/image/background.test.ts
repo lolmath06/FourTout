@@ -197,10 +197,15 @@ describe.skipIf(!MODEL)("détourage avec le vrai modèle U²-Net", () => {
   let tensor: (data: Float32Array, dims: number[]) => SegmentationTensor;
 
   beforeAll(async () => {
-    const ort = await import("onnxruntime-web");
+    // Même point d'entrée que l'application : tester un autre runtime que
+    // celui qui est livré ne prouverait rien.
+    const ort = await import("onnxruntime-web/wasm");
     ort.env.wasm.numThreads = 1;
     ort.env.logLevel = "error";
-    session = (await ort.InferenceSession.create(MODEL!, {
+    // Le modèle est passé en octets, comme dans l'application : `readAssetFile`
+    // rend un `Uint8Array`, et ce build du runtime interpréterait une chaîne
+    // comme une URL.
+    session = (await ort.InferenceSession.create(new Uint8Array(readFileSync(MODEL!)), {
       executionProviders: ["wasm"],
     })) as unknown as SegmentationSession;
     tensor = (data, dims) => new ort.Tensor("float32", data, dims);

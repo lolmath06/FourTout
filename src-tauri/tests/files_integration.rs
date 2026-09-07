@@ -169,8 +169,7 @@ fn analyses_the_tree_fixture() {
     let Some(root) = fixtures() else { return };
     let folder = root.join("folder-tree");
 
-    let mut options = TreeOptions::default();
-    options.max_depth = 2;
+    let options = TreeOptions { max_depth: 2, ..Default::default() };
     let tree = scan::tree(&folder, &options, &Reporter::silent()).unwrap();
     assert!(tree.text.contains("src/"));
     assert!(tree.text.contains("package.json"));
@@ -178,9 +177,9 @@ fn analyses_the_tree_fixture() {
     assert!(!tree.text.contains(".hidden-config"), "fichiers cachés masqués par défaut");
     assert!(tree.truncated, "la profondeur 2 doit tronquer l'arborescence");
 
-    options.include_hidden = true;
-    options.max_depth = 5;
-    let complete = scan::tree(&folder, &options, &Reporter::silent()).unwrap();
+    // Second passage : tout montrer, jusqu'au fond.
+    let deep = TreeOptions { max_depth: 5, include_hidden: true, ..Default::default() };
+    let complete = scan::tree(&folder, &deep, &Reporter::silent()).unwrap();
     assert!(complete.text.contains(".hidden-config"));
     assert!(complete.text.contains("VeryDeep.tsx"));
 

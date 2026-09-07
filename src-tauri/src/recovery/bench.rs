@@ -1,6 +1,6 @@
 //! Micro-mesures de débit du vérificateur (exécutées à la demande).
 #[cfg(test)]
-mod bench {
+mod measurements {
     use crate::recovery::verifier::{EncryptionParams, PasswordVerifier};
     use rayon::prelude::*;
     use std::time::Instant;

@@ -138,7 +138,7 @@ pub fn recover_password(
     // Préparation faillible : toute erreur ici doit relâcher le drapeau, sinon
     // le verrou resterait bloqué et empêcherait toute recherche ultérieure.
     let prepared = (|| {
-        let tier = Tier::from_str(&tier).ok_or_else(|| "Niveau de recherche inconnu.".to_string())?;
+        let tier = Tier::parse(&tier).ok_or_else(|| "Niveau de recherche inconnu.".to_string())?;
         let verifier = PasswordVerifier::new(params.into_params()?);
         let (gz_path, meta_path) = resolve_wordlist(&app)?;
         let seed_count = read_meta(&meta_path).map(|m| m.seed_count).unwrap_or(0);

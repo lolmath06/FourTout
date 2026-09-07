@@ -25,7 +25,13 @@ pub enum Tier {
 }
 
 impl Tier {
-    pub fn from_str(value: &str) -> Option<Tier> {
+    /// Lit un niveau depuis son nom.
+    ///
+    /// Volontairement `parse` et non `from_str` : ce dernier est le nom de la
+    /// méthode du trait `std::str::FromStr`, qui rend un `Result`. Deux
+    /// signatures différentes derrière le même nom se confondent trop
+    /// facilement à l'appel.
+    pub fn parse(value: &str) -> Option<Tier> {
         match value {
             "quick" => Some(Tier::Quick),
             "extended" => Some(Tier::Extended),
