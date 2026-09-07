@@ -8,6 +8,7 @@ import { TOOL_IMPLEMENTATIONS } from "@/tools/implementations";
 import { useFavorites } from "@/features/favorites/store";
 import { useRecents } from "@/features/recents/store";
 import { useNotifications } from "@/features/notifications/store";
+import { APP_TIMEOUT } from "@/test/timeouts";
 
 function renderApp(initialPath = "/") {
   const router = createMemoryRouter(routes, { initialEntries: [initialPath] });
@@ -21,7 +22,8 @@ beforeEach(() => {
   useNotifications.getState().clear();
 });
 
-describe("navigation principale", () => {
+// Chaque test monte l'application entière et la pilote comme un utilisateur.
+describe("navigation principale", { timeout: APP_TIMEOUT }, () => {
   it("affiche l'accueil et sa zone d'intention", () => {
     renderApp();
     expect(screen.getByRole("heading", { name: "Que voulez-vous faire ?" })).toBeInTheDocument();
@@ -91,7 +93,7 @@ describe("navigation principale", () => {
   });
 });
 
-describe("recherche depuis la page Outils", () => {
+describe("recherche depuis la page Outils", { timeout: APP_TIMEOUT }, () => {
   it("trouve « Compresser un PDF » avec « réduire taille pdf »", async () => {
     const user = userEvent.setup();
     renderApp("/tools");
@@ -115,7 +117,7 @@ describe("recherche depuis la page Outils", () => {
   });
 });
 
-describe("assistant d'accueil", () => {
+describe("assistant d'accueil", { timeout: APP_TIMEOUT }, () => {
   it("propose le bon outil pour « transformer gif en vidéo »", async () => {
     const user = userEvent.setup();
     renderApp();
@@ -148,7 +150,7 @@ describe("assistant d'accueil", () => {
   });
 });
 
-describe("favoris et récents dans l'application", () => {
+describe("favoris et récents dans l'application", { timeout: APP_TIMEOUT }, () => {
   it("ajoute un favori depuis la page d'un outil et le retrouve dans Favoris", async () => {
     const user = userEvent.setup();
     const { router } = renderApp("/tools/t/pdf-compress");

@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
+import { HEAVY_TIMEOUT } from "./timeouts";
 
 /**
  * Le générateur d'images est du code : on l'exécute réellement et on vérifie
@@ -15,7 +16,7 @@ describe("générateur d'images de test", () => {
 
   beforeAll(() => {
     execFileSync(process.execPath, [join(process.cwd(), "scripts/generate-image-assets.mjs")], { stdio: "ignore" });
-  });
+  }, HEAVY_TIMEOUT);
 
   it("produit toutes les fixtures images attendues", () => {
     const files = readdirSync(dir);

@@ -21,6 +21,7 @@ import { extname, join, normalize } from "node:path";
 import { homedir } from "node:os";
 import { pathToFileURL } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { ENGINE_TIMEOUT } from "@/test/timeouts";
 import { ORT_RUNTIME_FILES } from "./segmentation";
 
 /** Le modèle installé par le gestionnaire de modèles, s'il est présent. */
@@ -158,6 +159,6 @@ describe.skipIf(!BUILT)("service du runtime ONNX depuis le build", () => {
       expect(session.inputNames.length).toBeGreaterThan(0);
       expect(session.outputNames.length).toBeGreaterThan(0);
     },
-    180_000,
+    ENGINE_TIMEOUT,
   );
 });

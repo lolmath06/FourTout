@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { ENGINE_TIMEOUT, HEAVY_TIMEOUT } from "@/test/timeouts";
 import type { SelectedFile } from "@/core/files";
 import type { OperationContext } from "@/core/pdf/types";
 import { normalizeResult } from "./engine";
@@ -23,9 +24,11 @@ function fileOf(name: string): SelectedFile {
   };
 }
 
+// Régénération réelle des images de test : un processus Node, hors du délai
+// des hooks par défaut.
 beforeAll(() => {
   execFileSync(process.execPath, [join(process.cwd(), "scripts/generate-image-assets.mjs")], { stdio: "ignore" });
-});
+}, HEAVY_TIMEOUT);
 
 describe("mise en forme des résultats", () => {
   it("compte mots et caractères et normalise les espaces", () => {
@@ -82,8 +85,12 @@ describe("orchestration multi-image (moteur simulé)", () => {
  * OCR réel, hors ligne, via tesseract.js et les modèles embarqués. On construit
  * ici un moteur configuré pour Node (chemins locaux), équivalent à celui de
  * l'application mais sans les chemins servis par la WebView.
+ *
+ * Le moteur charge ses données de langue puis reconnaît réellement le texte,
+ * sans accélération matérielle : le délai est celui d'un moteur, pas d'un test
+ * unitaire.
  */
-describe("reconnaissance réelle (tesseract.js, hors ligne)", () => {
+describe("reconnaissance réelle (tesseract.js, hors ligne)", { timeout: ENGINE_TIMEOUT }, () => {
   class NodeEngine implements OcrEngine {
     readonly id = "tesseract-node";
     private workers = new Map<string, Promise<{ recognize(b: Uint8Array): Promise<{ data: { text: string; confidence: number } }>; terminate(): Promise<void> }>>();
@@ -116,7 +123,7 @@ describe("reconnaissance réelle (tesseract.js, hors ligne)", () => {
   }
 
   const engine = new NodeEngine();
-  afterAll(async () => engine.dispose());
+  afterAll(async () => engine.dispose(), ENGINE_TIMEOUT);
 
   it("lit un texte français", async () => {
     const [item] = await recognizeImages([fileOf("image-text-fr.png")], { language: "fra", engine });
@@ -126,7 +133,7 @@ describe("reconnaissance réelle (tesseract.js, hors ligne)", () => {
     expect(text).toContain("2026-042");
     expect(item.confidence).toBeGreaterThan(60);
     expect(item.words).toBeGreaterThan(5);
-  }, 120_000);
+  });
 
   it("lit un texte anglais", async () => {
     const [item] = await recognizeImages([fileOf("image-text-en.png")], { language: "eng", engine });
@@ -134,7 +141,7 @@ describe("reconnaissance réelle (tesseract.js, hors ligne)", () => {
     expect(text).toContain("fourtout");
     expect(text).toContain("invoice");
     expect(item.confidence).toBeGreaterThan(60);
-  }, 120_000);
+  });
 
   it("traite un lot de deux images", async () => {
     const items = await recognizeImages(

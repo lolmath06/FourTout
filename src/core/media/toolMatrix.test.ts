@@ -10,6 +10,7 @@ import {
   realCapabilities,
   whichBinary,
 } from "@/test/ffmpegProbe";
+import { HEAVY_TIMEOUT } from "@/test/timeouts";
 import {
   isHardwareEncoder,
   mostCompatible,
@@ -68,45 +69,52 @@ const probe = (path: string): MediaInfo =>
     ]).toString(),
   );
 
-describe.skipIf(!FFMPEG || !FFPROBE)("détection des encodeurs sur cette machine", () => {
-  // Chaque candidat déclenche un encodage d'essai réel : autant de processus
-  // FFmpeg lancés à la suite. Le délai par défaut de cinq secondes suffit sur
-  // une machine au repos, mais pas quand la suite complète tourne en parallèle.
-  it("n'accepte jamais un encodeur annoncé mais incapable d'encoder", { timeout: 60_000 }, () => {
-    const announced = announcedEncoders(FFMPEG!);
-    const candidates = videoEncoderCandidates().filter((name) => announced.includes(name));
-    const caps = realCapabilities(FFMPEG!);
+// Chaque candidat déclenche un encodage d'essai réel : autant de processus
+// FFmpeg lancés à la suite. Le délai par défaut de cinq secondes suffit sur une
+// machine au repos, mais pas quand la suite complète tourne en parallèle.
+describe.skipIf(!FFMPEG || !FFPROBE)(
+  "détection des encodeurs sur cette machine",
+  { timeout: HEAVY_TIMEOUT },
+  () => {
+    it("n'accepte jamais un encodeur annoncé mais incapable d'encoder", () => {
+      const announced = announcedEncoders(FFMPEG!);
+      const candidates = videoEncoderCandidates().filter((name) => announced.includes(name));
+      const caps = realCapabilities(FFMPEG!);
 
-    for (const name of candidates) {
-      const works = encoderWorks(FFMPEG!, name);
-      expect(caps.usableVideo.includes(name), `${name} : test ${works}, retenu ${!works}`).toBe(works);
-      if (!works) expect(caps.rejectedVideo).toContain(name);
-    }
-    // Aucune famille ne peut pointer vers un encodeur écarté.
-    for (const encoder of Object.values(caps.video)) {
-      expect(caps.usableVideo).toContain(encoder);
-    }
-  });
+      for (const name of candidates) {
+        const works = encoderWorks(FFMPEG!, name);
+        expect(caps.usableVideo.includes(name), `${name} : test ${works}, retenu ${!works}`).toBe(works);
+        if (!works) expect(caps.rejectedVideo).toContain(name);
+      }
+      // Aucune famille ne peut pointer vers un encodeur écarté.
+      for (const encoder of Object.values(caps.video)) {
+        expect(caps.usableVideo).toContain(encoder);
+      }
+    });
 
-  it("choisit pour « Compatibilité maximale » un encodeur qui démarre vraiment", { timeout: 60_000 }, () => {
-    const caps = realCapabilities(FFMPEG!);
-    const choice = mostCompatible(caps);
-    expect(choice, "aucun encodage vidéo possible sur cette machine").toBeDefined();
-    const encoder = caps.video[choice!.video]!;
-    expect(encoderWorks(FFMPEG!, encoder), `${encoder} doit fonctionner`).toBe(true);
-  });
+    it("choisit pour « Compatibilité maximale » un encodeur qui démarre vraiment", () => {
+      const caps = realCapabilities(FFMPEG!);
+      const choice = mostCompatible(caps);
+      expect(choice, "aucun encodage vidéo possible sur cette machine").toBeDefined();
+      const encoder = caps.video[choice!.video]!;
+      expect(encoderWorks(FFMPEG!, encoder), `${encoder} doit fonctionner`).toBe(true);
+    });
 
-  it("n'utilise un encodeur matériel que s'il a passé le test", () => {
-    const caps = realCapabilities(FFMPEG!);
-    for (const encoder of Object.values(caps.video)) {
-      if (!isHardwareEncoder(encoder)) continue;
-      expect(encoderWorks(FFMPEG!, encoder), `${encoder} matériel retenu sans test`).toBe(true);
-    }
-  });
-});
+    it("n'utilise un encodeur matériel que s'il a passé le test", () => {
+      const caps = realCapabilities(FFMPEG!);
+      for (const encoder of Object.values(caps.video)) {
+        if (!isHardwareEncoder(encoder)) continue;
+        expect(encoderWorks(FFMPEG!, encoder), `${encoder} matériel retenu sans test`).toBe(true);
+      }
+    });
+  },
+);
 
+// Chaque test enchaîne un ou plusieurs encodages complets, puis relit la sortie
+// avec ffprobe : c'est de l'intégration, pas de l'unitaire.
 describe.skipIf(!FFMPEG || !FFPROBE || !hasFixtures)(
   "matrice des outils vidéo, sur les vraies fixtures",
+  { timeout: HEAVY_TIMEOUT },
   () => {
     let dir: string;
     let caps: MediaCapabilities;
@@ -147,10 +155,12 @@ describe.skipIf(!FFMPEG || !FFPROBE || !hasFixtures)(
       extension: path.slice(path.lastIndexOf(".") + 1),
     });
 
+    // Le délai d'une suite ne couvre pas ses hooks, et celui-ci rejoue toute la
+    // détection des encodeurs — autant d'encodages d'essai.
     beforeAll(() => {
       dir = mkdtempSync(join(tmpdir(), "ft-matrix-"));
       caps = realCapabilities(FFMPEG!);
-    });
+    }, HEAVY_TIMEOUT);
 
     it("convertit en préréglage « Compatibilité maximale »", () => {
       const source = sourceOf(fixture("video-with-audio.mp4"));

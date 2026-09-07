@@ -4,6 +4,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
+import { HEAVY_TIMEOUT } from "@/test/timeouts";
 import { getRasterBackend, setRasterBackend } from "@/core/pdf/raster/types";
 import { nodeRasterBackend } from "@/test/nodeRaster";
 import { loadImage } from "@napi-rs/canvas";
@@ -53,10 +54,12 @@ function meanLuminance(pixels: { data: Uint8ClampedArray }): number {
   return sum / (d.length / 4);
 }
 
+// Régénération réelle des images de test : un processus Node, hors du délai
+// des hooks par défaut.
 beforeAll(() => {
   execFileSync(process.execPath, [join(process.cwd(), "scripts/generate-image-assets.mjs")], { stdio: "ignore" });
   setRasterBackend(nodeRasterBackend);
-});
+}, HEAVY_TIMEOUT);
 
 describe("décodage et formats", () => {
   it("décode les dimensions d'un JPEG paysage et portrait", async () => {
@@ -142,7 +145,9 @@ describe("transformations géométriques", () => {
   });
 });
 
-describe("traitements par pixel", () => {
+// Chaque test parcourt les pixels d'une vraie image, plusieurs fois : le coût
+// est celui d'un calcul, et il suit le processeur de la machine.
+describe("traitements par pixel", { timeout: HEAVY_TIMEOUT }, () => {
   it("convertit en niveaux de gris (R=V=B)", async () => {
     const source = await decodeImage(read("image-landscape.jpg"), "jpg");
     const gray = grayscale(source, { mode: "grayscale" }).getPixels().data;

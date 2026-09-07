@@ -5,6 +5,7 @@ import { existsSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
+import { HEAVY_TIMEOUT } from "@/test/timeouts";
 import {
   atempoChain,
   codecArgs,
@@ -79,77 +80,83 @@ const hasEnc = (name: string) => { try { return execFileSync(FFMPEG!, ["-hide_ba
 const VCODEC = FFMPEG && hasEnc("libx264") ? "libx264" : "libopenh264";
 const probe = (path: string) => parseProbe(execFileSync(FFPROBE!, ["-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", path]).toString());
 
-describe.skipIf(!FFMPEG || !FFPROBE)("opérations exécutées avec le vrai FFmpeg", () => {
-  let dir: string;
-  let tone: string;
-  let toneB: string;
-  let silences: string;
-  let video: string;
+describe.skipIf(!FFMPEG || !FFPROBE)(
+  "opérations exécutées avec le vrai FFmpeg",
+  { timeout: HEAVY_TIMEOUT },
+  () => {
+    let dir: string;
+    let tone: string;
+    let toneB: string;
+    let silences: string;
+    let video: string;
 
-  beforeAll(() => {
-    dir = mkdtempSync(join(tmpdir(), "ft-media-"));
-    tone = join(dir, "tone.wav");
-    toneB = join(dir, "toneb.wav");
-    silences = join(dir, "sil.wav");
-    video = join(dir, "clip.mp4");
-    ff(["-f", "lavfi", "-i", "sine=frequency=440:duration=2", tone]);
-    ff(["-f", "lavfi", "-i", "sine=frequency=660:duration=1", toneB]);
-    // 1 s son, 1,5 s silence, 1 s son.
-    ff(["-f", "lavfi", "-i", "sine=frequency=440:duration=1", "-f", "lavfi", "-i", "anullsrc=r=44100:cl=mono", "-f", "lavfi", "-i", "sine=frequency=440:duration=1",
-        "-filter_complex", "[1]atrim=duration=1.5[s];[0][s][2]concat=n=3:v=0:a=1[a]", "-map", "[a]", silences]);
-    // Vidéo courte avec audio (mire + tonalité).
-    ff(["-f", "lavfi", "-i", "testsrc=duration=2:size=160x120:rate=15", "-f", "lavfi", "-i", "sine=frequency=440:duration=2",
-        "-pix_fmt", "yuv420p", "-c:v", VCODEC, "-c:a", "aac", "-shortest", video]);
-  });
+    // Le délai d'une suite ne couvre pas ses hooks, et celui-ci fabrique les
+    // quatre fixtures avec FFmpeg.
+    beforeAll(() => {
+      dir = mkdtempSync(join(tmpdir(), "ft-media-"));
+      tone = join(dir, "tone.wav");
+      toneB = join(dir, "toneb.wav");
+      silences = join(dir, "sil.wav");
+      video = join(dir, "clip.mp4");
+      ff(["-f", "lavfi", "-i", "sine=frequency=440:duration=2", tone]);
+      ff(["-f", "lavfi", "-i", "sine=frequency=660:duration=1", toneB]);
+      // 1 s son, 1,5 s silence, 1 s son.
+      ff(["-f", "lavfi", "-i", "sine=frequency=440:duration=1", "-f", "lavfi", "-i", "anullsrc=r=44100:cl=mono", "-f", "lavfi", "-i", "sine=frequency=440:duration=1",
+          "-filter_complex", "[1]atrim=duration=1.5[s];[0][s][2]concat=n=3:v=0:a=1[a]", "-map", "[a]", silences]);
+      // Vidéo courte avec audio (mire + tonalité).
+      ff(["-f", "lavfi", "-i", "testsrc=duration=2:size=160x120:rate=15", "-f", "lavfi", "-i", "sine=frequency=440:duration=2",
+          "-pix_fmt", "yuv420p", "-c:v", VCODEC, "-c:a", "aac", "-shortest", video]);
+    }, HEAVY_TIMEOUT);
 
-  const run = (op: { buildArgs: (i: string[], o: string) => string[]; outputExt: string }, inputs: string[], name: string) => {
-    const out = join(dir, `${name}.${op.outputExt}`);
-    ff(op.buildArgs(inputs, out));
-    expect(existsSync(out) && statSync(out).size > 0, `${name} produit un fichier`).toBe(true);
-    return out;
-  };
+    const run = (op: { buildArgs: (i: string[], o: string) => string[]; outputExt: string }, inputs: string[], name: string) => {
+      const out = join(dir, `${name}.${op.outputExt}`);
+      ff(op.buildArgs(inputs, out));
+      expect(existsSync(out) && statSync(out).size > 0, `${name} produit un fichier`).toBe(true);
+      return out;
+    };
 
-  it("convertit WAV → MP3/FLAC/OGG/Opus valides", () => {
-    expect(probe(run(convertAudio("mp3", { bitrateKbps: 128 }), [tone], "c")).audioCodec).toBe("mp3");
-    expect(probe(run(convertAudio("flac"), [tone], "cf")).audioCodec).toBe("flac");
-    expect(probe(run(convertAudio("opus"), [tone], "co")).audioCodec).toBe("opus");
-  });
+    it("convertit WAV → MP3/FLAC/OGG/Opus valides", () => {
+      expect(probe(run(convertAudio("mp3", { bitrateKbps: 128 }), [tone], "c")).audioCodec).toBe("mp3");
+      expect(probe(run(convertAudio("flac"), [tone], "cf")).audioCodec).toBe("flac");
+      expect(probe(run(convertAudio("opus"), [tone], "co")).audioCodec).toBe("opus");
+    });
 
-  it("découpe une portion (durée réduite)", () => {
-    const out = run(trimAudio(500, 1500, "wav"), [tone], "trim");
-    expect(probe(out).durationMs).toBeGreaterThan(800);
-    expect(probe(out).durationMs).toBeLessThan(1200);
-  });
+    it("découpe une portion (durée réduite)", () => {
+      const out = run(trimAudio(500, 1500, "wav"), [tone], "trim");
+      expect(probe(out).durationMs).toBeGreaterThan(800);
+      expect(probe(out).durationMs).toBeLessThan(1200);
+    });
 
-  it("fusionne deux audios (durées additionnées)", () => {
-    const out = run(mergeAudio("wav"), [tone, toneB], "merge");
-    expect(probe(out).durationMs).toBeGreaterThan(2800);
-  });
+    it("fusionne deux audios (durées additionnées)", () => {
+      const out = run(mergeAudio("wav"), [tone, toneB], "merge");
+      expect(probe(out).durationMs).toBeGreaterThan(2800);
+    });
 
-  it("applique volume, vitesse et normalisation", () => {
-    expect(probe(run(volumeAudio(-6, "wav"), [tone], "vol")).hasAudio).toBe(true);
-    const sped = probe(run(speedAudio(2, "wav"), [tone], "spd"));
-    expect(sped.durationMs).toBeLessThan(1300); // ~1 s pour 2 s à 2×
-    expect(probe(run(normalizeAudio("standard", "wav"), [tone], "norm")).hasAudio).toBe(true);
-  });
+    it("applique volume, vitesse et normalisation", () => {
+      expect(probe(run(volumeAudio(-6, "wav"), [tone], "vol")).hasAudio).toBe(true);
+      const sped = probe(run(speedAudio(2, "wav"), [tone], "spd"));
+      expect(sped.durationMs).toBeLessThan(1300); // ~1 s pour 2 s à 2×
+      expect(probe(run(normalizeAudio("standard", "wav"), [tone], "norm")).hasAudio).toBe(true);
+    });
 
-  it("supprime les silences (durée réduite)", () => {
-    const out = run(removeSilenceAudio("wav", { thresholdDb: -30, minSilenceMs: 500 }), [silences], "nosil");
-    expect(probe(out).durationMs).toBeLessThan(probe(silences).durationMs - 500);
-  });
+    it("supprime les silences (durée réduite)", () => {
+      const out = run(removeSilenceAudio("wav", { thresholdDb: -30, minSilenceMs: 500 }), [silences], "nosil");
+      expect(probe(out).durationMs).toBeLessThan(probe(silences).durationMs - 500);
+    });
 
-  it("extrait l'audio d'une vidéo", () => {
-    const out = run(extractAudio("mp3"), [video], "extract");
-    expect(probe(out).hasAudio).toBe(true);
-    expect(probe(out).hasVideo).toBe(false);
-  });
+    it("extrait l'audio d'une vidéo", () => {
+      const out = run(extractAudio("mp3"), [video], "extract");
+      expect(probe(out).hasAudio).toBe(true);
+      expect(probe(out).hasVideo).toBe(false);
+    });
 
-  it("vidéo → GIF, GIF → vidéo, extraction d'image", () => {
-    const gif = run(videoToGif({ fps: 10, width: 120 }), [video], "gif");
-    expect(probe(gif).hasVideo).toBe(true);
-    const mp4 = run(gifToVideo("mp4", VCODEC as "libx264" | "libopenh264"), [gif], "fromgif");
-    expect(probe(mp4).videoCodec).toBe("h264");
-    const frame = run(extractFrame(1000, "png"), [video], "frame");
-    expect(existsSync(frame)).toBe(true);
-  });
-});
+    it("vidéo → GIF, GIF → vidéo, extraction d'image", () => {
+      const gif = run(videoToGif({ fps: 10, width: 120 }), [video], "gif");
+      expect(probe(gif).hasVideo).toBe(true);
+      const mp4 = run(gifToVideo("mp4", VCODEC as "libx264" | "libopenh264"), [gif], "fromgif");
+      expect(probe(mp4).videoCodec).toBe("h264");
+      const frame = run(extractFrame(1000, "png"), [video], "frame");
+      expect(existsSync(frame)).toBe(true);
+    });
+  },
+);

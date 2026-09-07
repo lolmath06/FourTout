@@ -8,6 +8,7 @@ import { TOOL_IMPLEMENTATIONS } from "@/tools/implementations";
 import { searchTools } from "@/core/tools/search";
 import { storeRates } from "@/core/currency";
 import { appStore } from "@/core/storage";
+import { APP_TIMEOUT } from "@/test/timeouts";
 
 /**
  * Recette du catalogue complet.
@@ -91,7 +92,8 @@ beforeEach(() => {
   cleanup();
 });
 
-describe("état final du catalogue", () => {
+// Chaque test monte l'application entière et la pilote comme un utilisateur.
+describe("état final du catalogue", { timeout: APP_TIMEOUT }, () => {
   it("branche une implémentation derrière chaque outil du catalogue", () => {
     // La règle : figurer au catalogue, c'est fonctionner. Il n'existe plus
     // d'état « bientôt » derrière lequel se réfugier.
@@ -116,7 +118,7 @@ describe("état final du catalogue", () => {
   });
 });
 
-describe("chaque outil du dernier lot s'ouvre", () => {
+describe("chaque outil du dernier lot s'ouvre", { timeout: APP_TIMEOUT }, () => {
   it.each(LAST_BATCH)("%s", async (id) => {
     await openTool(id);
   });
@@ -126,7 +128,7 @@ describe("chaque outil du dernier lot s'ouvre", () => {
 /* Scénarios réels, un par outil                                           */
 /* ====================================================================== */
 
-describe("développeur — formats de données", () => {
+describe("développeur — formats de données", { timeout: APP_TIMEOUT }, () => {
   it("JSON : formate, valide et situe l'erreur", async () => {
     const user = userEvent.setup();
     await openTool("json-tools");
@@ -185,7 +187,7 @@ describe("développeur — formats de données", () => {
   });
 });
 
-describe("développeur — code", () => {
+describe("développeur — code", { timeout: APP_TIMEOUT }, () => {
   it("formate du JavaScript", async () => {
     const user = userEvent.setup();
     await openTool("web-beautify");
@@ -227,7 +229,7 @@ describe("développeur — code", () => {
   });
 });
 
-describe("développeur — jetons et outils", () => {
+describe("développeur — jetons et outils", { timeout: APP_TIMEOUT }, () => {
   it("JWT : décode et refuse de parler de signature valide", async () => {
     const user = userEvent.setup();
     await openTool("jwt-decode");
@@ -296,7 +298,7 @@ describe("développeur — jetons et outils", () => {
   });
 });
 
-describe("calculateurs — unités", () => {
+describe("calculateurs — unités", { timeout: APP_TIMEOUT }, () => {
   const CASES: [string, string, RegExp][] = [
     ["unit-length", "100", /62[.,]13/],
     ["unit-weight", "70", /154[.,]3/],
@@ -328,7 +330,7 @@ describe("calculateurs — unités", () => {
   });
 });
 
-describe("calculateurs — calculs", () => {
+describe("calculateurs — calculs", { timeout: APP_TIMEOUT }, () => {
   it("pourcentages : X % de Y", async () => {
     const user = userEvent.setup();
     await openTool("calc-percentage");
@@ -428,7 +430,7 @@ describe("calculateurs — calculs", () => {
   });
 });
 
-describe("sécurité — mots de passe", () => {
+describe("sécurité — mots de passe", { timeout: APP_TIMEOUT }, () => {
   it("génère un mot de passe de la longueur demandée", async () => {
     const user = userEvent.setup();
     await openTool("password-generate");
@@ -466,7 +468,7 @@ describe("sécurité — mots de passe", () => {
   });
 });
 
-describe("outils qui exigent l'application installée", () => {
+describe("outils qui exigent l'application installée", { timeout: APP_TIMEOUT }, () => {
   // Hors Tauri, ces écrans doivent le dire clairement plutôt que de proposer
   // une action qui échouerait silencieusement.
   const NATIVE_TOOLS = [
@@ -490,7 +492,7 @@ describe("outils qui exigent l'application installée", () => {
   });
 });
 
-describe("le nettoyage de métadonnées route vers le bon outil", () => {
+describe("le nettoyage de métadonnées route vers le bon outil", { timeout: APP_TIMEOUT }, () => {
   it("s'ouvre et explique ce qu'il sait faire", async () => {
     await openTool("metadata-strip-any");
     expect(screen.getByText(/Déposez le fichier à nettoyer/)).toBeInTheDocument();
@@ -501,7 +503,7 @@ describe("le nettoyage de métadonnées route vers le bon outil", () => {
   });
 });
 
-describe("le détourage automatique", () => {
+describe("le détourage automatique", { timeout: APP_TIMEOUT }, () => {
   it("s'ouvre, et explique honnêtement ce qu'il lui faut", async () => {
     const tool = await openTool("image-remove-background");
     expect(tool.category).toBe("images");
@@ -532,7 +534,7 @@ describe("le détourage automatique", () => {
 /* Recherche                                                               */
 /* ====================================================================== */
 
-describe("recherche en langage courant", () => {
+describe("recherche en langage courant", { timeout: APP_TIMEOUT }, () => {
   const QUERIES: [string, string][] = [
     ["formater json", "json-tools"],
     ["formatter xml", "xml-format"],
