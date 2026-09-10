@@ -26,6 +26,20 @@ const WORKER_PATH = "/tesseract/worker.min.js";
 const LANG_PATH = "/tessdata";
 
 /**
+ * Emplacement des ressources de tesseract.js.
+ *
+ * Dans l'application, ce sont des URL servies par la WebView. Les tests, qui
+ * tournent sous Node, ont besoin de chemins de fichiers : les rendre
+ * paramétrables permet d'éprouver **cette classe-ci**, celle que l'application
+ * utilise réellement, plutôt qu'une copie écrite pour les tests.
+ */
+export interface TesseractPaths {
+  corePath?: string;
+  workerPath?: string;
+  langPath?: string;
+}
+
+/**
  * Forme minimale de ce que l'on consomme dans tesseract.js. `blocks` est la
  * hiérarchie bloc → paragraphe → ligne → mot, chaque niveau portant sa boîte
  * englobante en pixels image.
@@ -51,6 +65,8 @@ export class TesseractEngine implements OcrEngine {
   readonly id = "tesseract.js";
   private workers = new Map<OcrLanguage, Promise<TesseractWorker>>();
 
+  constructor(private readonly paths: TesseractPaths = {}) {}
+
   private async workerFor(language: OcrLanguage, context?: OperationContext): Promise<TesseractWorker> {
     let existing = this.workers.get(language);
     if (!existing) {
@@ -63,9 +79,15 @@ export class TesseractEngine implements OcrEngine {
   private async createWorker(language: OcrLanguage, context?: OperationContext): Promise<TesseractWorker> {
     const { createWorker } = await import("tesseract.js");
     const worker = await createWorker(language, 1, {
-      corePath: CORE_PATH,
-      workerPath: WORKER_PATH,
-      langPath: LANG_PATH,
+      corePath: this.paths.corePath ?? CORE_PATH,
+      // Sous Node, tesseract.js trouve son worker seul : forcer un chemin de
+      // WebView le ferait échouer.
+      ...(this.paths.workerPath === undefined
+        ? { workerPath: WORKER_PATH }
+        : this.paths.workerPath
+          ? { workerPath: this.paths.workerPath }
+          : {}),
+      langPath: this.paths.langPath ?? LANG_PATH,
       gzip: false,
       cacheMethod: "none",
       logger: (message: { status?: string; progress?: number }) => {
