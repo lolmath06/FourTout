@@ -19,6 +19,7 @@ export type PdfErrorCode =
   | "render-unavailable"
   | "no-text-found"
   | "no-images-found"
+  | "table-not-found"
   | "cancelled"
   | "unknown";
 
@@ -37,6 +38,7 @@ const MESSAGES: Record<PdfErrorCode, string> = {
   "render-unavailable": "Le rendu des pages n'est pas disponible dans cet environnement.",
   "no-text-found": "Aucun texte n'a pu être extrait de ce PDF.",
   "no-images-found": "Aucune image exploitable n'a été trouvée dans ce PDF.",
+  "table-not-found": "Aucun tableau n'a été reconnu dans ce PDF.",
   cancelled: "Opération annulée.",
   unknown: "Une erreur inattendue est survenue.",
 };

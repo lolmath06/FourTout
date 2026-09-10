@@ -1,7 +1,15 @@
 import type { OperationContext } from "@/core/pdf/types";
 import { JobCancelledError } from "@/core/jobs/types";
 import { ImageError } from "@/core/image/errors";
-import type { OcrEngine, OcrInput, OcrLanguage, OcrResult } from "./types";
+import type {
+  OcrEngine,
+  OcrInput,
+  OcrLanguage,
+  OcrLayout,
+  OcrResult,
+  OcrWord,
+  RecognizeRequest,
+} from "./types";
 
 /**
  * Moteur OCR reposant sur tesseract.js.
@@ -17,8 +25,25 @@ const CORE_PATH = "/tesseract";
 const WORKER_PATH = "/tesseract/worker.min.js";
 const LANG_PATH = "/tessdata";
 
+/**
+ * Forme minimale de ce que l'on consomme dans tesseract.js. `blocks` est la
+ * hiérarchie bloc → paragraphe → ligne → mot, chaque niveau portant sa boîte
+ * englobante en pixels image.
+ */
+export interface TesseractBlocks {
+  paragraphs?: {
+    lines?: {
+      words?: { text?: string; confidence?: number; bbox?: { x0: number; y0: number; x1: number; y1: number } }[];
+    }[];
+  }[];
+}
+
 type TesseractWorker = {
-  recognize(image: Uint8Array | Blob | string): Promise<{ data: { text: string; confidence: number; words?: unknown[] } }>;
+  recognize(
+    image: Uint8Array | Blob | string,
+    options?: unknown,
+    output?: Record<string, boolean>,
+  ): Promise<{ data: { text: string; confidence: number; blocks?: TesseractBlocks[] | null } }>;
   terminate(): Promise<void>;
 };
 
@@ -52,7 +77,12 @@ export class TesseractEngine implements OcrEngine {
     return worker as unknown as TesseractWorker;
   }
 
-  async recognize(input: OcrInput, language: OcrLanguage, context?: OperationContext): Promise<OcrResult> {
+  async recognize(
+    input: OcrInput,
+    language: OcrLanguage,
+    context?: OperationContext,
+    request?: RecognizeRequest,
+  ): Promise<OcrResult> {
     if (context?.signal?.aborted) throw new JobCancelledError();
     let worker: TesseractWorker;
     try {
@@ -60,8 +90,18 @@ export class TesseractEngine implements OcrEngine {
     } catch (error) {
       throw new ImageError("ocr-unavailable", undefined, { cause: error });
     }
-    const { data } = await worker.recognize(input.bytes);
-    return normalizeResult(data.text, data.confidence);
+    // `blocks` n'est demandé que si l'appelant veut les positions : la
+    // hiérarchie complète coûte du temps et de la mémoire pour rien sinon.
+    const { data } = await worker.recognize(input.bytes, undefined, {
+      text: true,
+      blocks: Boolean(request?.layout),
+    });
+    const result = normalizeResult(data.text, data.confidence);
+    if (!request?.layout) return result;
+    return {
+      ...result,
+      layout: collectWords(data.blocks ?? undefined, input.width ?? 0, input.height ?? 0),
+    };
   }
 
   async dispose(): Promise<void> {
@@ -77,6 +117,34 @@ export class TesseractEngine implements OcrEngine {
       }),
     );
   }
+}
+
+/**
+ * Aplatit la hiérarchie de tesseract en une liste de mots positionnés.
+ *
+ * Les mots vides ou sans boîte sont écartés : une couche texte ne doit contenir
+ * que ce qui a réellement été lu quelque part sur la page.
+ */
+export function collectWords(
+  blocks: TesseractBlocks[] | undefined,
+  imageWidth: number,
+  imageHeight: number,
+): OcrLayout {
+  const words: OcrWord[] = [];
+  for (const block of blocks ?? []) {
+    for (const paragraph of block.paragraphs ?? []) {
+      for (const line of paragraph.lines ?? []) {
+        for (const word of line.words ?? []) {
+          const text = (word.text ?? "").trim();
+          const box = word.bbox;
+          if (!text || !box) continue;
+          if (box.x1 <= box.x0 || box.y1 <= box.y0) continue;
+          words.push({ text, confidence: word.confidence ?? 0, box });
+        }
+      }
+    }
+  }
+  return { imageWidth, imageHeight, words };
 }
 
 /** Met en forme un résultat brut de tesseract.js. */

@@ -148,6 +148,10 @@ import {
   Contrast,
   ChevronUp,
   Eye,
+  Frame,
+  Table,
+  FileDiff,
+  ArrowRightLeft,
   type LucideIcon,
 } from "lucide-react";
 
@@ -310,6 +314,10 @@ export const ICONS: Record<string, LucideIcon> = {
   Contrast,
   ChevronUp,
   Eye,
+  Frame,
+  Table,
+  FileDiff,
+  ArrowRightLeft,
 };
 
 /** Icône de repli lorsqu'un nom est inconnu : jamais d'écran cassé. */
