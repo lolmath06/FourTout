@@ -10,10 +10,10 @@ change pour lui. Pour l'historique détaillé du code, `git log`.
 
 ## [Non publié]
 
-Première version complète de FourTout : **152 outils, tous utilisables**,
+Première version complète de FourTout : **160 outils, tous utilisables**,
 répartis en dix catégories.
 
-### PDF — 23 outils
+### PDF — 26 outils
 
 Fusionner, séparer, extraire ou supprimer des pages, réorganiser par
 glisser-déposer, faire pivoter, compresser. Images ↔ PDF, document ↔ PDF,
@@ -22,11 +22,23 @@ filigrane, numérotation, métadonnées. Édition du texte directement sur la
 page. Reconnaissance de texte (OCR) sur un PDF scanné, comparaison de deux
 documents.
 
+**PDF scanné vers PDF recherchable** : le texte d'un document numérisé est
+reconnu localement puis ajouté au PDF en couche invisible, à l'endroit exact où
+chaque mot a été lu. `Ctrl+F`, la sélection et le copier-coller fonctionnent, et
+les pages d'origine ne sont ni rasterisées ni recompressées — l'apparence ne
+change pas.
+
+**Extraire les tableaux d'un PDF** vers CSV ou classeur XLSX. Un PDF ne contient
+pas de tableaux mais du texte positionné : FourTout en déduit lignes et
+colonnes, avec ou sans bordures, montre ce qu'il a reconstruit et laisse
+corriger avant l'export. **Scans et photos vers PDF** relie un lot de pages
+numérisées, nettoyage et ordre compris.
+
 Côté sécurité : protection et déverrouillage par mot de passe, **caviardage
 qui supprime réellement le contenu** plutôt que de le recouvrir, et
 récupération locale d'un mot de passe oublié par dictionnaire et règles.
 
-### Images — 21 outils
+### Images — 23 outils
 
 Conversion, compression, redimensionnement, rognage visuel, rotation et
 miroir, niveaux de gris, réglages (luminosité, contraste, saturation, gamma),
@@ -61,13 +73,24 @@ Les codecs proposés sont ceux que le FFmpeg installé sait **réellement**
 produire : chacun est éprouvé par un encodage d'essai, pas simplement lu dans
 la liste annoncée.
 
-### Texte & Documents — 16 outils
+### Texte & Documents — 19 outils
 
 Statistiques, changement de casse, nettoyage, rechercher/remplacer avec
 expressions régulières, comparaison, doublons, tri. Markdown ↔ HTML ↔ texte
 avec aperçu assaini. Extraction d'URL, d'adresses e-mail et de nombres. Lorem
 Ipsum, normalisation Unicode, conversion des fins de ligne. Lecture des
 documents Word et conversion vers PDF.
+
+**Comparer deux documents** — PDF, Word, texte, Markdown ou HTML, y compris de
+formats différents : le contenu est ramené à du texte puis comparé ligne à ligne
+et mot à mot.
+
+**Encodage des fichiers texte** : détection de l'encodage, de la marque d'ordre
+des octets et de la convention de fin de ligne, avec la certitude réelle plutôt
+qu'un verdict trompeur ; puis conversion entre UTF-8, UTF-8 avec BOM, UTF-16
+LE/BE, Windows-1252 et Latin-1. Si la destination ne peut pas écrire un
+caractère, la conversion est **refusée** et les caractères concernés sont
+nommés : rien ne se perd en silence.
 
 ### Fichiers & Archives — 16 outils
 
