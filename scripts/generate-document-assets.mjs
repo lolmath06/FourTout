@@ -194,6 +194,33 @@ async function buildScannedPdf(pages) {
 write("scanned-two-page.pdf", await buildScannedPdf([SCANNED_PAGE_ONE, SCANNED_PAGE_TWO]));
 write("scanned-accents.pdf", await buildScannedPdf([SCANNED_ACCENTS]));
 
+/* ------------------------------------------- PDF scanné long (résistance) */
+
+/**
+ * Document raster long, pour éprouver la **tenue dans la durée** de la
+ * reconnaissance : chaque page ajoutée est un appel de plus au moteur
+ * WebAssembly sur un même worker. C'est là que se voient les fuites et les
+ * états corrompus, jamais sur une page isolée.
+ *
+ * Les pages sont volontairement légères — peu de texte, définition modeste —
+ * pour que le test reste rapide tout en multipliant les reconnaissances.
+ */
+export const STRESS_PAGE_COUNT = 10;
+
+/** Mot repère unique par page : il prouve que la bonne page a été lue. */
+export const stressMarker = (page) => `Repere ${String(page).padStart(2, "0")}`;
+
+write(
+  "scanned-multipage-stress.pdf",
+  await buildScannedPdf(
+    Array.from({ length: STRESS_PAGE_COUNT }, (_, index) => [
+      `**${stressMarker(index + 1)}`,
+      `Page numero ${index + 1} sur ${STRESS_PAGE_COUNT}.`,
+      "Document de resistance FourTout.",
+    ]),
+  ),
+);
+
 /* --------------------------------------------------- photo en perspective */
 
 /**

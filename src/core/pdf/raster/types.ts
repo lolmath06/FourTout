@@ -32,6 +32,16 @@ export interface RasterCanvas {
   encode(format: RasterFormat, quality?: number): Promise<Uint8Array>;
   getPixels(): RasterPixels;
   putPixels(pixels: RasterPixels): void;
+  /**
+   * Libère immédiatement la surface, quand l'implémentation le permet.
+   *
+   * Une page A4 rendue à 200 ppp occupe une quinzaine de méga-octets ; sur un
+   * document long, attendre le ramasse-miettes de la WebView laisse s'empiler
+   * autant de surfaces que de pages déjà traitées, en concurrence avec le tas
+   * WebAssembly de la reconnaissance de texte. Le canvas est inutilisable après
+   * cet appel.
+   */
+  release?(): void;
 }
 
 export interface RasterBackend {

@@ -18,6 +18,19 @@ import type {
  * modèles de langue proviennent des ressources de l'application
  * (`/tesseract/…`, `/tessdata/…`), jamais d'un CDN. Un worker est créé par
  * combinaison de langues puis réutilisé d'une image à l'autre.
+ *
+ * Trois propriétés sont tenues ici, et nulle part ailleurs :
+ *
+ * 1. **Une reconnaissance à la fois par worker.** Un worker porte un unique
+ *    `TessBaseAPI` : deux reconnaissances lancées en parallèle partageraient la
+ *    même image et le même état natif. Ce moteur est un singleton de module
+ *    utilisé par trois outils, et une annulation n'interrompt pas le calcul
+ *    déjà lancé — les chevauchements sont donc possibles en usage réel.
+ * 2. **Un worker fautif n'est jamais réutilisé.** Un piège WebAssembly laisse
+ *    le tas de Tesseract dans un état indéfini ; tout ce qui suivrait sur cette
+ *    instance serait faux, ou s'arrêterait à son tour.
+ * 3. **La progression va au travail en cours**, et non à celui qui se trouvait
+ *    là quand le worker a été créé.
  */
 
 // Emplacements des ressources embarquées (voir scripts/sync-tesseract-assets.mjs).
@@ -61,23 +74,91 @@ type TesseractWorker = {
   terminate(): Promise<void>;
 };
 
+/**
+ * Un worker et son état d'utilisation.
+ *
+ * `active` porte le contexte de la reconnaissance en cours. Le journal de
+ * tesseract.js est branché une fois pour toutes à la création du worker, alors
+ * que la progression doit aboutir au travail du moment : sans cette
+ * indirection, toutes les reconnaissances suivantes rapporteraient leur
+ * avancement au tout premier appel — c'est-à-dire à un travail terminé.
+ */
+interface WorkerHandle {
+  worker: TesseractWorker;
+  active?: OperationContext;
+}
+
+/**
+ * Chargement de tesseract.js, fait une seule fois.
+ *
+ * La bibliothèque est importée paresseusement — elle pèse lourd et n'a pas à
+ * ralentir le démarrage — mais **une seule fois** : deux créations de workers
+ * simultanées (deux langues lancées de front) déclencheraient sinon deux
+ * imports dynamiques concurrents du même module.
+ */
+interface TesseractModule {
+  createWorker(
+    langs: string,
+    oem: number,
+    options: Record<string, unknown>,
+  ): Promise<unknown>;
+}
+
+let tesseractModule: Promise<TesseractModule> | undefined;
+
+function loadTesseract(): Promise<TesseractModule> {
+  if (!tesseractModule) {
+    tesseractModule = import("tesseract.js") as unknown as Promise<TesseractModule>;
+    // Un échec de chargement ne doit pas être mémorisé pour toute la session.
+    tesseractModule.catch(() => {
+      tesseractModule = undefined;
+    });
+  }
+  return tesseractModule;
+}
+
+/**
+ * Ce défaut-là n'est pas une erreur métier : c'est le moteur WebAssembly qui
+ * s'est arrêté net.
+ *
+ * tesseract.js sérialise l'erreur de son worker avec `toString()` : elle
+ * parvient donc **sous forme de chaîne**, jamais d'`Error`. C'est la raison
+ * pour laquelle un piège WebAssembly ressemblait jusqu'ici à une erreur
+ * ordinaire — et pour laquelle le worker fautif restait en cache.
+ */
+export function isFatalEngineFault(error: unknown): boolean {
+  const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+  return /RuntimeError|out of bounds|memory access|unreachable|table index|null function|Aborted|abort\(|Cannot enlarge memory/i.test(
+    message,
+  );
+}
+
 export class TesseractEngine implements OcrEngine {
   readonly id = "tesseract.js";
-  private workers = new Map<OcrLanguage, Promise<TesseractWorker>>();
+  private handles = new Map<OcrLanguage, Promise<WorkerHandle>>();
+  /** File d'attente par langue : garantit une reconnaissance à la fois. */
+  private queues = new Map<OcrLanguage, Promise<unknown>>();
 
   constructor(private readonly paths: TesseractPaths = {}) {}
 
-  private async workerFor(language: OcrLanguage, context?: OperationContext): Promise<TesseractWorker> {
-    let existing = this.workers.get(language);
+  private handleFor(language: OcrLanguage): Promise<WorkerHandle> {
+    let existing = this.handles.get(language);
     if (!existing) {
-      existing = this.createWorker(language, context);
-      this.workers.set(language, existing);
+      existing = this.createHandle(language);
+      this.handles.set(language, existing);
+      // Un échec de création ne doit pas rester en cache : le prochain appel
+      // doit pouvoir retenter, sans quoi une panne passagère condamnerait la
+      // langue pour toute la session.
+      existing.catch(() => {
+        if (this.handles.get(language) === existing) this.handles.delete(language);
+      });
     }
     return existing;
   }
 
-  private async createWorker(language: OcrLanguage, context?: OperationContext): Promise<TesseractWorker> {
-    const { createWorker } = await import("tesseract.js");
+  private async createHandle(language: OcrLanguage): Promise<WorkerHandle> {
+    const { createWorker } = await loadTesseract();
+    const handle: Partial<WorkerHandle> = {};
     const worker = await createWorker(language, 1, {
       corePath: this.paths.corePath ?? CORE_PATH,
       // Sous Node, tesseract.js trouve son worker seul : forcer un chemin de
@@ -92,11 +173,89 @@ export class TesseractEngine implements OcrEngine {
       cacheMethod: "none",
       logger: (message: { status?: string; progress?: number }) => {
         if (message.status === "recognizing text") {
-          context?.report?.({ ratio: message.progress, label: "Reconnaissance du texte…" });
+          handle.active?.report?.({ ratio: message.progress, label: "Reconnaissance du texte…" });
         }
       },
-    } as never);
-    return worker as unknown as TesseractWorker;
+      // Sans ce gestionnaire, tesseract.js fait **en plus** un `throw` global à
+      // chaque tâche rejetée, alors même que la promesse correspondante est
+      // déjà rejetée — et traitée juste en dessous par `recognize`. Cette
+      // exception surnuméraire n'apporte aucune information : elle remonte
+      // hors de toute pile d'appel, échappe aux `try` de l'application, et
+      // transforme un échec récupérable en erreur non interceptée dans la
+      // WebView. On l'absorbe donc ici, à la source.
+      errorHandler: () => {},
+    });
+    handle.worker = worker as unknown as TesseractWorker;
+    return handle as WorkerHandle;
+  }
+
+  /** Arrête et oublie le worker d'une langue. Ne lève jamais. */
+  private async discard(language: OcrLanguage): Promise<void> {
+    const existing = this.handles.get(language);
+    this.handles.delete(language);
+    if (!existing) return;
+    try {
+      const handle = await existing;
+      handle.active = undefined;
+      await handle.worker.terminate();
+    } catch {
+      // Un worker déjà mort, ou jamais né, n'a rien à libérer.
+    }
+  }
+
+  /**
+   * Sérialise les traitements d'une même langue.
+   *
+   * La tâche suivante démarre après la précédente, **qu'elle ait réussi ou
+   * échoué** : une annulation ne doit pas laisser une reconnaissance abandonnée
+   * tourner en même temps que la nouvelle. C'est ce qui rend « annuler puis
+   * relancer aussitôt » sûr, sans la moindre temporisation artificielle.
+   */
+  private enqueue<T>(language: OcrLanguage, task: () => Promise<T>): Promise<T> {
+    const previous = this.queues.get(language) ?? Promise.resolve();
+    const next = previous.then(task, task);
+    // La chaîne conservée n'échoue jamais : l'échec d'un travail ne doit pas
+    // empoisonner ceux qui le suivent.
+    this.queues.set(
+      language,
+      next.then(
+        () => undefined,
+        () => undefined,
+      ),
+    );
+    return next;
+  }
+
+  private async attempt(
+    input: OcrInput,
+    language: OcrLanguage,
+    context: OperationContext | undefined,
+    request: RecognizeRequest | undefined,
+  ): Promise<OcrResult> {
+    let handle: WorkerHandle;
+    try {
+      handle = await this.handleFor(language);
+    } catch (error) {
+      throw new ImageError("ocr-unavailable", undefined, { cause: error });
+    }
+
+    handle.active = context;
+    try {
+      // `blocks` n'est demandé que si l'appelant veut les positions : la
+      // hiérarchie complète coûte du temps et de la mémoire pour rien sinon.
+      const { data } = await handle.worker.recognize(input.bytes, undefined, {
+        text: true,
+        blocks: Boolean(request?.layout),
+      });
+      const result = normalizeResult(data.text, data.confidence);
+      if (!request?.layout) return result;
+      return {
+        ...result,
+        layout: collectWords(data.blocks ?? undefined, input.width ?? 0, input.height ?? 0),
+      };
+    } finally {
+      if (handle.active === context) handle.active = undefined;
+    }
   }
 
   async recognize(
@@ -106,38 +265,45 @@ export class TesseractEngine implements OcrEngine {
     request?: RecognizeRequest,
   ): Promise<OcrResult> {
     if (context?.signal?.aborted) throw new JobCancelledError();
-    let worker: TesseractWorker;
-    try {
-      worker = await this.workerFor(language, context);
-    } catch (error) {
-      throw new ImageError("ocr-unavailable", undefined, { cause: error });
-    }
-    // `blocks` n'est demandé que si l'appelant veut les positions : la
-    // hiérarchie complète coûte du temps et de la mémoire pour rien sinon.
-    const { data } = await worker.recognize(input.bytes, undefined, {
-      text: true,
-      blocks: Boolean(request?.layout),
+
+    return this.enqueue(language, async () => {
+      // L'attente en file peut avoir duré : on revérifie avant de lancer un
+      // calcul dont plus personne ne veut.
+      if (context?.signal?.aborted) throw new JobCancelledError();
+
+      try {
+        return await this.attempt(input, language, context, request);
+      } catch (error) {
+        if (!isFatalEngineFault(error)) throw error;
+
+        // Le moteur WebAssembly s'est arrêté net : son tas est dans un état
+        // indéfini. On le jette — c'est indispensable même sans reprise, sans
+        // quoi toutes les opérations suivantes de la session s'exécuteraient
+        // sur une instance corrompue.
+        await this.discard(language);
+        if (context?.signal?.aborted) throw new JobCancelledError();
+
+        // Une seule reprise, sur un worker neuf. Bornée volontairement : si un
+        // moteur propre échoue à son tour sur la même image, le défaut vient de
+        // l'image ou de la machine, et insister ne ferait que perdre du temps.
+        try {
+          return await this.attempt(input, language, context, request);
+        } catch (retryError) {
+          if (isFatalEngineFault(retryError)) await this.discard(language);
+          throw new ImageError(
+            "ocr-unavailable",
+            "Le moteur de reconnaissance s'est interrompu sur cette image, y compris après redémarrage.",
+            { cause: retryError },
+          );
+        }
+      }
     });
-    const result = normalizeResult(data.text, data.confidence);
-    if (!request?.layout) return result;
-    return {
-      ...result,
-      layout: collectWords(data.blocks ?? undefined, input.width ?? 0, input.height ?? 0),
-    };
   }
 
   async dispose(): Promise<void> {
-    const workers = [...this.workers.values()];
-    this.workers.clear();
-    await Promise.all(
-      workers.map(async (promise) => {
-        try {
-          (await promise).terminate();
-        } catch {
-          // Un worker déjà arrêté ne doit pas faire échouer le nettoyage.
-        }
-      }),
-    );
+    const languages = [...this.handles.keys()];
+    this.queues.clear();
+    await Promise.all(languages.map((language) => this.discard(language)));
   }
 }
 
