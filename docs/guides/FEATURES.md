@@ -2,7 +2,7 @@
 
 [← Documentation](../README.md)
 
-152 outils, répartis en dix catégories. Chaque outil de cette liste est
+160 outils, répartis en dix catégories. Chaque outil de cette liste est
 **utilisable** : FourTout n'enregistre pas d'outil incomplet, et il n'existe
 donc pas d'état « bientôt disponible ».
 
@@ -15,11 +15,11 @@ aussi dans l'application, sur la page de l'outil.
 
 ## Sommaire
 
-- [PDF](#pdf-23)
-- [Images](#images-21)
+- [PDF](#pdf-26)
+- [Images](#images-23)
 - [Audio](#audio-15)
 - [Vidéo](#vidéo-19)
-- [Texte & Documents](#texte--documents-16)
+- [Texte & Documents](#texte--documents-19)
 - [Fichiers & Archives](#fichiers--archives-16)
 - [Convertisseurs](#convertisseurs-1)
 - [Développeur](#développeur-18)
@@ -28,7 +28,7 @@ aussi dans l'application, sur la page de l'outil.
 
 ---
 
-### PDF (23)
+### PDF (26)
 
 _Fusionner, découper, compresser, convertir et sécuriser des PDF._
 
@@ -58,8 +58,14 @@ _Fusionner, découper, compresser, convertir et sécuriser des PDF._
   <br>_Moteur OCR local (tesseract.js) embarqué : aucune donnée n'est envoyée sur le réseau. Pour une image seule, voir « Extraire le texte d'une image »._
 - **Comparer deux PDF** — Mettre en évidence les différences entre deux versions d'un document. · aussi dans *Texte*
 - **Caviarder un PDF** — Masquer définitivement des zones sensibles, contenu supprimé et non simplement recouvert. · aussi dans *Sécurité*
+- **PDF scanné vers PDF recherchable** — Reconnaître le texte d'un PDF numérisé et l'ajouter en couche invisible : Ctrl+F, sélection et copie fonctionnent, l'apparence ne bouge pas. · aussi dans *Texte*
+  <br>_La reconnaissance est entièrement locale. Les pages d'origine ne sont ni rasterisées ni recompressées : seule une couche de texte invisible leur est ajoutée. La qualité du résultat dépend de celle du scan._
+- **Extraire les tableaux d'un PDF** — Reconstruire lignes et colonnes à partir de la position du texte, puis exporter en CSV ou en classeur XLSX. · aussi dans *Texte* et *Convertisseurs*
+  <br>_Un PDF ne contient pas de tableaux, seulement du texte positionné : FourTout reconstruit les lignes et les colonnes à partir de ces positions. Les tableaux complexes — cellules fusionnées, texte sur plusieurs lignes — peuvent demander une correction avant export._
+- **Scans et photos vers PDF** — Assembler des pages numérisées ou photographiées en un seul PDF, avec nettoyage et mise en ordre des pages. · aussi dans *Images*
+  <br>_Le nettoyage s'applique à toutes les pages avec les mêmes réglages ; l'assemblage réutilise le moteur « Images vers PDF »._
 
-### Images (21)
+### Images (23)
 
 _Convertir, compresser, redimensionner et nettoyer des images._
 
@@ -85,6 +91,11 @@ _Convertir, compresser, redimensionner et nettoyer des images._
 - **Générer un favicon** — Produire un favicon multi-tailles et le fichier .ico depuis une image. · aussi dans *Développeur*
 - **Générer plusieurs tailles** — Exporter d'un coup toutes les tailles d'icônes ou de miniatures utiles. · aussi dans *Développeur*
 - **Palette de couleurs** — Extraire les couleurs dominantes d'une image (HEX, RGB) et les copier. · aussi dans *Développeur*
+
+- **Corriger la perspective d'un document** — Redresser la photo d'une feuille prise en biais : placez les quatre coins, FourTout la ramène à un rectangle vu de face. · aussi dans *Texte*
+  <br>_Les quatre coins se placent à la main : c'est toujours exact, là où une détection automatique se trompe. Les proportions déduites des coins sont approchées — imposez le format A4 ou Lettre pour un résultat exact._
+- **Nettoyer un scan** — Redresser un document légèrement penché, relever le contraste, blanchir un fond gris ou jauni, passer en niveaux de gris ou en noir et blanc. · aussi dans *Texte*
+  <br>_Chaque réglage est facultatif et visible en aperçu avant/après. Le blanchiment ne touche jamais aux pixels sombres : le texte fin garde sa densité._
 
 ### Audio (15)
 
@@ -137,7 +148,7 @@ _Convertir, compresser, découper et sous-titrer des vidéos._
   <br>_Utilise le modèle de transcription local déjà installé (aucun envoi sur le réseau)._
 - **Traitement vidéo par lots** — Convertir, compresser, redimensionner, pivoter ou extraire l'audio de plusieurs vidéos. · aussi dans *Fichiers*
 
-### Texte & Documents (16)
+### Texte & Documents (19)
 
 _Analyser, nettoyer, comparer et transformer du texte._
 
@@ -159,6 +170,13 @@ _Analyser, nettoyer, comparer et transformer du texte._
   <br>_La mise en page complexe (colonnes, images, styles) n'est pas restituée : FourTout extrait le contenu et sa structure._
 - **Word (DOCX) vers PDF** — Convertir un document Word en PDF en conservant sa mise en page. · aussi dans *PDF* et *Convertisseurs*
   <br>_Non disponible tant que la fidélité n'est pas au rendez-vous : sans moteur de mise en page Word, les tableaux, images, colonnes, polices et sauts de page seraient perdus. Un PDF qui ne ressemble pas au document d'origine serait pire que pas de conversion du tout. En attendant : « Word vers texte, Markdown ou HTML », puis « Document vers PDF »._
+
+- **Comparer deux documents** — Comparer le contenu de deux documents — PDF, Word, texte, Markdown ou HTML — même de formats différents, ligne par ligne et mot par mot. · aussi dans *PDF* et *Fichiers*
+  <br>_La comparaison porte sur le texte, pas sur la mise en page : elle dit ce qui a changé dans le contenu, y compris entre deux formats différents. Un PDF scanné doit d'abord passer par « PDF scanné vers PDF recherchable »._
+- **Détecter l'encodage d'un fichier texte** — Identifier l'encodage, la marque d'ordre des octets et la convention de fin de ligne d'un fichier, avec le degré de certitude réel. · aussi dans *Développeur* et *Fichiers*
+  <br>_Hors marque d'ordre des octets, aucun fichier ne déclare son encodage : la détection reste une hypothèse, et FourTout affiche sa certitude réelle plutôt qu'un verdict trompeur._
+- **Convertir l'encodage d'un fichier texte** — Passer d'un encodage à un autre — UTF-8, UTF-8 avec BOM, UTF-16 LE/BE, Windows-1252, Latin-1 — sans perdre un caractère à votre insu. · aussi dans *Développeur* et *Fichiers*
+  <br>_Si l'encodage de destination ne peut pas écrire certains caractères, la conversion est refusée et les caractères concernés sont listés. Le remplacement n'a lieu que si vous le demandez explicitement._
 
 ### Fichiers & Archives (16)
 
