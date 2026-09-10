@@ -76,6 +76,62 @@ chaque fichier est écrit dans `recovery-fixture.json` à la génération.
 | `page-green.png` | 600 × 400, fond vert, texte « VERT » |
 | `page-blue.png` | 600 × 400, fond bleu, texte « BLEU » |
 
+### Intelligence documentaire (phase 8)
+
+Produites par `scripts/generate-document-assets.mjs`. Les phrases et les valeurs
+sont **connues des tests** : ce sont elles que l'on cherche après traitement.
+
+#### Scans et photos
+
+| Fichier | Contenu | Utilité |
+| --- | --- | --- |
+| `scanned-two-page.pdf` | 2 pages **entièrement raster** : facture FR page 1, invoice EN page 2. Aucune couche texte | PDF recherchable — l'extraction de texte doit être vide **avant** traitement |
+| `scanned-accents.pdf` | 1 page raster : « Résumé du dossier », « Éditée à Genève, très tôt », « Coût : 128,50 euros où ça », « L'apostrophe et le çà » | Vérifier que `é è à ç ù ô` et l'apostrophe traversent OCR → couche texte → extraction |
+| `scan-perspective.jpg` | Feuille photographiée en biais sur fond sombre, 1200 × 1350 | Correction de perspective |
+| `scan-perspective.json` | **Coordonnées exactes des quatre coins** de la feuille ci-dessus | Évite d'avoir à les deviner, dans les tests comme à la main |
+| `scan-skewed.jpg` | Page de texte inclinée de **3,2°** exactement | Détection et correction du travers |
+| `scan-low-contrast.jpg` | Texte gris `#8a8a8a` sur papier beige `#d8d6cf` | Contraste et blanchiment du fond |
+| `scan-pages/page-01…03.jpg` | Trois pages numérotées et distinctes | Scans vers PDF — l'ordre se vérifie d'un coup d'œil |
+
+#### Tableaux
+
+Mêmes valeurs dans les deux fichiers, deux présentations opposées : c'est ce qui
+prouve que la détection s'appuie sur la **position du texte**, et non sur les
+bordures.
+
+| Fichier | Contenu |
+| --- | --- |
+| `table-grid.pdf` | Tableau 5 × 4 **avec bordures**, en-têtes accentués (`Référence`, `Désignation`, `Quantité`, `Prix unitaire`) |
+| `table-columns.pdf` | Le même tableau, **sans aucune bordure**, colonnes simplement alignées |
+
+#### Comparaison de documents
+
+Tous portent les mêmes phrases, à une seule près : le montant, `1 200` d'un côté
+et `1 450` de l'autre. Une comparaison correcte ne doit signaler que cette ligne.
+
+| Fichier | Format |
+| --- | --- |
+| `compare-a.pdf` / `compare-b.pdf` | PDF, montants différents |
+| `compare.docx` | Word (archive ZIP compressée, comme un vrai `.docx`), même contenu que `compare-b.pdf` |
+| `compare-a.txt` / `compare-b.txt` | Texte brut UTF-8 |
+
+#### Encodages
+
+Tous contiennent **le même texte** — `Été à Genève : coût 12,50 €.` puis deux
+autres lignes — sauf `encoding-latin1.txt`, où le signe € (absent du Latin-1) est
+écrit « euros ». Toute conversion réussie doit redonner exactement ce texte.
+
+| Fichier | Encodage | Particularité |
+| --- | --- | --- |
+| `encoding-utf8.txt` | UTF-8 | Sans BOM, fins de ligne LF |
+| `encoding-utf8-bom.txt` | UTF-8 | BOM `EF BB BF` |
+| `encoding-utf16le.txt` | UTF-16 LE | BOM `FF FE` |
+| `encoding-utf16be.txt` | UTF-16 BE | BOM `FE FF` |
+| `encoding-win1252.txt` | Windows-1252 | Contient `0x80` (€), impossible en Latin-1 : c'est ce qui départage les deux |
+| `encoding-latin1.txt` | ISO-8859-1 | Aucun octet 0x80–0x9F : indiscernable du Windows-1252, et l'outil le dit |
+| `encoding-win1252-crlf.txt` | Windows-1252 | Fins de ligne **CRLF** |
+| `encoding-unrepresentable.txt` | UTF-8 | Contient `→`, `中` et un emoji : la conversion vers Windows-1252 doit être **refusée** |
+
 ### Fixtures générales (phase 1)
 
 | Fichier | Contenu | Utilité |
