@@ -220,4 +220,63 @@ export const textTools = defineTools([
     outputs: [OUT.pdf()],
     note: "FourTout reprend le contenu et sa structure — titres, paragraphes, gras, italique, listes, tableaux simples — mais pas la maquette Word : colonnes, zones flottantes, en-têtes et pieds de page, polices spécifiques et images peuvent différer ou disparaître. Pour un rendu fidèle au pixel, exportez en PDF depuis Word ou LibreOffice.",
   },
+  {
+    id: "document-compare",
+    name: "Comparer deux documents",
+    description:
+      "Comparer le contenu de deux documents — PDF, Word, texte, Markdown ou HTML — même de formats différents, ligne par ligne et mot par mot.",
+    category: "text",
+    alsoIn: ["pdf", "files"],
+    icon: "FileDiff",
+    keywords: [
+      "comparer documents", "comparer deux documents", "comparer pdf et word",
+      "difference entre deux documents", "diff document", "comparer un docx",
+      "deux versions", "qu'est-ce qui a change", "comparer contrats", "collationner",
+    ],
+    aliases: ["compare documents", "document diff", "compare pdf docx"],
+    capabilities: ["local"],
+    acceptedInputs: [
+      { kind: "document", extensions: ["pdf", "docx", "txt", "md", "markdown", "html", "htm"] },
+    ],
+    outputs: [OUT.text(["txt", "diff"])],
+    note: "La comparaison porte sur le texte, pas sur la mise en page : elle dit ce qui a changé dans le contenu, y compris entre deux formats différents. Un PDF scanné doit d'abord passer par « PDF scanné vers PDF recherchable ».",
+  },
+  {
+    id: "text-encoding-detect",
+    name: "Détecter l'encodage d'un fichier texte",
+    description:
+      "Identifier l'encodage, la marque d'ordre des octets et la convention de fin de ligne d'un fichier, avec le degré de certitude réel.",
+    category: "text",
+    alsoIn: ["developer", "files"],
+    icon: "Binary",
+    keywords: [
+      "encodage texte", "detecter encodage", "quel encodage", "caracteres bizarres",
+      "accents casses", "mojibake", "utf8 ou latin1", "bom", "fin de ligne",
+      "fichier illisible", "Ã© au lieu de e accent", "charset",
+    ],
+    aliases: ["detect encoding", "charset detection", "what encoding", "bom"],
+    capabilities: ["local"],
+    acceptedInputs: [IN.text(), IN.anyFile(false)],
+    outputs: [OUT.none()],
+    note: "Hors marque d'ordre des octets, aucun fichier ne déclare son encodage : la détection reste une hypothèse, et FourTout affiche sa certitude réelle plutôt qu'un verdict trompeur.",
+  },
+  {
+    id: "text-encoding-convert",
+    name: "Convertir l'encodage d'un fichier texte",
+    description:
+      "Passer d'un encodage à un autre — UTF-8, UTF-8 avec BOM, UTF-16 LE/BE, Windows-1252, Latin-1 — sans perdre un caractère à votre insu.",
+    category: "text",
+    alsoIn: ["developer", "files"],
+    icon: "ArrowRightLeft",
+    keywords: [
+      "convertir encodage", "utf16 utf8", "latin1 utf8", "windows 1252 utf8",
+      "changer encodage", "reparer les accents", "ansi vers utf8", "iso 8859 1",
+      "encoder en utf8", "bom", "transcoder",
+    ],
+    aliases: ["convert encoding", "utf16 to utf8", "latin1 to utf8", "transcode"],
+    capabilities: ["local", "produces-files"],
+    acceptedInputs: [IN.text(), IN.anyFile(false)],
+    outputs: [OUT.text()],
+    note: "Si l'encodage de destination ne peut pas écrire certains caractères, la conversion est refusée et les caractères concernés sont listés. Le remplacement n'a lieu que si vous le demandez explicitement.",
+  },
 ]);

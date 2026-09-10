@@ -599,3 +599,78 @@ describe("recherche en langage courant", { timeout: APP_TIMEOUT }, () => {
     }
   });
 });
+
+/* ====================================================================== */
+/* Intelligence documentaire — phase 8                                     */
+/* ====================================================================== */
+
+/** Les huit outils documentaires livrés par cette phase. */
+const DOCUMENT_BATCH = [
+  "pdf-searchable",
+  "pdf-extract-tables",
+  "scans-to-pdf",
+  "document-perspective",
+  "scan-clean",
+  "document-compare",
+  "text-encoding-detect",
+  "text-encoding-convert",
+];
+
+describe("intelligence documentaire", { timeout: APP_TIMEOUT }, () => {
+  it("livre bien les huit outils annoncés", () => {
+    expect(DOCUMENT_BATCH).toHaveLength(8);
+    for (const id of DOCUMENT_BATCH) {
+      expect(toolRegistry.get(id), id).toBeDefined();
+      expect(id in TOOL_IMPLEMENTATIONS, id).toBe(true);
+    }
+  });
+
+  it.each(DOCUMENT_BATCH)("%s s'ouvre", async (id) => {
+    await openTool(id);
+  });
+
+  it("dit clairement ce que le PDF recherchable fait aux pages d'origine", async () => {
+    await openTool("pdf-searchable");
+    expect(await screen.findByText(/ni rasterisées, ni recompressées/i)).toBeInTheDocument();
+  });
+
+  it("annonce d'emblée la limite de la reconstruction des tableaux", async () => {
+    await openTool("pdf-extract-tables");
+    // La promesse honnête doit être visible avant tout traitement, pas après.
+    expect(screen.getByText(/ne contient pas de tableaux/i)).toBeInTheDocument();
+  });
+
+  it("propose les deux modes de comparaison de documents", async () => {
+    await openTool("document-compare");
+    expect(await screen.findByRole("radio", { name: "Texte exact" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Texte normalisé" })).toBeInTheDocument();
+  });
+
+  it("offre les six encodages en source comme en destination", async () => {
+    await openTool("text-encoding-convert");
+    // Sans fichier, l'outil n'affiche que sa zone de dépôt : c'est voulu, les
+    // réglages n'ont de sens qu'une fois l'encodage d'origine connu.
+    expect(await screen.findByText(/n'est jamais modifié/i)).toBeInTheDocument();
+  });
+
+  it("cherche à trouver ces outils avec les mots des utilisateurs", () => {
+    const cases: [string, string][] = [
+      ["pdf recherchable", "pdf-searchable"],
+      ["ocr pdf", "pdf-searchable"],
+      ["extraire tableau pdf", "pdf-extract-tables"],
+      ["pdf excel", "pdf-extract-tables"],
+      ["corriger perspective", "document-perspective"],
+      ["redresser document", "document-perspective"],
+      ["nettoyer scan", "scan-clean"],
+      ["scans en pdf", "scans-to-pdf"],
+      ["comparer documents", "document-compare"],
+      ["encodage texte", "text-encoding-detect"],
+      ["utf16 utf8", "text-encoding-convert"],
+      ["latin1 utf8", "text-encoding-convert"],
+    ];
+    for (const [query, expected] of cases) {
+      const results = searchTools(query).slice(0, 6).map((result) => result.tool.id);
+      expect(results, `${query} → ${results.join(", ")}`).toContain(expected);
+    }
+  });
+});

@@ -7,6 +7,8 @@
  */
 export * from "./clean";
 export * from "./diff";
+export * from "./encoding";
+export * from "./errors";
 export * from "./extract";
 export * from "./html";
 export * from "./lines";
