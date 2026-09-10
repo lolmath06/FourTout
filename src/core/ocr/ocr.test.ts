@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { ENGINE_TIMEOUT, HEAVY_TIMEOUT } from "@/test/timeouts";
 import type { SelectedFile } from "@/core/files";
 import type { OperationContext } from "@/core/pdf/types";
-import { normalizeResult } from "./engine";
+import { normalizeResult, TesseractEngine } from "./engine";
 import { recognizeImages, type OcrEngine, type OcrInput, type OcrLanguage } from "./index";
 
 const DIR = join(process.cwd(), "test-assets", "generated");
@@ -152,4 +152,56 @@ describe("reconnaissance réelle (tesseract.js, hors ligne)", { timeout: ENGINE_
     expect(items[0].text.toLowerCase()).toContain("fourtout");
     expect(items[1].text.toLowerCase()).toContain("fourtout");
   }, 180_000);
+});
+
+/**
+ * Le moteur réellement embarqué dans l'application.
+ *
+ * Les essais ci-dessus passent par un moteur écrit pour Node : ils éprouvent
+ * l'orchestration, pas la classe que l'application instancie. Ce bloc-ci
+ * instancie `TesseractEngine` — celle des outils « Extraire le texte d'une
+ * image », « OCR d'un PDF scanné » et « PDF recherchable » — en lui donnant les
+ * chemins locaux, et vérifie les deux formes d'appel : avec et sans position
+ * des mots.
+ */
+describe("moteur embarqué (TesseractEngine)", { timeout: ENGINE_TIMEOUT }, () => {
+  const engine = new TesseractEngine({
+    corePath: join(process.cwd(), "node_modules/tesseract.js-core"),
+    langPath: join(process.cwd(), "public/tessdata"),
+    // Chaîne vide : laisser tesseract.js trouver son worker lui-même sous Node.
+    workerPath: "",
+  });
+
+  afterAll(async () => engine.dispose(), ENGINE_TIMEOUT);
+
+  it("lit un texte sans qu'on lui demande les positions", async () => {
+    const bytes = new Uint8Array(readFileSync(join(DIR, "image-text-fr.png")));
+    const result = await engine.recognize({ name: "image-text-fr.png", bytes }, "fra");
+    expect(result.text.toLowerCase()).toContain("fourtout");
+    expect(result.confidence).toBeGreaterThan(60);
+    // Rien n'a été demandé : rien n'est calculé.
+    expect(result.layout).toBeUndefined();
+  });
+
+  it("rend la position de chaque mot quand on la demande", async () => {
+    const bytes = new Uint8Array(readFileSync(join(DIR, "image-text-fr.png")));
+    const result = await engine.recognize(
+      { name: "image-text-fr.png", bytes, width: 900, height: 300 },
+      "fra",
+      undefined,
+      { layout: true },
+    );
+    expect(result.layout).toBeDefined();
+    expect(result.layout!.words.length).toBeGreaterThan(5);
+    expect(result.layout!.imageWidth).toBe(900);
+
+    for (const word of result.layout!.words) {
+      expect(word.text.trim()).not.toBe("");
+      expect(word.box.x1).toBeGreaterThan(word.box.x0);
+      expect(word.box.y1).toBeGreaterThan(word.box.y0);
+    }
+    // Le texte assemblé et les mots positionnés décrivent bien la même page.
+    const fromBoxes = result.layout!.words.map((word) => word.text.toLowerCase()).join(" ");
+    expect(fromBoxes).toContain("fourtout");
+  });
 });
