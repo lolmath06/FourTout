@@ -23,6 +23,13 @@ import type { OutputFile } from "@/core/pdf/types";
  */
 
 export interface OperationOutcome {
+  /**
+   * Fichiers produits. La liste peut être **vide** : certaines opérations
+   * aboutissent à un résultat que l'on relit et corrige à l'écran avant de
+   * choisir quoi exporter — l'extraction de tableaux, par exemple. Le panneau
+   * annonce alors la réussite sans proposer d'enregistrement, l'export étant
+   * offert par l'outil lui-même.
+   */
   files: OutputFile[];
   /** Phrase récapitulative, propre à l'outil. */
   summary?: string;
@@ -38,6 +45,7 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
 
   const total = outcome.files.reduce((sum, file) => sum + file.bytes.length, 0);
   const many = outcome.files.length > 1;
+  const empty = outcome.files.length === 0;
 
   const persist = async (asZip: boolean) => {
     setBusy(true);
@@ -76,7 +84,11 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-[13px] font-medium leading-5">
-            {many ? `${outcome.files.length} fichiers produits` : "Fichier produit"}
+            {empty
+              ? "Opération terminée"
+              : many
+                ? `${outcome.files.length} fichiers produits`
+                : "Fichier produit"}
           </p>
           {outcome.summary && <p className="ft-meta mt-0.5">{outcome.summary}</p>}
           {outcome.warning && (
@@ -86,9 +98,11 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
             </p>
           )}
         </div>
-        <span className="ft-value shrink-0 text-[var(--ft-text-faint)]">
-          {formatFileSize(total)}
-        </span>
+        {!empty && (
+          <span className="ft-value shrink-0 text-[var(--ft-text-faint)]">
+            {formatFileSize(total)}
+          </span>
+        )}
       </div>
 
       {/* Les fichiers produits sont une donnée technique : une table, pas des cartes. */}
@@ -104,6 +118,7 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
         ))}
       </ul>
 
+      {!empty && (
       <div className="flex flex-wrap items-center gap-1.5 border-t border-[var(--ft-rule)] px-3 py-2">
         <Button size="sm" variant="primary" onClick={() => persist(false)} disabled={busy}>
           <Icon name="HardDrive" size={13} />
@@ -136,6 +151,7 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
           </>
         )}
       </div>
+      )}
     </div>
   );
 }
