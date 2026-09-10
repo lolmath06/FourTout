@@ -278,4 +278,42 @@ export const imageTools = defineTools([
     acceptedInputs: [IN.image()],
     outputs: [OUT.none()],
   },
+  {
+    id: "document-perspective",
+    name: "Corriger la perspective d'un document",
+    description:
+      "Redresser la photo d'une feuille prise en biais : placez les quatre coins, FourTout la ramène à un rectangle vu de face.",
+    category: "images",
+    alsoIn: ["text"],
+    icon: "Frame",
+    keywords: [
+      "corriger perspective", "redresser document", "photo de document", "feuille en biais",
+      "photo penchee", "document photographie", "redresser une photo", "quatre coins",
+      "scanner avec le telephone", "photo de page", "rectifier", "deformation",
+    ],
+    aliases: ["perspective correction", "dewarp", "document scanner", "deskew photo"],
+    capabilities: ["local", "produces-files"],
+    acceptedInputs: [IN.image()],
+    outputs: [OUT.image(["png", "jpg", "webp"])],
+    note: "Les quatre coins se placent à la main : c'est toujours exact, là où une détection automatique se trompe. Les proportions déduites des coins sont approchées — imposez le format A4 ou Lettre pour un résultat exact.",
+  },
+  {
+    id: "scan-clean",
+    name: "Nettoyer un scan",
+    description:
+      "Redresser un document légèrement penché, relever le contraste, blanchir un fond gris ou jauni, passer en niveaux de gris ou en noir et blanc.",
+    category: "images",
+    alsoIn: ["text"],
+    icon: "Sparkles",
+    keywords: [
+      "nettoyer scan", "nettoyer un document scanne", "redresser un scan", "deskew",
+      "scan penche", "fond gris", "papier jauni", "contraste document", "scan illisible",
+      "noir et blanc document", "ameliorer un scan", "numerisation sale",
+    ],
+    aliases: ["clean scan", "deskew", "enhance scan", "document cleanup"],
+    capabilities: ["local", "batch", "produces-files"],
+    acceptedInputs: [IN.image(true)],
+    outputs: [OUT.image(["png", "jpg", "webp"])],
+    note: "Chaque réglage est facultatif et visible en aperçu avant/après. Le blanchiment ne touche jamais aux pixels sombres : le texte fin garde sa densité.",
+  },
 ]);

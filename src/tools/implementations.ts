@@ -308,6 +308,37 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
 
   // Documents : Word vers PDF, en réutilisant le lecteur DOCX et le moteur PDF.
   "docx-to-pdf": lazy(() => import("./impl/documents/DocxToPdfTool").then((m) => ({ default: m.DocxToPdfTool }))),
+  // Intelligence documentaire — phase 8
+  "pdf-searchable": lazy(() =>
+    import("./impl/pdf/PdfSearchableTool").then((m) => ({ default: m.PdfSearchableTool })),
+  ),
+  "pdf-extract-tables": lazy(() =>
+    import("./impl/pdf/PdfExtractTablesTool").then((m) => ({ default: m.PdfExtractTablesTool })),
+  ),
+  "scans-to-pdf": lazy(() =>
+    import("./impl/pdf/ScansToPdfTool").then((m) => ({ default: m.ScansToPdfTool })),
+  ),
+  "document-perspective": lazy(() =>
+    import("./impl/image/DocumentPerspectiveTool").then((m) => ({
+      default: m.DocumentPerspectiveTool,
+    })),
+  ),
+  "scan-clean": lazy(() =>
+    import("./impl/image/ScanCleanTool").then((m) => ({ default: m.ScanCleanTool })),
+  ),
+  "document-compare": lazy(() =>
+    import("./impl/text/DocumentCompareTool").then((m) => ({ default: m.DocumentCompareTool })),
+  ),
+  "text-encoding-detect": lazy(() =>
+    import("./impl/text/TextEncodingDetectTool").then((m) => ({
+      default: m.TextEncodingDetectTool,
+    })),
+  ),
+  "text-encoding-convert": lazy(() =>
+    import("./impl/text/TextEncodingConvertTool").then((m) => ({
+      default: m.TextEncodingConvertTool,
+    })),
+  ),
 };
 
 export function getToolComponent(toolId: string): ToolComponent | undefined {

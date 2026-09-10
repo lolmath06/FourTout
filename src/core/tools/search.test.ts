@@ -242,3 +242,50 @@ describe("recherche des outils Texte et Fichiers", () => {
     expect(searchTools("fichiers en double")[0].tool.id).toBe("file-find-duplicates");
   });
 });
+
+/**
+ * Intelligence documentaire (phase 8).
+ *
+ * Ces requêtes sont celles avec lesquelles on cherche réellement ces outils :
+ * on ne vérifie pas qu'ils sont « trouvables », mais qu'ils arrivent **en
+ * tête**. Un outil de niche noyé sous des résultats voisins n'existe pas pour
+ * l'utilisateur.
+ */
+describe("recherche des outils documentaires", () => {
+  it.each([
+    ["pdf recherchable", "pdf-searchable"],
+    ["ocr pdf", "pdf-searchable"],
+    ["scanner pdf", "pdf-searchable"],
+    ["rendre un pdf recherchable", "pdf-searchable"],
+    ["corriger perspective", "document-perspective"],
+    ["redresser document", "document-perspective"],
+    ["photo de document en biais", "document-perspective"],
+    ["nettoyer scan", "scan-clean"],
+    ["extraire tableau pdf", "pdf-extract-tables"],
+    ["pdf excel", "pdf-extract-tables"],
+    ["comparer documents", "document-compare"],
+    ["encodage texte", "text-encoding-detect"],
+    ["utf16 utf8", "text-encoding-convert"],
+    ["latin1 utf8", "text-encoding-convert"],
+    ["scans en pdf", "scans-to-pdf"],
+  ])("« %s » place %s en tête", (query, expected) => {
+    expect(searchTools(query)[0]?.tool.id).toBe(expected);
+  });
+
+  it("distingue détection et conversion d'encodage", () => {
+    expect(searchTools("detecter l'encodage d'un fichier")[0].tool.id).toBe("text-encoding-detect");
+    expect(searchTools("convertir l'encodage en utf8")[0].tool.id).toBe("text-encoding-convert");
+  });
+
+  it("distingue la comparaison de documents de celle de textes collés", () => {
+    expect(searchTools("comparer deux documents")[0].tool.id).toBe("document-compare");
+    expect(searchTools("comparer deux textes")[0].tool.id).toBe("text-compare");
+  });
+
+  it("distingue le redressement d'un scan de la correction de perspective", () => {
+    // Deux problèmes différents : une page à plat mais penchée, et une photo
+    // prise en biais. Les confondre est le piège de cette famille d'outils.
+    expect(searchTools("scan penche")[0].tool.id).toBe("scan-clean");
+    expect(searchTools("feuille photographiee en biais")[0].tool.id).toBe("document-perspective");
+  });
+});
