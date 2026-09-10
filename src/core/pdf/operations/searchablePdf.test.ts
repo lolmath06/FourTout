@@ -23,6 +23,11 @@ function source(name: string): PdfSource {
   return { name, bytes: new Uint8Array(readFileSync(join(DIR, name))) };
 }
 
+/** Texte comparable : minuscules, espaces uniformes, sans retour à la ligne. */
+function flatten(text: string): string {
+  return text.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
 beforeAll(() => {
   setRasterBackend(nodeRasterBackend);
   configurePdfJsForNode();
@@ -411,3 +416,132 @@ interface TesseractLike {
   }>;
   terminate(): Promise<void>;
 }
+
+/* ============================ tenue dans la durée, avec le vrai moteur ==== */
+
+/**
+ * Ces essais utilisent `TesseractEngine` — la classe que l'application
+ * instancie — et non un moteur écrit pour Node. C'est le seul moyen d'éprouver
+ * la file d'attente, la reprise sur défaut fatal et la libération des workers
+ * telles qu'elles s'exécuteront réellement.
+ */
+describe("robustesse multipage (moteur embarqué)", { timeout: ENGINE_TIMEOUT }, () => {
+  const enginePaths = {
+    corePath: join(process.cwd(), "node_modules/tesseract.js-core"),
+    langPath: join(process.cwd(), "public/tessdata"),
+    workerPath: "",
+  };
+
+  it("océrise un document de dix pages sans perdre ni mélanger les pages", async () => {
+    const { TesseractEngine } = await import("@/core/ocr/engine");
+    const engine = new TesseractEngine(enginePaths);
+    try {
+      const input = source("scanned-multipage-stress.pdf");
+
+      // Avant : aucun texte extractible.
+      const before = await extractText(input);
+      expect(before.totalCharacters).toBe(0);
+
+      const result = await makeSearchablePdf(input, {
+        language: "fra+eng",
+        engine,
+        dpi: 150,
+      });
+      expect(result.pages).toHaveLength(10);
+
+      // Après : chaque page porte son propre repère, à sa propre place. C'est
+      // ce qui détecte un état corrompu après plusieurs reconnaissances — une
+      // page vide, ou le texte d'une page recopié sur une autre.
+      const after = await extractText({ name: result.file.name, bytes: result.file.bytes });
+      expect(after.pages).toHaveLength(10);
+      for (let page = 1; page <= 10; page += 1) {
+        // Les sauts de ligne de la couche texte suivent la mise en page lue :
+        // c'est le contenu qui est vérifié ici, pas son découpage en lignes.
+        const text = flatten(after.pages[page - 1].text);
+        expect(text, `page ${page}`).toContain(`repere ${String(page).padStart(2, "0")}`);
+        expect(text, `page ${page}`).toContain(`page numero ${page}`);
+      }
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it("enchaîne deux traitements sur la même instance, langues différentes", async () => {
+    const { TesseractEngine } = await import("@/core/ocr/engine");
+    const engine = new TesseractEngine(enginePaths);
+    try {
+      const input = source("scanned-two-page.pdf");
+      const first = await makeSearchablePdf(input, { language: "fra", engine, dpi: 150 });
+      const second = await makeSearchablePdf(input, { language: "fra+eng", engine, dpi: 200 });
+      const third = await makeSearchablePdf(input, { language: "fra+eng", engine, dpi: 150 });
+
+      for (const result of [first, second, third]) {
+        expect(result.pages).toHaveLength(2);
+        expect(result.totalWords).toBeGreaterThan(10);
+        const text = (await extractText({ name: "x.pdf", bytes: result.file.bytes })).pages
+          .map((page) => page.text)
+          .join(" ")
+          .toLowerCase();
+        expect(text).toContain("facture");
+        expect(text).toContain("invoice");
+      }
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it("annulation puis relance immédiate : la seconde aboutit", async () => {
+    const { TesseractEngine } = await import("@/core/ocr/engine");
+    const engine = new TesseractEngine(enginePaths);
+    try {
+      const input = source("scanned-multipage-stress.pdf");
+
+      // On annule en cours de route : la reconnaissance déjà partie continue
+      // dans le worker, l'appelant, lui, abandonne.
+      const controller = new AbortController();
+      const cancelled = makeSearchablePdf(
+        input,
+        { language: "fra", engine, dpi: 150 },
+        { signal: controller.signal },
+      );
+      setTimeout(() => controller.abort(), 400);
+      await expect(cancelled).rejects.toThrow();
+
+      // Relance immédiate, sans rien réinitialiser : c'est le scénario que la
+      // file d'attente doit rendre sûr.
+      const result = await makeSearchablePdf(input, { language: "fra", engine, dpi: 150 });
+      expect(result.pages).toHaveLength(10);
+      const after = await extractText({ name: result.file.name, bytes: result.file.bytes });
+      expect(flatten(after.pages[0].text)).toContain("repere 01");
+      expect(flatten(after.pages[9].text)).toContain("repere 10");
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it("reste utilisable après une erreur de lecture d'image", async () => {
+    const { TesseractEngine } = await import("@/core/ocr/engine");
+    const engine = new TesseractEngine(enginePaths);
+    try {
+      // Des octets qui ne sont pas une image : Tesseract refuse de les lire.
+      await expect(
+        engine.recognize(
+          { name: "faux.png", bytes: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]) },
+          "fra",
+          undefined,
+          { layout: true },
+        ),
+      ).rejects.toThrow();
+
+      // Immédiatement après, une vraie reconnaissance doit aboutir.
+      const result = await makeSearchablePdf(source("scanned-accents.pdf"), {
+        language: "fra",
+        engine,
+        dpi: 150,
+      });
+      expect(result.totalWords).toBeGreaterThan(5);
+    } finally {
+      await engine.dispose();
+    }
+  });
+});

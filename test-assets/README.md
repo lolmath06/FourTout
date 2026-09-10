@@ -87,6 +87,7 @@ sont **connues des tests** : ce sont elles que l'on cherche après traitement.
 | --- | --- | --- |
 | `scanned-two-page.pdf` | 2 pages **entièrement raster** : facture FR page 1, invoice EN page 2. Aucune couche texte | PDF recherchable — l'extraction de texte doit être vide **avant** traitement |
 | `scanned-accents.pdf` | 1 page raster : « Résumé du dossier », « Éditée à Genève, très tôt », « Coût : 128,50 euros où ça », « L'apostrophe et le çà » | Vérifier que `é è à ç ù ô` et l'apostrophe traversent OCR → couche texte → extraction |
+| `scanned-multipage-stress.pdf` | 10 pages raster, chacune portant un repère unique (`Repere 01` … `Repere 10`) | Tenue dans la durée de la reconnaissance : dix appels successifs au moteur WebAssembly sur un même worker. Les repères prouvent qu'aucune page n'est perdue, vide, ni recopiée d'une autre |
 | `scan-perspective.jpg` | Feuille photographiée en biais sur fond sombre, 1200 × 1350 | Correction de perspective |
 | `scan-perspective.json` | **Coordonnées exactes des quatre coins** de la feuille ci-dessus | Évite d'avoir à les deviner, dans les tests comme à la main |
 | `scan-skewed.jpg` | Page de texte inclinée de **3,2°** exactement | Détection et correction du travers |

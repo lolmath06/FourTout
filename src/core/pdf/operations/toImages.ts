@@ -121,22 +121,25 @@ export async function renderPagesStream(
       }).promise;
       page.cleanup();
 
-      await onPage(
-        {
-          page: pageNumber,
-          pageCount: document.numPages,
-          bytes: await canvas.encode(options.format, options.quality ?? 0.85),
-          mimeType: options.format === "jpeg" ? "image/jpeg" : "image/png",
-          widthPx: canvas.width,
-          heightPx: canvas.height,
-          scale,
-          viewWidthPts: base.width,
-          viewHeightPts: base.height,
-          rotation: ((page.rotate % 360) + 360) % 360,
-        },
-        index,
-        targets.length,
-      );
+      const rendered: RenderedPage = {
+        page: pageNumber,
+        pageCount: document.numPages,
+        bytes: await canvas.encode(options.format, options.quality ?? 0.85),
+        mimeType: options.format === "jpeg" ? "image/jpeg" : "image/png",
+        widthPx: canvas.width,
+        heightPx: canvas.height,
+        scale,
+        viewWidthPts: base.width,
+        viewHeightPts: base.height,
+        rotation: ((page.rotate % 360) + 360) % 360,
+      };
+      // L'image est encodée : la surface n'a plus lieu d'être. La libérer
+      // maintenant évite d'empiler une page de plus à chaque tour, pendant que
+      // l'appelant — la reconnaissance de texte — réclame de son côté beaucoup
+      // de mémoire.
+      canvas.release?.();
+
+      await onPage(rendered, index, targets.length);
     }
   } finally {
     await document.loadingTask?.destroy();

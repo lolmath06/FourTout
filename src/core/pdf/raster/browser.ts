@@ -46,6 +46,15 @@ class BrowserCanvas implements RasterCanvas {
     const image = new ImageData(pixels.data, pixels.width, pixels.height);
     this.context.putImageData(image, 0, 0);
   }
+
+  /**
+   * Ramener les dimensions à zéro est la seule façon, dans un navigateur, de
+   * rendre la mémoire d'un canvas sans attendre le ramasse-miettes.
+   */
+  release(): void {
+    this.handle.width = 0;
+    this.handle.height = 0;
+  }
 }
 
 function create(width: number, height: number): BrowserCanvas {
