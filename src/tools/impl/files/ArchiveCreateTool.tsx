@@ -15,17 +15,19 @@ import { revealFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
 
 /**
- * Création d'archives ZIP, TAR et TAR.GZ.
+ * Création d'archives ZIP, 7z, TAR, TAR.GZ et TAR.XZ.
  *
  * L'arborescence relative est conservée : déposer un dossier produit une
  * archive qui, une fois extraite, redonne ce dossier — pas ses fichiers en
  * vrac. Les noms écrits dans l'archive passent par la même validation que
  * ceux acceptés à l'extraction : FourTout ne fabrique pas d'archive piégée.
  */
-const FORMATS: { value: ArchiveFormat; label: string; hint: string }[] = [
-  { value: "zip", label: "ZIP", hint: "Le plus universel : Windows, macOS et Linux l'ouvrent sans rien installer." },
-  { value: "tar-gz", label: "TAR.GZ", hint: "Standard sous Linux ; conserve mieux les arborescences profondes." },
-  { value: "tar", label: "TAR", hint: "Sans compression : rapide, utile pour regrouper des fichiers déjà compressés." },
+const FORMATS: { value: ArchiveFormat; label: string; hint: string; extension: string }[] = [
+  { value: "zip", label: "ZIP", extension: "zip", hint: "Le plus universel : Windows, macOS et Linux l'ouvrent sans rien installer." },
+  { value: "seven-z", label: "7z", extension: "7z", hint: "Compression nettement meilleure que ZIP. Non chiffré ici : voir « Archive protégée » pour un mot de passe." },
+  { value: "tar-gz", label: "TAR.GZ", extension: "tar.gz", hint: "Standard sous Linux ; conserve mieux les arborescences profondes." },
+  { value: "tar-xz", label: "TAR.XZ", extension: "tar.xz", hint: "Même principe que TAR.GZ, compression plus forte et plus lente." },
+  { value: "tar", label: "TAR", extension: "tar", hint: "Sans compression : rapide, utile pour regrouper des fichiers déjà compressés." },
 ];
 
 export function ArchiveCreateTool(_props: ToolComponentProps) {
@@ -36,9 +38,11 @@ export function ArchiveCreateTool(_props: ToolComponentProps) {
   const [destination, setDestination] = useState("");
 
   const defaultName = paths[0] ? stemOf(baseName(paths[0])) : "archive";
-  const finalName = `${(name.trim() || defaultName).replace(/\.(zip|tar|tar\.gz|tgz)$/i, "")}.${
-    format === "tar-gz" ? "tar.gz" : format
-  }`;
+  const extension = FORMATS.find((entry) => entry.value === format)?.extension ?? "zip";
+  const finalName = `${(name.trim() || defaultName).replace(
+    /\.(zip|7z|tar|tar\.gz|tgz|tar\.xz|txz)$/i,
+    "",
+  )}.${extension}`;
   const target = destination || (paths[0] ? directoryName(paths[0]) : "");
   const output = target ? joinPath(target, finalName) : "";
 
@@ -82,8 +86,9 @@ export function ArchiveCreateTool(_props: ToolComponentProps) {
       footer={
         <p className="flex items-start gap-2 text-xs text-[var(--ft-text-muted)]">
           <Icon name="Info" size={13} className="mt-px shrink-0" />
-          Les archives protégées par mot de passe et le format 7z ne sont pas encore proposés :
-          voir la note de l'outil « Archive protégée par mot de passe ».
+          Pour une archive protégée par mot de passe, utilisez « Archive protégée » : son ZIP
+          AES-256 s'ouvre avec 7-Zip, WinRAR, Keka et l'Explorateur Windows. Le 7z produit ici
+          n'est pas chiffré.
         </p>
       }
     >

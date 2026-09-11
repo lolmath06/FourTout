@@ -15,6 +15,12 @@ import { JobCancelledError } from "@/core/jobs/types";
 /** Message renvoyé par le socle natif quand l'utilisateur a annulé. */
 const NATIVE_CANCELLED = "cancelled";
 
+/** Fragment de résultat publié en cours d'opération. */
+export interface FilesPartial<T> {
+  jobId: string;
+  payload: T;
+}
+
 export interface FilesProgress {
   jobId: string;
   ratio: number;
@@ -55,12 +61,30 @@ export interface FileInfo {
   created: number;
   accessed: number;
   mime: string;
+  /** Identifiant du type réel, déduit des premiers octets (« png », « 7z »…). */
   magic: string;
+  /** Libellé français du type détecté. */
+  magicLabel: string;
+  /** Famille du contenu : c'est elle qui décide de l'aperçu proposé. */
+  family: FileFamily;
+  /** L'extension du nom correspond-elle au contenu réel ? */
   extensionMatches: boolean;
   looksLikeText: boolean;
 }
 
-export type ArchiveFormat = "zip" | "tar" | "tar-gz";
+/** Grande famille d'un fichier, telle que la table de signatures la voit. */
+export type FileFamily =
+  | "document"
+  | "image"
+  | "audio"
+  | "video"
+  | "archive"
+  | "executable"
+  | "data"
+  | "text"
+  | "unknown";
+
+export type ArchiveFormat = "zip" | "tar" | "tar-gz" | "tar-xz" | "seven-z";
 
 export interface ArchiveSummary {
   path: string;
@@ -268,11 +292,12 @@ function nextJobId(prefix: string): string {
  * Exécute une commande native longue : elle publie sa progression et répond
  * réellement à l'annulation (le travail natif est interrompu, pas ignoré).
  */
-async function runJob<T>(
+async function runJob<T, TPartial = unknown>(
   prefix: string,
   command: string,
   args: (jobId: string) => Record<string, unknown>,
   context?: OperationContext,
+  onPartial?: (payload: TPartial) => void,
 ): Promise<T> {
   if (!isTauri()) throw new Error(NATIVE_REQUIRED);
   const { invoke } = await import("@tauri-apps/api/core");
@@ -287,6 +312,15 @@ async function runJob<T>(
     });
   });
 
+  // Certaines opérations publient leurs résultats par lots avant d'avoir fini
+  // (la recherche, notamment). On ne s'abonne que si l'appelant le demande.
+  const unlistenPartial = onPartial
+    ? await listen<FilesPartial<TPartial>>("files://partial", (event) => {
+        if (event.payload.jobId !== jobId) return;
+        onPartial(event.payload.payload);
+      })
+    : undefined;
+
   const onAbort = () => {
     void invoke("files_cancel", { jobId });
   };
@@ -300,6 +334,7 @@ async function runJob<T>(
     throw new Error(message || "L'opération a échoué.");
   } finally {
     unlisten();
+    unlistenPartial?.();
     context?.signal?.removeEventListener("abort", onAbort);
   }
 }
@@ -602,6 +637,20 @@ export async function readDocx(path: string): Promise<DocxResult> {
   return invoke<DocxResult>("files_docx_read", { path });
 }
 
+/**
+ * Octets bruts d'un fichier, pour un aperçu.
+ *
+ * Le retour est un `ArrayBuffer` : les octets traversent l'IPC tels quels au
+ * lieu d'être encodés en tableau JSON, ce qui rend l'aperçu d'un MP4 de 40 Mo
+ * instantané plutôt qu'insupportable.
+ */
+export async function readBytes(path: string, maxBytes = 0): Promise<Uint8Array> {
+  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  const { invoke } = await import("@tauri-apps/api/core");
+  const buffer = await invoke<ArrayBuffer>("files_read_bytes", { path, maxBytes });
+  return new Uint8Array(buffer);
+}
+
 export async function readTextFile(path: string, maxBytes = 0): Promise<string> {
   if (!isTauri()) throw new Error(NATIVE_REQUIRED);
   const { invoke } = await import("@tauri-apps/api/core");
@@ -651,4 +700,634 @@ export async function pickSavePath(
   const { save } = await import("@tauri-apps/plugin-dialog");
   const path = await save({ defaultPath: defaultName, filters });
   return path ?? undefined;
+}
+
+/* ============================================================================
+ * Phase 9 — dossiers, intégrité, archives
+ *
+ * Chaque capacité ci-dessous est une **fonction**, pas un écran : comparer deux
+ * dossiers, calculer un plan de synchronisation ou vérifier un manifeste se
+ * fait sans passer par React. Un appelant automatisé futur n'aura donc jamais à
+ * simuler des clics — il appellera exactement ce que l'interface appelle.
+ * ========================================================================== */
+
+/* --------------------------------------------- comparaison de dossiers */
+
+export type CompareMode = "quick" | "reliable";
+export type SymlinkPolicy = "report" | "skip" | "follow-inside";
+
+export interface WalkOptions {
+  recursive: boolean;
+  includeHidden: boolean;
+  symlinks: SymlinkPolicy;
+}
+
+export const DEFAULT_WALK_OPTIONS: WalkOptions = {
+  recursive: true,
+  includeHidden: false,
+  symlinks: "report",
+};
+
+export interface WalkNotes {
+  symlinks: string[];
+  unreadable: string[];
+  files: number;
+  directories: number;
+  bytes: number;
+}
+
+export type CompareEntryStatus =
+  | "same"
+  | "different"
+  | "left-only"
+  | "right-only"
+  | "type-conflict";
+
+export interface FolderCompareEntry {
+  relative: string;
+  status: CompareEntryStatus;
+  isDir: boolean;
+  leftSize: number | null;
+  rightSize: number | null;
+  leftModified: number | null;
+  rightModified: number | null;
+  reason: string;
+  /** Le contenu a-t-il réellement été lu pour conclure ? */
+  contentChecked: boolean;
+}
+
+export interface FolderCompareReport {
+  left: string;
+  right: string;
+  mode: CompareMode;
+  entries: FolderCompareEntry[];
+  same: number;
+  different: number;
+  leftOnly: number;
+  rightOnly: number;
+  typeConflicts: number;
+  hashedBytes: number;
+  leftNotes: WalkNotes;
+  rightNotes: WalkNotes;
+  caseCollisions: string[];
+}
+
+export interface FolderCompareRequest {
+  left: string;
+  right: string;
+  mode: CompareMode;
+  walk: WalkOptions;
+}
+
+export function compareFolders(
+  request: FolderCompareRequest,
+  context?: OperationContext,
+): Promise<FolderCompareReport> {
+  return runJob("folder-compare", "files_folder_compare", (jobId) => ({ jobId, request }), context);
+}
+
+/* -------------------------------------------------------- synchronisation */
+
+export type SyncMode = "update" | "mirror";
+export type SyncChangeTest = "size-and-date" | "content";
+export type SyncAction = "create-directory" | "copy" | "replace" | "delete" | "delete-directory";
+
+export interface SyncOperation {
+  action: SyncAction;
+  relative: string;
+  size: number;
+  sourceModified: number;
+  reason: string;
+}
+
+export interface SyncPlan {
+  source: string;
+  destination: string;
+  mode: SyncMode;
+  operations: SyncOperation[];
+  directories: number;
+  copies: number;
+  replacements: number;
+  deletions: number;
+  unchanged: number;
+  bytes: number;
+  freedBytes: number;
+  sourceNotes: WalkNotes;
+  destinationNotes: WalkNotes;
+  warnings: string[];
+}
+
+export interface SyncOutcome {
+  completed: number;
+  total: number;
+  copied: number;
+  replaced: number;
+  deleted: number;
+  directoriesCreated: number;
+  bytes: number;
+  failed: string[];
+  changedSincePlan: string[];
+  interrupted: boolean;
+}
+
+export interface SyncRequest {
+  source: string;
+  destination: string;
+  mode: SyncMode;
+  test: SyncChangeTest;
+  walk: WalkOptions;
+}
+
+/** Calcule le plan. **N'écrit rien** : c'est le « dry-run » de l'outil. */
+export function buildSyncPlan(
+  request: SyncRequest,
+  context?: OperationContext,
+): Promise<SyncPlan> {
+  return runJob("sync-plan", "files_sync_plan", (jobId) => ({ jobId, request }), context);
+}
+
+/**
+ * Exécute **exactement** le plan reçu.
+ *
+ * Le plan est transmis tel quel plutôt que recalculé : ce que l'utilisateur a
+ * lu et confirmé est ce qui sera fait, y compris si le disque a bougé entre
+ * les deux — auquel cas l'opération concernée est refusée et rapportée.
+ */
+export function executeSyncPlan(
+  plan: SyncPlan,
+  context?: OperationContext,
+): Promise<SyncOutcome> {
+  return runJob(
+    "sync-apply",
+    "files_sync_apply",
+    (jobId) => ({
+      jobId,
+      source: plan.source,
+      destination: plan.destination,
+      operations: plan.operations,
+    }),
+    context,
+  );
+}
+
+/** La synchronisation a-t-elle réellement abouti, en entier ? */
+export function syncIsComplete(outcome: SyncOutcome): boolean {
+  return !outcome.interrupted && outcome.failed.length === 0 && outcome.changedSincePlan.length === 0;
+}
+
+/* -------------------------------------------------------------- recherche */
+
+export interface SearchQuery {
+  root: string;
+  name: string;
+  extensions: string[];
+  minSize: number | null;
+  maxSize: number | null;
+  modifiedAfter: number | null;
+  modifiedBefore: number | null;
+  content: string;
+  caseSensitive: boolean;
+  wholeWord: boolean;
+  walk: WalkOptions;
+  maxResults: number | null;
+}
+
+export const DEFAULT_SEARCH_QUERY: Omit<SearchQuery, "root"> = {
+  name: "",
+  extensions: [],
+  minSize: null,
+  maxSize: null,
+  modifiedAfter: null,
+  modifiedBefore: null,
+  content: "",
+  caseSensitive: false,
+  wholeWord: false,
+  walk: DEFAULT_WALK_OPTIONS,
+  maxResults: 5000,
+};
+
+export interface SearchHit {
+  path: string;
+  relative: string;
+  name: string;
+  size: number;
+  modified: number;
+  extension: string;
+  reason: string;
+  line: number | null;
+  excerpt: string | null;
+  matches: number;
+  encoding: string | null;
+}
+
+export interface SearchReport {
+  root: string;
+  hits: SearchHit[];
+  scannedFiles: number;
+  scannedDirectories: number;
+  readFiles: number;
+  binarySkipped: number;
+  tooLarge: number;
+  truncated: boolean;
+  warnings: string[];
+}
+
+/**
+ * Recherche dans un dossier. `onBatch` reçoit les résultats **au fil de l'eau**,
+ * bien avant la fin du parcours : c'est ce qui rend l'attente supportable sur
+ * une arborescence de plusieurs dizaines de milliers de fichiers.
+ */
+export function searchFiles(
+  query: SearchQuery,
+  context?: OperationContext,
+  onBatch?: (hits: SearchHit[]) => void,
+): Promise<SearchReport> {
+  return runJob("search", "files_search", (jobId) => ({ jobId, query }), context, onBatch);
+}
+
+/* ------------------------------------------------------------ hexadécimal */
+
+export interface HexWindow {
+  path: string;
+  offset: number;
+  fileSize: number;
+  bytes: number[];
+}
+
+export interface HexPatch {
+  offset: number;
+  bytes: number[];
+}
+
+export interface HexWriteSummary {
+  path: string;
+  size: number;
+  patchedBytes: number;
+  patches: number;
+  inPlace: boolean;
+}
+
+/** Taille maximale d'une fenêtre, alignée sur la limite du moteur natif. */
+export const HEX_MAX_WINDOW = 64 * 1024;
+
+export async function readHex(path: string, offset: number, length: number): Promise<HexWindow> {
+  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<HexWindow>("files_hex_read", { path, offset, length });
+}
+
+export function findHex(
+  path: string,
+  pattern: number[],
+  from: number,
+  context?: OperationContext,
+): Promise<number | null> {
+  return runJob("hex-find", "files_hex_find", (jobId) => ({ jobId, path, pattern, from }), context);
+}
+
+/**
+ * Écrit les octets modifiés. Par défaut `destination` diffère de `source` :
+ * l'original reste intact, et l'écrasement doit être demandé explicitement.
+ */
+export function writeHex(
+  source: string,
+  destination: string,
+  patches: HexPatch[],
+  context?: OperationContext,
+): Promise<HexWriteSummary> {
+  return runJob(
+    "hex-write",
+    "files_hex_write",
+    (jobId) => ({ jobId, source, destination, patches }),
+    context,
+  );
+}
+
+/* ------------------------------------------------------------ sauvegarde */
+
+export type RestoreMode = "skip" | "overwrite";
+
+export interface BackupSummary {
+  destination: string;
+  manifestPath: string;
+  files: number;
+  directories: number;
+  bytes: number;
+  warnings: string[];
+  failed: string[];
+  interrupted: boolean;
+}
+
+export type BackupEntryState = "ok" | "missing" | "modified" | "unreadable";
+
+export interface BackupCheck {
+  path: string;
+  state: BackupEntryState;
+  expected: string;
+  actual: string | null;
+  size: number;
+}
+
+export interface BackupVerifyReport {
+  backup: string;
+  createdAt: number;
+  sourceName: string;
+  checks: BackupCheck[];
+  ok: number;
+  missing: number;
+  modified: number;
+  unreadable: number;
+  unexpected: string[];
+  bytes: number;
+}
+
+export interface RestorePreview {
+  backup: string;
+  sourceName: string;
+  createdAt: number;
+  files: number;
+  directories: number;
+  bytes: number;
+  collisions: string[];
+  warnings: string[];
+}
+
+export interface RestoreSummary {
+  destination: string;
+  restored: number;
+  skipped: string[];
+  failed: string[];
+  bytes: number;
+  interrupted: boolean;
+  corrupted: string[];
+}
+
+export function createBackup(
+  source: string,
+  destination: string,
+  walk: WalkOptions = DEFAULT_WALK_OPTIONS,
+  context?: OperationContext,
+): Promise<BackupSummary> {
+  return runJob(
+    "backup",
+    "files_backup_create",
+    (jobId) => ({ jobId, request: { source, destination, walk } }),
+    context,
+  );
+}
+
+export function verifyBackup(
+  path: string,
+  context?: OperationContext,
+): Promise<BackupVerifyReport> {
+  return runJob("backup-verify", "files_backup_verify", (jobId) => ({ jobId, path }), context);
+}
+
+export function previewRestore(
+  path: string,
+  destination: string,
+  context?: OperationContext,
+): Promise<RestorePreview> {
+  return runJob(
+    "backup-preview",
+    "files_backup_preview",
+    (jobId) => ({ jobId, path, destination }),
+    context,
+  );
+}
+
+export function restoreBackup(
+  path: string,
+  destination: string,
+  mode: RestoreMode,
+  context?: OperationContext,
+): Promise<RestoreSummary> {
+  return runJob(
+    "backup-restore",
+    "files_backup_restore",
+    (jobId) => ({ jobId, path, destination, mode }),
+    context,
+  );
+}
+
+export function backupIsIntact(report: BackupVerifyReport): boolean {
+  return report.missing === 0 && report.modified === 0 && report.unreadable === 0;
+}
+
+/* --------------------------------------------------- manifestes et HMAC */
+
+export type ManifestFormat = "text" | "json";
+
+export interface ManifestEntry {
+  relative: string;
+  digest: string;
+  size: number;
+}
+
+export interface ManifestSummary {
+  output: string;
+  algorithm: string;
+  entries: ManifestEntry[];
+  files: number;
+  bytes: number;
+  errors: string[];
+  /** Rappel affiché quand l'algorithme choisi n'est plus sûr. */
+  legacyWarning: string | null;
+}
+
+export type ChecksumStatus = "ok" | "mismatch" | "missing" | "unreadable" | "refused";
+
+export interface ChecksumResult {
+  relative: string;
+  status: ChecksumStatus;
+  expected: string;
+  actual: string | null;
+  size: number;
+  detail: string | null;
+}
+
+export interface ChecksumVerifyReport {
+  manifest: string;
+  root: string;
+  algorithm: string;
+  results: ChecksumResult[];
+  ok: number;
+  mismatched: number;
+  missing: number;
+  unreadable: number;
+  refused: number;
+  legacyWarning: string | null;
+}
+
+export function checksumsAreValid(report: ChecksumVerifyReport): boolean {
+  return (
+    report.mismatched === 0 &&
+    report.missing === 0 &&
+    report.unreadable === 0 &&
+    report.refused === 0
+  );
+}
+
+export function createManifest(
+  request: {
+    root: string;
+    files?: string[];
+    algorithm: HashAlgorithm;
+    format: ManifestFormat;
+    output: string;
+    walk?: WalkOptions;
+  },
+  context?: OperationContext,
+): Promise<ManifestSummary> {
+  return runJob(
+    "manifest",
+    "files_manifest_create",
+    (jobId) => ({
+      jobId,
+      request: {
+        files: [],
+        walk: DEFAULT_WALK_OPTIONS,
+        ...request,
+      },
+    }),
+    context,
+  );
+}
+
+export function verifyManifest(
+  manifestPath: string,
+  root: string,
+  context?: OperationContext,
+): Promise<ChecksumVerifyReport> {
+  return runJob(
+    "manifest-verify",
+    "files_manifest_verify",
+    (jobId) => ({ jobId, manifestPath, root }),
+    context,
+  );
+}
+
+export type HmacAlgorithm = "sha1" | "sha256" | "sha512";
+
+export interface HmacResult {
+  algorithm: string;
+  hex: string;
+  base64: string;
+  bytes: number;
+}
+
+/**
+ * HMAC d'un texte. La clé traverse l'IPC une seule fois : elle n'est ni
+ * journalisée, ni écrite dans les récents, ni conservée après l'appel.
+ */
+export async function hmacText(
+  algorithm: HmacAlgorithm,
+  key: string,
+  text: string,
+): Promise<HmacResult> {
+  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<HmacResult>("files_hmac_text", { algorithm, key, text });
+}
+
+export function hmacFile(
+  algorithm: HmacAlgorithm,
+  key: string,
+  path: string,
+  context?: OperationContext,
+): Promise<HmacResult> {
+  return runJob(
+    "hmac",
+    "files_hmac_file",
+    (jobId) => ({ jobId, algorithm, key, path }),
+    context,
+  );
+}
+
+/* -------------------------------------------- compression d'un fichier */
+
+export type StreamFormat = "gz" | "xz";
+
+export interface StreamSummary {
+  input: string;
+  output: string;
+  format: string;
+  inputBytes: number;
+  outputBytes: number;
+  ratio: number;
+}
+
+export function compressStream(
+  input: string,
+  output: string,
+  format: StreamFormat,
+  level: number,
+  context?: OperationContext,
+): Promise<StreamSummary> {
+  return runJob(
+    "stream-compress",
+    "files_stream_compress",
+    (jobId) => ({ jobId, input, output, format, level }),
+    context,
+  );
+}
+
+export function decompressStream(
+  input: string,
+  output: string,
+  format: StreamFormat,
+  context?: OperationContext,
+): Promise<StreamSummary> {
+  return runJob(
+    "stream-decompress",
+    "files_stream_decompress",
+    (jobId) => ({ jobId, input, output, format }),
+    context,
+  );
+}
+
+/** Décompresse entièrement sans rien écrire : le seul test honnête d'un flux. */
+export function testStream(
+  input: string,
+  format: StreamFormat,
+  context?: OperationContext,
+): Promise<number> {
+  return runJob("stream-test", "files_stream_test", (jobId) => ({ jobId, input, format }), context);
+}
+
+export async function suggestStreamOutput(
+  input: string,
+  format: StreamFormat,
+  compressing: boolean,
+): Promise<string> {
+  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<string>("files_stream_suggest", { input, format, compressing });
+}
+
+/* --------------------------------------------------- intégrité d'archive */
+
+export type ArchiveVerdict = "valid" | "corrupt" | "incomplete" | "encrypted" | "unsupported";
+
+export interface ArchiveIntegrityReport {
+  path: string;
+  format: string;
+  verdict: ArchiveVerdict;
+  checked: number;
+  bytes: number;
+  failures: string[];
+  detail: string;
+}
+
+export function testArchive(
+  path: string,
+  password: string | null,
+  context?: OperationContext,
+): Promise<ArchiveIntegrityReport> {
+  return runJob(
+    "archive-test",
+    "files_archive_test",
+    (jobId) => ({ jobId, path, password }),
+    context,
+  );
 }

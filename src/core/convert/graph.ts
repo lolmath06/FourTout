@@ -27,9 +27,20 @@ export interface ConversionTarget {
 }
 
 export interface ConversionEdge extends ConversionTarget {
-  /** Extension acceptée en entrée, sans point. */
+  /**
+   * Extension acceptée en entrée, sans point, ou `"*"` pour un outil qui
+   * accepte réellement **n'importe quel** fichier.
+   *
+   * La compression d'un fichier seul en `.gz` est le cas typique : elle ne
+   * connaît ni ne regarde le format de son entrée. Coder cela comme une liste
+   * d'extensions serait mentir par omission — il y en aurait toujours une qui
+   * manquerait.
+   */
   from: string;
 }
+
+/** Source universelle : l'outil accepte tout ce qu'on lui donne. */
+export const ANY_SOURCE = "*";
 
 /** Le point d'entrée universel n'est pas lui-même une conversion. */
 const EXCLUDED_TOOLS = new Set(["universal-converter"]);
@@ -66,9 +77,11 @@ export function buildConversionEdges(registry: ToolRegistry = toolRegistry): Con
 
     const sources = new Set<string>();
     for (const input of tool.acceptedInputs) {
-      if (input.kind === "none") continue;
+      // Un dossier n'est pas un format : accepter un dossier d'images ne rend
+      // pas l'outil capable de convertir n'importe quelle extension.
+      if (input.kind === "none" || input.kind === "folder") continue;
       for (const extension of input.extensions) {
-        if (extension !== "*") sources.add(extension.toLowerCase());
+        sources.add(extension.toLowerCase());
       }
     }
 
@@ -115,7 +128,9 @@ export function conversionsFor(
   const seen = new Set<string>();
   const targets: ConversionTarget[] = [];
   for (const edge of source) {
-    if (edge.from !== from) continue;
+    // Une arête universelle vaut pour toute extension, sauf la sienne propre :
+    // compresser un `.gz` en `.gz` n'est pas une conversion.
+    if (edge.from !== from && !(edge.from === ANY_SOURCE && edge.to !== from)) continue;
     // Premier outil rencontré pour un format donné : l'ordre du catalogue fait
     // foi (les outils « unitaires » y précèdent les traitements par lot).
     if (seen.has(edge.to)) continue;
