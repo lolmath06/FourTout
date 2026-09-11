@@ -13,14 +13,24 @@
 //!    interrompue, pas seulement ignorée à son retour.
 
 pub mod archive;
+pub mod backup;
 pub mod command;
+pub mod compare;
+pub mod compress;
 pub mod crypto;
 pub mod docx;
 pub mod hash;
+pub mod hex;
+pub mod magic;
+pub mod manifest;
 pub mod rename;
 pub mod scan;
+pub mod search;
 pub mod secure;
 pub mod split;
+pub mod sync;
+pub mod textscan;
+pub mod walk;
 
 use std::collections::HashMap;
 use std::path::{Component, Path, PathBuf};
@@ -71,6 +81,14 @@ pub struct ProgressEvent {
     pub total: u64,
 }
 
+/// Fragment de résultat publié en cours d'opération.
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PartialEvent<T: Clone + Serialize> {
+    pub job_id: String,
+    pub payload: T,
+}
+
 /// Rapporteur d'avancement : annulation et progression au même endroit.
 pub struct Reporter {
     app: Option<AppHandle>,
@@ -95,6 +113,14 @@ impl Reporter {
         Self { app: None, job_id: String::new(), cancel: Arc::new(AtomicBool::new(true)) }
     }
 
+    /// Rapporteur muet dont l'appelant tient le drapeau d'annulation : il peut
+    /// ainsi interrompre l'opération **en cours de route**, et pas seulement
+    /// avant qu'elle ne commence.
+    #[cfg(test)]
+    pub fn silent_with_flag(cancel: Arc<AtomicBool>) -> Self {
+        Self { app: None, job_id: String::new(), cancel }
+    }
+
     pub fn cancelled(&self) -> bool {
         self.cancel.load(Ordering::SeqCst)
     }
@@ -105,6 +131,20 @@ impl Reporter {
             Err(CANCELLED.to_string())
         } else {
             Ok(())
+        }
+    }
+
+    /// Publie un résultat **partiel**, avant la fin de l'opération.
+    ///
+    /// C'est ce qui permet à la recherche d'afficher ses premiers fichiers
+    /// trouvés au bout d'une seconde, plutôt qu'une barre qui avance devant un
+    /// écran vide jusqu'au dernier dossier parcouru.
+    pub fn partial<T: Serialize + Clone>(&self, payload: &T) {
+        if let Some(app) = &self.app {
+            let _ = app.emit(
+                "files://partial",
+                PartialEvent { job_id: self.job_id.clone(), payload: payload.clone() },
+            );
         }
     }
 
@@ -167,23 +207,29 @@ pub fn safe_relative_path(raw: &str) -> Result<PathBuf, String> {
 }
 
 /// Chemin de destination final, garanti à l'intérieur du dossier choisi.
+///
+/// La garde porte sur l'**entrée**, jamais sur la racine : celle-ci vient de
+/// l'application ou d'une boîte de dialogue du système, et peut parfaitement
+/// s'écrire `…/projet/../test-assets`. Refuser une telle racine bloquerait des
+/// chemins légitimes sans rien sécuriser de plus — la seule question qui compte
+/// est de savoir si l'entrée sort du dossier.
 pub fn resolve_inside(destination: &Path, entry: &str) -> Result<PathBuf, String> {
     let relative = safe_relative_path(entry)?;
-    let target = destination.join(&relative);
 
-    // Double garde : même après normalisation, le résultat doit rester sous la
-    // destination (protège des cas exotiques de composants de chemin).
-    let mut probe = PathBuf::new();
-    for component in target.components() {
+    // Double garde : après normalisation, la partie relative ne doit contenir
+    // ni remontée, ni racine, ni préfixe de lecteur.
+    for component in relative.components() {
         match component {
-            Component::ParentDir => return Err(format!("Chemin non autorisé : {entry}")),
-            other => probe.push(other.as_os_str()),
+            Component::Normal(_) | Component::CurDir => continue,
+            _ => return Err(format!("Chemin non autorisé : {entry}")),
         }
     }
-    if !probe.starts_with(destination) {
+
+    let target = destination.join(&relative);
+    if !target.starts_with(destination) {
         return Err(format!("Chemin hors du dossier de destination : {entry}"));
     }
-    Ok(probe)
+    Ok(target)
 }
 
 /// Nom de fichier libre : ajoute « (2) », « (3) »… plutôt que d'écraser.

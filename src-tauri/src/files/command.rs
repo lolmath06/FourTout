@@ -18,7 +18,15 @@ use tauri::AppHandle;
 use super::archive::{self, Format};
 use super::crypto;
 use super::docx;
+use super::backup;
+use super::compare;
+use super::compress;
 use super::hash::{self, Algorithm};
+use super::hex;
+use super::magic;
+use super::manifest;
+use super::search;
+use super::sync;
 use super::rename::{self, RenameRules};
 use super::scan::{self, DuplicateOptions, TreeOptions};
 use super::secure;
@@ -186,6 +194,10 @@ pub struct FileInfo {
     pub mime: String,
     /// Type réel déduit des premiers octets ; « inconnu » si non reconnu.
     pub magic: String,
+    /// Libellé français du type détecté.
+    pub magic_label: String,
+    /// Famille du contenu : oriente l'aperçu proposé.
+    pub family: magic::Family,
     /// L'extension correspond-elle au contenu réel ?
     pub extension_matches: bool,
     pub looks_like_text: bool,
@@ -234,55 +246,6 @@ fn mime_of(extension: &str) -> &'static str {
     }
 }
 
-/// Reconnaissance par signature : ce que le fichier **est**, pas ce que son
-/// nom prétend. C'est ce qui permet de dire « ce .jpg est en fait un PNG ».
-fn magic_of(head: &[u8]) -> &'static str {
-    let starts = |prefix: &[u8]| head.len() >= prefix.len() && &head[..prefix.len()] == prefix;
-    if starts(b"%PDF-") {
-        "pdf"
-    } else if starts(&[0x89, b'P', b'N', b'G']) {
-        "png"
-    } else if starts(&[0xFF, 0xD8, 0xFF]) {
-        "jpg"
-    } else if starts(b"GIF87a") || starts(b"GIF89a") {
-        "gif"
-    } else if head.len() >= 12 && &head[0..4] == b"RIFF" && &head[8..12] == b"WEBP" {
-        "webp"
-    } else if head.len() >= 12 && &head[0..4] == b"RIFF" && &head[8..12] == b"WAVE" {
-        "wav"
-    } else if starts(b"OggS") {
-        "ogg"
-    } else if starts(b"fLaC") {
-        "flac"
-    } else if starts(b"ID3") || (head.len() >= 2 && head[0] == 0xFF && (head[1] & 0xE0) == 0xE0) {
-        "mp3"
-    } else if head.len() >= 12 && &head[4..8] == b"ftyp" {
-        "mp4"
-    } else if starts(&[0x1A, 0x45, 0xDF, 0xA3]) {
-        "mkv"
-    } else if starts(&[0x50, 0x4B, 0x03, 0x04]) {
-        // ZIP : conteneur des formats Office et OpenDocument.
-        "zip"
-    } else if starts(&[0x1F, 0x8B]) {
-        "gz"
-    } else if starts(&[0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C]) {
-        "7z"
-    } else if starts(b"Rar!") {
-        "rar"
-    } else if starts(b"BM") {
-        "bmp"
-    } else if starts(&[0x49, 0x49, 0x2A, 0x00]) || starts(&[0x4D, 0x4D, 0x00, 0x2A]) {
-        "tiff"
-    } else {
-        "inconnu"
-    }
-}
-
-/// Les formats fondés sur ZIP : leur signature est celle du ZIP.
-fn zip_based(extension: &str) -> bool {
-    matches!(extension, "zip" | "docx" | "xlsx" | "pptx" | "odt" | "ods" | "odp" | "epub" | "jar")
-}
-
 fn millis(time: Option<std::time::SystemTime>) -> u64 {
     time.and_then(|t| t.duration_since(UNIX_EPOCH).ok())
         .map(|d| d.as_millis() as u64)
@@ -298,22 +261,14 @@ pub fn files_info(path: String) -> Result<FileInfo, String> {
         .map(|e| e.to_string_lossy().to_lowercase())
         .unwrap_or_default();
 
-    let mut head = vec![0_u8; 32];
+    let mut head = vec![0_u8; magic::HEAD_BYTES];
     let mut read = 0;
     if meta.is_file() {
         if let Ok(mut file) = fs::File::open(target) {
             read = file.read(&mut head).unwrap_or(0);
         }
     }
-    let magic = magic_of(&head[..read]);
-    let extension_matches = magic == "inconnu"
-        || magic == extension
-        || (magic == "jpg" && extension == "jpeg")
-        || (magic == "mp4" && matches!(extension.as_str(), "m4a" | "m4v" | "mov" | "aac"))
-        || (magic == "gz" && matches!(extension.as_str(), "tgz" | "gz"))
-        || (magic == "zip" && zip_based(&extension))
-        || (magic == "ogg" && extension == "opus")
-        || (magic == "tiff" && extension == "tif");
+    let signature = magic::identify(&head[..read]);
 
     Ok(FileInfo {
         name: target.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default(),
@@ -325,12 +280,46 @@ pub fn files_info(path: String) -> Result<FileInfo, String> {
         created: millis(meta.created().ok()),
         accessed: millis(meta.accessed().ok()),
         mime: mime_of(&extension).to_string(),
-        magic: magic.to_string(),
-        extension_matches,
+        magic: signature.id.to_string(),
+        magic_label: signature.label.to_string(),
+        family: signature.family,
+        extension_matches: magic::extension_matches(&signature, &extension),
         looks_like_text: meta.is_file() && looks_like_text(target),
         extension,
         path,
     })
+}
+
+
+/* ------------------------------------------------------------- aperçu */
+
+/// Limite de ce qu'un aperçu accepte de charger en mémoire.
+///
+/// L'aperçu construit un objet binaire dans la WebView : au-delà, on refuse
+/// plutôt que de faire gonfler la mémoire de l'application jusqu'à la faire
+/// tomber. Les outils dédiés (lecteur vidéo, visionneuse PDF) restent la bonne
+/// réponse pour les fichiers vraiment lourds.
+pub const PREVIEW_LIMIT: u64 = 256 * 1024 * 1024;
+
+/// Lit un fichier (ou son début) et renvoie ses octets **bruts**.
+///
+/// Le retour passe par `tauri::ipc::Response` : les octets traversent l'IPC
+/// tels quels, au lieu d'être encodés en tableau JSON — sur un MP4 de 40 Mo,
+/// la différence est celle entre un aperçu instantané et une interface figée.
+#[tauri::command]
+pub fn files_read_bytes(path: String, max_bytes: u64) -> Result<tauri::ipc::Response, String> {
+    let target = Path::new(&path);
+    let size = fs::metadata(target).map_err(|e| format!("Fichier introuvable : {e}"))?.len();
+    let limit = if max_bytes == 0 { PREVIEW_LIMIT } else { max_bytes.min(PREVIEW_LIMIT) };
+    if size > limit {
+        return Err(format!(
+            "Fichier trop volumineux pour un aperçu ({}). Limite : {} Mo.",
+            size,
+            limit / (1024 * 1024)
+        ));
+    }
+    let bytes = fs::read(target).map_err(|e| format!("Lecture impossible : {e}"))?;
+    Ok(tauri::ipc::Response::new(bytes))
 }
 
 /* ---------------------------------------------------------- archives */
@@ -430,6 +419,277 @@ pub fn files_archive_extract_encrypted(
             Some(password.as_str()),
             reporter,
         )
+    })
+}
+
+
+/* ------------------------------------------------- comparaison de dossiers */
+
+#[tauri::command]
+pub fn files_folder_compare(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    request: compare::CompareRequest,
+) -> Result<compare::CompareReport, String> {
+    with_reporter(app, &state, &job_id, |reporter| compare::compare(&request, reporter))
+}
+
+/* ------------------------------------------------------- synchronisation */
+
+/// Calcule le plan. **N'écrit rien.**
+#[tauri::command]
+pub fn files_sync_plan(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    request: sync::SyncRequest,
+) -> Result<sync::SyncPlan, String> {
+    with_reporter(app, &state, &job_id, |reporter| sync::build_plan(&request, reporter))
+}
+
+/// Exécute **exactement** le plan reçu, et rien d'autre.
+///
+/// Le plan voyage de l'interface au processus natif plutôt que d'être recalculé
+/// ici : ce que l'utilisateur a vu et confirmé est ce qui sera fait.
+#[tauri::command]
+pub fn files_sync_apply(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    source: String,
+    destination: String,
+    operations: Vec<sync::SyncOperation>,
+) -> Result<sync::SyncOutcome, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        sync::execute(Path::new(&source), Path::new(&destination), &operations, reporter)
+    })
+}
+
+/* -------------------------------------------------------------- recherche */
+
+#[tauri::command]
+pub fn files_search(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    query: search::SearchQuery,
+) -> Result<search::SearchReport, String> {
+    with_reporter(app, &state, &job_id, |reporter| search::search(&query, reporter))
+}
+
+/* ------------------------------------------------------------ hexadécimal */
+
+#[tauri::command]
+pub fn files_hex_read(path: String, offset: u64, length: usize) -> Result<hex::HexWindow, String> {
+    hex::read_window(Path::new(&path), offset, length)
+}
+
+#[tauri::command]
+pub fn files_hex_find(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    path: String,
+    pattern: Vec<u8>,
+    from: u64,
+) -> Result<Option<u64>, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        hex::find(Path::new(&path), &pattern, from, reporter)
+    })
+}
+
+/// Applique des modifications d'octets.
+///
+/// `destination` différent de `source` = « Enregistrer sous » ; l'original
+/// n'est pas touché. L'écrasement de l'original suppose que l'interface l'ait
+/// explicitement demandé.
+#[tauri::command]
+pub fn files_hex_write(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    source: String,
+    destination: String,
+    patches: Vec<hex::HexPatch>,
+) -> Result<hex::HexWriteSummary, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        hex::write_patched(Path::new(&source), Path::new(&destination), &patches, reporter)
+    })
+}
+
+/* ------------------------------------------------------------ sauvegarde */
+
+#[tauri::command]
+pub fn files_backup_create(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    request: backup::BackupRequest,
+) -> Result<backup::BackupSummary, String> {
+    with_reporter(app, &state, &job_id, |reporter| backup::create(&request, reporter))
+}
+
+#[tauri::command]
+pub fn files_backup_verify(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    path: String,
+) -> Result<backup::VerifyReport, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        backup::verify(Path::new(&path), reporter)
+    })
+}
+
+#[tauri::command]
+pub fn files_backup_preview(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    path: String,
+    destination: String,
+) -> Result<backup::RestorePreview, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        backup::preview(Path::new(&path), Path::new(&destination), reporter)
+    })
+}
+
+#[tauri::command]
+pub fn files_backup_restore(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    path: String,
+    destination: String,
+    mode: backup::RestoreMode,
+) -> Result<backup::RestoreSummary, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        backup::restore(Path::new(&path), Path::new(&destination), mode, reporter)
+    })
+}
+
+/* --------------------------------------------------- manifestes et HMAC */
+
+#[tauri::command]
+pub fn files_manifest_create(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    request: manifest::ManifestRequest,
+) -> Result<manifest::ManifestSummary, String> {
+    with_reporter(app, &state, &job_id, |reporter| manifest::create(&request, reporter))
+}
+
+#[tauri::command]
+pub fn files_manifest_verify(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    manifest_path: String,
+    root: String,
+) -> Result<manifest::VerifyReport, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        manifest::verify(Path::new(&manifest_path), Path::new(&root), reporter)
+    })
+}
+
+/// HMAC d'un texte saisi dans l'interface.
+///
+/// La clé traverse l'IPC une seule fois, sert au calcul, et disparaît avec la
+/// fin de l'appel : elle n'est ni journalisée, ni conservée, ni renvoyée.
+#[tauri::command]
+pub fn files_hmac_text(
+    algorithm: manifest::HmacAlgorithm,
+    key: String,
+    text: String,
+) -> Result<manifest::HmacResult, String> {
+    manifest::hmac_bytes(algorithm, key.as_bytes(), text.as_bytes())
+}
+
+#[tauri::command]
+pub fn files_hmac_file(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    algorithm: manifest::HmacAlgorithm,
+    key: String,
+    path: String,
+) -> Result<manifest::HmacResult, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        manifest::hmac_file(algorithm, key.as_bytes(), Path::new(&path), reporter)
+    })
+}
+
+/* ---------------------------------------------- compression d'un fichier */
+
+#[tauri::command]
+pub fn files_stream_compress(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    input: String,
+    output: String,
+    format: compress::StreamFormat,
+    level: u32,
+) -> Result<compress::StreamSummary, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        compress::compress(Path::new(&input), Path::new(&output), format, level, reporter)
+    })
+}
+
+#[tauri::command]
+pub fn files_stream_decompress(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    input: String,
+    output: String,
+    format: compress::StreamFormat,
+) -> Result<compress::StreamSummary, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        compress::decompress(Path::new(&input), Path::new(&output), format, reporter)
+    })
+}
+
+/// Vérifie qu'un `.gz` ou un `.xz` se décompresse entièrement, sans rien écrire.
+#[tauri::command]
+pub fn files_stream_test(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    input: String,
+    format: compress::StreamFormat,
+) -> Result<u64, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        compress::test_stream(Path::new(&input), format, reporter)
+    })
+}
+
+/// Nom de sortie naturel pour une compression ou une décompression.
+#[tauri::command]
+pub fn files_stream_suggest(
+    input: String,
+    format: compress::StreamFormat,
+    compressing: bool,
+) -> String {
+    compress::suggested_output(Path::new(&input), format, compressing)
+        .to_string_lossy()
+        .to_string()
+}
+
+/* --------------------------------------------------- intégrité d'archive */
+
+#[tauri::command]
+pub fn files_archive_test(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    path: String,
+    password: Option<String>,
+) -> Result<archive::IntegrityReport, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        archive::test(Path::new(&path), password.as_deref(), reporter)
     })
 }
 
@@ -658,25 +918,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn recognises_signatures() {
-        assert_eq!(magic_of(b"%PDF-1.7"), "pdf");
-        assert_eq!(magic_of(&[0x89, b'P', b'N', b'G', 13, 10, 26, 10]), "png");
-        assert_eq!(magic_of(&[0xFF, 0xD8, 0xFF, 0xE0]), "jpg");
-        assert_eq!(magic_of(b"PK\x03\x04rest"), "zip");
-        assert_eq!(magic_of(b"quelconque"), "inconnu");
-    }
-
-    #[test]
     fn maps_extensions_to_mime() {
         assert_eq!(mime_of("pdf"), "application/pdf");
         assert_eq!(mime_of("md"), "text/markdown");
         assert_eq!(mime_of("inconnue"), "application/octet-stream");
-    }
-
-    #[test]
-    fn accepts_zip_based_office_formats() {
-        assert!(zip_based("docx"));
-        assert!(zip_based("epub"));
-        assert!(!zip_based("pdf"));
     }
 }

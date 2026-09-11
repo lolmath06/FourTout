@@ -23,6 +23,8 @@ pub enum Format {
     Zip,
     Tar,
     TarGz,
+    TarXz,
+    SevenZ,
 }
 
 impl Format {
@@ -31,6 +33,20 @@ impl Format {
             Format::Zip => "zip",
             Format::Tar => "tar",
             Format::TarGz => "tar.gz",
+            Format::TarXz => "tar.xz",
+            Format::SevenZ => "7z",
+        }
+    }
+
+    /// Ce format porte-t-il une arborescence ? (Par opposition à `.gz` et
+    /// `.xz`, qui ne compressent qu'un flux — voir `super::compress`.)
+    pub fn label(&self) -> &'static str {
+        match self {
+            Format::Zip => "ZIP",
+            Format::Tar => "TAR",
+            Format::TarGz => "TAR.GZ",
+            Format::TarXz => "TAR.XZ",
+            Format::SevenZ => "7z",
         }
     }
 
@@ -41,8 +57,12 @@ impl Format {
             Some(Format::Zip)
         } else if name.ends_with(".tar.gz") || name.ends_with(".tgz") {
             Some(Format::TarGz)
+        } else if name.ends_with(".tar.xz") || name.ends_with(".txz") {
+            Some(Format::TarXz)
         } else if name.ends_with(".tar") {
             Some(Format::Tar)
+        } else if name.ends_with(".7z") {
+            Some(Format::SevenZ)
         } else {
             None
         }
@@ -184,10 +204,18 @@ pub fn create(
         fs::create_dir_all(parent).map_err(|e| e.to_string())?;
     }
 
-    match format {
-        Format::Zip => write_zip(members, output, level, total, reporter)?,
-        Format::Tar => write_tar(members, output, None, total, reporter)?,
-        Format::TarGz => write_tar(members, output, Some(level), total, reporter)?,
+    let written = match format {
+        Format::Zip => write_zip(members, output, level, total, reporter),
+        Format::Tar => write_tar(members, output, Packing::Plain, total, reporter),
+        Format::TarGz => write_tar(members, output, Packing::Gzip(level), total, reporter),
+        Format::TarXz => write_tar(members, output, Packing::Xz(level), total, reporter),
+        Format::SevenZ => write_7z(members, output, total, reporter),
+    };
+    if let Err(error) = written {
+        // Une archive interrompue en cours d'écriture n'est pas une archive :
+        // on ne la laisse pas derrière nous sous son nom définitif.
+        let _ = fs::remove_file(output);
+        return Err(error);
     }
 
     let output_bytes = fs::metadata(output).map(|m| m.len()).unwrap_or(0);
@@ -262,22 +290,34 @@ fn write_zip_maybe_encrypted(
     Ok(())
 }
 
+/// Enveloppe de compression appliquée au flux TAR.
+enum Packing {
+    Plain,
+    Gzip(u32),
+    Xz(u32),
+}
+
 fn write_tar(
     members: &[Member],
     output: &Path,
-    gzip_level: Option<u32>,
+    packing: Packing,
     total: u64,
     reporter: &Reporter,
 ) -> Result<(), String> {
     let file = File::create(output).map_err(|e| format!("Création impossible : {e}"))?;
     let writer = BufWriter::new(file);
 
+    /// Écrit les membres puis **rend l'enveloppe**, pour que l'appelant puisse
+    /// la refermer explicitement. Se contenter de laisser tomber l'encodeur
+    /// produirait une archive sans son pied de page : lisible à moitié, donc
+    /// pire qu'absente.
     fn append<W: Write>(
-        builder: &mut tar::Builder<W>,
+        builder: tar::Builder<W>,
         members: &[Member],
         total: u64,
         reporter: &Reporter,
-    ) -> Result<(), String> {
+    ) -> Result<W, String> {
+        let mut builder = builder;
         let mut done = 0_u64;
         for member in members {
             reporter.check()?;
@@ -287,21 +327,75 @@ fn write_tar(
             done += fs::metadata(&member.source).map(|m| m.len()).unwrap_or(0);
             reporter.report(done, total, &member.name);
         }
-        builder.finish().map_err(|e| e.to_string())
+        builder.into_inner().map_err(|e| e.to_string())
     }
 
-    match gzip_level {
-        None => {
-            let mut builder = tar::Builder::new(writer);
-            append(&mut builder, members, total, reporter)?;
+    match packing {
+        Packing::Plain => {
+            let mut inner = append(tar::Builder::new(writer), members, total, reporter)?;
+            inner.flush().map_err(|e| e.to_string())?;
         }
-        Some(level) => {
+        Packing::Gzip(level) => {
             let encoder = GzEncoder::new(writer, Compression::new(level.clamp(1, 9)));
-            let mut builder = tar::Builder::new(encoder);
-            append(&mut builder, members, total, reporter)?;
+            let encoder = append(tar::Builder::new(encoder), members, total, reporter)?;
+            let mut inner = encoder.finish().map_err(|e| e.to_string())?;
+            inner.flush().map_err(|e| e.to_string())?;
+        }
+        Packing::Xz(level) => {
+            let encoder = lzma_rust2::XzWriter::new(
+                writer,
+                lzma_rust2::XzOptions::with_preset(level.clamp(0, 9)),
+            )
+            .map_err(|e| e.to_string())?;
+            let encoder = append(tar::Builder::new(encoder), members, total, reporter)?;
+            let mut inner = encoder.finish().map_err(|e| e.to_string())?;
+            inner.flush().map_err(|e| e.to_string())?;
         }
     }
     Ok(())
+}
+
+/// Écrit une archive 7z.
+///
+/// Le chiffrement 7z n'est volontairement pas proposé : il demande un format
+/// d'en-tête chiffré dont la compatibilité avec les autres outils est délicate
+/// à garantir, et FourTout dispose déjà d'une archive protégée éprouvée
+/// (ZIP AES-256). Mieux vaut un format non chiffré qui s'ouvre partout qu'un
+/// chiffrement que l'utilisateur ne pourrait pas relire ailleurs.
+fn write_7z(
+    members: &[Member],
+    output: &Path,
+    total: u64,
+    reporter: &Reporter,
+) -> Result<(), String> {
+    let mut writer = sevenz_rust2::ArchiveWriter::create(output)
+        .map_err(|e| format!("Création impossible : {e}"))?;
+    let mut done = 0_u64;
+    for member in members {
+        reporter.check()?;
+        let name = safe_relative_path(&member.name)?.to_string_lossy().replace('\\', "/");
+        let entry = sevenz_rust2::ArchiveEntry::from_path(&member.source, name);
+        let source = File::open(&member.source).map_err(|e| e.to_string())?;
+        writer
+            .push_archive_entry(entry, Some(source))
+            .map_err(|e| format!("{} : {e}", member.name))?;
+        done += fs::metadata(&member.source).map(|m| m.len()).unwrap_or(0);
+        reporter.report(done, total, &member.name);
+    }
+    writer.finish().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+
+/// Ouvre un flux TAR, quelle que soit son enveloppe de compression.
+fn tar_reader(path: &Path, format: Format) -> Result<Box<dyn Read>, String> {
+    let file = File::open(path).map_err(|e| format!("Ouverture impossible : {e}"))?;
+    let buffered = BufReader::new(file);
+    Ok(match format {
+        Format::TarGz => Box::new(GzDecoder::new(buffered)),
+        Format::TarXz => Box::new(lzma_rust2::XzReader::new(buffered, false)),
+        _ => Box::new(buffered),
+    })
 }
 
 /* ------------------------------------------------------------ inspection */
@@ -337,14 +431,18 @@ pub struct ArchiveListing {
 /// Rapport de compression au-delà duquel on prévient l'utilisateur.
 const BOMB_RATIO: u64 = 200;
 /// Taille décompressée au-delà de laquelle le rapport devient significatif.
-const BOMB_MIN_SIZE: u64 = 1024 * 1024 * 1024;
+///
+/// En deçà, un fort taux de compression est banal — un journal de 10 Mo fait
+/// de lignes répétées le dépasse sans rien avoir de suspect. Au-delà, un
+/// rapport de plus de 200 pour 1 mérite qu'on prévienne avant d'extraire.
+const BOMB_MIN_SIZE: u64 = 64 * 1024 * 1024;
 /// Nombre d'entrées au-delà duquel on refuse d'extraire sans confirmation.
 pub const MAX_ENTRIES: usize = 200_000;
 
 /// Liste le contenu d'une archive **sans rien extraire**.
 pub fn list(path: &Path) -> Result<ArchiveListing, String> {
     let format = Format::detect(path).ok_or_else(|| {
-        "Format d'archive non reconnu. Formats pris en charge : ZIP, TAR, TAR.GZ.".to_string()
+        "Format d'archive non reconnu. Formats pris en charge : ZIP, 7z, TAR, TAR.GZ et TAR.XZ.".to_string()
     })?;
     let archive_size = fs::metadata(path).map(|m| m.len()).unwrap_or(0);
     let mut entries: Vec<ArchiveEntry> = Vec::new();
@@ -376,13 +474,25 @@ pub fn list(path: &Path) -> Result<ArchiveListing, String> {
                 });
             }
         }
-        Format::Tar | Format::TarGz => {
-            let file = File::open(path).map_err(|e| format!("Ouverture impossible : {e}"))?;
-            let reader: Box<dyn Read> = if format == Format::TarGz {
-                Box::new(GzDecoder::new(BufReader::new(file)))
-            } else {
-                Box::new(BufReader::new(file))
-            };
+        Format::SevenZ => {
+            // L'en-tête d'un 7z suffit à décrire tout son contenu : rien n'est
+            // décompressé pour produire cette liste.
+            let archive = sevenz_rust2::Archive::open(path)
+                .map_err(|e| format!("Archive 7z illisible : {e}"))?;
+            for file in &archive.files {
+                let raw = file.name.replace('\\', "/");
+                let is_dir = file.is_directory;
+                entries.push(ArchiveEntry {
+                    rejected: check_entry(&raw, is_dir),
+                    name: raw,
+                    size: file.size,
+                    compressed_size: file.compressed_size,
+                    is_dir,
+                });
+            }
+        }
+        _ => {
+            let reader = tar_reader(path, format)?;
             let mut archive = tar::Archive::new(reader);
             for entry in archive.entries().map_err(|e| e.to_string())? {
                 let entry = entry.map_err(|e| format!("Archive TAR illisible : {e}"))?;
@@ -591,13 +701,40 @@ pub fn extract_with_password(
                 }
             }
         }
-        Format::Tar | Format::TarGz => {
-            let file = File::open(path).map_err(|e| e.to_string())?;
-            let reader: Box<dyn Read> = if format == Format::TarGz {
-                Box::new(GzDecoder::new(BufReader::new(file)))
-            } else {
-                Box::new(BufReader::new(file))
-            };
+        Format::SevenZ => {
+            let mut archive = sevenz_rust2::ArchiveReader::open(path, Default::default())
+                .map_err(|e| format!("Archive 7z illisible : {e}"))?;
+            let mut failure: Option<String> = None;
+            archive
+                .for_each_entries(|entry, reader| {
+                    let name = entry.name.replace('\\', "/");
+                    match write_entry(
+                        &name,
+                        entry.is_directory,
+                        reader,
+                        reporter,
+                        &mut bytes,
+                        &mut skipped,
+                        &mut created,
+                    ) {
+                        Ok(true) => {
+                            extracted += 1;
+                            Ok(true)
+                        }
+                        Ok(false) => Ok(true),
+                        Err(error) => {
+                            failure = Some(error);
+                            Ok(false)
+                        }
+                    }
+                })
+                .map_err(|e| format!("Archive 7z illisible : {e}"))?;
+            if let Some(error) = failure {
+                return Err(rollback(created, error));
+            }
+        }
+        _ => {
+            let reader = tar_reader(path, format)?;
             let mut archive = tar::Archive::new(reader);
             for entry in archive.entries().map_err(|e| e.to_string())? {
                 let mut entry = entry.map_err(|e| e.to_string())?;
@@ -634,6 +771,401 @@ pub fn extract_with_password(
         extracted,
         skipped,
         bytes,
+    })
+}
+
+
+
+/// Contrôle de bout en bout d'un flux TAR, éventuellement compressé.
+///
+/// Deux choses sont vérifiées ici, et nulle part ailleurs :
+///
+/// - **La somme de contrôle de l'enveloppe.** GZIP et XZ placent la leur *à la
+///   fin* du flux. Or le parcours des entrées s'arrête à la marque de fin du
+///   TAR, souvent bien avant : sans cette lecture complète, une archive
+///   `.tar.gz` abîmée passerait pour saine.
+/// - **La marque de fin du TAR lui-même** : deux blocs de 512 octets nuls. Un
+///   TAR nu n'a aucune somme de contrôle globale ; s'il est coupé net, la
+///   lecture s'arrête simplement, sans erreur, et rien d'autre ne le trahirait.
+fn tar_tail_problem(path: &Path, format: Format) -> Result<Option<(Verdict, String)>, String> {
+    const BLOCK: usize = 512;
+    let mut tail = [0_u8; BLOCK * 2];
+    let mut filled = 0_usize;
+    let mut total = 0_u64;
+
+    let mut reader = tar_reader(path, format)?;
+    let mut buffer = vec![0_u8; 256 * 1024];
+    loop {
+        let read = match reader.read(&mut buffer) {
+            Ok(0) => break,
+            Ok(read) => read,
+            Err(error) => {
+                let message = error.to_string();
+                let verdict =
+                    if looks_truncated(&message) { Verdict::Incomplete } else { Verdict::Corrupt };
+                return Ok(Some((
+                    verdict,
+                    format!("Flux {} illisible jusqu'au bout : {message}", format.label()),
+                )));
+            }
+        };
+        total += read as u64;
+        let slice = &buffer[..read];
+        let window = tail.len();
+        if slice.len() >= window {
+            tail.copy_from_slice(&slice[slice.len() - window..]);
+            filled = window;
+        } else {
+            tail.copy_within(slice.len().., 0);
+            tail[window - slice.len()..].copy_from_slice(slice);
+            filled = (filled + slice.len()).min(window);
+        }
+    }
+
+    if total == 0 {
+        return Ok(Some((Verdict::Incomplete, "Le flux TAR est vide.".into())));
+    }
+    if total % BLOCK as u64 != 0 {
+        return Ok(Some((
+            Verdict::Incomplete,
+            format!("Le flux TAR ne fait pas un nombre entier de blocs de 512 octets ({total})."),
+        )));
+    }
+    if filled < tail.len() || tail.iter().any(|byte| *byte != 0) {
+        return Ok(Some((
+            Verdict::Incomplete,
+            "Le flux TAR ne se termine pas par sa marque de fin : il a été coupé.".into(),
+        )));
+    }
+    Ok(None)
+}
+
+/* --------------------------------------------------- test d'intégrité */
+
+/// Verdict porté sur une archive testée.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Verdict {
+    /// Toutes les entrées se décompressent et leurs sommes de contrôle passent.
+    Valid,
+    /// Une entrée au moins est abîmée : somme de contrôle fausse, données illisibles.
+    Corrupt,
+    /// L'archive s'arrête avant la fin : elle a été tronquée.
+    Incomplete,
+    /// Le contenu est chiffré : sans mot de passe, il n'y a rien à vérifier.
+    Encrypted,
+    /// Format hors du périmètre de FourTout (RAR, par exemple).
+    Unsupported,
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IntegrityReport {
+    pub path: String,
+    pub format: String,
+    pub verdict: Verdict,
+    /// Entrées effectivement décompressées et vérifiées.
+    pub checked: usize,
+    /// Octets décompressés pendant le test (rien n'est écrit sur le disque).
+    pub bytes: u64,
+    /// Détail des entrées fautives.
+    pub failures: Vec<String>,
+    /// Phrase affichable résumant le verdict.
+    pub detail: String,
+}
+
+/// Une erreur de lecture signale-t-elle une archive tronquée plutôt qu'abîmée ?
+fn looks_truncated(message: &str) -> bool {
+    let message = message.to_lowercase();
+    message.contains("unexpected end")
+        || message.contains("failed to fill whole buffer")
+        || message.contains("early eof")
+        || message.contains("inattendue")
+        || message.contains("unexpected eof")
+}
+
+/// Teste réellement une archive : chaque entrée est décompressée et sa somme de
+/// contrôle vérifiée, **sans rien écrire sur le disque**.
+///
+/// C'est la seule façon honnête de répondre à « cette archive est-elle
+/// encore bonne ? » : lister ses entrées ne prouve rien, seul l'en-tête serait
+/// lu. Le contenu est envoyé dans un puits qui compte les octets et les jette.
+pub fn test(
+    path: &Path,
+    password: Option<&str>,
+    reporter: &Reporter,
+) -> Result<IntegrityReport, String> {
+    let Some(format) = Format::detect(path) else {
+        return Ok(IntegrityReport {
+            path: path.to_string_lossy().to_string(),
+            format: "inconnu".into(),
+            verdict: Verdict::Unsupported,
+            checked: 0,
+            bytes: 0,
+            failures: Vec::new(),
+            detail: "Format non pris en charge : FourTout teste les archives ZIP, 7z, TAR, TAR.GZ et TAR.XZ."
+                .into(),
+        });
+    };
+
+    let mut checked = 0_usize;
+    let mut bytes = 0_u64;
+    let mut failures: Vec<String> = Vec::new();
+    let mut verdict = Verdict::Valid;
+    let mut buffer = vec![0_u8; 256 * 1024];
+
+    // Consomme entièrement un flux d'entrée et rapporte ce qui a mal tourné.
+    let consume = |name: &str,
+                       reader: &mut dyn Read,
+                       bytes: &mut u64,
+                       failures: &mut Vec<String>,
+                       verdict: &mut Verdict,
+                       buffer: &mut [u8]|
+     -> Result<(), String> {
+        loop {
+            reporter.check()?;
+            match reader.read(buffer) {
+                Ok(0) => return Ok(()),
+                Ok(read) => *bytes += read as u64,
+                Err(error) => {
+                    let message = error.to_string();
+                    if *verdict == Verdict::Valid {
+                        *verdict = if looks_truncated(&message) {
+                            Verdict::Incomplete
+                        } else {
+                            Verdict::Corrupt
+                        };
+                    }
+                    failures.push(format!("{name} — {message}"));
+                    return Ok(());
+                }
+            }
+        }
+    };
+
+    match format {
+        Format::Zip => {
+            let file = File::open(path).map_err(|e| format!("Ouverture impossible : {e}"))?;
+            let mut archive = match zip::ZipArchive::new(BufReader::new(file)) {
+                Ok(archive) => archive,
+                Err(error) => {
+                    let message = error.to_string();
+                    return Ok(IntegrityReport {
+                        path: path.to_string_lossy().to_string(),
+                        format: format.label().to_string(),
+                        verdict: if looks_truncated(&message) {
+                            Verdict::Incomplete
+                        } else {
+                            Verdict::Corrupt
+                        },
+                        checked: 0,
+                        bytes: 0,
+                        failures: vec![message],
+                        detail: "Le répertoire central de l'archive est illisible.".into(),
+                    });
+                }
+            };
+            let count = archive.len();
+            for index in 0..count {
+                reporter.check()?;
+                reporter.report(index as u64, count as u64, "Vérification des entrées…");
+                let opened = match password {
+                    Some(password) => archive.by_index_decrypt(index, password.as_bytes()),
+                    None => archive.by_index(index),
+                };
+                let mut entry = match opened {
+                    Ok(entry) => entry,
+                    Err(zip::result::ZipError::InvalidPassword) => {
+                        return Ok(IntegrityReport {
+                            path: path.to_string_lossy().to_string(),
+                            format: format.label().to_string(),
+                            verdict: Verdict::Encrypted,
+                            checked,
+                            bytes,
+                            failures: Vec::new(),
+                            detail: "Archive protégée : le mot de passe est nécessaire pour vérifier son contenu."
+                                .into(),
+                        });
+                    }
+                    Err(error) => {
+                        let message = describe_zip_error(error, password.is_some());
+                        if message.contains("mot de passe") {
+                            return Ok(IntegrityReport {
+                                path: path.to_string_lossy().to_string(),
+                                format: format.label().to_string(),
+                                verdict: Verdict::Encrypted,
+                                checked,
+                                bytes,
+                                failures: Vec::new(),
+                                detail: message,
+                            });
+                        }
+                        if verdict == Verdict::Valid {
+                            verdict = Verdict::Corrupt;
+                        }
+                        failures.push(message);
+                        continue;
+                    }
+                };
+                if entry.is_dir() {
+                    continue;
+                }
+                let name = entry.name().to_string();
+                // Lire l'entrée jusqu'au bout vérifie son CRC-32 : la
+                // bibliothèque échoue à la dernière lecture si elle ne
+                // correspond pas.
+                consume(&name, &mut entry, &mut bytes, &mut failures, &mut verdict, &mut buffer)?;
+                checked += 1;
+            }
+        }
+
+        Format::SevenZ => {
+            let mut archive = match sevenz_rust2::ArchiveReader::open(path, Default::default()) {
+                Ok(archive) => archive,
+                Err(error) => {
+                    let message = error.to_string();
+                    return Ok(IntegrityReport {
+                        path: path.to_string_lossy().to_string(),
+                        format: format.label().to_string(),
+                        verdict: if looks_truncated(&message) {
+                            Verdict::Incomplete
+                        } else {
+                            Verdict::Corrupt
+                        },
+                        checked: 0,
+                        bytes: 0,
+                        failures: vec![message],
+                        detail: "L'en-tête de l'archive 7z est illisible.".into(),
+                    });
+                }
+            };
+            let mut interrupted: Option<String> = None;
+            let outcome = archive.for_each_entries(|entry, reader| {
+                if entry.is_directory {
+                    return Ok(true);
+                }
+                let name = entry.name.clone();
+                match consume(
+                    &name,
+                    reader,
+                    &mut bytes,
+                    &mut failures,
+                    &mut verdict,
+                    &mut buffer,
+                ) {
+                    Ok(()) => {
+                        checked += 1;
+                        Ok(true)
+                    }
+                    Err(error) => {
+                        interrupted = Some(error);
+                        Ok(false)
+                    }
+                }
+            });
+            if let Some(error) = interrupted {
+                return Err(error);
+            }
+            if let Err(error) = outcome {
+                let message = error.to_string();
+                if verdict == Verdict::Valid {
+                    verdict =
+                        if looks_truncated(&message) { Verdict::Incomplete } else { Verdict::Corrupt };
+                }
+                failures.push(message);
+            }
+        }
+
+        _ => {
+            if let Some((tail_verdict, problem)) = tar_tail_problem(path, format)? {
+                verdict = tail_verdict;
+                failures.push(problem);
+            }
+            let reader = tar_reader(path, format)?;
+            let mut archive = tar::Archive::new(reader);
+            let entries = match archive.entries() {
+                Ok(entries) => entries,
+                Err(error) => {
+                    return Ok(IntegrityReport {
+                        path: path.to_string_lossy().to_string(),
+                        format: format.label().to_string(),
+                        verdict: Verdict::Corrupt,
+                        checked: 0,
+                        bytes: 0,
+                        failures: vec![error.to_string()],
+                        detail: "Le flux TAR est illisible dès son en-tête.".into(),
+                    });
+                }
+            };
+            for entry in entries {
+                reporter.check()?;
+                match entry {
+                    Ok(mut entry) => {
+                        let name =
+                            entry.path().map(|p| p.to_string_lossy().to_string()).unwrap_or_default();
+                        if entry.header().entry_type().is_dir() {
+                            continue;
+                        }
+                        consume(
+                            &name,
+                            &mut entry,
+                            &mut bytes,
+                            &mut failures,
+                            &mut verdict,
+                            &mut buffer,
+                        )?;
+                        checked += 1;
+                    }
+                    Err(error) => {
+                        let message = error.to_string();
+                        if verdict == Verdict::Valid {
+                            verdict = if looks_truncated(&message) {
+                                Verdict::Incomplete
+                            } else {
+                                Verdict::Corrupt
+                            };
+                        }
+                        failures.push(message);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    let detail = match verdict {
+        // Le TAR nu est le seul format sans somme de contrôle du contenu : ses
+        // en-têtes en ont une, ses données non. Annoncer « valide » sans le
+        // dire laisserait croire à une garantie que le format ne donne pas.
+        Verdict::Valid if format == Format::Tar => format!(
+            "{checked} entrée(s) lue(s) intégralement, {bytes} octets. Structure et en-têtes conformes. \
+             Attention : le format TAR ne porte aucune somme de contrôle du contenu — une altération \
+             des données d'un fichier y est indétectable. Un TAR.GZ ou un TAR.XZ, eux, sont vérifiables."
+        ),
+        Verdict::Valid => format!(
+            "{checked} entrée(s) décompressée(s) et vérifiée(s), {} octets lus. Aucune anomalie.",
+            bytes
+        ),
+        Verdict::Corrupt => format!(
+            "{} entrée(s) abîmée(s) sur {} vérifiée(s) : le contenu ne correspond plus à ses sommes de contrôle.",
+            failures.len(),
+            checked
+        ),
+        Verdict::Incomplete => {
+            "L'archive s'arrête avant la fin : le fichier a été tronqué (transfert interrompu, copie incomplète).".to_string()
+        }
+        Verdict::Encrypted => "Archive protégée par mot de passe.".to_string(),
+        Verdict::Unsupported => "Format non pris en charge.".to_string(),
+    };
+
+    Ok(IntegrityReport {
+        path: path.to_string_lossy().to_string(),
+        format: format.label().to_string(),
+        verdict,
+        checked,
+        bytes,
+        failures,
+        detail,
     })
 }
 
@@ -679,6 +1211,219 @@ mod tests {
             fs::read(destination.join("source/nested/b.txt")).unwrap(),
             b"contenu B imbrique\n"
         );
+    }
+
+    #[test]
+    fn sevenz_roundtrip_preserves_tree() {
+        roundtrip(Format::SevenZ, "7z");
+    }
+
+    #[test]
+    fn tarxz_roundtrip_preserves_tree() {
+        roundtrip(Format::TarXz, "tarxz");
+    }
+
+    #[test]
+    fn detects_every_supported_extension() {
+        for (name, expected) in [
+            ("a.zip", Format::Zip),
+            ("a.tar", Format::Tar),
+            ("a.tar.gz", Format::TarGz),
+            ("a.tgz", Format::TarGz),
+            ("a.tar.xz", Format::TarXz),
+            ("a.txz", Format::TarXz),
+            ("a.7z", Format::SevenZ),
+        ] {
+            assert_eq!(Format::detect(Path::new(name)), Some(expected), "{name}");
+        }
+        assert_eq!(Format::detect(Path::new("a.rar")), None);
+    }
+
+    /// Fabrique une archive de chaque format à partir de la même source.
+    fn build(root: &Path, format: Format) -> PathBuf {
+        let members = collect_members(&[root.join("source")], &Reporter::silent()).unwrap();
+        let output = root.join(format!("archive.{}", format.extension()));
+        create(&members, &output, format, 6, &Reporter::silent()).unwrap();
+        output
+    }
+
+    #[test]
+    fn a_healthy_archive_passes_the_integrity_test() {
+        for format in
+            [Format::Zip, Format::Tar, Format::TarGz, Format::TarXz, Format::SevenZ]
+        {
+            let root = workspace(&format!("test-ok-{}", format.extension()));
+            seed(&root);
+            let archive = build(&root, format);
+            let report = test(&archive, None, &Reporter::silent()).unwrap();
+            assert_eq!(report.verdict, Verdict::Valid, "{} : {}", format.label(), report.detail);
+            assert_eq!(report.checked, 3);
+            assert!(report.bytes > 0);
+            assert!(report.failures.is_empty());
+        }
+    }
+
+    #[test]
+    fn a_truncated_archive_is_rejected() {
+        for format in
+            [Format::Zip, Format::Tar, Format::TarGz, Format::TarXz, Format::SevenZ]
+        {
+            let root = workspace(&format!("test-cut-{}", format.extension()));
+            seed(&root);
+            let archive = build(&root, format);
+            let mut bytes = fs::read(&archive).unwrap();
+            bytes.truncate(bytes.len() / 2);
+            let broken = root.join(format!("tronquee.{}", format.extension()));
+            fs::write(&broken, &bytes).unwrap();
+
+            let report = test(&broken, None, &Reporter::silent()).unwrap();
+            assert_ne!(
+                report.verdict,
+                Verdict::Valid,
+                "{} tronquée acceptée à tort : {}",
+                format.label(),
+                report.detail
+            );
+        }
+    }
+
+    #[test]
+    fn a_corrupted_archive_is_rejected() {
+        for format in [Format::Zip, Format::TarGz, Format::TarXz, Format::SevenZ] {
+            let root = workspace(&format!("test-bitflip-{}", format.extension()));
+            seed(&root);
+            // Un contenu assez gros pour que le bit retourné tombe dans les
+            // données, pas dans un en-tête.
+            fs::write(root.join("source/gros.bin"), vec![b'Z'; 200_000]).unwrap();
+            let archive = build(&root, format);
+
+            let mut bytes = fs::read(&archive).unwrap();
+            let middle = bytes.len() / 2;
+            bytes[middle] ^= 0xFF;
+            bytes[middle + 1] ^= 0x0F;
+            let broken = root.join(format!("abimee.{}", format.extension()));
+            fs::write(&broken, &bytes).unwrap();
+
+            let report = test(&broken, None, &Reporter::silent()).unwrap();
+            assert_ne!(
+                report.verdict,
+                Verdict::Valid,
+                "{} corrompue acceptée à tort : {}",
+                format.label(),
+                report.detail
+            );
+        }
+    }
+
+    #[test]
+    fn an_encrypted_archive_reports_that_it_needs_a_password() {
+        let root = workspace("test-encrypted");
+        seed(&root);
+        let members = collect_members(&[root.join("source")], &Reporter::silent()).unwrap();
+        let output = root.join("protege.zip");
+        create_encrypted(&members, &output, 6, "secret", &Reporter::silent()).unwrap();
+
+        let report = test(&output, None, &Reporter::silent()).unwrap();
+        assert_eq!(report.verdict, Verdict::Encrypted);
+
+        let report = test(&output, Some("secret"), &Reporter::silent()).unwrap();
+        assert_eq!(report.verdict, Verdict::Valid);
+        assert_eq!(report.checked, 3);
+    }
+
+    #[test]
+    fn an_unsupported_format_is_named_as_such() {
+        let root = workspace("test-unsupported");
+        let fake = root.join("archive.rar");
+        fs::write(&fake, b"Rar!\x1a\x07\x00").unwrap();
+        let report = test(&fake, None, &Reporter::silent()).unwrap();
+        assert_eq!(report.verdict, Verdict::Unsupported);
+    }
+
+    #[test]
+    fn tar_traversal_entries_are_never_written() {
+        let root = workspace("tar-slip");
+        let archive_path = root.join("evil.tar");
+        {
+            let file = File::create(&archive_path).unwrap();
+            let mut builder = tar::Builder::new(file);
+            for (name, content) in
+                [("../../evil.txt", &b"piege"[..]), ("/etc/passwd", b"piege"), ("sain.txt", b"ok")]
+            {
+                // `set_path` refuse les chemins dangereux : pour fabriquer une
+                // archive réellement piégée, le nom est écrit tel quel dans
+                // l'en-tête, exactement comme le ferait un outil malveillant.
+                let mut header = tar::Header::new_gnu();
+                header.set_size(content.len() as u64);
+                header.set_mode(0o644);
+                header.set_mtime(0);
+                let bytes = name.as_bytes();
+                header.as_gnu_mut().unwrap().name[..bytes.len()].copy_from_slice(bytes);
+                header.set_cksum();
+                builder.append(&header, content).unwrap();
+            }
+            builder.finish().unwrap();
+        }
+
+        let listing = list(&archive_path).unwrap();
+        assert_eq!(listing.rejected, 2, "{:?}", listing.entries.iter().map(|e| &e.name).collect::<Vec<_>>());
+
+        let destination = root.join("out");
+        let summary = extract(&archive_path, &destination, true, &Reporter::silent()).unwrap();
+        assert_eq!(summary.extracted, 1);
+        assert_eq!(summary.skipped.len(), 2);
+        assert!(destination.join("sain.txt").exists());
+        assert!(!root.parent().unwrap().join("evil.txt").exists());
+    }
+
+    #[test]
+    fn sevenz_traversal_entries_are_never_written() {
+        let root = workspace("7z-slip");
+        let archive_path = root.join("evil.7z");
+        {
+            let mut writer = sevenz_rust2::ArchiveWriter::create(&archive_path).unwrap();
+            for name in ["../../evil.txt", "sain.txt"] {
+                let entry = sevenz_rust2::ArchiveEntry::new_file(name);
+                writer.push_archive_entry(entry, Some(&b"piege"[..])).unwrap();
+            }
+            writer.finish().unwrap();
+        }
+
+        let listing = list(&archive_path).unwrap();
+        assert_eq!(listing.rejected, 1);
+
+        let destination = root.join("out");
+        let summary = extract(&archive_path, &destination, true, &Reporter::silent()).unwrap();
+        assert_eq!(summary.extracted, 1);
+        assert_eq!(summary.skipped.len(), 1);
+        assert!(destination.join("sain.txt").exists());
+        assert!(!root.parent().unwrap().join("evil.txt").exists());
+    }
+
+    #[test]
+    fn listing_a_7z_does_not_decompress_it() {
+        let root = workspace("7z-listing");
+        seed(&root);
+        let archive = build(&root, Format::SevenZ);
+        let listing = list(&archive).unwrap();
+        assert_eq!(listing.format, "7z");
+        assert_eq!(listing.files, 3);
+        assert!(listing.total_size > 0);
+        assert!(listing.entries.iter().any(|entry| entry.name == "source/nested/b.txt"));
+    }
+
+    #[test]
+    fn an_interrupted_creation_leaves_no_archive_behind() {
+        let root = workspace("create-cancel");
+        seed(&root);
+        let members = collect_members(&[root.join("source")], &Reporter::silent()).unwrap();
+        for format in [Format::Zip, Format::Tar, Format::TarGz, Format::SevenZ] {
+            let output = root.join(format!("annulee.{}", format.extension()));
+            let outcome =
+                create(&members, &output, format, 6, &Reporter::silent_cancelled());
+            assert!(outcome.is_err(), "{}", format.label());
+            assert!(!output.exists(), "{} : archive partielle laissée", format.label());
+        }
     }
 
     #[test]
