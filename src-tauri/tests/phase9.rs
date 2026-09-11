@@ -385,6 +385,37 @@ fn backup_verify_restore_round_trip_on_the_fixture() {
     );
 }
 
+/// La sauvegarde déjà abîmée du dépôt : un fichier modifié, un autre disparu.
+/// La vérification doit les désigner nommément, et non se contenter d'un
+/// « quelque chose ne va pas ».
+#[test]
+fn names_the_damaged_files_of_the_broken_backup_fixture() {
+    let Some(root) = require("backup-corrompu") else { return };
+    let report = backup::verify(&root, &Reporter::silent()).unwrap();
+
+    assert!(!report.intact());
+    assert_eq!(report.modified, 1);
+    assert_eq!(report.missing, 1);
+    assert_eq!(report.ok, 3);
+    assert_eq!(
+        report.checks.iter().find(|c| c.state == backup::EntryState::Modified).unwrap().path,
+        "notes.txt"
+    );
+    assert_eq!(
+        report.checks.iter().find(|c| c.state == backup::EntryState::Missing).unwrap().path,
+        "binaire.bin"
+    );
+
+    // Et la restauration d'une telle sauvegarde le dit, plutôt que de remettre
+    // le fichier abîmé en place en silence.
+    let destination = scratch("restore-broken");
+    let summary =
+        backup::restore(&root, &destination, RestoreMode::Overwrite, &Reporter::silent()).unwrap();
+    assert!(!summary.complete());
+    assert_eq!(summary.corrupted, vec!["notes.txt".to_string()]);
+    assert!(summary.failed.iter().any(|entry| entry.starts_with("binaire.bin")));
+}
+
 /* -------------------------------------------------------------- manifestes */
 
 #[test]

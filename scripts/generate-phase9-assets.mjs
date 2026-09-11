@@ -245,6 +245,74 @@ write("backup-source/binaire.bin", Buffer.from(Array.from({ length: 256 }, (_, i
 write("backup-source/sous-dossier/accentué é à ü.txt", "Contenu accentué.\n");
 write("backup-source/sous-dossier/profond/tout-en-bas.md", "# Niveau trois\n");
 
+
+/* ------------------------------------- une sauvegarde déjà abîmée */
+/*
+ * Vérifier qu'une sauvegarde saine est saine ne prouve pas grand-chose. Cette
+ * fixture est une sauvegarde FourTout **complète et valide dans sa forme**,
+ * dont un fichier a été modifié et un autre supprimé après coup : c'est
+ * exactement ce que produit un disque qui vieillit mal, et ce que la
+ * vérification doit désigner nommément.
+ */
+fresh("backup-corrompu");
+const BACKUP_FILES = {
+  "notes.txt": "Des notes à sauvegarder.\n",
+  "vide.txt": "",
+  "binaire.bin": Buffer.from(Array.from({ length: 256 }, (_, i) => i)),
+  "sous-dossier/accentué é à ü.txt": "Contenu accentué.\n",
+  "sous-dossier/profond/tout-en-bas.md": "# Niveau trois\n",
+};
+
+const backupEntries = [];
+for (const relative of ["sous-dossier", "sous-dossier/profond"]) {
+  mkdirSync(join(OUT, "backup-corrompu/donnees", relative), { recursive: true });
+  backupEntries.push({
+    path: relative,
+    kind: "directory",
+    size: 0,
+    modified: 0,
+    sha256: "",
+  });
+}
+for (const [relative, content] of Object.entries(BACKUP_FILES)) {
+  const bytes = write(`backup-corrompu/donnees/${relative}`, content);
+  backupEntries.push({
+    path: relative,
+    kind: "file",
+    size: bytes.length,
+    modified: 0,
+    sha256: sha256(bytes),
+  });
+}
+
+write(
+  "backup-corrompu/manifeste.json",
+  JSON.stringify(
+    {
+      format: "fourtout-backup",
+      version: 1,
+      // Date figée : la fixture doit être reproductible à l'octet près.
+      createdAt: Date.UTC(2026, 0, 15, 9, 30),
+      sourceName: "backup-source",
+      entries: backupEntries,
+      files: Object.keys(BACKUP_FILES).length,
+      directories: 2,
+      bytes: Object.values(BACKUP_FILES).reduce(
+        (sum, content) => sum + Buffer.byteLength(content),
+        0,
+      ),
+      warnings: [],
+    },
+    null,
+    2,
+  ) + "\n",
+);
+
+// L'altération vient **après** le manifeste : il décrit donc l'état d'origine,
+// et c'est cet écart que la vérification doit trouver.
+write("backup-corrompu/donnees/notes.txt", "Des notes falsifiées.\n");
+rmSync(join(OUT, "backup-corrompu/donnees/binaire.bin"), { force: true });
+
 /* ====================================================== 8. CHECKSUMS */
 fresh("checksum-set");
 const CHECKSUM_FILES = {
