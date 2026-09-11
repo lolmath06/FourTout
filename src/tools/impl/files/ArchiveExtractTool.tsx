@@ -18,7 +18,7 @@ import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
 
 /**
- * Extraction d'archives ZIP, TAR et TAR.GZ.
+ * Extraction d'archives ZIP, 7z, TAR, TAR.GZ et TAR.XZ.
  *
  * Le contenu est **inspecté avant** toute écriture : nombre de fichiers, taille
  * décompressée, et surtout entrées refusées. Une archive contenant
@@ -66,8 +66,8 @@ export function ArchiveExtractTool(_props: ToolComponentProps) {
           setDestination("");
         },
         label: "Choisissez l'archive à extraire",
-        filters: [{ name: "Archives", extensions: ["zip", "tar", "gz", "tgz"] }],
-        hint: "ZIP, TAR et TAR.GZ",
+        filters: [{ name: "Archives", extensions: ["zip", "7z", "tar", "gz", "tgz", "xz", "txz"] }],
+        hint: "ZIP, 7z, TAR, TAR.GZ et TAR.XZ",
       }}
       actionLabel="Extraire l'archive"
       actionIcon="PackageOpen"

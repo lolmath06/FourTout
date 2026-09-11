@@ -1,5 +1,14 @@
 import {
   AlignLeft,
+  GitCompareArrows,
+  FolderSync,
+  SearchCode,
+  DatabaseBackup,
+  ArchiveRestore,
+  ListChecks,
+  FileArchive,
+  FileSearch2,
+  PackageCheck,
   ArrowDownAZ,
   ArrowLeft,
   ArrowRight,
@@ -318,6 +327,15 @@ export const ICONS: Record<string, LucideIcon> = {
   Table,
   FileDiff,
   ArrowRightLeft,
+  GitCompareArrows,
+  FolderSync,
+  SearchCode,
+  DatabaseBackup,
+  ArchiveRestore,
+  ListChecks,
+  FileArchive,
+  FileSearch2,
+  PackageCheck,
 };
 
 /** Icône de repli lorsqu'un nom est inconnu : jamais d'écran cassé. */

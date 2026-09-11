@@ -76,9 +76,17 @@ describe("convertisseur universel", () => {
     expect(handoff?.files?.[0]?.name).toBe("photo.png");
   });
 
-  it("dit clairement qu'il n'y a rien à proposer pour un format inconnu", async () => {
+  it("ne propose, pour un format inconnu, que ce qui marche vraiment dessus", async () => {
     renderConverter();
     await drop("archive.xyz", "application/octet-stream");
-    expect(await screen.findByText(/Aucune conversion disponible/i)).toBeInTheDocument();
+
+    // Aucun convertisseur d'image ni de document ne sait quoi faire d'un
+    // « .xyz ». La compression d'un fichier seul, elle, ne regarde pas le
+    // format de son entrée : la proposer est exact, la taire serait une
+    // omission.
+    expect(await screen.findByTestId("convert-to-gz")).toBeInTheDocument();
+    expect(screen.getByTestId("convert-to-xz")).toBeInTheDocument();
+    expect(screen.queryByTestId("convert-to-png")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("convert-to-pdf")).not.toBeInTheDocument();
   });
 });

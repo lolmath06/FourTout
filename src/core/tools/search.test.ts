@@ -289,3 +289,84 @@ describe("recherche des outils documentaires", () => {
     expect(searchTools("feuille photographiee en biais")[0].tool.id).toBe("document-perspective");
   });
 });
+
+/**
+ * Dossiers, intégrité et archives (phase 9).
+ *
+ * Ces requêtes sont celles avec lesquelles on cherche vraiment ces outils. On
+ * vérifie qu'ils arrivent **en tête** : quatorze outils de plus dans la même
+ * catégorie, c'est quatorze occasions supplémentaires de noyer les précédents.
+ */
+describe("recherche des outils Dossiers, intégrité et archives", () => {
+  it.each([
+    ["comparer dossiers", "folder-compare"],
+    ["diff dossier", "folder-compare"],
+    ["differences entre deux dossiers", "folder-compare"],
+    ["synchroniser dossier", "folder-sync"],
+    ["miroir dossier", "folder-sync"],
+    ["rechercher fichiers", "file-search"],
+    ["chercher dans fichiers", "file-search"],
+    ["espace disque", "folder-size"],
+    ["gros fichiers", "folder-size"],
+    ["inspecter fichier", "file-info"],
+    ["magic bytes", "file-info"],
+    ["hex editor", "file-hex-edit"],
+    ["editeur hex", "file-hex-edit"],
+    ["backup dossier", "folder-backup"],
+    ["sauvegarder dossier", "folder-backup"],
+    ["restaurer sauvegarde", "folder-restore"],
+    ["checksum manifest", "checksum-manifest"],
+    ["verifier checksums", "checksum-verify"],
+    ["hmac", "hmac"],
+    ["inspecter archive", "archive-inspect"],
+    ["tester archive", "archive-test"],
+    ["previsualiser un fichier", "file-preview"],
+  ])("« %s » place %s en tête", (query, expected) => {
+    expect(searchTools(query)[0]?.tool.id).toBe(expected);
+  });
+
+  it.each([
+    ["7z", "archive-create"],
+    ["xz", "file-compress"],
+    ["gzip", "file-compress"],
+    ["decompresser un gz", "file-decompress"],
+  ])("« %s » trouve %s", (query, expected) => {
+    expect(searchTools(query).map((result) => result.tool.id)).toContain(expected);
+  });
+
+  it("distingue la comparaison de dossiers de celle de fichiers", () => {
+    expect(searchTools("comparer deux dossiers")[0].tool.id).toBe("folder-compare");
+    expect(searchTools("comparer deux fichiers")[0].tool.id).toBe("file-compare");
+  });
+
+  it("distingue la recherche de fichiers de la recherche dans un texte", () => {
+    expect(searchTools("trouver un fichier")[0].tool.id).toBe("file-search");
+    expect(searchTools("chercher et remplacer")[0].tool.id).toBe("text-find-replace");
+  });
+
+  it("distingue le manifeste d'empreintes de l'empreinte d'un fichier", () => {
+    // Les deux outils d'empreinte d'un fichier unique se valent pour cette
+    // formulation ; ce qui compte est qu'aucun outil de manifeste ne s'y glisse.
+    expect(["file-hash", "file-verify-hash"]).toContain(
+      searchTools("empreinte d'un fichier")[0].tool.id,
+    );
+    expect(searchTools("manifeste de checksums")[0].tool.id).toBe("checksum-manifest");
+    // « checksums d'un dossier » vise la famille manifeste, pas l'empreinte
+    // d'un fichier isolé : créer ou vérifier sont deux lectures légitimes.
+    expect(["checksum-manifest", "checksum-verify"]).toContain(
+      searchTools("checksums d'un dossier")[0].tool.id,
+    );
+  });
+
+  it("distingue compresser un fichier seul de créer une archive", () => {
+    expect(searchTools("compresser un fichier en gz")[0].tool.id).toBe("file-compress");
+    expect(searchTools("mettre des fichiers dans un zip")[0].tool.id).toBe("archive-create");
+  });
+
+  it("distingue inspecter une archive de l'extraire", () => {
+    expect(searchTools("voir le contenu d'un zip sans extraire")[0].tool.id).toBe(
+      "archive-inspect",
+    );
+    expect(searchTools("dezipper")[0].tool.id).toBe("archive-extract");
+  });
+});

@@ -93,8 +93,23 @@ describe("conversions proposées par format", () => {
     expect(conversionsFor(".png").map((t) => t.to)).toEqual(targetsFor("png"));
   });
 
-  it("ne propose rien pour un format inconnu", () => {
-    expect(conversionsFor("xyz")).toEqual([]);
+  it("ne propose, pour un format inconnu, que ce qui marche vraiment dessus", () => {
+    // Un `.xyz` n'a ni conversion d'image, ni conversion de document — mais la
+    // compression d'un fichier seul, elle, ne regarde pas le format de son
+    // entrée. La proposer est exact ; la taire serait une omission.
+    const targets = conversionsFor("xyz").map((target) => target.to).sort();
+    expect(targets).toEqual(["gz", "xz"]);
+  });
+
+  it("propose la compression d'un fichier seul quel que soit son format", () => {
+    for (const extension of ["log", "bin", "sql", "iso"]) {
+      const targets = conversionsFor(extension).map((target) => target.to);
+      expect(targets, extension).toContain("gz");
+      expect(targets, extension).toContain("xz");
+    }
+    // Mais jamais vers son propre format : compresser un `.gz` en `.gz` n'est
+    // pas une conversion.
+    expect(conversionsFor("gz").map((target) => target.to)).not.toContain("gz");
   });
 
   it("ne propose que des conversions réellement exécutables", () => {
