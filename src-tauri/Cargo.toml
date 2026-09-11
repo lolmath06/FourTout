@@ -5,7 +5,7 @@ description = "FourTout — boîte à outils desktop locale"
 authors = ["Matheo Dolmen"]
 license = "LicenseRef-Proprietary"
 edition = "2021"
-rust-version = "1.77.2"
+rust-version = "1.85"
 
 [lib]
 # Le suffixe `_lib` évite un conflit de noms avec le binaire sous Windows.
@@ -37,6 +37,9 @@ zip = { version = "2", default-features = false, features = ["aes-crypto", "defl
 argon2 = "0.5.3"
 chacha20poly1305 = "0.10.1"
 getrandom = "0.3.4"
+sevenz-rust2 = { version = "0.21", default-features = false, features = ["compress"] }
+hmac = "0.12"
+lzma-rust2 = "0.19"
 
 # Arbitrage des permissions de la WebView (microphone). La version est figée sur
 # celle de wry : c'est la même WebView qui est manipulée.
