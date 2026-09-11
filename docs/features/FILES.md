@@ -486,14 +486,16 @@ dans les avertissements du plan.
   archives abîmées, tronquées et piégées, empreintes de référence,
   découpage/réassemblage, doublons, arborescence, plan de renommage.
 - `src-tauri/tests/files_integration.rs` — tests sur les fixtures de la phase 6.
-- `src-tauri/tests/phase9.rs` — 18 tests sur les **vraies fixtures** de
+- `src-tauri/tests/phase9.rs` — 19 tests sur les **vraies fixtures** de
   `test-assets/generated/`, produites par du code Node indépendant des moteurs
   éprouvés : comparaison des deux dossiers de référence, synchronisation
   `update` puis `mirror` avec comparaison octet par octet, recherche dans trois
   encodages, analyse d'espace vérifiée à l'octet près, aller-retour
   hexadécimal, cycle sauvegarde → vérification → restauration, quatre
-  manifestes de référence (valide, faux, manquant, piégé), listage/test/
-  extraction des cinq formats, dix archives abîmées, trois archives piégées.
+  manifestes de référence (valide, faux, manquant, piégé), sauvegarde
+  volontairement abîmée dont les deux fichiers en défaut doivent être nommés,
+  listage/test/extraction des cinq formats, neuf archives abîmées, trois
+  archives piégées.
 - Deux mesures de performance `#[ignore]` (`cargo test --test phase9 --
   --ignored --nocapture`) : 5 000 fichiers et un fichier de 512 Mio.
 
