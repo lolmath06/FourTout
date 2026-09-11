@@ -81,7 +81,9 @@ src-tauri/                 Application native (Rust)
 ├── src/recovery/          Récupération de mot de passe PDF
 ├── src/rates.rs           Taux BCE — la seule sortie réseau de l'application
 └── src/files/             Archives, empreintes, doublons, découpage, renommage,
-                           chiffrement, effacement, organisation de dossier
+                           chiffrement, effacement, organisation de dossier,
+                           comparaison et synchronisation de dossiers, recherche,
+                           sauvegarde, manifestes, hexadécimal, signatures
 ```
 
 ## Le registre : une seule source de vérité
@@ -167,6 +169,37 @@ glisser-déposer, explorateur, validation selon les `acceptedInputs` de l'outil,
 affichage nom/taille/type, multi-fichiers quand l'outil est `batch`. Les futurs
 outils l'utilisent avec `constraintsForTool(tool)` et n'écrivent aucune
 validation eux-mêmes.
+
+Les outils qui travaillent sur des **chemins** — archives, dossiers,
+empreintes, sauvegarde — n'utilisent pas `FileDropZone` : ils passent par
+`PathPicker` (boîtes de dialogue natives et glisser-déposer Tauri, qui fournit
+de vrais chemins) et par l'une des deux ossatures d'exécution :
+
+- `NativeToolShell` pour le cas courant — une sélection, un bouton, un
+  résultat ;
+- `useNativeAction` + `RunBar` quand l'outil compose lui-même sa mise en page,
+  parce qu'il a deux sélections (comparer, synchroniser) ou deux étapes (plan
+  puis exécution). Même mécanique — progression réelle, annulation réelle,
+  erreur lisible — sans mise en page imposée.
+
+### Où vit un algorithme
+
+La règle qui décide de TypeScript ou de Rust n'est pas une préférence, c'est
+une conséquence :
+
+| En TypeScript | En Rust |
+| --- | --- |
+| Modèles de données, types partagés | Parcours du système de fichiers |
+| Mise en forme, libellés, unités | Lecture et écriture de gros fichiers |
+| Orchestration d'un outil, état de l'écran | Empreintes et copies en flux |
+| Logique pure et testable sans disque | Validation des chemins d'archive |
+| | Lecture partielle (fenêtres hexadécimales) |
+
+Corollaire pratique : chaque capacité de la phase 9 est une **fonction**
+appelable sans React (`compareFolders`, `buildSyncPlan`, `executeSyncPlan`,
+`searchFiles`, `createBackup`, `verifyManifest`, `testArchive`…). Un appelant
+automatisé futur n'aura donc jamais à simuler des clics — il appellera
+exactement ce que l'interface appelle.
 
 ## Confidentialité
 
