@@ -71,8 +71,19 @@ présence change quelque chose pour l'utilisateur ou pour un juriste.
 | [zip](https://crates.io/crates/zip) | 2.4 | MIT | Archives ZIP, y compris WinZip AES-256 |
 | [tar](https://crates.io/crates/tar) | 0.4 | MIT / Apache-2.0 | Archives TAR |
 | [flate2](https://crates.io/crates/flate2) | 1.1 | MIT / Apache-2.0 | Compression DEFLATE et gzip |
+| [sevenz-rust2](https://crates.io/crates/sevenz-rust2) | 0.21 | Apache-2.0 | Archives 7z : création, listage, extraction, test |
+| [lzma-rust2](https://crates.io/crates/lzma-rust2) | 0.19 | Apache-2.0 | Flux XZ et LZMA2, en Rust pur (portage de « XZ for Java ») |
+| [hmac](https://crates.io/crates/hmac) | 0.12 | MIT / Apache-2.0 | HMAC-SHA-1, SHA-256 et SHA-512 |
 | [rayon](https://crates.io/crates/rayon) | 1.12 | MIT / Apache-2.0 | Parallélisme (empreintes, récupération de mot de passe) |
 | [ureq](https://crates.io/crates/ureq) | 2.12 | MIT / Apache-2.0 | Client HTTP : taux BCE et téléchargement des modèles |
+
+Les trois derniers sont arrivés avec la phase 9. Deux points ont pesé dans leur
+choix, avant même leurs fonctions : ce sont des bibliothèques **Rust pures** —
+aucun `liblzma` ou `p7zip` à trouver sur la machine de l'utilisateur, et rien
+à compiler en C sous Windows — et leurs licences (Apache-2.0, MIT) n'imposent
+aucune obligation incompatible avec la distribution de FourTout. La question
+était de toute façon tranchée d'avance : dépendre d'un `7z` ou d'un `xz`
+installé casserait la promesse « tout est embarqué, rien à installer ».
 
 ---
 

@@ -1,6 +1,6 @@
 # Feuille de route
 
-FourTout est complet pour l'usage qu'il vise : 160 outils, tous utilisables.
+FourTout est complet pour l'usage qu'il vise : 174 outils, tous utilisables.
 Cette page liste ce qui pourrait venir ensuite. Rien de ce qui y figure n'est
 promis, et **aucun de ces éléments n'apparaît dans l'application** : le
 catalogue ne contient que des outils qui fonctionnent.
@@ -20,9 +20,19 @@ catalogue ne contient que des outils qui fonctionnent.
 
 ## Outils
 
-- **Archives 7z et RAR.** Aucune bibliothèque Rust mûre et à licence
-  compatible ne les couvre aujourd'hui, et appeler un binaire externe casserait
-  la promesse « tout est embarqué ».
+- **RAR.** Format fermé ; le décompresseur de référence n'est pas
+  redistribuable sous une licence compatible. Le 7z, lui, est arrivé en
+  phase 9 avec `sevenz-rust2`, bibliothèque Rust pure.
+- **Chiffrement des archives 7z.** Le ZIP AES-256 d'« Archive protégée »
+  couvre déjà le besoin et s'ouvre partout ; un second format chiffré, à la
+  compatibilité plus incertaine, attendra une demande réelle.
+- **Synchronisation bidirectionnelle.** La synchronisation actuelle va de la
+  source vers la destination, avec un plan lu avant toute écriture. Réconcilier
+  deux côtés modifiés demande une détection de conflits et un historique — un
+  sujet entier, pas une option à cocher.
+- **Sauvegarde versionnée.** La sauvegarde actuelle est une copie complète,
+  datée et vérifiable. Les instantanés incrémentaux, la déduplication par blocs
+  et l'historique de versions sont un produit à part.
 - **Word vers PDF fidèle à la maquette.** Demanderait un moteur de mise en
   page Word. L'outil actuel reprend le contenu et sa structure, et le dit.
 - **Plus de langues d'OCR.** L'infrastructure les accepte ; ce sont des

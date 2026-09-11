@@ -10,7 +10,7 @@ change pour lui. Pour l'historique détaillé du code, `git log`.
 
 ## [Non publié]
 
-Première version complète de FourTout : **160 outils, tous utilisables**,
+Première version complète de FourTout : **174 outils, tous utilisables**,
 répartis en dix catégories.
 
 ### PDF — 26 outils
@@ -92,15 +92,57 @@ LE/BE, Windows-1252 et Latin-1. Si la destination ne peut pas écrire un
 caractère, la conversion est **refusée** et les caractères concernés sont
 nommés : rien ne se perd en silence.
 
-### Fichiers & Archives — 16 outils
+### Fichiers & Archives — 29 outils
 
-Archives ZIP, TAR et TAR.GZ — création et extraction **protégées contre la
-traversée de dossiers** — et archives chiffrées WinZip AES-256, lisibles par
-7-Zip et l'Explorateur Windows. Empreintes, vérification d'empreinte,
-comparaison, détection de doublons par contenu, découpage et réassemblage
-vérifié, renommage par lot avec aperçu, nettoyage des noms, organisation d'un
-dossier avec plan préalable, analyse de la taille d'un dossier, arborescence,
-fiche d'identité d'un fichier, suppression sécurisée.
+Archives **ZIP, 7z, TAR, TAR.GZ et TAR.XZ** — création et extraction
+**protégées contre la traversée de dossiers** — et archives chiffrées WinZip
+AES-256, lisibles par 7-Zip et l'Explorateur Windows. Aucun `7z`, `xz` ou `tar`
+n'a besoin d'être installé : tout est embarqué. Compression d'un fichier seul
+en `.gz` ou `.xz`, avec la distinction dite à l'écran (`.gz` ne contient qu'un
+fichier, `.tar.gz` une arborescence). **Inspection d'une archive** sans rien
+extraire, et **test d'intégrité** qui décompresse réellement tout et vérifie
+les sommes de contrôle sans rien écrire.
+
+Empreintes, vérification d'empreinte, **manifestes d'empreintes** au format
+`sha256sum` (création et vérification), comparaison de deux fichiers, détection
+de doublons par contenu, découpage et réassemblage vérifié, renommage par lot
+avec aperçu, nettoyage des noms, organisation d'un dossier avec plan préalable,
+arborescence, suppression sécurisée.
+
+**Comparer deux dossiers** dit ce qui est identique, modifié ou présent d'un
+seul côté. Deux modes, et la différence entre eux est dite à l'écran : le mode
+rapide compare type et taille sans rien lire — deux fichiers de même taille y
+sont « probablement identiques » —, le mode fiable confirme par le contenu, et
+ne relit que les fichiers de même taille.
+
+**Synchroniser des dossiers** calcule d'abord un plan : tant de fichiers à
+copier, à remplacer, à supprimer, tant d'octets à écrire, et la liste. Rien ne
+s'écrit avant que ce plan ait été lu et confirmé, et c'est exactement ce plan
+qui est exécuté. Un fichier modifié entre-temps est refusé plutôt qu'écrasé à
+l'aveugle. Le mode miroir, qui supprime, demande en plus une confirmation
+tapée — et seulement s'il y a réellement quelque chose à effacer.
+
+**Rechercher dans des fichiers** croise nom, extension, taille, date et
+contenu. Les résultats s'affichent pendant la recherche, pas après. Rien n'est
+indexé en fond. Un fichier binaire n'est jamais interprété comme du texte, même
+s'il contient le mot cherché.
+
+**Analyser l'espace d'un dossier** remplace l'ancienne « taille d'un dossier » :
+plus gros fichiers, plus gros sous-dossiers, répartition par type.
+
+**Inspecter un fichier** croise ce que le nom prétend et ce que les premiers
+octets révèlent. Un `.jpg` contenant un PNG est signalé — et rien n'est renommé
+automatiquement. **Prévisualiser un fichier** ouvre texte, image, PDF, audio,
+vidéo, archive ou octets bruts sans l'application d'origine, en suivant le
+contenu réel. **Éditer en hexadécimal** lit par fenêtres (un fichier de 20 Go
+se parcourt sans être chargé), cherche une séquence, corrige des octets, et
+enregistre par défaut dans un **nouveau** fichier.
+
+**Sauvegarder un dossier** produit une copie doublée d'un manifeste
+d'empreintes, dans un format lisible sans FourTout : un dossier `donnees` et un
+`manifeste.json`, sans aucun chemin absolu. **Restaurer une sauvegarde**
+vérifie l'intégrité avant d'écrire, nomme les fichiers abîmés au lieu de les
+remettre en place en silence, et ne supprime jamais rien dans la destination.
 
 ### Convertisseur universel
 
@@ -132,12 +174,17 @@ Pourcentages, règle de trois, calculs de dates, de durées, d'âge. Calculatric
 scientifique dotée de son propre analyseur — ni `eval`, ni `new Function`.
 Convertisseur de devises adossé aux taux de la Banque centrale européenne.
 
-### Sécurité & Confidentialité — 6 outils
+### Sécurité & Confidentialité — 7 outils
 
 Génération de mots de passe et de phrases de passe, évaluation de robustesse
 hors ligne, **chiffrement et déchiffrement de fichiers** (Argon2id puis
 XChaCha20-Poly1305, par blocs authentifiés), suppression des métadonnées d'un
 fichier quel qu'en soit le type, récupération d'un mot de passe PDF.
+
+**Calculer un HMAC** signe un texte ou un fichier avec une clé secrète
+(SHA-256, SHA-512, SHA-1 pour les services anciens). La clé n'est ni
+enregistrée, ni journalisée, ni ajoutée aux récents : elle sert au calcul, puis
+disparaît.
 
 ### Interface
 

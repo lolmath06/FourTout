@@ -10,7 +10,7 @@
 | --- | --- |
 | [Installation](guides/INSTALLATION.md) | Windows, Fedora, autres Linux. FFmpeg, modèles, vérification des téléchargements. |
 | [Guide d'utilisation](guides/USER_GUIDE.md) | Trouver un outil, déposer des fichiers, opérations longues, zoom, paramètres. |
-| [Tous les outils](guides/FEATURES.md) | Les 160 outils, catégorie par catégorie. |
+| [Tous les outils](guides/FEATURES.md) | Les 174 outils, catégorie par catégorie. |
 | [Dépannage](guides/TROUBLESHOOTING.md) | Ce qui peut coincer, et pourquoi. |
 
 ## Confidentialité et sécurité
