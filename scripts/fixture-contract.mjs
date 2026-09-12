@@ -14,9 +14,11 @@
  * Usage : `pnpm fixtures:contract` (inclus dans `pnpm test:assets`)
  */
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { execFileSync, spawnSync } from "node:child_process";
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "test-assets", "generated");
@@ -127,6 +129,193 @@ const backupRoot = join(OUT, "backup-source");
 const checksumRoot = join(OUT, "checksum-set");
 const archiveRoot = join(OUT, "archive-sample");
 
+
+/* --------------------------------------------------- phase 10 : images et média */
+
+/**
+ * Deuxième implémentation, volontairement.
+ *
+ * Les valeurs de comparaison d'images ci-dessous sont recalculées ici, en dehors
+ * du moteur de FourTout et sans partager une ligne de code avec lui. Un test qui
+ * comparerait le moteur à lui-même ne prouverait rien ; celui-ci compare deux
+ * calculs indépendants du même énoncé.
+ */
+async function pixelsOf(name) {
+  const image = await loadImage(join(OUT, name));
+  const canvas = createCanvas(image.width, image.height);
+  const context = canvas.getContext("2d");
+  context.drawImage(image, 0, 0);
+  const { data } = context.getImageData(0, 0, image.width, image.height);
+  return { width: image.width, height: image.height, data };
+}
+
+/** Écart de Tchebychev par pixel, sur trois canaux ou quatre. */
+function diffStats(a, b, includeAlpha = false) {
+  const channels = includeAlpha ? 4 : 3;
+  const count = a.width * a.height;
+  let different = 0;
+  let maxDifference = 0;
+  let squares = 0;
+  let changedAt;
+  for (let p = 0; p < count; p += 1) {
+    const i = p * 4;
+    let pixelMax = 0;
+    for (let c = 0; c < channels; c += 1) {
+      const delta = a.data[i + c] - b.data[i + c];
+      squares += delta * delta;
+      const magnitude = Math.abs(delta);
+      if (magnitude > pixelMax) pixelMax = magnitude;
+    }
+    if (pixelMax > 0) {
+      different += 1;
+      changedAt ??= { x: p % a.width, y: Math.floor(p / a.width) };
+    }
+    if (pixelMax > maxDifference) maxDifference = pixelMax;
+  }
+  const mse = squares / (count * channels);
+  return {
+    pixels: count,
+    pixelsDifferents: different,
+    ecartMaximal: maxDifference,
+    eqm: Number(mse.toFixed(6)),
+    psnr: mse === 0 ? null : Number((10 * Math.log10((255 * 255) / mse)).toFixed(3)),
+    premierPixelChange: changedAt,
+  };
+}
+
+/** SSIM par blocs disjoints de 8 × 8 sur la luminance BT.601 — même énoncé que le moteur. */
+function ssimOf(a, b) {
+  const C1 = (0.01 * 255) ** 2;
+  const C2 = (0.03 * 255) ** 2;
+  const block = 8;
+  const blocksX = Math.floor(a.width / block);
+  const blocksY = Math.floor(a.height / block);
+  const luma = (data, i) => 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+  let total = 0;
+  let blocks = 0;
+  for (let by = 0; by < blocksY; by += 1) {
+    for (let bx = 0; bx < blocksX; bx += 1) {
+      const values = [];
+      for (let y = 0; y < block; y += 1) {
+        for (let x = 0; x < block; x += 1) {
+          const i = ((by * block + y) * a.width + bx * block + x) * 4;
+          values.push([luma(a.data, i), luma(b.data, i)]);
+        }
+      }
+      const n = values.length;
+      const meanA = values.reduce((sum, [va]) => sum + va, 0) / n;
+      const meanB = values.reduce((sum, [, vb]) => sum + vb, 0) / n;
+      const varA = values.reduce((sum, [va]) => sum + (va - meanA) ** 2, 0) / n;
+      const varB = values.reduce((sum, [, vb]) => sum + (vb - meanB) ** 2, 0) / n;
+      const cov = values.reduce((sum, [va, vb]) => sum + (va - meanA) * (vb - meanB), 0) / n;
+      const numerator = (2 * meanA * meanB + C1) * (2 * cov + C2);
+      const denominator = (meanA ** 2 + meanB ** 2 + C1) * (varA + varB + C2);
+      total += denominator === 0 ? 1 : numerator / denominator;
+      blocks += 1;
+    }
+  }
+  return blocks === 0 ? 1 : Number((total / blocks).toFixed(6));
+}
+
+const reference = await pixelsOf("image-reference.png");
+const identical = await pixelsOf("image-identical.png");
+const onePixel = await pixelsOf("image-one-pixel.png");
+const smallNoise = await pixelsOf("image-small-noise.png");
+const heavyChange = await pixelsOf("image-heavy-change.png");
+const alphaChange = await pixelsOf("image-alpha-change.png");
+const differentSize = await pixelsOf("image-different-size.png");
+const colorKnown = await pixelsOf("color-known.png");
+
+const onePixelStats = diffStats(reference, onePixel);
+const alphaStats = diffStats(reference, alphaChange, true);
+
+/** Couleur exacte d'un pixel de `color-known.png`, en hexadécimal. */
+function hexAt(pixels, x, y) {
+  const i = (y * pixels.width + x) * 4;
+  return `#${[0, 1, 2].map((c) => pixels.data[i + c].toString(16).padStart(2, "0")).join("")}`;
+}
+
+/** Rapport de contraste WCAG entre deux couleurs `#rrggbb`. */
+function contrast(hexA, hexB) {
+  const luminance = (hex) => {
+    const parts = [1, 3, 5].map((start) => Number.parseInt(hex.slice(start, start + 2), 16) / 255);
+    const [r, g, b] = parts.map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const la = luminance(hexA);
+  const lb = luminance(hexB);
+  return Number(((Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05)).toFixed(4));
+}
+
+/** Compte les blocs d'un fichier de sous-titres, sans rien interpréter de plus. */
+function subtitleBlocks(name) {
+  const text = readFileSync(join(OUT, name), "utf8").replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+  return text.split(/\n{2,}/).filter((block) => block.includes("-->")).length;
+}
+
+const ffprobe = (() => {
+  try {
+    return execFileSync("sh", ["-c", "command -v ffprobe"]).toString().trim() || null;
+  } catch {
+    return null;
+  }
+})();
+
+/** Ce que ffprobe dit du premier flux d'un type donné — valeurs stables seulement. */
+function probeStream(name, selector) {
+  if (!ffprobe || !existsSync(join(OUT, name))) return null;
+  const result = spawnSync(
+    ffprobe,
+    ["-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", "-select_streams", selector, join(OUT, name)],
+    { encoding: "utf8" },
+  );
+  if (result.status !== 0) return null;
+  try {
+    const data = JSON.parse(result.stdout);
+    const stream = data.streams?.[0];
+    if (!stream) return null;
+    return { stream, format: data.format ?? {} };
+  } catch {
+    return null;
+  }
+}
+
+function audioFixture(name) {
+  const probed = probeStream(name, "a:0");
+  if (!probed) return null;
+  return {
+    canaux: probed.stream.channels ?? null,
+    dispositionCanaux: probed.stream.channel_layout ?? null,
+    frequenceHz: Number(probed.stream.sample_rate ?? 0),
+    dureeSecondes: Number(Number(probed.format.duration ?? 0).toFixed(2)),
+  };
+}
+
+function videoFixture(name) {
+  const probed = probeStream(name, "v:0");
+  if (!probed) return null;
+  return {
+    cadenceReelle: probed.stream.r_frame_rate ?? null,
+    cadenceMoyenne: probed.stream.avg_frame_rate ?? null,
+    largeur: probed.stream.width ?? null,
+    hauteur: probed.stream.height ?? null,
+    images: probed.stream.nb_frames ? Number(probed.stream.nb_frames) : null,
+    dureeSecondes: Number(Number(probed.format.duration ?? 0).toFixed(2)),
+  };
+}
+
+function audioTags(name) {
+  const probed = probeStream(name, "a:0");
+  if (!probed) return null;
+  const tags = probed.format.tags ?? {};
+  const wanted = ["title", "artist", "album", "date", "genre", "track"];
+  return Object.fromEntries(wanted.filter((key) => tags[key]).map((key) => [key, String(tags[key])]));
+}
+
+/** Géométrie attendue de la planche-contact de recette (5 images, 2 colonnes). */
+const CONTACT_SETTINGS = { colonnes: 2, largeurVignette: 120, espacement: 12, marge: 24, hauteurLegende: 22 };
+const contactRows = Math.ceil(5 / CONTACT_SETTINGS.colonnes);
+
 const contract = {
   genereLe: new Date().toISOString().slice(0, 10),
   avertissement:
@@ -224,6 +413,81 @@ const contract = {
   archive: {
     fichiers: walk(archiveRoot).length,
     entrees: walk(archiveRoot).map((entry) => `archive-sample/${entry}`),
+  },
+
+  comparaisonImages: {
+    largeur: reference.width,
+    hauteur: reference.height,
+    pixels: reference.width * reference.height,
+    tailleDifferente: { largeur: differentSize.width, hauteur: differentSize.height },
+    identique: diffStats(reference, identical),
+    unPixel: {
+      ...onePixelStats.premierPixelChange,
+      ecart: onePixelStats.ecartMaximal,
+      pixelsDifferents: onePixelStats.pixelsDifferents,
+      psnr: onePixelStats.psnr,
+      ssim: ssimOf(reference, onePixel),
+    },
+    alpha: {
+      pixels: alphaStats.pixelsDifferents,
+      ecart: alphaStats.ecartMaximal,
+      pixelsSansAlpha: diffStats(reference, alphaChange, false).pixelsDifferents,
+    },
+    petitBruit: { ...diffStats(reference, smallNoise), ssim: ssimOf(reference, smallNoise) },
+    grosseModification: { ...diffStats(reference, heavyChange), ssim: ssimOf(reference, heavyChange) },
+  },
+
+  plancheContact: {
+    images: 5,
+    reglages: CONTACT_SETTINGS,
+    lignes: contactRows,
+    // marges + colonnes × vignette + espacements intérieurs
+    largeur:
+      CONTACT_SETTINGS.marge * 2 +
+      CONTACT_SETTINGS.colonnes * CONTACT_SETTINGS.largeurVignette +
+      (CONTACT_SETTINGS.colonnes - 1) * CONTACT_SETTINGS.espacement,
+    hauteurAvecLegendes:
+      CONTACT_SETTINGS.marge * 2 +
+      contactRows * (CONTACT_SETTINGS.largeurVignette + CONTACT_SETTINGS.hauteurLegende) +
+      (contactRows - 1) * CONTACT_SETTINGS.espacement,
+    hauteurSansLegendes:
+      CONTACT_SETTINGS.marge * 2 +
+      contactRows * CONTACT_SETTINGS.largeurVignette +
+      (contactRows - 1) * CONTACT_SETTINGS.espacement,
+  },
+
+  couleurs: {
+    imageTaille: { largeur: colorKnown.width, hauteur: colorKnown.height },
+    quadrants: [
+      { x: 5, y: 5, hex: hexAt(colorKnown, 5, 5) },
+      { x: 25, y: 5, hex: hexAt(colorKnown, 25, 5) },
+      { x: 5, y: 25, hex: hexAt(colorKnown, 5, 25) },
+      { x: 25, y: 25, hex: hexAt(colorKnown, 25, 25) },
+    ],
+    contrastes: {
+      noirSurBlanc: contrast("#000000", "#ffffff"),
+      identique: contrast("#777777", "#777777"),
+      rougeSurBlanc: contrast("#ff0000", "#ffffff"),
+    },
+  },
+
+  sousTitres: {
+    "subtitle-sample.srt": { repliques: subtitleBlocks("subtitle-sample.srt") },
+    "subtitle-sample.vtt": { repliques: subtitleBlocks("subtitle-sample.vtt") },
+    "subtitle-offset.srt": { repliques: subtitleBlocks("subtitle-offset.srt"), decalageMs: 2500 },
+    "subtitle-overlap.srt": { repliques: subtitleBlocks("subtitle-overlap.srt"), chevauchements: 2 },
+    "subtitle-broken.srt": { blocs: subtitleBlocks("subtitle-broken.srt") },
+    "subtitle-second.srt": { repliques: subtitleBlocks("subtitle-second.srt") },
+  },
+
+  mediaPhase10: {
+    "audio-mono.wav": audioFixture("audio-mono.wav"),
+    "audio-stereo-distinct.wav": audioFixture("audio-stereo-distinct.wav"),
+    "audio-multichannel.wav": audioFixture("audio-multichannel.wav"),
+    "audio-tagged.mp3": { ...audioFixture("audio-tagged.mp3"), etiquettes: audioTags("audio-tagged.mp3") },
+    "video-24fps.mp4": videoFixture("video-24fps.mp4"),
+    "video-30fps.mp4": videoFixture("video-30fps.mp4"),
+    "video-vfr.mp4": videoFixture("video-vfr.mp4"),
   },
 
   inspection: {
