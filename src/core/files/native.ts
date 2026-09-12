@@ -349,6 +349,41 @@ export function hashFiles(
   return runJob("hash", "files_hash", (jobId) => ({ params: { jobId, paths, algorithms } }), context);
 }
 
+export interface DiffRange {
+  offset: number;
+  length: number;
+}
+
+export interface BinaryDiff {
+  sizeA: number;
+  sizeB: number;
+  /** Premières plages divergentes, dans l'ordre. */
+  ranges: DiffRange[];
+  /** Restait-il des différences au-delà de la dernière plage listée ? */
+  truncated: boolean;
+  differingBytes: number;
+}
+
+/**
+ * Localise les premières plages divergentes entre deux fichiers.
+ *
+ * Lecture en flux : répondre à « où diffèrent-ils ? » sur deux images disque
+ * ne coûte pas plus de mémoire que sur deux notes.
+ */
+export function binaryDiff(
+  pathA: string,
+  pathB: string,
+  maxRanges = 24,
+  context?: OperationContext,
+): Promise<BinaryDiff> {
+  return runJob(
+    "binary-diff",
+    "files_binary_diff",
+    (jobId) => ({ jobId, pathA, pathB, maxRanges }),
+    context,
+  );
+}
+
 export function compareFiles(
   pathA: string,
   pathB: string,
@@ -974,6 +1009,26 @@ export async function readHex(path: string, offset: number, length: number): Pro
   if (!isTauri()) throw new Error(NATIVE_REQUIRED);
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<HexWindow>("files_hex_read", { path, offset, length });
+}
+
+/**
+ * Toutes les occurrences d'une séquence, en une seule traversée du fichier.
+ *
+ * C'est ce qui permet d'annoncer « occurrence 3 sur 17 » : une recherche qui
+ * ne sait dire que « suivante » ne connaît jamais le total.
+ */
+export function findAllHex(
+  path: string,
+  pattern: number[],
+  limit = 5000,
+  context?: OperationContext,
+): Promise<number[]> {
+  return runJob(
+    "hex-find-all",
+    "files_hex_find_all",
+    (jobId) => ({ jobId, path, pattern, limit }),
+    context,
+  );
 }
 
 export function findHex(

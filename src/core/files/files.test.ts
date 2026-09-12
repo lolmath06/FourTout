@@ -3,7 +3,9 @@ import {
   acceptAttribute,
   constraintsForTool,
   extensionOf,
+  formatExactBytes,
   formatFileSize,
+  formatSizeWithExact,
   kindOfExtension,
   validateSelection,
 } from "./index";
@@ -26,11 +28,26 @@ describe("identification des fichiers", () => {
     expect(kindOfExtension("inconnue")).toBe("data");
   });
 
-  it("formate les tailles", () => {
+  it("formate les tailles en multiples binaires, libellés en conséquence", () => {
     expect(formatFileSize(512)).toBe("512 o");
-    expect(formatFileSize(2048)).toBe("2 Ko");
-    expect(formatFileSize(1024 * 1024 * 3.5)).toBe("3.5 Mo");
+    // Le calcul est en 1024 : le libellé doit l'être aussi.
+    expect(formatFileSize(2048)).toBe("2,00 Kio");
+    expect(formatFileSize(1024 * 1024 * 3.5)).toBe("3,50 Mio");
     expect(formatFileSize(-1)).toBe("—");
+  });
+
+  it("adapte la précision à l'ordre de grandeur", () => {
+    // 10 584 064 octets ne doivent pas s'afficher « 10 Mio » dans un outil
+    // dont le métier est justement de vérifier des tailles.
+    expect(formatFileSize(10_584_064)).toBe("10,1 Mio");
+    expect(formatFileSize(1024 * 1024 * 512)).toBe("512 Mio");
+  });
+
+  it("sait donner la taille exacte, en toutes lettres d'octets", () => {
+    expect(formatExactBytes(10_584_064)).toBe("10\u202f584\u202f064 octets");
+    expect(formatSizeWithExact(10_584_064)).toBe("10,1 Mio (10\u202f584\u202f064 octets)");
+    // En dessous du kibioctet, la forme arrondie n'apprendrait rien.
+    expect(formatSizeWithExact(512)).toBe("512 octets");
   });
 });
 

@@ -43,7 +43,8 @@ describe("zone de dépôt de fichiers", () => {
     expect(screen.getByText("rapport.pdf")).toBeInTheDocument();
     expect(screen.getByText("annexe.pdf")).toBeInTheDocument();
     expect(screen.getAllByText("pdf")).toHaveLength(2);
-    expect(screen.getAllByText("2 Ko")).toHaveLength(2);
+    // Le calcul est en 1024 : le libellé l'est aussi.
+    expect(screen.getAllByText("2,00 Kio")).toHaveLength(2);
   });
 
   it("limite à un fichier un outil qui n'est pas par lots", async () => {

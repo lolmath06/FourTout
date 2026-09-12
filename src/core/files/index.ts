@@ -32,17 +32,52 @@ export function kindOfExtension(extension: string): DataKind {
   return KIND_BY_EXTENSION[extension.replace(/^\./, "").toLowerCase()] ?? "data";
 }
 
+/**
+ * Taille lisible, en multiples **binaires**.
+ *
+ * FourTout compte en 1024 : c'est ce que fait le système de fichiers, et c'est
+ * ce que fait l'Explorateur de Windows. Les libellés le disent donc — Kio, Mio,
+ * Gio — au lieu d'écrire « Ko » devant un calcul en 1024, ce qui mélangeait
+ * deux conventions et rendait tout écart inexplicable.
+ *
+ * La précision suit l'ordre de grandeur : deux décimales en dessous de dix,
+ * une en dessous de cent, aucune au-delà. Un outil technique ne doit pas
+ * afficher « 10 Mio » pour 10 584 064 octets.
+ */
 export function formatFileSize(bytes: number): string {
   if (!Number.isFinite(bytes) || bytes < 0) return "—";
   if (bytes < 1024) return `${bytes} o`;
-  const units = ["Ko", "Mo", "Go", "To"];
+  const units = ["Kio", "Mio", "Gio", "Tio"];
   let value = bytes / 1024;
   let unit = 0;
   while (value >= 1024 && unit < units.length - 1) {
     value /= 1024;
     unit += 1;
   }
-  return `${value.toFixed(value >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`;
+  const decimals = value < 10 ? 2 : value < 100 ? 1 : 0;
+  return `${value.toLocaleString("fr-FR", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })} ${units[unit]}`;
+}
+
+/** Nombre exact d'octets, groupé par milliers : « 10 584 064 octets ». */
+export function formatExactBytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes < 0) return "—";
+  return `${bytes.toLocaleString("fr-FR")} octet${bytes > 1 ? "s" : ""}`;
+}
+
+/**
+ * Taille lisible **et** exacte : « 10,1 Mio (10 584 064 octets) ».
+ *
+ * Les outils qui servent à vérifier — analyse d'espace, inspection, intégrité —
+ * l'emploient plutôt que la forme arrondie : un chiffre qu'on ne peut pas
+ * recouper ne vaut rien dans ce contexte.
+ */
+export function formatSizeWithExact(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes < 0) return "—";
+  if (bytes < 1024) return formatExactBytes(bytes);
+  return `${formatFileSize(bytes)} (${formatExactBytes(bytes)})`;
 }
 
 let counter = 0;
