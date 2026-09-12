@@ -14,3 +14,13 @@ if (typeof window !== "undefined" && !window.matchMedia) {
     dispatchEvent: () => false,
   })) as unknown as typeof window.matchMedia;
 }
+
+// jsdom n'implémente pas les URL objets : sans ce complément, tout composant
+// qui affiche une image ou un média produit — et ils sont nombreux — échoue
+// ici pour une raison sans rapport avec ce que le test observe. Le stub rend
+// une URL inerte, jamais chargée par jsdom, ce qui suffit à ces tests.
+if (typeof window !== "undefined" && typeof URL.createObjectURL !== "function") {
+  let counter = 0;
+  URL.createObjectURL = () => `blob:fourtout-test/${++counter}`;
+  URL.revokeObjectURL = () => {};
+}

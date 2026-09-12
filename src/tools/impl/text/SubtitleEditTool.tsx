@@ -110,7 +110,13 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
     };
   }, [files]);
 
-  const primary = documents[0];
+  // Les documents sont analysés par un effet : ils survivent **un rendu de
+  // plus** que les fichiers dont ils viennent. Les subordonner à `files`, qui
+  // change, lui, dès le clic sur la croix, ferme la fenêtre pendant laquelle
+  // l'écran lisait `files[1].name` sur un fichier déjà retiré — une exception
+  // de rendu que rien ne rattrapait, donc un écran noir définitif.
+  const primary = files[0] ? documents[0] : undefined;
+  const secondary = files[1] ? documents[1] : undefined;
 
   /** Répliques telles que l'action en cours les produirait. */
   const resulting = useMemo<SubtitleCue[]>(() => {
@@ -119,13 +125,13 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
       case "shift":
         return shiftCues(primary.cues, offsetMs).cues;
       case "merge":
-        return documents[1] ? mergeCues(primary.cues, documents[1].cues, mergeOrder) : primary.cues;
+        return secondary ? mergeCues(primary.cues, secondary.cues, mergeOrder) : primary.cues;
       case "check":
         return normalizeCues(primary.cues, normalizeOptions).cues;
       default:
         return primary.cues;
     }
-  }, [primary, documents, mode, offsetMs, mergeOrder, normalizeOptions]);
+  }, [primary, secondary, mode, offsetMs, mergeOrder, normalizeOptions]);
 
   const shifted = primary && mode === "shift" ? shiftCues(primary.cues, offsetMs) : undefined;
   const normalized = primary && mode === "check" ? normalizeCues(primary.cues, normalizeOptions) : undefined;
@@ -188,8 +194,8 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
             {primary.cues.length > 1 ? "s" : ""}
             {encodings[0] && encodings[0] !== "utf-8" &&
               ` · lu en ${ENCODING_LABELS[encodings[0] as keyof typeof ENCODING_LABELS] ?? encodings[0]}, réécrit en UTF-8`}
-            {documents[1] &&
-              ` · ${files[1].name} — ${documents[1].format.toUpperCase()}, ${documents[1].cues.length} répliques`}
+            {secondary &&
+              ` · ${files[1].name} — ${secondary.format.toUpperCase()}, ${secondary.cues.length} répliques`}
           </p>
 
           {primary.warnings.length > 0 && (
@@ -281,7 +287,7 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
                   />
                 </Field>
               </Fieldset>
-              {!documents[1] && (
+              {!secondary && (
                 <Callout tone="info" title="Il manque le second fichier">
                   Déposez un deuxième fichier de sous-titres pour la fusion.
                 </Callout>
@@ -338,7 +344,7 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
               size="md"
               variant="primary"
               onClick={produce}
-              disabled={resulting.length === 0 || (mode === "merge" && !documents[1])}
+              disabled={resulting.length === 0 || (mode === "merge" && !secondary)}
             >
               <Icon name="Play" size={15} />
               Produire le fichier
