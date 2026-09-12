@@ -798,3 +798,219 @@ fn measures_a_large_file() {
     // de qui que ce soit, et encore moins dans le dépôt.
     fs::remove_dir_all(&workspace).unwrap();
 }
+
+/// Les plages divergentes entre deux fichiers de la fixture de comparaison.
+/// C'est ce qui permet de répondre à « pourquoi ces deux fichiers
+/// diffèrent-ils ? » sans charger un octet de plus qu'un bloc.
+#[test]
+fn locates_the_differing_ranges_of_the_compare_fixture() {
+    let (Some(left), Some(right)) =
+        (require("folder-compare-left"), require("folder-compare-right"))
+    else {
+        return;
+    };
+
+    // `changed.txt` : même longueur, un mot différent au même endroit.
+    let diff = fourtout_lib::files::command::binary_diff(
+        &left.join("changed.txt"),
+        &right.join("changed.txt"),
+        16,
+        &Reporter::silent(),
+    )
+    .unwrap();
+    assert_eq!(diff.size_a, diff.size_b);
+    assert!(!diff.ranges.is_empty());
+    assert!(diff.differing_bytes > 0);
+    assert!(!diff.truncated);
+    // La première divergence tombe bien à l'endroit du mot changé.
+    let first = diff.ranges[0].offset as usize;
+    let a = fs::read(left.join("changed.txt")).unwrap();
+    let b = fs::read(right.join("changed.txt")).unwrap();
+    assert_ne!(a[first], b[first]);
+    assert_eq!(&a[..first], &b[..first]);
+
+    // `nested/changed-size.bin` : longueurs différentes. La divergence de
+    // taille est une plage à part entière, qui commence où le plus court finit.
+    let diff = fourtout_lib::files::command::binary_diff(
+        &left.join("nested/changed-size.bin"),
+        &right.join("nested/changed-size.bin"),
+        16,
+        &Reporter::silent(),
+    )
+    .unwrap();
+    assert_ne!(diff.size_a, diff.size_b);
+    let tail = diff.ranges.last().unwrap();
+    assert_eq!(tail.offset, diff.size_a.min(diff.size_b));
+    assert_eq!(tail.length, diff.size_a.max(diff.size_b) - diff.size_a.min(diff.size_b));
+
+    // Deux fichiers identiques n'ont aucune plage.
+    let diff = fourtout_lib::files::command::binary_diff(
+        &left.join("same.txt"),
+        &right.join("same.txt"),
+        16,
+        &Reporter::silent(),
+    )
+    .unwrap();
+    assert!(diff.ranges.is_empty());
+    assert_eq!(diff.differing_bytes, 0);
+}
+
+/* ------------------------------------------------------- contrat de fixtures */
+
+/// Les moteurs sont-ils d'accord avec ce que les fixtures contiennent
+/// réellement ?
+///
+/// `scripts/fixture-contract.mjs` observe le disque et écrit ce constat dans
+/// `CONTRAT.json`. Ce test compare la sortie des moteurs à ce constat. Il
+/// existe parce qu'une recette manuelle avait dérivé des fixtures — elle
+/// annonçait quatre fichiers `.txt` là où il y en avait six, et un total
+/// d'octets faux. Désormais, aucune valeur attendue ne se recopie : elle se
+/// dérive, et l'écart se voit ici.
+#[test]
+fn engines_agree_with_the_fixture_contract() {
+    let Some(path) = require("CONTRAT.json") else { return };
+    let contract: serde_json::Value =
+        serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
+    let reporter = Reporter::silent();
+
+    let number = |pointer: &str| -> u64 {
+        contract.pointer(pointer).and_then(|v| v.as_u64()).unwrap_or_else(|| {
+            panic!("contrat incomplet : {pointer}");
+        })
+    };
+    let list = |pointer: &str| -> Vec<String> {
+        contract
+            .pointer(pointer)
+            .and_then(|v| v.as_array())
+            .unwrap_or_else(|| panic!("contrat incomplet : {pointer}"))
+            .iter()
+            .filter_map(|entry| entry.as_str().map(str::to_string))
+            .collect()
+    };
+
+    // --- recherche -------------------------------------------------------
+    let search_root = assets().join("search-tree");
+    let query = |build: &dyn Fn(&mut SearchQuery)| {
+        let mut query =
+            SearchQuery { root: search_root.to_string_lossy().to_string(), ..Default::default() };
+        build(&mut query);
+        let mut names: Vec<String> = search::search(&query, &reporter)
+            .unwrap()
+            .hits
+            .into_iter()
+            .map(|hit| hit.relative)
+            .collect();
+        names.sort();
+        names
+    };
+
+    let txt = query(&|q| q.extensions = vec!["txt".into()]);
+    assert_eq!(txt.len() as u64, number("/rechercheArborescence/fichiersTxt"));
+    assert_eq!(txt, list("/rechercheArborescence/listeTxt"));
+
+    let containing = query(&|q| q.content = "FourTout".into());
+    assert_eq!(
+        containing,
+        list("/rechercheArborescence/contenantFourTout"),
+        "la recherche de contenu doit trouver exactement les fichiers qui portent le mot"
+    );
+    // Et jamais le binaire qui le contient pourtant.
+    let trap = contract
+        .pointer("/rechercheArborescence/piegeBinaire")
+        .and_then(|v| v.as_str())
+        .unwrap();
+    assert!(!containing.iter().any(|entry| entry == trap));
+
+    let large = query(&|q| q.min_size = Some(1024 * 1024));
+    assert_eq!(large, list("/rechercheArborescence/fichiersAuMoins1Mio"));
+
+    // --- comparaison de dossiers ----------------------------------------
+    let report = compare::compare(
+        &compare::CompareRequest {
+            left: assets().join("folder-compare-left").to_string_lossy().to_string(),
+            right: assets().join("folder-compare-right").to_string_lossy().to_string(),
+            mode: CompareMode::Reliable,
+            walk: WalkOptions::default(),
+        },
+        &reporter,
+    )
+    .unwrap();
+    let status_paths = |status: EntryStatus| {
+        let mut names: Vec<String> = report
+            .entries
+            .iter()
+            .filter(|entry| entry.status == status && !entry.is_dir)
+            .map(|entry| entry.relative.clone())
+            .collect();
+        names.sort();
+        names
+    };
+    assert_eq!(status_paths(EntryStatus::Different), list("/comparaisonDossiers/differents"));
+    assert_eq!(status_paths(EntryStatus::LeftOnly), list("/comparaisonDossiers/gaucheUniquement"));
+    assert_eq!(status_paths(EntryStatus::RightOnly), list("/comparaisonDossiers/droiteUniquement"));
+    assert_eq!(report.hashed_bytes, number("/comparaisonDossiers/octetsRelusEnModeFiable"));
+
+    // --- synchronisation -------------------------------------------------
+    let workspace = scratch("contract-sync");
+    let destination = workspace.join("destination");
+    copy_tree(&assets().join("sync-destination-update"), &destination);
+    let plan = sync::build_plan(
+        &sync_request(&assets().join("sync-source"), &destination, SyncMode::Update),
+        &reporter,
+    )
+    .unwrap();
+    assert_eq!(plan.copies as u64, list("/synchronisation/aCopier").len() as u64);
+    assert_eq!(plan.replacements as u64, list("/synchronisation/aRemplacer").len() as u64);
+    assert_eq!(plan.unchanged as u64, list("/synchronisation/inchanges").len() as u64);
+    assert_eq!(plan.directories as u64, list("/synchronisation/dossiersACreer").len() as u64);
+    assert_eq!(plan.bytes, number("/synchronisation/octetsAEcrire"));
+    assert_eq!(
+        plan.operations.len(),
+        plan.copies + plan.replacements + plan.directories,
+        "le total d'opérations est la somme des trois, pas un quatrième chiffre"
+    );
+
+    let mirror_destination = workspace.join("miroir");
+    copy_tree(&assets().join("sync-destination-mirror"), &mirror_destination);
+    let mirror = sync::build_plan(
+        &sync_request(&assets().join("sync-source"), &mirror_destination, SyncMode::Mirror),
+        &reporter,
+    )
+    .unwrap();
+    assert_eq!(mirror.deletions as u64, list("/synchronisation/aSupprimerEnMiroir").len() as u64);
+
+    // --- analyse d'espace ------------------------------------------------
+    let stats = fourtout_lib::files::scan::folder_stats(&assets().join("space-analysis"), &reporter)
+        .unwrap();
+    assert_eq!(stats.total_bytes, number("/analyseEspace/octetsTotal"));
+    assert_eq!(stats.files as u64, number("/analyseEspace/fichiers"));
+    assert_eq!(stats.directories as u64, number("/analyseEspace/dossiers"));
+
+    // --- archives ---------------------------------------------------------
+    let listing = archive::list(&assets().join("archive-sample.zip")).unwrap();
+    assert_eq!(listing.files as u64, number("/archive/fichiers"));
+
+    // --- inspection par signature ----------------------------------------
+    let expected = contract.pointer("/inspection/attendus").unwrap().as_object().unwrap();
+    for (relative, attente) in expected {
+        let target = assets().join(relative);
+        let head = fs::read(&target).unwrap_or_default();
+        let head = &head[..head.len().min(fourtout_lib::files::magic::HEAD_BYTES)];
+        let signature = fourtout_lib::files::magic::identify(head);
+        let extension = target
+            .extension()
+            .map(|e| e.to_string_lossy().to_lowercase())
+            .unwrap_or_default();
+
+        assert_eq!(
+            signature.id,
+            attente.get("typeReel").and_then(|v| v.as_str()).unwrap(),
+            "type détecté pour {relative}"
+        );
+        assert_eq!(
+            fourtout_lib::files::magic::extension_matches(&signature, &extension),
+            attente.get("extensionCoherente").and_then(|v| v.as_bool()).unwrap(),
+            "cohérence d'extension pour {relative}"
+        );
+    }
+}
