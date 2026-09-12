@@ -106,17 +106,29 @@ export async function cleanup(paths: string[]): Promise<void> {
   }
 }
 
-/** Inspecte un fichier média via ffprobe. */
-export async function probeFile(file: SelectedFile): Promise<MediaInfo> {
+/**
+ * Inspecte un fichier média via ffprobe et renvoie le **JSON brut**.
+ *
+ * La fiche détaillée (`core/media/inspect`) a besoin de champs que `MediaInfo`
+ * ne retient pas — profil, rapports d'aspect, espace colorimétrique,
+ * étiquettes. Plutôt que d'élargir `MediaInfo` pour tous les appelants, on
+ * expose une fois le texte que ffprobe a produit, et chaque lecteur y prend ce
+ * qui le concerne. Une seule commande dans les deux cas.
+ */
+export async function probeJson(file: SelectedFile): Promise<string> {
   const bytes = await readBytes(file);
   const path = await stage(bytes, file.extension || "bin");
   try {
     const { invoke } = await import("@tauri-apps/api/core");
-    const json = await invoke<string>("media_probe", { path });
-    return parseProbe(json);
+    return await invoke<string>("media_probe", { path });
   } finally {
     await cleanup([path]);
   }
+}
+
+/** Inspecte un fichier média via ffprobe. */
+export async function probeFile(file: SelectedFile): Promise<MediaInfo> {
+  return parseProbe(await probeJson(file));
 }
 
 export interface RunOptions {

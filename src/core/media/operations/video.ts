@@ -680,3 +680,71 @@ export function extractSubtitleTrack(order: number, format: "srt" | "vtt"): Vide
 export function cropFilter(rect: PixelRect): string {
   return `crop=${rect.width}:${rect.height}:${rect.x}:${rect.y}`;
 }
+
+/* --------------------------------------------------------- fréquence d'images */
+
+/**
+ * Cadences courantes, avec leur fraction exacte.
+ *
+ * 23,976 et 29,97 ne sont pas des nombres décimaux : ce sont 24000/1001 et
+ * 30000/1001. Passer `29.97` à FFmpeg produirait une dérive d'une image toutes
+ * les quelques minutes par rapport au son. On transmet donc toujours la
+ * fraction, et c'est aussi elle que ffprobe renverra à la relecture.
+ */
+export const FRAME_RATE_PRESETS: { value: string; label: string; hint?: string }[] = [
+  { value: "24000/1001", label: "23,976", hint: "Cinéma transféré en NTSC" },
+  { value: "24/1", label: "24", hint: "Cinéma" },
+  { value: "25/1", label: "25", hint: "PAL / Europe" },
+  { value: "30000/1001", label: "29,97", hint: "NTSC" },
+  { value: "30/1", label: "30" },
+  { value: "50/1", label: "50" },
+  { value: "60000/1001", label: "59,94" },
+  { value: "60/1", label: "60" },
+];
+
+/** `30000/1001` → 29.97. Renvoie `undefined` si la fraction est invalide. */
+export function frameRateValue(fraction: string): number | undefined {
+  const match = /^(\d+)(?:\/(\d+))?$/.exec(fraction.trim());
+  if (!match) return undefined;
+  const numerator = Number(match[1]);
+  const denominator = match[2] === undefined ? 1 : Number(match[2]);
+  if (numerator <= 0 || denominator <= 0) return undefined;
+  return numerator / denominator;
+}
+
+/**
+ * Lit une cadence saisie à la main : `30`, `29.97`, `30000/1001`.
+ *
+ * Les valeurs décimales connues pour être des fractions NTSC sont ramenées à
+ * leur fraction exacte — saisir « 29,97 » doit donner la même vidéo que
+ * choisir le préréglage.
+ */
+export function parseFrameRateInput(input: string): string | undefined {
+  const text = input.trim().replace(",", ".");
+  if (text === "") return undefined;
+  if (text.includes("/")) return frameRateValue(text) === undefined ? undefined : text;
+  const value = Number(text);
+  if (!Number.isFinite(value) || value <= 0 || value > 480) return undefined;
+  const exact = FRAME_RATE_PRESETS.find(
+    (preset) => Math.abs((frameRateValue(preset.value) ?? 0) - value) < 0.005,
+  );
+  if (exact) return exact.value;
+  return Number.isInteger(value) ? `${value}/1` : `${Math.round(value * 1000)}/1000`;
+}
+
+/**
+ * Filtre de changement de cadence.
+ *
+ * `fps` **duplique ou supprime** des images pour atteindre la cadence demandée.
+ * Rien n'est interpolé : aucune image intermédiaire n'est inventée, et une
+ * conversion 24 → 30 se voit donc comme une saccade régulière, pas comme un
+ * ralenti fluide. C'est le comportement attendu d'une conversion de cadence ;
+ * fabriquer des images demanderait un modèle d'interpolation, que FourTout n'a
+ * pas et ne prétend pas avoir.
+ *
+ * La durée et le son ne bougent pas : seule la façon d'échantillonner le temps
+ * change.
+ */
+export function frameRateFilter(fraction: string): string {
+  return `fps=${fraction}`;
+}
