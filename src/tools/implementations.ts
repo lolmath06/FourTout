@@ -179,7 +179,32 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   "image-watermark": lazy(() => import("./impl/image/ImageWatermarkTool").then((m) => ({ default: m.ImageWatermarkTool }))),
   "image-favicon": lazy(() => import("./impl/image/ImageFaviconTool").then((m) => ({ default: m.ImageFaviconTool }))),
   "image-icon-sizes": lazy(() => import("./impl/image/ImageIconSizesTool").then((m) => ({ default: m.ImageIconSizesTool }))),
-  "color-picker": lazy(() => import("./impl/image/ImagePaletteTool").then((m) => ({ default: m.ImagePaletteTool }))),
+  "color-picker": lazy(() =>
+    import("./impl/image/ColorInspectTool").then((m) => ({ default: m.ColorInspectTool })),
+  ),
+
+  // Phase 10 : comparaison d'images, planche-contact, média et sous-titres
+  "image-compare": lazy(() =>
+    import("./impl/image/ImageCompareTool").then((m) => ({ default: m.ImageCompareTool })),
+  ),
+  "image-contact-sheet": lazy(() =>
+    import("./impl/image/ContactSheetTool").then((m) => ({ default: m.ContactSheetTool })),
+  ),
+  "audio-channels": lazy(() =>
+    import("./impl/audio/AudioChannelsTool").then((m) => ({ default: m.AudioChannelsTool })),
+  ),
+  "audio-metadata": lazy(() =>
+    import("./impl/audio/AudioMetadataTool").then((m) => ({ default: m.AudioMetadataTool })),
+  ),
+  "media-info": lazy(() =>
+    import("./impl/media/MediaInspectTool").then((m) => ({ default: m.MediaInspectTool })),
+  ),
+  "video-frame-rate": lazy(() =>
+    import("./impl/video/VideoFrameRateTool").then((m) => ({ default: m.VideoFrameRateTool })),
+  ),
+  "subtitle-edit": lazy(() =>
+    import("./impl/text/SubtitleEditTool").then((m) => ({ default: m.SubtitleEditTool })),
+  ),
 
   // QR (phase 4)
   "qr-generate": lazy(() => import("./impl/dev/QrGenerateTool").then((m) => ({ default: m.QrGenerateTool }))),

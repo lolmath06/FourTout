@@ -203,4 +203,62 @@ export const audioTools = defineTools([
     acceptedInputs: [{ kind: "text", extensions: ["txt", "md"], multiple: false }],
     outputs: [OUT.audio(["mp3", "wav"])],
   },
+  {
+    id: "audio-channels",
+    name: "Convertir les canaux audio",
+    description:
+      "Passer un fichier en mono ou en stéréo, ou le laisser tel quel. Un fichier multicanal n'est jamais réduit sans qu'on le demande.",
+    category: "audio",
+    icon: "AudioLines",
+    keywords: [
+      "mono stereo", "canaux audio", "mono", "stereo", "passer en mono",
+      "passer en stereo", "downmix", "melanger les canaux", "5.1 en stereo",
+      "un seul canal", "deux canaux",
+    ],
+    aliases: ["audio channels", "mono to stereo", "stereo to mono", "downmix"],
+    capabilities: ["local", "produces-files", "needs-sidecar"],
+    acceptedInputs: [IN.audio()],
+    outputs: [OUT.audio()],
+    note: "Du mono vers le stéréo, le canal est dupliqué : les deux voies portent le même signal. Aucune spatialisation n'est fabriquée.",
+  },
+  {
+    id: "audio-metadata",
+    name: "Modifier les étiquettes audio",
+    description:
+      "Lire et corriger titre, artiste, album, année, genre, piste et commentaire — sans réencoder le son.",
+    category: "audio",
+    icon: "Tags",
+    keywords: [
+      "metadata audio", "metadonnees audio", "etiquettes", "tags mp3", "id3",
+      "titre artiste album", "renommer les tags", "corriger un titre",
+      "annee genre piste", "modifier les informations d'un mp3",
+    ],
+    aliases: ["audio metadata", "id3 tags", "edit tags", "music tags"],
+    capabilities: ["local", "produces-files", "needs-sidecar"],
+    acceptedInputs: [IN.audio()],
+    outputs: [OUT.audio()],
+    note: "L'écriture recopie le flux audio tel quel (-c copy) : le son produit est identique au bit près.",
+  },
+  {
+    id: "media-info",
+    name: "Inspecter un média",
+    description:
+      "Tout ce qu'un fichier audio ou vidéo déclare : conteneur, codecs, résolution, cadence, débits, canaux, étiquettes.",
+    category: "audio",
+    alsoIn: ["video", "files"],
+    icon: "FileSearch",
+    keywords: [
+      "metadata video", "metadata audio", "metadonnees", "informations media",
+      "codec", "bitrate", "debit", "resolution video", "frequence d'images",
+      "fps video", "canaux", "echantillonnage", "inspecter une video",
+      "proprietes d'un fichier video", "ffprobe",
+    ],
+    aliases: ["media info", "media metadata", "video metadata", "audio metadata", "ffprobe", "mediainfo"],
+    capabilities: ["local", "needs-sidecar"],
+    acceptedInputs: [
+      { kind: "audio", extensions: ["mp3", "wav", "flac", "ogg", "m4a", "aac", "opus"], multiple: false },
+      { kind: "video", extensions: ["mp4", "mkv", "webm", "mov", "avi", "gif"], multiple: false },
+    ],
+    outputs: [OUT.none()],
+  },
 ]);
