@@ -175,3 +175,105 @@ export function extractAudio(format: AudioFormat, options: { copy?: boolean } = 
         : ["-i", inputs[0], "-vn", ...codecArgs(format), output],
   };
 }
+
+/* ------------------------------------------------------------------ canaux */
+
+/** Nombre de canaux demandé en sortie. `keep` laisse la source intacte. */
+export type ChannelTarget = "keep" | "mono" | "stereo";
+
+export const CHANNEL_TARGETS: { value: ChannelTarget; label: string; hint: string }[] = [
+  { value: "keep", label: "Tel quel", hint: "Les canaux de la source sont conservés." },
+  {
+    value: "mono",
+    label: "Mono (1 canal)",
+    hint: "Les canaux sont mélangés en un seul par le mixage de FFmpeg, à volume corrigé.",
+  },
+  {
+    value: "stereo",
+    label: "Stéréo (2 canaux)",
+    hint: "Depuis du mono, les deux voies portent le même signal : c'est une duplication, pas une spatialisation.",
+  },
+];
+
+/** Nombre de canaux correspondant à une cible, ou `undefined` pour « tel quel ». */
+export function channelCount(target: ChannelTarget): number | undefined {
+  if (target === "mono") return 1;
+  if (target === "stereo") return 2;
+  return undefined;
+}
+
+/**
+ * Change le nombre de canaux d'un fichier audio.
+ *
+ * Le mixage est celui de FFmpeg (`-ac`), qui applique les coefficients de
+ * mixage standard et une correction de volume : c'est un vrai mélange, pas la
+ * somme brute de deux voies qui saturerait. Dans l'autre sens, passer du mono au
+ * stéréo **duplique** le canal — les deux voies sont identiques. FourTout ne
+ * prétend pas fabriquer une image stéréo qui n'a jamais été enregistrée.
+ */
+export function setChannels(
+  target: ChannelTarget,
+  format: AudioFormat,
+  options: { bitrateKbps?: number; sampleRate?: number } = {},
+): AudioOp {
+  const channels = channelCount(target);
+  return {
+    outputExt: format,
+    mimeType: AUDIO_MIME[format],
+    buildArgs: (inputs, output) => [
+      "-i", inputs[0],
+      ...codecArgs(format, { ...options, channels }),
+      output,
+    ],
+  };
+}
+
+/* ------------------------------------------------------------- métadonnées */
+
+/** Étiquettes modifiables sans toucher au son. */
+export interface AudioTags {
+  title?: string;
+  artist?: string;
+  album?: string;
+  date?: string;
+  genre?: string;
+  comment?: string;
+  track?: string;
+}
+
+/** Clés FFmpeg correspondantes, dans l'ordre d'affichage de l'outil. */
+export const TAG_FIELDS: { key: keyof AudioTags; label: string; placeholder?: string }[] = [
+  { key: "title", label: "Titre" },
+  { key: "artist", label: "Artiste" },
+  { key: "album", label: "Album" },
+  { key: "date", label: "Année", placeholder: "2024" },
+  { key: "genre", label: "Genre" },
+  { key: "track", label: "Piste", placeholder: "3" },
+  { key: "comment", label: "Commentaire" },
+];
+
+/**
+ * Réécrit les étiquettes d'un fichier audio **sans réencoder**.
+ *
+ * `-c copy` recopie le flux tel quel : le son produit est identique au bit
+ * près, et l'opération prend une fraction de seconde quelle que soit la durée.
+ * Réencoder pour corriger un titre mal orthographié dégraderait le fichier à
+ * chaque passage — un prix absurde pour une chaîne de caractères.
+ *
+ * Une valeur vide **efface** l'étiquette (`-metadata clé=`), ce qui est la
+ * seule façon de retirer un champ ; les clés absentes de l'objet ne sont pas
+ * touchées.
+ */
+export function writeTags(tags: AudioTags, extension: string, mimeType: string): AudioOp {
+  const args: string[] = [];
+  for (const { key } of TAG_FIELDS) {
+    const value = tags[key];
+    if (value === undefined) continue;
+    args.push("-metadata", `${key}=${value}`);
+  }
+  return {
+    outputExt: extension,
+    mimeType,
+    buildArgs: (inputs, output) => ["-i", inputs[0], "-map", "0", "-c", "copy", ...args, output],
+  };
+}

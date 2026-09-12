@@ -22,6 +22,7 @@ import {
   cropFilter,
   encodeVideo,
   extractSubtitleTrack,
+  frameRateFilter,
   removeAudio,
   replaceAudio,
   scaleFilter,
@@ -303,6 +304,34 @@ export function speedPipeline(
     }),
   );
   return { ...pipeline, durationMs: speedDurationMs(source.info?.durationMs ?? 0, options.factor) };
+}
+
+/**
+ * « Changer la fréquence d'images ».
+ *
+ * La sortie est **à cadence constante** : `fps` régularise l'échantillonnage et
+ * `-r` fixe la cadence du conteneur. Une source à cadence variable en ressort
+ * donc constante — c'est le comportement réel, et l'outil le dit plutôt que de
+ * laisser croire que la variabilité est préservée.
+ *
+ * La piste audio est recopiée sans y toucher quand le conteneur ne change pas :
+ * la durée du son ne peut donc pas dériver de celle de l'image.
+ */
+export function frameRatePipeline(
+  source: PipelineSource,
+  options: { fraction: string; container?: VideoContainerId },
+): VideoPipeline {
+  const container = options.container ?? defaultContainer(source.extension, source.caps);
+  const audioArgs = passthroughAudioArgs(source, container);
+  return pipelineFor({ container, level: "balanced" }, source, ({ videoArgs }) =>
+    encodeVideo({
+      container,
+      videoArgs,
+      audioArgs,
+      videoFilters: [frameRateFilter(options.fraction)],
+      extraArgs: ["-r", options.fraction],
+    }),
+  );
 }
 
 /** « Découper une vidéo », en mode rapide (recopie) ou précis (réencodage). */
