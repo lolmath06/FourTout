@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:assets": "node scripts/generate-test-assets.mjs && node scripts/generate-image-assets.mjs && node scripts/generate-pdf-assets.mjs && node scripts/generate-recovery-fixtures.mjs && node scripts/generate-media-assets.mjs && node scripts/generate-files-assets.mjs && node scripts/generate-speech-assets.mjs && node scripts/generate-document-assets.mjs && node scripts/generate-phase9-assets.mjs && cargo run --quiet --manifest-path src-tauri/Cargo.toml --example phase9_fixtures",
+    "test:assets": "node scripts/generate-test-assets.mjs && node scripts/generate-image-assets.mjs && node scripts/generate-pdf-assets.mjs && node scripts/generate-recovery-fixtures.mjs && node scripts/generate-media-assets.mjs && node scripts/generate-files-assets.mjs && node scripts/generate-speech-assets.mjs && node scripts/generate-document-assets.mjs && node scripts/generate-phase9-assets.mjs && cargo run --quiet --manifest-path src-tauri/Cargo.toml --example phase9_fixtures && node scripts/fixture-contract.mjs",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "pdfjs:assets": "node scripts/sync-pdfjs-assets.mjs",
     "ocr:assets": "node scripts/sync-tesseract-assets.mjs",
@@ -28,7 +28,8 @@
     "wordlist": "node scripts/generate-wordlist.mjs",
     "speech:assets": "node scripts/generate-speech-assets.mjs",
     "onnx:assets": "node scripts/sync-onnx-assets.mjs",
-    "docs:features": "node scripts/generate-features-doc.mjs"
+    "docs:features": "node scripts/generate-features-doc.mjs",
+    "fixtures:contract": "node scripts/fixture-contract.mjs"
   },
   "dependencies": {
     "@cantoo/pdf-lib": "^2.9.1",

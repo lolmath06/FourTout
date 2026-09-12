@@ -20,7 +20,7 @@ import { createHash } from "node:crypto";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { deflateRawSync, gzipSync } from "node:zlib";
+import { deflateRawSync, deflateSync, gzipSync } from "node:zlib";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "test-assets", "generated");
@@ -52,6 +52,120 @@ function deterministicBytes(length, seed = 1) {
 }
 
 const sha256 = (buffer) => createHash("sha256").update(buffer).digest("hex");
+
+/* ---------------------------------------- CRC-32, PNG, JPEG, trame MPEG */
+
+const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
+  let c = n;
+  for (let k = 0; k < 8; k += 1) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  return c >>> 0;
+});
+
+function crc32(buffer) {
+  let crc = 0xffffffff;
+  for (const byte of buffer) crc = CRC_TABLE[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+/**
+ * Écrit un PNG véritable, en couleur, à partir d'une fonction de pixel.
+ *
+ * Un PNG de 1×1 suffirait à éprouver la reconnaissance de signature, mais pas
+ * l'aperçu : affiché dans un panneau, un pixel ressemble à un panneau vide, et
+ * on ne sait plus distinguer « l'image ne s'affiche pas » de « l'image fait un
+ * pixel ». Les fixtures d'aperçu sont donc de vraies images, reconnaissables
+ * d'un coup d'œil.
+ */
+function buildPng(width, height, pixel) {
+  const raw = Buffer.alloc(height * (1 + width * 3));
+  let cursor = 0;
+  for (let y = 0; y < height; y += 1) {
+    raw[cursor] = 0; // type de filtre : aucun
+    cursor += 1;
+    for (let x = 0; x < width; x += 1) {
+      const [r, g, b] = pixel(x, y);
+      raw[cursor] = r;
+      raw[cursor + 1] = g;
+      raw[cursor + 2] = b;
+      cursor += 3;
+    }
+  }
+
+  const chunk = (type, data) => {
+    const length = Buffer.alloc(4);
+    length.writeUInt32BE(data.length, 0);
+    const body = Buffer.concat([Buffer.from(type, "ascii"), data]);
+    const checksum = Buffer.alloc(4);
+    checksum.writeUInt32BE(crc32(body), 0);
+    return Buffer.concat([length, body, checksum]);
+  };
+
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width, 0);
+  header.writeUInt32BE(height, 4);
+  header[8] = 8; // 8 bits par composante
+  header[9] = 2; // couleur vraie (RVB)
+
+  return Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk("IHDR", header),
+    chunk("IDAT", deflateSync(raw, { level: 9 })),
+    chunk("IEND", Buffer.alloc(0)),
+  ]);
+}
+
+/** Damier bleu et blanc traversé d'une diagonale rouge : reconnaissable. */
+function damier(size) {
+  return buildPng(size, size, (x, y) => {
+    if (Math.abs(x - y) < 3) return [220, 60, 60];
+    const clair = (Math.floor(x / 8) + Math.floor(y / 8)) % 2 === 0;
+    return clair ? [245, 245, 250] : [60, 110, 200];
+  });
+}
+
+/**
+ * JPEG en niveaux de gris, 8 × 8, écrit segment par segment.
+ *
+ * Il ne sert qu'à une chose : être un JPEG *authentique* portant une fausse
+ * extension `.png`, pour éprouver le cas symétrique du PNG déguisé en JPEG.
+ */
+function buildMinimalJpeg() {
+  const segment = (code, payload) => {
+    const length = Buffer.alloc(2);
+    length.writeUInt16BE(payload.length + 2, 0);
+    return Buffer.concat([Buffer.from([0xff, code]), length, payload]);
+  };
+  const huffman = (classAndId) =>
+    Buffer.concat([
+      Buffer.from([classAndId]),
+      Buffer.from([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+      Buffer.from([0x00]),
+    ]);
+
+  return Buffer.concat([
+    Buffer.from([0xff, 0xd8]), // SOI
+    segment(
+      0xe0,
+      Buffer.concat([Buffer.from("JFIF\0", "ascii"), Buffer.from([1, 1, 0, 0, 1, 0, 1, 0, 0])]),
+    ),
+    segment(0xdb, Buffer.concat([Buffer.from([0x00]), Buffer.alloc(64, 16)])),
+    segment(0xc0, Buffer.from([0x08, 0x00, 0x08, 0x00, 0x08, 0x01, 0x01, 0x11, 0x00])),
+    segment(0xc4, huffman(0x00)),
+    segment(0xc4, huffman(0x10)),
+    segment(0xda, Buffer.from([0x01, 0x01, 0x00, 0x00, 0x3f, 0x00])),
+    Buffer.from([0x00]), // un bloc, valeur nulle
+    Buffer.from([0xff, 0xd9]), // EOI
+  ]);
+}
+
+/**
+ * En-tête de trame MPEG-1 Layer III valide (128 kbit/s, 44,1 kHz), suivi du
+ * silence. Assez pour la reconnaissance par signature — et surtout, assez pour
+ * vérifier qu'un vrai MP3 reste reconnu après le durcissement de la détection.
+ */
+function mpegFrame() {
+  return Buffer.concat([Buffer.from([0xff, 0xfb, 0x90, 0x00]), Buffer.alloc(413)]);
+}
 
 /* ============================================================ 1. COMPARAISON
  *
@@ -181,15 +295,15 @@ write("space-analysis/images/vignettes/mini.png", deterministicBytes(32 * 1024, 
 /* ======================================================== 5. INSPECTION */
 fresh("inspect");
 
-// Un vrai PNG (1×1, noir) renommé en .jpg : le cas d'école de l'extension
-// trompeuse. Les octets sont ceux d'un PNG minimal valide.
-const PNG_1x1 = Buffer.from(
-  "89504E470D0A1A0A0000000D49484452000000010000000108060000001F15C4890000000A4944415478DA6300010000050001" +
-    "0D0A2DB40000000049454E44AE426082",
-  "hex",
-);
-write("inspect/wrong-extension.jpg", PNG_1x1);
-write("inspect/vraie-image.png", PNG_1x1);
+// Un vrai PNG renommé en .jpg : le cas d'école de l'extension trompeuse.
+// L'image est volontairement lisible à l'œil, pour qu'un aperçu qui n'affiche
+// rien se distingue d'un aperçu qui affiche un pixel.
+write("inspect/wrong-extension.jpg", damier(96));
+write("inspect/vraie-image.png", damier(96));
+
+// Le cas symétrique : un JPEG véritable portant l'extension .png.
+write("inspect/wrong-extension.png", buildMinimalJpeg());
+write("inspect/vraie-photo.jpg", buildMinimalJpeg());
 
 // UTF-16 LE avec BOM, et fins de ligne CRLF : trois choses à détecter.
 const utf16Text = "Première ligne.\r\nDeuxième ligne accentuée : é à ü.\r\n";
@@ -199,6 +313,37 @@ for (const [index, character] of [...utf16Text].entries()) {
   utf16Buffer.writeUInt16LE(character.charCodeAt(0), 2 + index * 2);
 }
 write("inspect/encoding-utf16le.txt", utf16Buffer);
+
+// Le jeu complet des marques d'ordre des octets, et les sosies du MP3.
+// « FF FE » — le BOM UTF-16 petit-boutien — ressemble à s'y méprendre au mot
+// de synchronisation d'une trame MPEG : ces fixtures verrouillent la
+// distinction, qui a déjà été prise en défaut une fois.
+const utf16beText = "Ligne en UTF-16 grand-boutien.\r\n";
+const utf16beBuffer = Buffer.alloc(2 + utf16beText.length * 2);
+utf16beBuffer.writeUInt16BE(0xfeff, 0);
+for (const [index, character] of [...utf16beText].entries()) {
+  utf16beBuffer.writeUInt16BE(character.charCodeAt(0), 2 + index * 2);
+}
+write("inspect/encoding-utf16be.txt", utf16beBuffer);
+
+write(
+  "inspect/encoding-utf8-bom.txt",
+  Buffer.concat([
+    Buffer.from([0xef, 0xbb, 0xbf]),
+    Buffer.from("Texte UTF-8 précédé de son BOM.\n", "utf8"),
+  ]),
+);
+
+write("inspect/sample.mp3", mpegFrame());
+
+// Sosie du MP3 : la synchronisation est là, les champs qui suivent sont absurdes.
+write(
+  "inspect/faux-mp3.bin",
+  Buffer.concat([
+    Buffer.from([0xff, 0xfe, 0x00, 0x01, 0x02, 0x1b, 0x7f]),
+    deterministicBytes(512, 68),
+  ]),
+);
 
 // En-tête SQLite valide, suivi d'une page vide : reconnu par signature.
 const sqlite = Buffer.alloc(1024);
@@ -358,17 +503,6 @@ write(
 /* ======================================================== 9. ARCHIVES */
 
 /* --------------------------------------------------------------- ZIP */
-const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
-  let c = n;
-  for (let k = 0; k < 8; k += 1) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-  return c >>> 0;
-});
-
-function crc32(buffer) {
-  let crc = 0xffffffff;
-  for (const byte of buffer) crc = CRC_TABLE[(crc ^ byte) & 0xff] ^ (crc >>> 8);
-  return (crc ^ 0xffffffff) >>> 0;
-}
 
 function buildZip(entries, { compress = true } = {}) {
   const parts = [];
