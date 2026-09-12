@@ -59,9 +59,9 @@ const PLAN = {
   replacements: 1,
   deletions: 0,
   unchanged: 1,
-  bytes: 8349,
+  bytes: 8343,
   freedBytes: 0,
-  sourceNotes: { symlinks: [], unreadable: [], files: 7, directories: 1, bytes: 8349 },
+  sourceNotes: { symlinks: [], unreadable: [], files: 7, directories: 1, bytes: 8343 },
   destinationNotes: { symlinks: [], unreadable: [], files: 3, directories: 1, bytes: 0 },
   warnings: [],
 };
@@ -107,7 +107,7 @@ describe("résumé du plan de synchronisation", () => {
     await plan();
     // Le séparateur de milliers français est une espace fine insécable, que
     // la comparaison de texte normalise : la regex accepte l'une comme l'autre.
-    expect(screen.getByTestId("sync-plan-total")).toHaveTextContent(/8[\s\u202f]349 octets/);
+    expect(screen.getByTestId("sync-plan-total")).toHaveTextContent(/8[\s\u202f]343 octets/);
     expect(screen.getByTestId("sync-plan-total")).toHaveTextContent(/8,15 Kio/);
   });
 
