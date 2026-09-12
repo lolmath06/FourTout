@@ -98,20 +98,17 @@ pub struct CompareResult {
     pub sha256_b: String,
 }
 
-/// Les 8 premiers Kio contiennent-ils un octet nul ou trop de contrôles ?
+/// Ce fichier ressemble-t-il à du texte ?
+///
+/// La question est déléguée à `textscan`, qui porte la même décision que le
+/// moteur d'encodage de la phase 8. L'ancienne heuristique locale — « contient
+/// un octet nul, donc binaire » — déclarait binaire tout fichier en UTF-16,
+/// dont un octet sur deux est nul par construction.
 fn looks_like_text(path: &Path) -> bool {
     let Ok(mut file) = fs::File::open(path) else { return false };
     let mut buffer = vec![0_u8; 8192];
     let Ok(read) = file.read(&mut buffer) else { return false };
-    let sample = &buffer[..read];
-    if sample.contains(&0) {
-        return false;
-    }
-    let suspicious = sample
-        .iter()
-        .filter(|b| **b < 9 || (**b > 13 && **b < 32))
-        .count();
-    read == 0 || suspicious * 100 / read.max(1) < 5
+    super::textscan::looks_like_text(&buffer[..read])
 }
 
 #[tauri::command]
@@ -172,6 +169,140 @@ pub fn files_compare(
             sha256_b: hash::sha256_file(b)?,
         })
     })
+}
+
+
+/// Plage d'octets qui diffère entre deux fichiers.
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DiffRange {
+    pub offset: u64,
+    pub length: u64,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BinaryDiff {
+    pub size_a: u64,
+    pub size_b: u64,
+    /// Premières plages divergentes, dans l'ordre.
+    pub ranges: Vec<DiffRange>,
+    /// Y avait-il encore des différences au-delà de la dernière plage listée ?
+    pub truncated: bool,
+    /// Nombre total d'octets différents parcourus (sur la partie commune).
+    pub differing_bytes: u64,
+}
+
+/// Localise les premières plages divergentes entre deux fichiers.
+///
+/// Lecture en flux par blocs de 256 Kio : comparer deux images disque ne coûte
+/// rien de plus en mémoire que comparer deux notes. Seules les `max_ranges`
+/// premières plages sont retenues — au-delà, l'information utile n'est plus
+/// « où », mais « partout », et le rapport le dit.
+#[tauri::command]
+pub fn files_binary_diff(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    path_a: String,
+    path_b: String,
+    max_ranges: usize,
+) -> Result<BinaryDiff, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        binary_diff(Path::new(&path_a), Path::new(&path_b), max_ranges, reporter)
+    })
+}
+
+/// Cœur de `files_binary_diff`, appelable sans Tauri — donc testable.
+pub fn binary_diff(
+    a: &Path,
+    b: &Path,
+    max_ranges: usize,
+    reporter: &Reporter,
+) -> Result<BinaryDiff, String> {
+    {
+        let size_a = fs::metadata(a).map_err(|e| format!("{} : {e}", a.display()))?.len();
+        let size_b = fs::metadata(b).map_err(|e| format!("{} : {e}", b.display()))?.len();
+
+        let mut file_a = std::io::BufReader::new(fs::File::open(a).map_err(|e| e.to_string())?);
+        let mut file_b = std::io::BufReader::new(fs::File::open(b).map_err(|e| e.to_string())?);
+        let mut buffer_a = vec![0_u8; 256 * 1024];
+        let mut buffer_b = vec![0_u8; 256 * 1024];
+
+        let limit = max_ranges.clamp(1, 1000);
+        let mut ranges: Vec<DiffRange> = Vec::new();
+        let mut differing_bytes = 0_u64;
+        let mut truncated = false;
+        let mut offset = 0_u64;
+        let common = size_a.min(size_b);
+        // Plage ouverte : `Some(début)` tant que les octets continuent de différer.
+        let mut open: Option<u64> = None;
+
+        loop {
+            reporter.check()?;
+            let read_a = read_full(&mut file_a, &mut buffer_a)?;
+            let read_b = read_full(&mut file_b, &mut buffer_b)?;
+            let shared = read_a.min(read_b);
+            if shared == 0 {
+                break;
+            }
+            for index in 0..shared {
+                let position = offset + index as u64;
+                if buffer_a[index] == buffer_b[index] {
+                    if let Some(start) = open.take() {
+                        if ranges.len() < limit {
+                            ranges.push(DiffRange { offset: start, length: position - start });
+                        } else {
+                            truncated = true;
+                        }
+                    }
+                } else {
+                    differing_bytes += 1;
+                    if open.is_none() {
+                        open = Some(position);
+                    }
+                }
+            }
+            offset += shared as u64;
+            reporter.report(offset, common, "Recherche des différences…");
+            if read_a != read_b {
+                break;
+            }
+        }
+
+        if let Some(start) = open {
+            if ranges.len() < limit {
+                ranges.push(DiffRange { offset: start, length: offset - start });
+            } else {
+                truncated = true;
+            }
+        }
+        // Une longueur différente est une divergence à part entière : elle
+        // commence là où le plus court s'arrête.
+        if size_a != size_b {
+            if ranges.len() < limit {
+                ranges.push(DiffRange { offset: common, length: size_a.max(size_b) - common });
+            } else {
+                truncated = true;
+            }
+        }
+
+        Ok(BinaryDiff { size_a, size_b, ranges, truncated, differing_bytes })
+    }
+}
+
+/// Remplit le tampon autant que possible : un `read` court ne doit pas
+/// décaler la comparaison des deux flux l'un par rapport à l'autre.
+fn read_full(reader: &mut impl Read, buffer: &mut [u8]) -> Result<usize, String> {
+    let mut filled = 0;
+    while filled < buffer.len() {
+        match reader.read(&mut buffer[filled..]) {
+            Ok(0) => break,
+            Ok(read) => filled += read,
+            Err(error) => return Err(error.to_string()),
+        }
+    }
+    Ok(filled)
 }
 
 /* ------------------------------------------------------ informations */
@@ -496,6 +627,21 @@ pub fn files_hex_find(
 ) -> Result<Option<u64>, String> {
     with_reporter(app, &state, &job_id, |reporter| {
         hex::find(Path::new(&path), &pattern, from, reporter)
+    })
+}
+
+/// Toutes les occurrences d'une séquence, en une seule traversée du fichier.
+#[tauri::command]
+pub fn files_hex_find_all(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    path: String,
+    pattern: Vec<u8>,
+    limit: usize,
+) -> Result<Vec<u64>, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        hex::find_all(Path::new(&path), &pattern, limit, reporter)
     })
 }
 
