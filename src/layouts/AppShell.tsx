@@ -2,7 +2,6 @@ import clsx from "clsx";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
-import { SearchInput } from "@/components/ui/SearchInput";
 import { ToastViewport } from "@/components/ui/ToastViewport";
 import { useFavorites } from "@/features/favorites/store";
 import { useRecents } from "@/features/recents/store";
@@ -18,12 +17,17 @@ interface NavItem {
 }
 
 /**
- * Cadre de l'application : barre latérale de navigation, en-tête avec recherche
- * globale, zone de contenu et pile de notifications.
+ * Cadre de l'application : barre latérale de navigation, zone de contenu et
+ * pile de notifications.
+ *
+ * Pas de barre de recherche en en-tête. Elle doublait celle de la page Outils
+ * sans rien ajouter — la même requête, sur le même catalogue — tout en prenant
+ * le focus sur chaque écran, y compris ceux où il n'y a rien à chercher. La
+ * recherche vit là où sont les outils ; la ligne d'en-tête disparaît avec elle
+ * plutôt que de laisser une bande vide.
  */
 export function AppShell() {
   const navigate = useNavigate();
-  const [query, setQuery] = useState("");
   const [collapsed, setCollapsed] = useState(false);
   const favorites = useFavorites((state) => state.ids);
   const recents = useRecents((state) => state.entries);
@@ -48,12 +52,6 @@ export function AppShell() {
     { to: "/recents", label: "Récents", icon: "Clock3", count: recents.length },
     { to: "/settings", label: "Paramètres", icon: "Settings" },
   ];
-
-  const submitSearch = () => {
-    const trimmed = query.trim();
-    navigate(trimmed ? `/tools?q=${encodeURIComponent(trimmed)}` : "/tools");
-    setQuery("");
-  };
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-[var(--ft-bg)] text-[var(--ft-text)]">
@@ -143,17 +141,6 @@ export function AppShell() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-11 shrink-0 items-center gap-3 border-b border-[var(--ft-border)] bg-[var(--ft-chrome)] px-3">
-          <SearchInput
-            value={query}
-            onChange={setQuery}
-            onSubmit={submitSearch}
-            placeholder="Rechercher un outil…"
-            aria-label="Rechercher un outil"
-            className="max-w-sm flex-1"
-          />
-        </header>
-
         <main className="min-h-0 flex-1 overflow-y-auto">
           <Outlet />
         </main>
