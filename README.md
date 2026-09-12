@@ -7,7 +7,7 @@
 **Une boîte à outils desktop locale regroupant PDF, image, audio, vidéo,
 documents, fichiers, outils développeur, conversions et confidentialité.**
 
-174 outils, une seule application, sur votre machine.
+181 outils, une seule application, sur votre machine.
 
 </div>
 

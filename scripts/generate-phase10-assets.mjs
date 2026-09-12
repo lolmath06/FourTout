@@ -257,6 +257,29 @@ write(
   ),
 );
 
+// Sous-titres venus de Windows : UTF-16 avec marque d'ordre des octets et fins
+// de ligne CRLF. Décodé en UTF-8 d'office, ce fichier ne lèverait aucune erreur
+// — il rendrait simplement du charabia.
+write(
+  "subtitle-windows.srt",
+  Buffer.concat([
+    Buffer.from([0xff, 0xfe]),
+    Buffer.from(
+      [
+        "1",
+        "00:00:01,000 --> 00:00:03,000",
+        "Réplique accentuée à l'ancienne.",
+        "",
+        "2",
+        "00:00:04,000 --> 00:00:06,000",
+        "Où ça ? Là-bas, près du mûrier.",
+        "",
+      ].join("\r\n"),
+      "utf16le",
+    ),
+  ]),
+);
+
 // Deux chevauchements francs : le second commence avant la fin du premier.
 write(
   "subtitle-overlap.srt",

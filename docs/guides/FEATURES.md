@@ -2,7 +2,7 @@
 
 [← Documentation](../README.md)
 
-174 outils, répartis en dix catégories. Chaque outil de cette liste est
+181 outils, répartis en dix catégories. Chaque outil de cette liste est
 **utilisable** : FourTout n'enregistre pas d'outil incomplet, et il n'existe
 donc pas d'état « bientôt disponible ».
 
@@ -22,10 +22,10 @@ d'arriver.
 ## Sommaire
 
 - [PDF](#pdf-26)
-- [Images](#images-23)
-- [Audio](#audio-15)
-- [Vidéo](#vidéo-19)
-- [Texte & Documents](#texte--documents-19)
+- [Images](#images-25)
+- [Audio](#audio-18)
+- [Vidéo](#vidéo-20)
+- [Texte & Documents](#texte--documents-20)
 - [Fichiers & Archives](#fichiers--archives-29)
 - [Convertisseurs](#convertisseurs-1)
 - [Développeur](#développeur-18)
@@ -71,7 +71,7 @@ _Fusionner, découper, compresser, convertir et sécuriser des PDF._
 - **Scans et photos vers PDF** — Assembler des pages numérisées ou photographiées en un seul PDF, avec nettoyage et mise en ordre des pages. · aussi dans *Images*
   <br>_Le nettoyage s'applique à toutes les pages avec les mêmes réglages ; l'assemblage réutilise le moteur « Images vers PDF »._
 
-### Images (23)
+### Images (25)
 
 _Convertir, compresser, redimensionner et nettoyer des images._
 
@@ -96,13 +96,16 @@ _Convertir, compresser, redimensionner et nettoyer des images._
 - **Filigrane sur une image** — Ajouter un logo ou un texte en filigrane, à l'unité ou par lots.
 - **Générer un favicon** — Produire un favicon multi-tailles et le fichier .ico depuis une image. · aussi dans *Développeur*
 - **Générer plusieurs tailles** — Exporter d'un coup toutes les tailles d'icônes ou de miniatures utiles. · aussi dans *Développeur*
-- **Palette de couleurs** — Extraire les couleurs dominantes d'une image (HEX, RGB) et les copier. · aussi dans *Développeur*
+- **Analyser et convertir une couleur** — Couleurs dominantes d'une image, pipette au pixel près, écritures HEX / RGB / HSL / HSV, et contraste WCAG entre un texte et son fond. · aussi dans *Développeur*
 - **Corriger la perspective d'un document** — Redresser la photo d'une feuille prise en biais : placez les quatre coins, FourTout la ramène à un rectangle vu de face. · aussi dans *Texte & Documents*
   <br>_Les quatre coins se placent à la main : c'est toujours exact, là où une détection automatique se trompe. Les proportions déduites des coins sont approchées — imposez le format A4 ou Lettre pour un résultat exact._
 - **Nettoyer un scan** — Redresser un document légèrement penché, relever le contraste, blanchir un fond gris ou jauni, passer en niveaux de gris ou en noir et blanc. · aussi dans *Texte & Documents*
   <br>_Chaque réglage est facultatif et visible en aperçu avant/après. Le blanchiment ne touche jamais aux pixels sombres : le texte fin garde sa densité._
+- **Comparer deux images** — Voir et mesurer ce qui change entre deux images : côte à côte, en superposition ou en différence, avec pixels différents, PSNR et SSIM.
+  <br>_Deux images de dimensions différentes ne sont jamais redimensionnées sans votre accord : le rééchantillonnage fabriquerait des écarts absents des fichiers._
+- **Créer une planche-contact** — Disposer plusieurs images en grille sur une seule feuille, avec le nom de chaque fichier.
 
-### Audio (15)
+### Audio (18)
 
 _Convertir, découper, normaliser, transcrire et synthétiser du son._
 
@@ -122,8 +125,13 @@ _Convertir, découper, normaliser, transcrire et synthétiser du son._
 - **Texte vers parole** — Lire un texte à voix haute et l'enregistrer en fichier audio, sans service en ligne. · aussi dans *Texte & Documents*
 - **PDF vers audio** — Transformer un PDF en livre audio grâce à la synthèse vocale locale. · aussi dans *PDF* et *Convertisseurs*
 - **Fichier texte vers audio** — Convertir un fichier TXT ou Markdown en fichier audio narré. · aussi dans *Texte & Documents* et *Convertisseurs*
+- **Convertir les canaux audio** — Passer un fichier en mono ou en stéréo, ou le laisser tel quel. Un fichier multicanal n'est jamais réduit sans qu'on le demande.
+  <br>_Du mono vers le stéréo, le canal est dupliqué : les deux voies portent le même signal. Aucune spatialisation n'est fabriquée._
+- **Modifier les étiquettes audio** — Lire et corriger titre, artiste, album, année, genre, piste et commentaire — sans réencoder le son.
+  <br>_L'écriture recopie le flux audio tel quel (-c copy) : le son produit est identique au bit près._
+- **Inspecter un média** — Tout ce qu'un fichier audio ou vidéo déclare : conteneur, codecs, résolution, cadence, débits, canaux, étiquettes. · aussi dans *Vidéo* et *Fichiers & Archives*
 
-### Vidéo (19)
+### Vidéo (20)
 
 _Convertir, compresser, découper et sous-titrer des vidéos._
 
@@ -152,8 +160,10 @@ _Convertir, compresser, découper et sous-titrer des vidéos._
 - **Générer les sous-titres d'une vidéo** — Transcrire automatiquement la parole d'une vidéo, puis exporter ou incruster. · aussi dans *Audio* et *Texte & Documents*
   <br>_Utilise le modèle de transcription local déjà installé (aucun envoi sur le réseau)._
 - **Traitement vidéo par lots** — Convertir, compresser, redimensionner, pivoter ou extraire l'audio de plusieurs vidéos. · aussi dans *Fichiers & Archives*
+- **Changer la fréquence d'images** — Convertir une vidéo vers 24, 25, 30, 60 i/s ou une cadence personnalisée, par duplication et suppression d'images.
+  <br>_Aucune image intermédiaire n'est calculée : les images sont dupliquées ou supprimées. La sortie est à cadence constante._
 
-### Texte & Documents (19)
+### Texte & Documents (20)
 
 _Analyser, nettoyer, comparer et transformer du texte._
 
@@ -181,6 +191,8 @@ _Analyser, nettoyer, comparer et transformer du texte._
   <br>_Hors marque d'ordre des octets, aucun fichier ne déclare son encodage : la détection reste une hypothèse, et FourTout affiche sa certitude réelle plutôt qu'un verdict trompeur._
 - **Convertir l'encodage d'un fichier texte** — Passer d'un encodage à un autre — UTF-8, UTF-8 avec BOM, UTF-16 LE/BE, Windows-1252, Latin-1 — sans perdre un caractère à votre insu. · aussi dans *Développeur* et *Fichiers & Archives*
   <br>_Si l'encodage de destination ne peut pas écrire certains caractères, la conversion est refusée et les caractères concernés sont listés. Le remplacement n'a lieu que si vous le demandez explicitement._
+- **Modifier des sous-titres** — Convertir entre SRT et WebVTT, décaler les horodatages, fusionner deux fichiers, vérifier et réparer. · aussi dans *Vidéo* et *Convertisseurs*
+  <br>_Ce qui est mécaniquement sûr est corrigé (ordre, numérotation, fins de ligne) ; les chevauchements sont signalés mais jamais raccourcis d'office._
 
 ### Fichiers & Archives (29)
 

@@ -24,6 +24,7 @@ import {
   type SubtitleFormat,
   type SubtitleReport,
 } from "@/core/subtitles";
+import { decodeText, detectEncoding, ENCODING_LABELS } from "@/core/text/encoding";
 import { formatTimecode } from "@/core/media/types";
 import { presetString, useHandoff } from "@/features/handoff/store";
 import { notify } from "@/features/notifications/store";
@@ -54,6 +55,7 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
   const [mode, setMode] = useState<Mode>("convert");
   const [files, setFiles] = useState<SelectedFile[]>(() => handoff?.files ?? []);
   const [documents, setDocuments] = useState<SubtitleDocument[]>([]);
+  const [encodings, setEncodings] = useState<string[]>([]);
   const [error, setError] = useState<string | undefined>();
   const [outcome, setOutcome] = useState<OperationOutcome | null>(null);
 
@@ -82,13 +84,21 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
     (async () => {
       try {
         const read: SubtitleDocument[] = [];
+        const seen: string[] = [];
         for (const file of files) {
           const bytes = await readSelectedFile(file);
-          const text = new TextDecoder("utf-8").decode(bytes);
-          read.push(parseSubtitles(text, file.extension));
+          // Un SRT venu de Windows est souvent en UTF-16 ou en Windows-1252 :
+          // le décoder en UTF-8 d'office ne lèverait aucune erreur, il
+          // remplacerait simplement tous les accents par des losanges. On
+          // réutilise donc la détection d'encodage de la phase 8, et on dit ce
+          // qu'on a lu — la sortie, elle, est toujours écrite en UTF-8.
+          const detection = detectEncoding(bytes);
+          seen.push(detection.encoding);
+          read.push(parseSubtitles(decodeText(bytes, detection.encoding), file.extension));
         }
         if (!cancelled) {
           setDocuments(read);
+          setEncodings(seen);
           setError(undefined);
         }
       } catch (cause) {
@@ -176,6 +186,8 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
           <p className="text-xs text-[var(--ft-text-muted)]">
             {files[0].name} — {primary.format.toUpperCase()}, {primary.cues.length} réplique
             {primary.cues.length > 1 ? "s" : ""}
+            {encodings[0] && encodings[0] !== "utf-8" &&
+              ` · lu en ${ENCODING_LABELS[encodings[0] as keyof typeof ENCODING_LABELS] ?? encodings[0]}, réécrit en UTF-8`}
             {documents[1] &&
               ` · ${files[1].name} — ${documents[1].format.toUpperCase()}, ${documents[1].cues.length} répliques`}
           </p>
