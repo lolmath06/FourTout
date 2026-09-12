@@ -20,6 +20,7 @@
 - [Sauvegarde et restauration](#sauvegarde-et-restauration)
 - [Manifestes d'empreintes et HMAC](#manifestes-dempreintes-et-hmac)
 - [Politique des liens symboliques](#politique-des-liens-symboliques)
+- [Unités et précision](#unités-et-précision)
 - [Portabilité Windows / Fedora](#portabilité-windows--fedora)
 - [Tests](#tests)
 
@@ -345,8 +346,32 @@ le rapport le compte à part.
 `magic.rs` est l'**autorité unique** de FourTout sur « ce que ce fichier est
 réellement ». Une trentaine de signatures — PDF, PNG, JPEG, GIF, WEBP, BMP,
 TIFF, ZIP, 7z, GZIP, XZ, BZIP2, Zstandard, RAR, SQLite, ELF, PE, WASM, MP3,
-WAV, FLAC, Ogg, MP4, MOV, AVI, Matroska, OLE2, RTF — pas une base de milliers
-d'entrées dont personne ne vérifie jamais l'exactitude.
+WAV, FLAC, Ogg, MP4, MOV, AVI, Matroska, OLE2, RTF, plus les trois marques
+d'ordre des octets — pas une base de milliers d'entrées dont personne ne
+vérifie jamais l'exactitude.
+
+### Deux pièges, et comment ils sont traités
+
+**`FF FE` n'est pas un MP3.** Ces deux octets sont la marque d'ordre d'un
+fichier UTF-16 petit-boutien ; ce sont aussi, bit pour bit, un mot de
+synchronisation MPEG plausible. Un fichier texte s'est ainsi retrouvé annoncé
+comme « Audio MP3 ». Deux corrections, pas une :
+
+1. les marques d'ordre des octets sont examinées **avant** tout le reste ;
+2. le mot de synchronisation ne suffit plus à conclure au MP3 — la version, la
+   couche, l'index de débit et l'index de fréquence sont validés, et chacun a
+   des valeurs réservées ou interdites qui écartent les coïncidences.
+
+**Une marque d'ordre n'est pas une preuve.** Deux octets ne font pas un fichier
+texte : n'importe quel binaire peut commencer par `FF FE`. Le contenu qui suit
+est donc décodé, et rejeté s'il produit des caractères de remplacement (paires
+de substitution orphelines) ou trop de codes de contrôle. Un fichier texte bien
+formé n'en produit aucun.
+
+Conséquence pour le reste de l'application : `looks_like_text` ne repose plus
+sur « contient un octet nul, donc binaire » — règle qui déclarait binaire tout
+fichier UTF-16, dont un octet sur deux est nul par construction. La décision
+est déléguée à `textscan`, le même moteur que la recherche de contenu.
 
 L'inspecteur croise trois sources, et le contraste entre elles est tout
 l'intérêt de l'outil : ce que le **nom** prétend, ce que les **premiers octets**
@@ -359,8 +384,31 @@ supposition fait plus de dégâts qu'un nom trompeur.
 
 L'aperçu suit le **contenu**, pas l'extension, et ne développe aucun nouveau
 décodeur : images, audio et vidéo passent par les lecteurs déjà présents dans
-la WebView, le texte par le moteur d'encodage, les archives par le moteur de
-listage natif, le reste par l'affichage hexadécimal.
+la WebView, le PDF par `usePdfPage` — le moteur de rendu des outils PDF
+visuels, avec navigation page à page —, le texte par le moteur d'encodage, les
+archives par le moteur de listage natif, le reste par l'affichage hexadécimal.
+
+Le type employé pour construire l'objet binaire vient du **type détecté**,
+jamais de l'extension : étiqueter des octets PNG en `image/jpeg` parce que le
+fichier s'appelle `.jpg` annulerait le travail de détection, et l'image ne
+s'afficherait pas. Le panneau affiche les dimensions réelles sur fond en
+damier, et signale explicitement un contenu que le moteur d'affichage a refusé
+— sans quoi « image minuscule » et « aperçu en échec » se ressemblent trop.
+
+### Passages de relais
+
+Regarder un fichier donne presque toujours envie d'en faire quelque chose.
+L'inspecteur, l'aperçu, l'inspection d'archive, l'éditeur hexadécimal et la
+compression proposent donc les outils pertinents **avec le fichier déjà
+transmis** — un chemin pour les outils Fichiers, un fichier chargé pour les
+outils PDF, image et média, qui n'en acceptent pas d'autre.
+
+Les identifiants visés sont rassemblés dans `src/features/handoff/targets.ts`,
+et un test vérifie que chacun existe au registre et porte une implémentation :
+un lien mort fait échouer la suite plutôt que d'attendre une recette manuelle.
+L'outil spécialisé proposé dérive de la **famille détectée** — un `.jpg`
+contenant un PNG mène au convertisseur d'image, et un `.gz` mène au
+décompresseur plutôt qu'à un inspecteur d'archive qui n'aurait rien à lister.
 
 L'éditeur hexadécimal est volontairement **borné** : ni modèles binaires, ni
 script, ni désassemblage, ni insertion ou suppression d'octets. Ce qu'il fait,
@@ -368,7 +416,17 @@ il le fait entièrement :
 
 - lecture par fenêtres de 512 octets (plafond du moteur : 64 Kio) — un fichier
   de 20 Go se parcourt sans que rien ne soit chargé en mémoire ;
-- recherche d'une séquence en flux, avec chevauchement des blocs, annulable ;
+- la recherche porte sur **tout le fichier**, jamais sur la fenêtre affichée :
+  une seule passe en flux rend toutes les occurrences, ce qui permet d'annoncer
+  « occurrence 3 sur 17 » et de naviguer d'avant en arrière — un « suivante »
+  qui relit le fichier à chaque fois ne connaît jamais le total ;
+- la séquence trouvée est surlignée **en entier**, y compris à cheval sur deux
+  lignes, et la fenêtre qui la contient est chargée au besoin ;
+- les occurrences qui se chevauchent sont comptées comme telles : « aa »
+  apparaît trois fois dans « aaaa » ;
+- l'éditeur d'octet se tient **au-dessus** de la table, à portée immédiate de
+  ce qu'on vient de cliquer, et une invite le dit tant que rien n'est
+  sélectionné ;
 - **la taille du fichier ne change jamais** : une insertion décalerait toutes
   les structures du fichier et produirait, neuf fois sur dix, un fichier cassé ;
 - l'enregistrement produit par défaut un **nouveau fichier** ; écraser
@@ -415,6 +473,11 @@ refusée : écraser le dossier personnel de quelqu'un par mégarde ne doit pas
 
 ## Manifestes d'empreintes et HMAC
 
+L'écran se lit en deux temps numérotés — le fichier de checksums, puis la
+racine —, avec l'exemple qui montre comment les deux se combinent. Créer un
+manifeste propose ensuite de le vérifier, manifeste et racine déjà en place :
+resélectionner à la main le fichier qu'on vient d'écrire n'aurait aucun sens.
+
 Le format texte produit est celui de `sha256sum` : `<empreinte>  <chemin>`,
 avec l'échappement GNU des chemins contenant `\` ou un saut de ligne. Il se
 relit avec les outils du système, sur n'importe quelle machine, même sans
@@ -460,6 +523,24 @@ canonicalisés déjà visités.
 La synchronisation ne copie ni ne supprime les liens symboliques, et le dit
 dans les avertissements du plan.
 
+## Unités et précision
+
+Les tailles sont comptées en **multiples binaires** — c'est ce que fait le
+système de fichiers. Les libellés le disent donc : Kio, Mio, Gio. Écrire « Ko »
+devant un calcul en 1024 mélangeait deux conventions et rendait tout écart
+inexplicable.
+
+Les outils dont le métier est de vérifier — analyse d'espace, plan de
+synchronisation, inspection, intégrité — donnent en plus le **nombre exact
+d'octets** : un chiffre qu'on ne peut pas recouper ne vaut rien dans ce
+contexte. La précision de la forme arrondie suit l'ordre de grandeur (deux
+décimales sous dix, une sous cent, aucune au-delà) : « 10 Mio » pour
+10 584 064 octets n'est pas une réponse.
+
+Même principe pour les compteurs du plan de synchronisation : « fichiers à
+copier » et « opérations au total » comptent deux choses différentes, et
+l'écran le dit. Un dossier créé n'est pas un fichier copié.
+
 ## Portabilité Windows / Fedora
 
 | Sujet | Traitement |
@@ -478,24 +559,32 @@ dans les avertissements du plan.
 
 ## Tests
 
-- `src-tauri/src/files/*` — 136 tests unitaires : gardes de chemin, parcours et
-  politique des liens symboliques, comparaison rapide/fiable, plan et exécution
-  de synchronisation, recherche et détection texte/binaire, fenêtres
-  hexadécimales, sauvegarde/vérification/restauration, manifestes et vecteurs
-  HMAC de référence, aller-retour des cinq formats d'archive, GZ et XZ,
-  archives abîmées, tronquées et piégées, empreintes de référence,
-  découpage/réassemblage, doublons, arborescence, plan de renommage.
+- `src-tauri/src/files/*` — tests unitaires : gardes de chemin, parcours et
+  politique des liens symboliques, **signatures et sosies du MP3**,
+  comparaison rapide/fiable, plan et exécution de synchronisation, recherche et
+  détection texte/binaire, fenêtres hexadécimales et recherche de toutes les
+  occurrences (y compris à cheval sur deux blocs, y compris chevauchantes),
+  sauvegarde/vérification/restauration, manifestes et vecteurs HMAC de
+  référence, aller-retour des cinq formats d'archive, GZ et XZ, archives
+  abîmées, tronquées et piégées.
 - `src-tauri/tests/files_integration.rs` — tests sur les fixtures de la phase 6.
-- `src-tauri/tests/phase9.rs` — 19 tests sur les **vraies fixtures** de
+- `src-tauri/tests/phase9.rs` — tests sur les **vraies fixtures** de
   `test-assets/generated/`, produites par du code Node indépendant des moteurs
-  éprouvés : comparaison des deux dossiers de référence, synchronisation
-  `update` puis `mirror` avec comparaison octet par octet, recherche dans trois
-  encodages, analyse d'espace vérifiée à l'octet près, aller-retour
-  hexadécimal, cycle sauvegarde → vérification → restauration, quatre
-  manifestes de référence (valide, faux, manquant, piégé), sauvegarde
-  volontairement abîmée dont les deux fichiers en défaut doivent être nommés,
-  listage/test/extraction des cinq formats, neuf archives abîmées, trois
-  archives piégées.
+  éprouvés, plus un **contrat de fixtures** : `scripts/fixture-contract.mjs`
+  observe le disque et écrit ce constat dans `CONTRAT.json`, et le test vérifie
+  que les moteurs sont d'accord avec lui. Ce contrat existe parce qu'une
+  recette manuelle avait dérivé des fixtures — elle annonçait quatre fichiers
+  `.txt` là où il y en avait six. Plus aucune valeur attendue ne se recopie :
+  elle se dérive, et l'écart se voit en test.
+- Côté interface : aperçu (image réellement rendue avec le type détecté, page
+  de PDF réellement rendue, navigation entre pages), éditeur hexadécimal
+  (recherche globale, surlignage complet, occurrence n sur N, saut de fenêtre,
+  éditeur d'octet accessible), recherche (filtre de date inactif par défaut,
+  résultats signalés comme périmés), synchronisation (distinction fichiers
+  copiés / opérations totales), archives (champ de mot de passe conditionnel,
+  verdict nuancé du TAR), manifestes (explication des deux champs, relais vers
+  la vérification), et **navigation** : chaque relais de la phase 9 vise un
+  outil qui existe et qui est branché.
 - Deux mesures de performance `#[ignore]` (`cargo test --test phase9 --
   --ignored --nocapture`) : 5 000 fichiers et un fichier de 512 Mio.
 
