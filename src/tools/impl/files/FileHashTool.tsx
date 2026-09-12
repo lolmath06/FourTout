@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/Icon";
 import { formatFileSize } from "@/core/files";
 import { hashFiles, type FileHashes, type HashAlgorithm } from "@/core/files/native";
 import { notify } from "@/features/notifications/store";
+import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
 
 /**
@@ -26,7 +27,8 @@ const ALGORITHMS: { value: HashAlgorithm; label: string; legacy?: boolean }[] = 
 
 export function FileHashTool({ tool }: ToolComponentProps) {
   const verifyMode = tool.id === "file-verify-hash";
-  const [paths, setPaths] = useState<string[]>([]);
+  const received = useHandoffPaths(tool.id);
+  const [paths, setPaths] = useState<string[]>(received);
   const [selected, setSelected] = useState<HashAlgorithm[]>(["sha256"]);
   const [expected, setExpected] = useState("");
 

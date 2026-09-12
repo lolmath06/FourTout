@@ -21,7 +21,7 @@ import {
   type ManifestFormat,
   type ManifestSummary,
 } from "@/core/files/native";
-import { baseName } from "@/core/files/paths";
+import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import { revealFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
@@ -74,9 +74,22 @@ const STATUS_LABEL: Record<ChecksumStatus, string> = {
 };
 
 export function ChecksumManifestTool({ tool }: ToolComponentProps) {
+  const received = useHandoffPaths(tool.id);
   const [mode, setMode] = useState<"create" | "verify">(
     tool.id === "checksum-verify" ? "verify" : "create",
   );
+  /**
+   * Manifeste et racine transmis du mode « Créer » au mode « Vérifier ».
+   *
+   * Créer un manifeste puis devoir resélectionner à la main le fichier qu'on
+   * vient d'écrire, et le dossier dont on vient de partir, n'a aucun sens :
+   * les deux moitiés du geste se passent le relais.
+   */
+  const [verifyManifestPath, setVerifyManifestPath] = useState<string[]>(
+    tool.id === "checksum-verify" ? received : [],
+  );
+  const [verifyRoot, setVerifyRoot] = useState<string[]>([]);
+
   return (
     <div className="space-y-4">
       <OptionGroup
@@ -88,12 +101,27 @@ export function ChecksumManifestTool({ tool }: ToolComponentProps) {
           { value: "verify", label: "Vérifier un manifeste" },
         ]}
       />
-      {mode === "create" ? <CreatePanel /> : <VerifyPanel />}
+      {mode === "create" ? (
+        <CreatePanel
+          onVerify={(manifestPath, root) => {
+            setVerifyManifestPath([manifestPath]);
+            setVerifyRoot([root]);
+            setMode("verify");
+          }}
+        />
+      ) : (
+        <VerifyPanel
+          manifest={verifyManifestPath}
+          setManifest={setVerifyManifestPath}
+          root={verifyRoot}
+          setRoot={setVerifyRoot}
+        />
+      )}
     </div>
   );
 }
 
-function CreatePanel() {
+function CreatePanel({ onVerify }: { onVerify: (manifest: string, root: string) => void }) {
   const [root, setRoot] = useState<string[]>([]);
   const [algorithm, setAlgorithm] = useState<HashAlgorithm>("sha256");
   const [format, setFormat] = useState<ManifestFormat>("text");
@@ -105,8 +133,11 @@ function CreatePanel() {
   const legacy = ALGORITHMS.find((entry) => entry.value === algorithm && entry.value !== "sha256" && entry.value !== "sha512");
 
   const run = async () => {
+    // Nom proposé prévisible : l'utilisateur n'a pas à comprendre qu'on lui
+    // demande un **chemin de fichier de sortie**, la boîte de dialogue
+    // d'enregistrement du système s'en charge.
     const extension = format === "json" ? "json" : algorithm;
-    const output = await pickSavePath(`${baseName(root[0])}.${extension}`);
+    const output = await pickSavePath(`checksums.${extension}`);
     if (!output) return;
     const summary = await action.execute((context) =>
       createManifest(
@@ -134,8 +165,8 @@ function CreatePanel() {
           setRoot(next);
           action.setResult(null);
         }}
-        label="Dossier à inventorier"
-        hint="les chemins écrits seront relatifs à ce dossier"
+        label="1. Dossier à inventorier"
+        hint="chaque fichier qu'il contient sera listé, avec un chemin relatif à ce dossier"
         disabled={action.job.isRunning}
       />
 
@@ -176,8 +207,17 @@ function CreatePanel() {
             </Callout>
           )}
 
+          <Callout tone="neutral" title="Ce que FourTout va écrire">
+            Un fichier texte, une ligne par fichier :
+            <code className="mt-1 block font-mono text-[11px]">
+              e3b0c442…  documents/rapport.txt
+            </code>
+            À l'étape suivante, la boîte de dialogue du système vous demandera{" "}
+            <strong>où enregistrer ce fichier</strong>.
+          </Callout>
+
           <RunBar
-            label="Créer le manifeste"
+            label="Créer le manifeste…"
             icon="ListChecks"
             running={action.job.isRunning}
             progress={action.job.progress}
@@ -206,15 +246,34 @@ function CreatePanel() {
           />
           <Callout
             tone="success"
-            title="Manifeste écrit"
+            title="Manifeste enregistré"
             actions={
               <Button size="sm" onClick={() => revealFile(action.result!.output)}>
-                <Icon name="FolderTree" size={13} /> Ouvrir
+                <Icon name="FolderTree" size={13} /> Ouvrir l'emplacement
               </Button>
             }
           >
-            <code className="font-mono">{action.result.output}</code>
+            <span className="block">
+              Emplacement : <code className="font-mono">{action.result.output}</code>
+            </span>
+            <span className="mt-0.5 block">
+              Il décrit {action.result.files} fichier(s) du dossier{" "}
+              <code className="font-mono">{root[0]}</code>.
+            </span>
           </Callout>
+
+          {/* La suite logique, sans resélection : on vient d'écrire ce
+              manifeste, et on sait déjà à quelle racine il se rapporte. */}
+          <div className="flex flex-wrap items-center gap-2" data-testid="manifest-handoff">
+            <span className="ft-label">Et maintenant</span>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => onVerify(action.result!.output, root[0])}
+            >
+              <Icon name="ShieldCheck" size={13} /> Vérifier ce manifeste
+            </Button>
+          </div>
           {action.result.legacyWarning && (
             <Callout tone="warning" title="Algorithme hérité">
               {action.result.legacyWarning}
@@ -226,9 +285,17 @@ function CreatePanel() {
   );
 }
 
-function VerifyPanel() {
-  const [manifest, setManifest] = useState<string[]>([]);
-  const [root, setRoot] = useState<string[]>([]);
+function VerifyPanel({
+  manifest,
+  setManifest,
+  root,
+  setRoot,
+}: {
+  manifest: string[];
+  setManifest: (paths: string[]) => void;
+  root: string[];
+  setRoot: (paths: string[]) => void;
+}) {
   const action = useNativeAction<ChecksumVerifyReport>();
 
   if (!isNativeAvailable()) return <NativeRequired />;
@@ -239,6 +306,25 @@ function VerifyPanel() {
 
   return (
     <div className="space-y-4">
+      {/*
+        Deux sélections, et rien dans leurs intitulés ne disait laquelle
+        attendait quoi. L'exemple ci-dessous montre comment les deux se
+        combinent — c'est la seule façon de rendre la mécanique évidente sans
+        demander à l'utilisateur de la deviner.
+      */}
+      <Callout tone="neutral" title="Comment ces deux champs se combinent">
+        <span className="block">
+          Un manifeste contient des chemins <strong>relatifs</strong> :
+        </span>
+        <code className="mt-1 block font-mono text-[11px]">
+          e3b0c442…&nbsp;&nbsp;docs/readme.txt
+        </code>
+        <span className="mt-1 block">
+          Avec la racine <code className="font-mono">/home/vous/projet/</code>, FourTout vérifiera
+          donc <code className="font-mono">/home/vous/projet/docs/readme.txt</code>.
+        </span>
+      </Callout>
+
       <div className="grid gap-3 sm:grid-cols-2">
         <PathPicker
           mode="files"
@@ -247,8 +333,8 @@ function VerifyPanel() {
             setManifest(next);
             action.setResult(null);
           }}
-          label="Fichier de checksums"
-          hint=".sha256, .md5, .sha1… ou un JSON FourTout"
+          label="1. Le fichier de checksums"
+          hint="un .sha256, .sha512, .sha1, .md5 — ou le JSON écrit par FourTout"
           filters={[
             {
               name: "Manifestes d'empreintes",
@@ -263,8 +349,8 @@ function VerifyPanel() {
             setRoot(next);
             action.setResult(null);
           }}
-          label="Dossier à vérifier"
-          hint="celui auquel les chemins du manifeste se rapportent"
+          label="2. Le dossier contenant les fichiers"
+          hint="la racine à laquelle les chemins du manifeste se rapportent"
         />
       </div>
 

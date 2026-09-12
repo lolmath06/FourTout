@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NativeRequired, RunBar } from "@/components/files/NativeRun";
 import { isNativeAvailable, useNativeAction } from "@/components/files/useNativeAction";
 import { PasswordField } from "@/components/files/PasswordField";
@@ -17,6 +17,9 @@ import {
   type ArchiveVerdict,
 } from "@/core/files/native";
 import { baseName } from "@/core/files/paths";
+import { HANDOFF_TARGETS } from "@/features/handoff/targets";
+import { OpenToolButton } from "@/features/handoff/openTool";
+import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
 
 /**
@@ -56,11 +59,46 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
   const [mode, setMode] = useState<"inspect" | "test">(
     tool.id === "archive-test" ? "test" : "inspect",
   );
-  const [paths, setPaths] = useState<string[]>([]);
+  const received = useHandoffPaths(tool.id);
+  const [paths, setPaths] = useState<string[]>(received);
   const [password, setPassword] = useState("");
 
   const listing = useNativeAction<ArchiveListing>();
   const integrity = useNativeAction<ArchiveIntegrityReport>();
+
+  /**
+   * Ce que l'en-tête de l'archive dit d'elle-même, lu dès la sélection.
+   *
+   * Il sert à une seule chose, mais elle compte : ne demander un mot de passe
+   * que lorsqu'il y en a un. Un champ secret affiché devant chaque TAR ou
+   * chaque GZ laisse croire qu'on attend quelque chose de l'utilisateur, alors
+   * que ces formats n'ont pas de chiffrement du tout.
+   */
+  const [probe, setProbe] = useState<{ encrypted: boolean } | null>(null);
+  const [askPassword, setAskPassword] = useState(false);
+
+  const selected = paths[0];
+
+  // La lecture d'en-tête est instantanée : elle ne décompresse rien.
+  useEffect(() => {
+    let cancelled = false;
+    setProbe(null);
+    setAskPassword(false);
+    if (!selected) return;
+    (async () => {
+      try {
+        const description = await listArchive(selected);
+        if (!cancelled) setProbe({ encrypted: description.encrypted });
+      } catch {
+        // Format sans table des matières (.gz, .xz) ou archive illisible :
+        // on ne sait pas, et on ne demande donc rien de plus.
+        if (!cancelled) setProbe(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selected]);
 
   if (!isNativeAvailable()) return <NativeRequired />;
 
@@ -68,6 +106,11 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
   const name = path ? baseName(path).toLowerCase() : "";
   /** Un `.gz` ou `.xz` nu n'a pas de table des matières : rien à lister. */
   const isBareStream = STREAM_EXTENSIONS.test(name) && !TARBALL.test(name);
+  /**
+   * Seul le ZIP porte un chiffrement dans FourTout. TAR, GZ et XZ n'en ont
+   * aucun par construction ; le 7z chiffré n'est pas proposé.
+   */
+  const supportsPassword = /\.zip$/i.test(name);
 
   const reset = () => {
     listing.setResult(null);
@@ -140,15 +183,44 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
         </Callout>
       )}
 
-      {path && mode === "test" && !isBareStream && (
-        <Fieldset columns={1} title="Archive protégée">
+      {/*
+        Le mot de passe n'apparaît que s'il sert : une archive dont l'en-tête
+        annonce des entrées chiffrées, ou un doute que l'utilisateur lève
+        lui-même. Les TAR, GZ et XZ n'ont aucun chiffrement — leur montrer un
+        champ secret serait une question sans objet.
+      */}
+      {path && mode === "test" && supportsPassword && probe?.encrypted && (
+        <Fieldset columns={1} title="Archive protégée par mot de passe">
           <PasswordField
             value={password}
             onChange={setPassword}
-            label="Mot de passe (si l'archive est protégée)"
-            hint="Laissez vide pour une archive ordinaire. Sans mot de passe, le contenu chiffré ne peut pas être vérifié."
+            label="Mot de passe"
+            hint="L'en-tête de cette archive annonce des entrées chiffrées : sans le mot de passe, leur contenu ne peut pas être vérifié."
           />
         </Fieldset>
+      )}
+
+      {path && mode === "test" && supportsPassword && probe && !probe.encrypted && (
+        <>
+          {askPassword ? (
+            <Fieldset columns={1} title="Archive protégée par mot de passe">
+              <PasswordField
+                value={password}
+                onChange={setPassword}
+                label="Mot de passe"
+                hint="L'en-tête n'annonce aucune entrée chiffrée ; ce champ n'est là que si vous savez le contraire."
+              />
+            </Fieldset>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setAskPassword(true)}
+              className="text-xs text-[var(--ft-text-muted)] underline-offset-2 hover:underline"
+            >
+              Cette archive est protégée par un mot de passe ?
+            </button>
+          )}
+        </>
       )}
 
       {path && !(mode === "inspect" && isBareStream) && (
@@ -162,6 +234,24 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
           cancel={mode === "inspect" ? listing.job.cancel : integrity.job.cancel}
           onRun={run}
         />
+      )}
+
+      {(listing.result || integrity.result) && path && (
+        <div className="flex flex-wrap items-center gap-2" data-testid="archive-handoffs">
+          <span className="ft-label">Continuer avec</span>
+          {!isBareStream && (
+            <OpenToolButton
+              toolId={HANDOFF_TARGETS.archiveExtract}
+              paths={[path]}
+              variant="primary"
+            />
+          )}
+          {isBareStream && (
+            <OpenToolButton toolId={HANDOFF_TARGETS.decompress} paths={[path]} variant="primary" />
+          )}
+          <OpenToolButton toolId={HANDOFF_TARGETS.inspect} paths={[path]} />
+          <OpenToolButton toolId={HANDOFF_TARGETS.hash} paths={[path]} />
+        </div>
       )}
 
       {listing.result && <Listing listing={listing.result} />}

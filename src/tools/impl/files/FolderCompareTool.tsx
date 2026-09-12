@@ -2,12 +2,14 @@ import { useMemo, useState } from "react";
 import { NativeRequired, RunBar } from "@/components/files/NativeRun";
 import { isNativeAvailable, useNativeAction } from "@/components/files/useNativeAction";
 import { PathPicker } from "@/components/files/PathPicker";
+import { EntryDiff } from "@/components/files/EntryDiff";
 import { Panel, StatGrid, Warnings } from "@/components/files/Summary";
 import { Field, Fieldset, OptionGroup } from "@/components/pdf/Field";
 import { CheckOption } from "@/components/text/TextToolShell";
 import { Callout } from "@/components/ui/Callout";
 import { Icon } from "@/components/ui/Icon";
 import { formatFileSize } from "@/core/files";
+import { joinPath } from "@/core/files/paths";
 import {
   compareFolders,
   DEFAULT_WALK_OPTIONS,
@@ -187,6 +189,9 @@ function Report({
   filter: CompareEntryStatus | "all";
   onFilter: (value: CompareEntryStatus | "all") => void;
 }) {
+  /** Entrée dont on regarde le détail. Une seule à la fois. */
+  const [opened, setOpened] = useState<string | null>(null);
+
   const visible = useMemo(
     () =>
       report.entries
@@ -255,25 +260,72 @@ function Report({
 
       <Panel title="Entrées" count={visible.length} testId="compare-entries">
         <ul className="max-h-[28rem] divide-y divide-[var(--ft-rule)] overflow-y-auto text-xs">
-          {visible.slice(0, 500).map((entry) => (
-            <li key={entry.relative} className="flex items-start gap-2 px-3 py-1.5">
-              <span className="mt-px shrink-0" style={{ color: STATUS_COLOR[entry.status] }}>
-                <Icon name={STATUS_ICON[entry.status]} size={13} />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block truncate font-mono" title={entry.relative}>
-                  {entry.relative}
-                  {entry.isDir && "/"}
+          {visible.slice(0, 500).map((entry) => {
+            // Seules les entrées présentes des deux côtés ont un « pourquoi »
+            // à montrer : une entrée d'un seul côté n'a rien à comparer.
+            const explainable = entry.status === "different" && !entry.isDir;
+            const open = opened === entry.relative;
+            const row = (
+              <>
+                <span className="mt-px shrink-0" style={{ color: STATUS_COLOR[entry.status] }}>
+                  <Icon name={STATUS_ICON[entry.status]} size={13} />
                 </span>
-                <span className="block text-[11px] text-[var(--ft-text-faint)]">{entry.reason}</span>
-              </span>
-              <span className="shrink-0 text-right tabular-nums text-[var(--ft-text-muted)]">
-                {entry.leftSize !== null && <span>{formatFileSize(entry.leftSize)}</span>}
-                {entry.leftSize !== null && entry.rightSize !== null && <span> · </span>}
-                {entry.rightSize !== null && <span>{formatFileSize(entry.rightSize)}</span>}
-              </span>
-            </li>
-          ))}
+                <span className="min-w-0 flex-1 text-left">
+                  <span className="block truncate font-mono" title={entry.relative}>
+                    {entry.relative}
+                    {entry.isDir && "/"}
+                  </span>
+                  <span className="block text-[11px] text-[var(--ft-text-faint)]">
+                    {entry.reason}
+                    {explainable && (
+                      <span className="text-[var(--ft-accent)]">
+                        {" "}
+                        — {open ? "masquer le détail" : "voir la différence"}
+                      </span>
+                    )}
+                  </span>
+                </span>
+                <span className="shrink-0 text-right tabular-nums text-[var(--ft-text-muted)]">
+                  {entry.leftSize !== null && <span>{formatFileSize(entry.leftSize)}</span>}
+                  {entry.leftSize !== null && entry.rightSize !== null && <span> · </span>}
+                  {entry.rightSize !== null && <span>{formatFileSize(entry.rightSize)}</span>}
+                </span>
+                {explainable && (
+                  <span className="shrink-0 text-[var(--ft-text-faint)]">
+                    <Icon name={open ? "ChevronDown" : "ChevronRight"} size={13} />
+                  </span>
+                )}
+              </>
+            );
+
+            return (
+              <li key={entry.relative}>
+                {explainable ? (
+                  <button
+                    type="button"
+                    onClick={() => setOpened(open ? null : entry.relative)}
+                    aria-expanded={open}
+                    data-testid={`compare-entry-${entry.relative}`}
+                    className="flex w-full items-start gap-2 px-3 py-1.5 text-left hover:bg-[var(--ft-hover)]"
+                  >
+                    {row}
+                  </button>
+                ) : (
+                  <div className="flex items-start gap-2 px-3 py-1.5">{row}</div>
+                )}
+                {open && (
+                  <div className="border-t border-[var(--ft-rule)] bg-[var(--ft-surface-2)] p-2">
+                    <EntryDiff
+                      relative={entry.relative}
+                      leftPath={joinPath(report.left, entry.relative)}
+                      rightPath={joinPath(report.right, entry.relative)}
+                      onClose={() => setOpened(null)}
+                    />
+                  </div>
+                )}
+              </li>
+            );
+          })}
           {visible.length === 0 && (
             <li className="px-3 py-2 text-[var(--ft-text-faint)]">Aucune entrée dans ce filtre.</li>
           )}

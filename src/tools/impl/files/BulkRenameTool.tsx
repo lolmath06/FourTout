@@ -14,6 +14,7 @@ import {
   type RenameRules,
 } from "@/core/files/native";
 import { notify } from "@/features/notifications/store";
+import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
 
 /**
@@ -26,7 +27,8 @@ import type { ToolComponentProps } from "@/tools/implementations";
  */
 export function BulkRenameTool({ tool }: ToolComponentProps) {
   const cleanMode = tool.id === "file-clean-names";
-  const [paths, setPaths] = useState<string[]>([]);
+  const received = useHandoffPaths(tool.id);
+  const [paths, setPaths] = useState<string[]>(received);
   const [rules, setRules] = useState<RenameRules>({
     ...DEFAULT_RENAME_RULES,
     sanitize: cleanMode,

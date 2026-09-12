@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NativeToolShell } from "@/components/files/NativeToolShell";
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
-import { formatFileSize } from "@/core/files";
+import { formatExactBytes, formatFileSize, formatSizeWithExact } from "@/core/files";
 import { folderStats, type FolderStats } from "@/core/files/native";
 import { revealFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
@@ -29,7 +29,7 @@ export function FolderSizeTool(_props: ToolComponentProps) {
       actionLabel="Analyser le dossier"
       actionIcon="HardDrive"
       run={(context) => folderStats(paths[0], context)}
-      successMessage={(stats) => `${formatFileSize(stats.totalBytes)} · ${stats.files} fichiers`}
+      successMessage={(stats) => `${formatSizeWithExact(stats.totalBytes)} · ${stats.files} fichiers`}
       renderResult={(stats) => (
         <div className="space-y-3" data-testid="folder-stats">
           <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
@@ -48,6 +48,11 @@ export function FolderSizeTool(_props: ToolComponentProps) {
               </div>
             ))}
           </div>
+
+          <p className="ft-meta tabular-nums" data-testid="folder-total-exact">
+            Total exact : {formatExactBytes(stats.totalBytes)}. Les tailles sont comptées en
+            multiples binaires (1 Kio = 1024 octets), comme le système de fichiers.
+          </p>
 
           {stats.children.length > 0 && (
             <Table
@@ -88,7 +93,12 @@ export function FolderSizeTool(_props: ToolComponentProps) {
                       <td className="px-3 py-1 tabular-nums text-[var(--ft-text-muted)]">
                         {entry.files} fichier(s)
                       </td>
-                      <td className="px-3 py-1 text-right tabular-nums">{formatFileSize(entry.bytes)}</td>
+                      <td
+                        className="px-3 py-1 text-right tabular-nums"
+                        title={formatExactBytes(entry.bytes)}
+                      >
+                        {formatFileSize(entry.bytes)}
+                      </td>
                       <td className="w-1/3 px-3 py-1">
                         <Bar ratio={stats.totalBytes > 0 ? entry.bytes / stats.totalBytes : 0} />
                       </td>
@@ -152,7 +162,12 @@ function Table({
               <td className="max-w-0 truncate px-3 py-1" title={row.path}>
                 {row.name}
               </td>
-              <td className="px-3 py-1 text-right tabular-nums">{formatFileSize(row.size)}</td>
+              <td
+                className="px-3 py-1 text-right tabular-nums"
+                title={formatExactBytes(row.size)}
+              >
+                {formatFileSize(row.size)}
+              </td>
               <td className="w-1/3 px-3 py-1">
                 <Bar ratio={total > 0 ? row.size / total : 0} />
               </td>

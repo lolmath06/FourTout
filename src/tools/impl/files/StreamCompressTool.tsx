@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NativeRequired, RunBar } from "@/components/files/NativeRun";
 import { isNativeAvailable, useNativeAction } from "@/components/files/useNativeAction";
 import { PathPicker } from "@/components/files/PathPicker";
@@ -9,6 +9,7 @@ import { Callout } from "@/components/ui/Callout";
 import { Icon } from "@/components/ui/Icon";
 import { formatFileSize } from "@/core/files";
 import {
+  fileInfo,
   compressStream,
   decompressStream,
   pickSavePath,
@@ -19,6 +20,9 @@ import {
 import { baseName } from "@/core/files/paths";
 import { revealFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
+import { HANDOFF_TARGETS } from "@/features/handoff/targets";
+import { OpenToolButton } from "@/features/handoff/openTool";
+import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
 
 /**
@@ -49,22 +53,62 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
   const [direction, setDirection] = useState<"compress" | "decompress">(
     tool.id === "file-decompress" ? "decompress" : "compress",
   );
-  const [paths, setPaths] = useState<string[]>([]);
+  const received = useHandoffPaths(tool.id);
+  const [paths, setPaths] = useState<string[]>(received);
   const [format, setFormat] = useState<StreamFormat>("gz");
   const [level, setLevel] = useState(6);
   const action = useNativeAction<StreamSummary>();
+  /**
+   * Ce que les premiers octets disent du fichier choisi.
+   *
+   * Le décompresseur a besoin de savoir si on lui a donné un flux compressé —
+   * et si ce n'est pas le cas, de le dire dans ces termes. Annoncer « archive
+   * invalide » devant un `.txt` parfaitement sain serait un faux diagnostic :
+   * le fichier va très bien, il n'est simplement pas compressé.
+   */
+  const [detected, setDetected] = useState<{ magic: string; label: string } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setDetected(null);
+    const target = paths[0];
+    if (!target) return;
+    (async () => {
+      try {
+        const info = await fileInfo(target);
+        if (!cancelled) setDetected({ magic: info.magic, label: info.magicLabel });
+      } catch {
+        if (!cancelled) setDetected(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [paths]);
 
   if (!isNativeAvailable()) return <NativeRequired />;
 
   const path = paths[0];
   const name = path ? baseName(path).toLowerCase() : "";
-  const detected: StreamFormat | null = name.endsWith(".xz") || name.endsWith(".txz")
-    ? "xz"
-    : name.endsWith(".gz") || name.endsWith(".tgz")
-      ? "gz"
-      : null;
+  /** Format déduit du **contenu** d'abord, du nom ensuite. */
+  const streamFormat: StreamFormat | null =
+    detected?.magic === "xz"
+      ? "xz"
+      : detected?.magic === "gz"
+        ? "gz"
+        : name.endsWith(".xz") || name.endsWith(".txz")
+          ? "xz"
+          : name.endsWith(".gz") || name.endsWith(".tgz")
+            ? "gz"
+            : null;
   const isTarball = /\.(tar\.gz|tgz|tar\.xz|txz)$/i.test(name);
-  const effectiveFormat = direction === "decompress" ? (detected ?? format) : format;
+  const effectiveFormat = direction === "decompress" ? (streamFormat ?? format) : format;
+  /**
+   * Un fichier donné au décompresseur alors qu'il n'est pas compressé : cas
+   * courant et parfaitement innocent, qui mérite une phrase juste.
+   */
+  const notCompressed =
+    direction === "decompress" && detected !== null && streamFormat === null;
 
   const run = async () => {
     const suggestion = await suggestStreamOutput(path, effectiveFormat, direction === "compress");
@@ -100,9 +144,9 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
       />
 
       <Callout tone="info" title="« .gz » et « .xz » ne contiennent qu'un seul fichier">
-        Ils compressent un flux d'octets, sans nom de dossier ni arborescence. Pour regrouper
-        plusieurs fichiers en conservant leur organisation, passez par « Créer une archive » et son
-        format TAR.GZ ou TAR.XZ.
+        {direction === "compress"
+          ? "Compresser produit un flux : un seul fichier, sans nom de dossier ni arborescence. Pour regrouper plusieurs fichiers en conservant leur organisation, passez par « Créer une archive » et son format TAR.GZ ou TAR.XZ."
+          : "Décompresser attend un flux déjà compressé — un .gz ou un .xz. Un fichier ordinaire n'a rien à y faire, et un .tar.gz redonnera le .tar, pas l'arborescence qu'il contient."}
       </Callout>
 
       <PathPicker
@@ -130,10 +174,23 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
         </Callout>
       )}
 
-      {path && direction === "decompress" && !detected && (
-        <Callout tone="warning" title="Format non reconnu d'après le nom">
-          FourTout ne sait pas si ce fichier est un flux GZIP ou XZ. Choisissez le format
-          explicitement ci-dessous.
+      {notCompressed && (
+        <Callout tone="warning" title="Ce fichier n'est pas compressé en GZ ni en XZ">
+          <span className="block">
+            Ses premiers octets le désignent comme : <strong>{detected?.label}</strong>. Il n'y a
+            donc rien à décompresser — le fichier n'a rien d'anormal, il n'est simplement pas un
+            flux compressé.
+          </span>
+          <span className="mt-1 block">
+            Pour le <strong>compresser</strong>, basculez sur « Compresser » ci-dessus.
+          </span>
+        </Callout>
+      )}
+
+      {path && direction === "decompress" && detected === null && streamFormat === null && (
+        <Callout tone="warning" title="Format non reconnu">
+          FourTout ne sait dire ni d'après le nom ni d'après les premiers octets s'il s'agit d'un
+          flux GZIP ou XZ. Choisissez le format explicitement ci-dessous.
         </Callout>
       )}
 
@@ -148,7 +205,7 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
               value={effectiveFormat}
               onChange={setFormat}
               options={FORMATS}
-              disabled={direction === "decompress" && detected !== null}
+              disabled={direction === "decompress" && streamFormat !== null}
             />
           </Field>
           {direction === "compress" && (
@@ -162,7 +219,7 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
         </Fieldset>
       )}
 
-      {path && (
+      {path && !notCompressed && (
         <RunBar
           label={direction === "compress" ? "Compresser…" : "Décompresser…"}
           icon={direction === "compress" ? "FileArchive" : "FileOutput"}
@@ -186,6 +243,15 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
               { label: "Taille finale", value: `${action.result.ratio.toFixed(1)} %` },
             ]}
           />
+          <div className="flex flex-wrap items-center gap-2" data-testid="stream-handoffs">
+            <span className="ft-label">Continuer avec</span>
+            <OpenToolButton
+              toolId={HANDOFF_TARGETS.inspect}
+              paths={[action.result.output]}
+            />
+            <OpenToolButton toolId={HANDOFF_TARGETS.preview} paths={[action.result.output]} />
+          </div>
+
           <Callout
             tone="success"
             title={direction === "compress" ? "Fichier compressé" : "Fichier décompressé"}

@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { NativeToolShell } from "@/components/files/NativeToolShell";
 import { Panel } from "@/components/files/Summary";
 import { CheckOption } from "@/components/text/TextToolShell";
 import { Callout } from "@/components/ui/Callout";
-import { Icon } from "@/components/ui/Icon";
-import { formatFileSize, kindOfExtension } from "@/core/files";
+import { formatFileSize } from "@/core/files";
 import { toHexLines, formatOffset } from "@/core/files/hex";
 import {
   fileInfo,
@@ -16,8 +14,9 @@ import {
   type HashAlgorithm,
 } from "@/core/files/native";
 import { detectEncoding, ENCODING_LABELS, type TextEncodingId } from "@/core/text/encoding";
-import { toolRegistry } from "@/core/tools/registry";
-import { toolRoute } from "@/core/tools/types";
+import { HANDOFF_TARGETS, specialistFor } from "@/features/handoff/targets";
+import { OpenToolButton } from "@/features/handoff/openTool";
+import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
 
 /**
@@ -58,21 +57,12 @@ const ALGORITHMS: { value: HashAlgorithm; label: string; legacy?: boolean }[] = 
   { value: "md5", label: "MD5", legacy: true },
 ];
 
-const RELATED_TOOLS: Partial<Record<string, string[]>> = {
-  pdf: ["pdf-metadata", "pdf-extract-text"],
-  image: ["image-metadata-read", "image-convert"],
-  audio: ["audio-convert", "audio-transcribe"],
-  video: ["video-convert", "video-extract-audio"],
-  archive: ["archive-inspect", "archive-test"],
-  document: ["docx-extract"],
-  text: ["text-statistics", "text-line-endings"],
-};
-
 /** Nombre d'octets montrés dans l'aperçu hexadécimal de la fiche. */
 const HEAD_BYTES = 128;
 
-export function FileInspectTool(_props: ToolComponentProps) {
-  const [paths, setPaths] = useState<string[]>([]);
+export function FileInspectTool({ tool }: ToolComponentProps) {
+  const received = useHandoffPaths(tool.id);
+  const [paths, setPaths] = useState<string[]>(received);
   const [algorithms, setAlgorithms] = useState<HashAlgorithm[]>(["sha256"]);
 
   const toggle = (algorithm: HashAlgorithm) =>
@@ -147,9 +137,10 @@ export function FileInspectTool(_props: ToolComponentProps) {
 
 function Report({ inspection }: { inspection: Inspection }) {
   const { info, hashes, head, encoding } = inspection;
-  const kind = kindOfExtension(info.extension);
-  const related = toolRegistry.resolveMany(RELATED_TOOLS[kind] ?? []);
   const lines = toHexLines(head.slice(0, HEAD_BYTES), 0);
+  // L'outil proposé vient de la **famille détectée**, jamais de l'extension :
+  // un « .jpg » qui contient un PNG doit mener au convertisseur d'image.
+  const specialist = specialistFor(info.family, info.magic);
 
   return (
     <div className="space-y-3" data-testid="file-inspect">
@@ -162,11 +153,29 @@ function Report({ inspection }: { inspection: Inspection }) {
           <span className="mt-1 block">
             Le fichier a sans doute été renommé. FourTout ne le renomme pas de lui-même : sur une
             bibliothèque entière, une correction automatique fondée sur une supposition fait plus de
-            dégâts qu'un nom trompeur. Si vous êtes sûr du format, renommez-le avec « Renommage en
-            masse ».
+            dégâts qu'un nom trompeur. Le bouton « Renommer ce fichier » ouvre le renommage par lot
+            avec ce fichier déjà chargé.
           </span>
         </Callout>
       )}
+
+      {/* Les outils qui savent traiter ce contenu, avec le fichier transmis. */}
+      <div className="flex flex-wrap items-center gap-2" data-testid="inspect-handoffs">
+        <span className="ft-label">Continuer avec</span>
+        <OpenToolButton toolId={HANDOFF_TARGETS.preview} paths={[info.path]} variant="primary" />
+        {specialist && <OpenToolButton toolId={specialist} paths={[info.path]} />}
+        {info.family === "archive" && info.magic !== "gz" && info.magic !== "xz" && (
+          <OpenToolButton toolId={HANDOFF_TARGETS.archiveTest} paths={[info.path]} />
+        )}
+        <OpenToolButton toolId={HANDOFF_TARGETS.hexEdit} paths={[info.path]} />
+        {!info.extensionMatches && (
+          <OpenToolButton
+            toolId={HANDOFF_TARGETS.rename}
+            paths={[info.path]}
+            label="Renommer ce fichier"
+          />
+        )}
+      </div>
 
       <Panel title="Identité">
         <dl className="grid gap-x-4 gap-y-1 p-3 text-xs sm:grid-cols-[14rem_1fr]">
@@ -240,25 +249,6 @@ function Report({ inspection }: { inspection: Inspection }) {
         </Panel>
       )}
 
-      {related.length > 0 && (
-        <div className="rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2">
-          <p className="mb-1.5 text-xs font-medium text-[var(--ft-text-muted)]">
-            Pour aller plus loin avec ce type de fichier
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {related.map((entry) => (
-              <Link
-                key={entry.id}
-                to={toolRoute(entry.id)}
-                className="inline-flex items-center gap-1.5 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface)] px-2.5 py-1 text-xs hover:border-[var(--ft-accent)]"
-              >
-                <Icon name={entry.icon} size={13} />
-                {entry.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
