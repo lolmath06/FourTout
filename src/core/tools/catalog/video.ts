@@ -274,4 +274,22 @@ export const videoTools = defineTools([
     acceptedInputs: [IN.video(true)],
     outputs: [OUT.video()],
   },
+  {
+    id: "video-frame-rate",
+    name: "Changer la fréquence d'images",
+    description:
+      "Convertir une vidéo vers 24, 25, 30, 60 i/s ou une cadence personnalisée, par duplication et suppression d'images.",
+    category: "video",
+    icon: "Gauge",
+    keywords: [
+      "fps video", "changer fps", "frequence d'images", "images par seconde",
+      "24 fps", "25 fps", "30 fps", "60 fps", "29.97", "23.976", "ntsc", "pal",
+      "cadence video", "ralentir le nombre d'images",
+    ],
+    aliases: ["frame rate", "change fps", "fps converter", "framerate"],
+    capabilities: ["local", "produces-files", "long-running", "needs-sidecar"],
+    acceptedInputs: [IN.video()],
+    outputs: [OUT.video()],
+    note: "Aucune image intermédiaire n'est calculée : les images sont dupliquées ou supprimées. La sortie est à cadence constante.",
+  },
 ]);

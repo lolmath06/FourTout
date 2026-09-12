@@ -74,11 +74,17 @@ describe("catégorie Vidéo", () => {
     expect(rejected).toHaveLength(0);
   });
 
-  it("garde chaque outil vidéo local et déclare son moteur embarqué", () => {
+  it("garde chaque outil vidéo local, et déclare FFmpeg dès qu'il touche à une vidéo", () => {
     for (const tool of videoTools) {
       expect(tool.capabilities, `${tool.id}`).toContain("local");
-      expect(tool.capabilities, `${tool.id}`).toContain("needs-sidecar");
       expect(tool.capabilities).not.toContain("network");
+
+      // La catégorie accueille aussi des outils qui accompagnent la vidéo sans
+      // la manipuler — l'éditeur de sous-titres ne lit que du texte et tourne
+      // entièrement en TypeScript. Exiger le moteur embarqué de tous les outils
+      // de la rubrique reviendrait à annoncer une dépendance qui n'existe pas.
+      const touchesVideo = tool.acceptedInputs.some((input) => input.kind === "video");
+      if (touchesVideo) expect(tool.capabilities, `${tool.id}`).toContain("needs-sidecar");
     }
   });
 });

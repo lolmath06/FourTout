@@ -279,4 +279,24 @@ export const textTools = defineTools([
     outputs: [OUT.text()],
     note: "Si l'encodage de destination ne peut pas écrire certains caractères, la conversion est refusée et les caractères concernés sont listés. Le remplacement n'a lieu que si vous le demandez explicitement.",
   },
+  {
+    id: "subtitle-edit",
+    name: "Modifier des sous-titres",
+    description:
+      "Convertir entre SRT et WebVTT, décaler les horodatages, fusionner deux fichiers, vérifier et réparer.",
+    category: "text",
+    alsoIn: ["video", "converters"],
+    icon: "Captions",
+    keywords: [
+      "sous titres", "sous-titres", "srt", "vtt", "webvtt", "srt en vtt",
+      "vtt en srt", "decaler sous titres", "synchroniser les sous titres",
+      "sous titres en retard", "fusionner sous titres", "reparer srt",
+      "normaliser sous titres", "sous titres desynchronises", "chevauchement",
+    ],
+    aliases: ["subtitles", "srt to vtt", "vtt to srt", "shift subtitles", "merge subtitles", "fix srt"],
+    capabilities: ["local", "produces-files"],
+    acceptedInputs: [{ kind: "text", extensions: ["srt", "vtt"], multiple: true }],
+    outputs: [{ kind: "text", extensions: ["srt", "vtt"] }],
+    note: "Ce qui est mécaniquement sûr est corrigé (ordre, numérotation, fins de ligne) ; les chevauchements sont signalés mais jamais raccourcis d'office.",
+  },
 ]);

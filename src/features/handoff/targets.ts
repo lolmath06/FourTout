@@ -41,6 +41,20 @@ export const HANDOFF_TARGETS = {
   videoConvert: "video-convert",
   /** Comparaison de deux textes collés. */
   textCompare: "text-compare",
+  /** Fiche d'identité d'un fichier audio ou vidéo. */
+  mediaInspect: "media-info",
+  /** Comparaison de deux images. */
+  imageCompare: "image-compare",
+  /** Changement de fréquence d'images. */
+  videoFrameRate: "video-frame-rate",
+  /** Étiquettes d'un fichier audio. */
+  audioMetadata: "audio-metadata",
+  /** Canaux d'un fichier audio. */
+  audioChannels: "audio-channels",
+  /** Extraction des sous-titres d'une vidéo. */
+  subtitleExtract: "video-extract-subtitles",
+  /** Conversion, décalage, fusion et réparation de sous-titres. */
+  subtitleEdit: "subtitle-edit",
 } as const;
 
 export type HandoffTarget = (typeof HANDOFF_TARGETS)[keyof typeof HANDOFF_TARGETS];
