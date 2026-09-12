@@ -102,6 +102,67 @@ pub fn find(
     }
 }
 
+/// Toutes les occurrences d'une séquence, en **une seule** traversée.
+///
+/// Chercher occurrence par occurrence obligerait à relire le fichier autant de
+/// fois qu'il y a de résultats. Une passe suffit, et elle donne d'emblée de
+/// quoi afficher « occurrence 3 sur 17 » — ce qu'un simple « suivante » ne
+/// permet jamais de savoir.
+pub fn find_all(
+    path: &Path,
+    pattern: &[u8],
+    limit: usize,
+    reporter: &Reporter,
+) -> Result<Vec<u64>, String> {
+    if pattern.is_empty() {
+        return Err("La séquence recherchée est vide.".into());
+    }
+    if pattern.len() > COPY_CHUNK {
+        return Err("La séquence recherchée est trop longue.".into());
+    }
+    let file = File::open(path).map_err(|e| format!("Lecture impossible : {e}"))?;
+    let size = file.metadata().map_err(|e| e.to_string())?.len();
+    let mut reader = BufReader::with_capacity(COPY_CHUNK, file);
+
+    let overlap = pattern.len() - 1;
+    let mut window: Vec<u8> = Vec::with_capacity(COPY_CHUNK + overlap);
+    let mut base = 0_u64;
+    let mut chunk = vec![0_u8; COPY_CHUNK];
+    let mut found = Vec::new();
+    let limit = limit.clamp(1, 100_000);
+
+    loop {
+        reporter.check()?;
+        let read = reader.read(&mut chunk).map_err(|e| format!("Lecture interrompue : {e}"))?;
+        if read == 0 {
+            break;
+        }
+        window.extend_from_slice(&chunk[..read]);
+
+        // Les occurrences peuvent se chevaucher : on avance d'un octet après
+        // chaque trouvaille plutôt que de sauter la séquence entière.
+        let mut cursor = 0_usize;
+        while cursor + pattern.len() <= window.len() {
+            match window[cursor..].windows(pattern.len()).position(|slice| slice == pattern) {
+                Some(offset) => {
+                    found.push(base + (cursor + offset) as u64);
+                    if found.len() >= limit {
+                        return Ok(found);
+                    }
+                    cursor += offset + 1;
+                }
+                None => break,
+            }
+        }
+
+        let keep = overlap.min(window.len());
+        base += (window.len() - keep) as u64;
+        window.drain(..window.len() - keep);
+        reporter.report(base, size, "Recherche de la séquence…");
+    }
+    Ok(found)
+}
+
 /// Une modification : remplacer des octets à partir d'un décalage.
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -288,6 +349,45 @@ mod tests {
         assert_eq!(find(&path, b"absent", 0, &Reporter::silent()).unwrap(), None);
         // Recherche à partir d'un décalage : on ne retrouve pas ce qui précède.
         assert_eq!(find(&path, b"FourTout", 300, &Reporter::silent()).unwrap(), None);
+    }
+
+    #[test]
+    fn finds_every_occurrence_in_one_pass() {
+        let dir = std::env::temp_dir().join("fourtout-hex-tests");
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("occurrences.bin");
+
+        // Trois occurrences, dont une à cheval sur la frontière de deux blocs
+        // de lecture : c'est le cas qu'une recherche par fenêtre rate.
+        let mut bytes = vec![0x11_u8; COPY_CHUNK - 2];
+        bytes.extend_from_slice(&[0xDE, 0xAD, 0xBE, 0xEF]);
+        bytes.extend(std::iter::repeat_n(0x22_u8, 100));
+        let first = 10_usize;
+        bytes[first..first + 4].copy_from_slice(&[0xDE, 0xAD, 0xBE, 0xEF]);
+        let last = bytes.len();
+        bytes.extend_from_slice(&[0xDE, 0xAD, 0xBE, 0xEF]);
+        fs::write(&path, &bytes).unwrap();
+
+        let found =
+            find_all(&path, &[0xDE, 0xAD, 0xBE, 0xEF], 100, &Reporter::silent()).unwrap();
+        assert_eq!(found, vec![first as u64, (COPY_CHUNK - 2) as u64, last as u64]);
+
+        // La recherche unitaire et la recherche complète doivent s'accorder.
+        assert_eq!(
+            find(&path, &[0xDE, 0xAD, 0xBE, 0xEF], 0, &Reporter::silent()).unwrap(),
+            Some(found[0])
+        );
+        assert!(find_all(&path, b"absent", 100, &Reporter::silent()).unwrap().is_empty());
+    }
+
+    #[test]
+    fn counts_overlapping_occurrences() {
+        let dir = std::env::temp_dir().join("fourtout-hex-tests");
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("overlap.bin");
+        fs::write(&path, b"aaaa").unwrap();
+        // « aa » apparaît trois fois dans « aaaa » : aux positions 0, 1 et 2.
+        assert_eq!(find_all(&path, b"aa", 100, &Reporter::silent()).unwrap(), vec![0, 1, 2]);
     }
 
     #[test]
