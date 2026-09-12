@@ -38,6 +38,32 @@ describe("écrans représentatifs après la passe visuelle", { timeout: APP_TIME
   });
 });
 
+describe("recherche", { timeout: APP_TIMEOUT }, () => {
+  it("n'a plus de champ de recherche en en-tête, sur aucun écran", async () => {
+    for (const path of ["/", "/settings", "/tools/t/pdf-merge"]) {
+      open(path);
+      const main = await waitFor(() => {
+        const found = document.querySelector("main");
+        expect(found).not.toBeNull();
+        return found!;
+      });
+      // Le champ global doublait celui de la page Outils et prenait le focus
+      // partout, y compris sur les écrans où il n'y a rien à chercher.
+      expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+      // Et la ligne d'en-tête part avec lui : rien ne subsiste au-dessus du
+      // contenu, sans quoi le retrait n'aurait fait que vider une bande.
+      expect(main.previousElementSibling).toBeNull();
+      cleanup();
+    }
+  });
+
+  it("garde la recherche de la page Outils, qui porte sur tout le catalogue", async () => {
+    open("/tools");
+    const box = await waitFor(() => screen.getByRole("searchbox"));
+    expect(box).toHaveAttribute("placeholder", expect.stringContaining("Rechercher"));
+  });
+});
+
 describe("motifs retirés par la passe visuelle", { timeout: APP_TIMEOUT }, () => {
   it("n'affiche plus de marqueur d'état sur un outil disponible", () => {
     open("/tools/t/pdf-merge");

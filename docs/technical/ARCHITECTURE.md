@@ -67,7 +67,7 @@ src/
 │   ├── jobs/              Travaux de fond, barre de progression globale
 │   └── settings/          Thème, échelle, densité, animations, confidentialité
 ├── components/            Composants réutilisables (ui/, tools/, files/)
-├── layouts/AppShell.tsx   Barre latérale, en-tête, recherche globale
+├── layouts/AppShell.tsx   Barre latérale de navigation et zone de contenu
 ├── pages/                 Une page par route
 ├── tools/                 Les outils réellement implémentés
 │   ├── implementations.ts Table id → composant (chargement paresseux)
