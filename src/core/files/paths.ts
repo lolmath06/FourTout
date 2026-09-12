@@ -27,10 +27,17 @@ export function directoryName(path: string): string {
   return index > 0 ? cleaned.slice(0, index) : index === 0 ? "/" : "";
 }
 
-/** Assemble un chemin en respectant le séparateur du parent. */
+/**
+ * Assemble un chemin en respectant le séparateur du parent.
+ *
+ * Le fragment ajouté est normalisé au même séparateur : les chemins relatifs
+ * que produisent les moteurs Fichiers emploient toujours `/`, y compris sous
+ * Windows, et les recoller tels quels donnerait `C:\dossier\sous/fichier.txt`.
+ */
 export function joinPath(parent: string, child: string): string {
   const separator = separatorOf(parent);
-  return `${parent.replace(/[\\/]+$/, "")}${separator}${child}`;
+  const normalized = child.replace(/[\\/]+/g, separator);
+  return `${parent.replace(/[\\/]+$/, "")}${separator}${normalized}`;
 }
 
 /** Nom sans extension. */
