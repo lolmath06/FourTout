@@ -45,7 +45,11 @@ const VIEW_MODES: { value: ViewMode; label: string }[] = [
 ];
 
 export function ImageCompareTool({ tool }: ToolComponentProps) {
-  const [files, setFiles] = useState<SelectedFile[]>([]);
+  // Deux emplacements nommés, pas une liste de deux : « A » et « B » ont des
+  // rôles différents — la référence et la candidate — et une liste ne permet
+  // pas de remplacer la seconde sans d'abord retirer la première.
+  const [fileA, setFileA] = useState<SelectedFile[]>([]);
+  const [fileB, setFileB] = useState<SelectedFile[]>([]);
   const [view, setView] = useState<ViewMode>("side-by-side");
   const [opacity, setOpacity] = useState(50);
   const [tolerance, setTolerance] = useState(0);
@@ -56,9 +60,13 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
   const [outcome, setOutcome] = useState<OperationOutcome | null>(null);
   const job = useJob<CompareResult>();
 
-  const a = useSourceCanvas(files[0]);
-  const b = useSourceCanvas(files[1]);
-  const ready = Boolean(a.full && b.full);
+  const a = useSourceCanvas(fileA[0]);
+  const b = useSourceCanvas(fileB[0]);
+  // Les canvas viennent d'un effet : ils survivent **un rendu de plus** que le
+  // fichier dont ils sont issus. Exiger aussi le fichier ferme la fenêtre
+  // pendant laquelle l'écran affichait des données dont la source n'existait
+  // plus — c'est elle qui faisait lever `files[1].name` et démontait la racine.
+  const ready = Boolean(fileA[0] && fileB[0] && a.full && b.full);
   const matching = a.full && b.full ? sameDimensions(a.full, b.full) : false;
   const needsChoice = ready && !matching && align === undefined;
 
@@ -68,7 +76,7 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
   useEffect(() => {
     setResult(undefined);
     setOutcome(null);
-  }, [files, tolerance, includeAlpha, align]);
+  }, [fileA, fileB, tolerance, includeAlpha, align]);
 
   const compare = async () => {
     if (!a.full || !b.full) return;
@@ -103,7 +111,7 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
     setOutcome({
       files: [
         {
-          name: diffOutputName(files[0].name, files[1].name),
+          name: diffOutputName(fileA[0].name, fileB[0].name),
           bytes,
           mimeType: "image/png",
         },
@@ -115,24 +123,40 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
 
   return (
     <div className="space-y-4">
-      <FileDropZone
-        constraints={{ ...constraintsForTool(tool), maxFiles: 2 }}
-        files={files}
-        onChange={setFiles}
-        label="Déposez les deux images à comparer"
-        hint="La première est l'image A (référence), la seconde l'image B."
-        disabled={job.isRunning}
-      />
+      <div className="grid gap-3 sm:grid-cols-2">
+        <FileDropZone
+          constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
+          files={fileA}
+          onChange={setFileA}
+          label="Image A — référence"
+          hint="Celle à laquelle on compare."
+          disabled={job.isRunning}
+        />
+        <FileDropZone
+          constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
+          files={fileB}
+          onChange={setFileB}
+          label="Image B — comparaison"
+          hint="Celle dont on cherche les écarts."
+          disabled={job.isRunning}
+        />
+      </div>
 
-      {files.length === 1 && (
+      {fileA.length === 1 && fileB.length === 0 && (
         <Callout tone="info" title="Il manque la seconde image">
-          Déposez une deuxième image pour lancer la comparaison.
+          Déposez une image dans l'emplacement B pour lancer la comparaison.
+        </Callout>
+      )}
+
+      {fileB.length === 1 && fileA.length === 0 && (
+        <Callout tone="info" title="Il manque l'image de référence">
+          Déposez une image dans l'emplacement A pour lancer la comparaison.
         </Callout>
       )}
 
       {ready && (
         <>
-          <Dimensions a={a} b={b} files={files} matching={matching} />
+          <Dimensions a={a} b={b} names={[fileA[0].name, fileB[0].name]} matching={matching} />
 
           {!matching && (
             <Fieldset columns={1}>
@@ -178,7 +202,7 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ft-border)] pt-4">
             <p className="text-xs text-[var(--ft-text-muted)]">
-              {formatFileSize(files[0].size)} · {formatFileSize(files[1].size)}
+              {formatFileSize(fileA[0].size)} · {formatFileSize(fileB[0].size)}
             </p>
             <div className="flex items-center gap-2">
               {job.isRunning && (
@@ -238,7 +262,7 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
             view={view}
             a={a.full}
             b={b.full}
-            names={[files[0].name, files[1].name]}
+            names={[fileA[0].name, fileB[0].name]}
             opacity={opacity}
             diff={result?.diff}
             amplify={amplify}
@@ -262,19 +286,19 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
 function Dimensions({
   a,
   b,
-  files,
+  names,
   matching,
 }: {
   a: { width: number; height: number };
   b: { width: number; height: number };
-  files: SelectedFile[];
+  names: [string, string];
   matching: boolean;
 }) {
   return (
     <div className="grid gap-2 sm:grid-cols-2">
       {[
-        { label: "A", name: files[0].name, size: a },
-        { label: "B", name: files[1].name, size: b },
+        { label: "A", name: names[0], size: a },
+        { label: "B", name: names[1], size: b },
       ].map((entry) => (
         <div
           key={entry.label}

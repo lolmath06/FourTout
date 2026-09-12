@@ -78,8 +78,17 @@ describe("éditeur de sous-titres", () => {
     const input = document.querySelector<HTMLInputElement>('input[type="file"]')!;
     await user.upload(input, fixtureFile("subtitle-windows.srt"));
 
-    await waitFor(() => expect(screen.getByText(/réécrit en UTF-8/)).toBeInTheDocument());
+    // La fixture est en UTF-16 LE, avec marque d'ordre des octets et fins de
+    // ligne CRLF. Lue comme de l'UTF-8, elle ne lèverait aucune erreur : elle
+    // afficherait « 0 réplique » et un avertissement d'horodatage manquant.
+    // C'est le compte, vu depuis l'interface, qui distingue les deux lectures.
+    await waitFor(() =>
+      expect(screen.getByText(/subtitle-windows\.srt — SRT, 2 répliques/)).toBeInTheDocument(),
+    );
+    expect(screen.getByText(/réécrit en UTF-8/)).toBeInTheDocument();
+    expect(screen.queryByText(/aucun horodatage/i)).not.toBeInTheDocument();
     expect(screen.getByText(/Réplique accentuée à l'ancienne\./)).toBeInTheDocument();
+    expect(screen.getByText(/Où ça \? Là-bas, près du mûrier\./)).toBeInTheDocument();
   });
 });
 
