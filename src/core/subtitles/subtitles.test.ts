@@ -2,6 +2,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { decodeText, detectEncoding } from "@/core/text/encoding";
 import {
   detectFormat,
   mergeCues,
@@ -22,7 +23,10 @@ import {
 const DIR = join(process.cwd(), "test-assets", "generated");
 const read = (name: string) => readFileSync(join(DIR, name), "utf8");
 const CONTRACT = JSON.parse(readFileSync(join(DIR, "CONTRAT.json"), "utf8")) as {
-  sousTitres: Record<string, { repliques?: number; blocs?: number; decalageMs?: number; chevauchements?: number }>;
+  sousTitres: Record<
+    string,
+    { repliques?: number; blocs?: number; decalageMs?: number; chevauchements?: number; encodage?: string }
+  >;
 };
 
 describe("lecture des sous-titres", () => {
@@ -68,6 +72,30 @@ describe("lecture des sous-titres", () => {
     expect(parseTimestamp("00:00:75,000")).toBeUndefined();
     expect(parseTimestamp("n'importe quoi")).toBeUndefined();
     expect(parseTimestamp("999:00:00,000")).toBeUndefined();
+  });
+
+  it("lit un fichier venu de Windows sans transformer les accents en losanges", () => {
+    // UTF-16 avec marque d'ordre des octets et CRLF : décodé en UTF-8 d'office,
+    // ce fichier ne lèverait aucune erreur, il rendrait du charabia. La
+    // détection d'encodage de la phase 8 fait le travail en amont du lecteur.
+    const bytes = new Uint8Array(readFileSync(join(DIR, "subtitle-windows.srt")));
+    const detection = detectEncoding(bytes);
+    const expected = CONTRACT.sousTitres["subtitle-windows.srt"];
+    expect(detection.encoding).toBe(expected.encodage);
+    expect(detection.certain).toBe(true);
+
+    const document = parseSrt(decodeText(bytes, detection.encoding));
+    expect(document.cues).toHaveLength(expected.repliques!);
+    expect(document.warnings).toHaveLength(0);
+    expect(document.cues[0].text).toBe("Réplique accentuée à l'ancienne.");
+    expect(document.cues[1].text).toBe("Où ça ? Là-bas, près du mûrier.");
+
+    // La réécriture est toujours en fins de ligne LF, quel que soit le fichier
+    // d'entrée : c'est ce que lisent VLC comme les lecteurs web, et c'est la
+    // seule façon d'obtenir le même résultat sous Fedora et sous Windows.
+    const srt = serializeSrt(document.cues);
+    expect(srt).not.toContain("\r");
+    expect(srt).toContain("Réplique accentuée");
   });
 
   it("signale les défauts d'un fichier abîmé plutôt que de les masquer", () => {

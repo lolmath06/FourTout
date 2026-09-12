@@ -478,6 +478,12 @@ const contract = {
     "subtitle-overlap.srt": { repliques: subtitleBlocks("subtitle-overlap.srt"), chevauchements: 2 },
     "subtitle-broken.srt": { blocs: subtitleBlocks("subtitle-broken.srt") },
     "subtitle-second.srt": { repliques: subtitleBlocks("subtitle-second.srt") },
+    "subtitle-windows.srt": {
+      repliques: 2,
+      encodage: "utf-16le",
+      finsDeLigne: "crlf",
+      marqueOrdreOctets: true,
+    },
   },
 
   mediaPhase10: {

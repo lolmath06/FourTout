@@ -10,7 +10,7 @@ change pour lui. Pour l'historique détaillé du code, `git log`.
 
 ## [Non publié]
 
-Première version complète de FourTout : **174 outils, tous utilisables**,
+Première version complète de FourTout : **181 outils, tous utilisables**,
 répartis en dix catégories.
 
 ### PDF — 26 outils
@@ -38,7 +38,7 @@ Côté sécurité : protection et déverrouillage par mot de passe, **caviardage
 qui supprime réellement le contenu** plutôt que de le recouvrir, et
 récupération locale d'un mot de passe oublié par dictionnaire et règles.
 
-### Images — 23 outils
+### Images — 25 outils
 
 Conversion, compression, redimensionnement, rognage visuel, rotation et
 miroir, niveaux de gris, réglages (luminosité, contraste, saturation, gamma),
@@ -52,7 +52,22 @@ automatiquement, le fond devient transparent. Le modèle (U²-Net, Apache 2.0)
 s'installe une fois puis tourne sur la machine — l'image n'est jamais envoyée
 sur un serveur, contrairement aux services en ligne équivalents.
 
-### Audio — 15 outils
+**Comparer deux images** : côte à côte, en superposition à opacité réglable, ou
+en différence. Le nombre de pixels qui changent, l'écart moyen et maximal, le
+PSNR et le SSIM sont affichés, et l'image de différence s'enregistre en PNG.
+Deux images de dimensions différentes ne sont jamais redimensionnées sans votre
+accord : le rééchantillonnage fabriquerait des écarts que les fichiers ne
+contiennent pas.
+
+**Créer une planche-contact** : plusieurs images en grille sur une feuille, avec
+colonnes, espacement, fond et noms de fichier réglables.
+
+**Analyser et convertir une couleur** remplace l'ancienne palette et la contient
+toujours : couleurs dominantes, pipette au pixel près avec zoom, écritures HEX /
+RGB / HSL / HSV copiables, et contraste WCAG entre un texte et son fond — avec
+le texte réellement affiché sur ce fond, en plus du rapport chiffré.
+
+### Audio — 18 outils
 
 Enregistrement au micro, conversion, compression, découpage, fusion, volume,
 normalisation, changement de vitesse, suppression automatique des silences,
@@ -61,7 +76,20 @@ extraction de la bande son d'une vidéo.
 Et la parole, **entièrement locale** : synthèse vocale (Piper), transcription
 (whisper.cpp), génération de sous-titres SRT, PDF vers livre audio.
 
-### Vidéo — 19 outils
+**Convertir les canaux** (mono, stéréo, ou tel quel) : un fichier multicanal
+n'est jamais réduit sans qu'on le demande, et passer du mono au stéréo duplique
+le canal — aucune spatialisation n'est inventée.
+
+**Modifier les étiquettes** (titre, artiste, album, année, genre, piste,
+commentaire) sans réencoder : le flux audio est recopié tel quel, le son produit
+est identique au bit près.
+
+**Inspecter un média** donne tout ce qu'un fichier audio ou vidéo déclare —
+conteneur, codecs, profil, résolution, rapports d'aspect, cadence, débits,
+canaux, profondeur, étiquettes. Les champs absents ne sont pas affichés plutôt
+que montrés à zéro.
+
+### Vidéo — 20 outils
 
 Conversion, compression, changement de résolution, découpage, fusion, rognage
 visuel, rotation et miroir, vitesse. Gestion des pistes audio : suppression,
@@ -73,7 +101,13 @@ Les codecs proposés sont ceux que le FFmpeg installé sait **réellement**
 produire : chacun est éprouvé par un encodage d'essai, pas simplement lu dans
 la liste annoncée.
 
-### Texte & Documents — 19 outils
+**Changer la fréquence d'images** vers 24, 25, 30, 60 i/s ou une cadence
+personnalisée. Les images sont dupliquées ou supprimées ; aucune image
+intermédiaire n'est calculée, et l'outil le dit. Les cadences NTSC sont écrites
+comme les fractions exactes qu'elles sont (30000/1001), et non comme un décimal
+arrondi qui ferait dériver l'image par rapport au son.
+
+### Texte & Documents — 20 outils
 
 Statistiques, changement de casse, nettoyage, rechercher/remplacer avec
 expressions régulières, comparaison, doublons, tri. Markdown ↔ HTML ↔ texte
@@ -91,6 +125,15 @@ qu'un verdict trompeur ; puis conversion entre UTF-8, UTF-8 avec BOM, UTF-16
 LE/BE, Windows-1252 et Latin-1. Si la destination ne peut pas écrire un
 caractère, la conversion est **refusée** et les caractères concernés sont
 nommés : rien ne se perd en silence.
+
+**Modifier des sous-titres** réunit les quatre gestes du même travail :
+convertir entre SRT et WebVTT, décaler les horodatages, fusionner deux fichiers
+en une seule ligne de temps, vérifier et réparer. Ce qui est mécaniquement sûr
+est corrigé — l'ordre, la numérotation, les fins de ligne, les répliques vides,
+les doublons exacts. Ce qui demande un arbitrage est **signalé sans être
+touché** : raccourcir une réplique qui en chevauche une autre reviendrait à
+décider, à la place de l'auteur, laquelle doit céder. Un fichier venu de Windows
+en UTF-16 est lu correctement et réécrit en UTF-8.
 
 ### Fichiers & Archives — 29 outils
 
