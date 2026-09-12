@@ -7,7 +7,7 @@ import { Field, Fieldset, OptionGroup, TextInput } from "@/components/pdf/Field"
 import { CheckOption } from "@/components/text/TextToolShell";
 import { Callout } from "@/components/ui/Callout";
 import { Icon } from "@/components/ui/Icon";
-import { formatFileSize } from "@/core/files";
+import { formatFileSize, formatSizeWithExact } from "@/core/files";
 import {
   buildSyncPlan,
   DEFAULT_WALK_OPTIONS,
@@ -238,13 +238,40 @@ export function FolderSyncTool(_props: ToolComponentProps) {
           <StatGrid
             columns={5}
             stats={[
-              { label: "À copier", value: plan.copies },
-              { label: "À remplacer", value: plan.replacements, tone: plan.replacements > 0 ? "warn" : "neutral" },
-              { label: "À supprimer", value: plan.deletions, tone: plan.deletions > 0 ? "danger" : "neutral" },
-              { label: "Inchangés", value: plan.unchanged },
-              { label: "À écrire", value: formatFileSize(plan.bytes) },
+              { label: "Fichiers à copier", value: plan.copies },
+              {
+                label: "Fichiers à remplacer",
+                value: plan.replacements,
+                tone: plan.replacements > 0 ? "warn" : "neutral",
+              },
+              {
+                label: "À supprimer",
+                value: plan.deletions,
+                tone: plan.deletions > 0 ? "danger" : "neutral",
+              },
+              { label: "Dossiers à créer", value: plan.directories },
+              { label: "Fichiers inchangés", value: plan.unchanged },
             ]}
           />
+
+          {/*
+            Le total d'opérations est dit à part, et sa composition avec lui.
+            Sans cela, un résumé annonçant « 5 à copier » devant une liste de
+            sept lignes laisse croire à une incohérence — alors que les deux
+            chiffres comptent simplement deux choses différentes.
+          */}
+          <p className="ft-meta tabular-nums" data-testid="sync-plan-total">
+            <strong className="text-[var(--ft-text)]">
+              {plan.operations.length.toLocaleString("fr-FR")} opération
+              {plan.operations.length > 1 ? "s" : ""}
+            </strong>{" "}
+            au total : {plan.directories} création(s) de dossier, {plan.copies} copie(s),{" "}
+            {plan.replacements} remplacement(s)
+            {plan.deletions > 0 && `, ${plan.deletions} suppression(s)`}. Volume à écrire :{" "}
+            {formatSizeWithExact(plan.bytes)}.
+            {plan.unchanged > 0 &&
+              ` ${plan.unchanged} fichier(s) déjà conforme(s) ne seront pas touchés.`}
+          </p>
 
           {plan.operations.length === 0 ? (
             <Callout tone="success" title="Rien à faire">
@@ -400,13 +427,21 @@ function Outcome({ outcome }: { outcome: SyncOutcome }) {
       <StatGrid
         columns={5}
         stats={[
-          { label: "Copiés", value: outcome.copied },
-          { label: "Remplacés", value: outcome.replaced },
-          { label: "Supprimés", value: outcome.deleted, tone: outcome.deleted > 0 ? "danger" : "neutral" },
+          { label: "Fichiers copiés", value: outcome.copied },
+          { label: "Fichiers remplacés", value: outcome.replaced },
+          {
+            label: "Supprimés",
+            value: outcome.deleted,
+            tone: outcome.deleted > 0 ? "danger" : "neutral",
+          },
           { label: "Dossiers créés", value: outcome.directoriesCreated },
-          { label: "Écrit", value: formatFileSize(outcome.bytes) },
+          { label: "Opérations", value: `${outcome.completed} / ${outcome.total}` },
         ]}
       />
+
+      <p className="ft-meta tabular-nums">
+        Volume écrit : {formatSizeWithExact(outcome.bytes)}.
+      </p>
 
       {complete ? (
         <Callout tone="success" title="Synchronisation terminée">

@@ -15,6 +15,7 @@ import {
 import { directoryName, joinPath, stemOf, baseName } from "@/core/files/paths";
 import { openFolder } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
+import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
 
 /**
@@ -25,8 +26,9 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * `../../evil.txt` ou un chemin absolu ne peut rien écrire hors du dossier
  * choisi : ces entrées sont ignorées et listées.
  */
-export function ArchiveExtractTool(_props: ToolComponentProps) {
-  const [paths, setPaths] = useState<string[]>([]);
+export function ArchiveExtractTool({ tool }: ToolComponentProps) {
+  const received = useHandoffPaths(tool.id);
+  const [paths, setPaths] = useState<string[]>(received);
   const [listing, setListing] = useState<ArchiveListing | null>(null);
   const [listingError, setListingError] = useState<string | undefined>();
   const [destination, setDestination] = useState("");
