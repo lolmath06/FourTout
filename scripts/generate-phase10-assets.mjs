@@ -20,6 +20,7 @@ import { existsSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs"
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createCanvas } from "@napi-rs/canvas";
+import { which } from "./lib/which.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "test-assets", "generated");
@@ -360,14 +361,6 @@ write(
 );
 
 /* ------------------------------------------------------------- audio / vidéo */
-
-function which(name) {
-  try {
-    return execFileSync("sh", ["-c", `command -v ${name}`]).toString().trim() || null;
-  } catch {
-    return null;
-  }
-}
 
 const FFMPEG = which("ffmpeg");
 const FFPROBE = which("ffprobe");

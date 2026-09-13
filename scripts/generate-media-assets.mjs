@@ -15,6 +15,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createCanvas } from "@napi-rs/canvas";
 import QRCode from "qrcode";
+import { which } from "./lib/which.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "test-assets", "generated");
@@ -22,13 +23,6 @@ mkdirSync(OUT, { recursive: true });
 const written = [];
 const path = (n) => join(OUT, n);
 
-function which(name) {
-  try {
-    return execFileSync("sh", ["-c", `command -v ${name}`]).toString().trim() || null;
-  } catch {
-    return null;
-  }
-}
 const FFMPEG = which("ffmpeg");
 const hasEnc = (name) => {
   try {

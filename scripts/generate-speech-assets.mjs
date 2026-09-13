@@ -16,6 +16,7 @@ import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
+import { which } from "./lib/which.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "test-assets", "generated");
@@ -33,14 +34,6 @@ const VOICES = [
   { file: "en_US-lessac-medium.onnx", source: "tts-short-en.txt", out: "audio-speech-en.wav" },
 ];
 
-/** FFmpeg du système, pour habiller la voix synthétisée d'une image. */
-function which(name) {
-  try {
-    return spawnSync("sh", ["-c", `command -v ${name}`]).stdout.toString().trim() || null;
-  } catch {
-    return null;
-  }
-}
 
 if (!existsSync(piper)) {
   console.log(

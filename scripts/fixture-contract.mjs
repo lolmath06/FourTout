@@ -14,12 +14,13 @@
  * Usage : `pnpm fixtures:contract` (inclus dans `pnpm test:assets`)
  */
 import { createHash } from "node:crypto";
-import { execFileSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import { parse as parseToml } from "smol-toml";
+import { which } from "./lib/which.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "test-assets", "generated");
@@ -254,13 +255,7 @@ function subtitleBlocks(name) {
   return text.split(/\n{2,}/).filter((block) => block.includes("-->")).length;
 }
 
-const ffprobe = (() => {
-  try {
-    return execFileSync("sh", ["-c", "command -v ffprobe"]).toString().trim() || null;
-  } catch {
-    return null;
-  }
-})();
+const ffprobe = which("ffprobe");
 
 /** Ce que ffprobe dit du premier flux d'un type donné — valeurs stables seulement. */
 function probeStream(name, selector) {
