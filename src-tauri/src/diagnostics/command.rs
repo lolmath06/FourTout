@@ -402,7 +402,7 @@ pub fn diagnostics_discard(request: DiscardRequest) -> Result<(), String> {
     // refuse : une commande de suppression ne doit pas pouvoir servir à autre
     // chose que défaire ce que l'on vient d'écrire.
     const SUFFIXES: &[&str] =
-        &["-repare", "-recuperee", "-recuperee", "-type-corrige", "-nettoye", "-reconstruit"];
+        &["-repare", "-recuperee", "-type-corrige", "-nettoye", "-reconstruit"];
     if !SUFFIXES.iter().any(|suffix| name.contains(suffix)) {
         return Err(
             "Ce chemin ne correspond pas à un fichier produit par une réparation FourTout."
