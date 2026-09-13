@@ -90,6 +90,15 @@ export const CATEGORIES: CategoryDefinition[] = [
     keywords: ["calcul", "unité", "conversion", "mesure", "math"],
   },
   {
+    id: "network",
+    name: "Réseau",
+    description: "Diagnostiquer une connexion, tester des ports, voir ce qui est branché chez soi.",
+    icon: "Network",
+    order: 95,
+    accent: "teal",
+    keywords: ["réseau", "network", "lan", "ip", "ping", "port", "connexion", "wifi"],
+  },
+  {
     id: "security",
     name: "Sécurité & Confidentialité",
     description: "Mots de passe, chiffrement, empreintes et effacement de données.",

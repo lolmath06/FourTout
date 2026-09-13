@@ -18,6 +18,7 @@ export type CategoryId =
   | "converters"
   | "developer"
   | "calculators"
+  | "network"
   | "security";
 
 /**
@@ -125,6 +126,7 @@ export type AccentName =
   | "cyan"
   | "lime"
   | "orange"
+  | "teal"
   | "slate";
 
 /** Route canonique d'un outil. Unique endroit où cette URL est construite. */

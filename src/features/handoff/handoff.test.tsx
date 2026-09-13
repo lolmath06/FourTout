@@ -40,7 +40,11 @@ describe("passages de relais des outils Fichiers", () => {
     // Et sur un contenu qu'aucun outil ne traite mieux qu'un autre, on ne
     // propose rien plutôt que de proposer au hasard.
     expect(specialistFor("unknown", "inconnu")).toBeUndefined();
-    expect(specialistFor("data", "sqlite")).toBeUndefined();
+
+    // Une base SQLite est reconnue à sa signature, jamais à son extension :
+    // elle s'appelle aussi bien « .db », « .sqlite3 » ou rien du tout.
+    expect(specialistFor("data", "sqlite")).toBe(HANDOFF_TARGETS.sqliteExplorer);
+    expect(specialistFor("data", "inconnu")).toBeUndefined();
   });
 
   it("n'a aucune cible en double sous deux noms différents", () => {

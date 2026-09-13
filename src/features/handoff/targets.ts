@@ -55,6 +55,8 @@ export const HANDOFF_TARGETS = {
   subtitleExtract: "video-extract-subtitles",
   /** Conversion, décalage, fusion et réparation de sous-titres. */
   subtitleEdit: "subtitle-edit",
+  /** Exploration en lecture seule d'une base SQLite. */
+  sqliteExplorer: "sqlite-explorer",
 } as const;
 
 export type HandoffTarget = (typeof HANDOFF_TARGETS)[keyof typeof HANDOFF_TARGETS];
@@ -70,6 +72,9 @@ export function handoffTargetIds(): string[] {
  */
 export function specialistFor(family: string, magic: string): HandoffTarget | undefined {
   if (magic === "pdf") return HANDOFF_TARGETS.pdfMetadata;
+  // Une base SQLite est reconnue à sa signature, pas à son extension : elle
+  // s'appelle aussi bien `.db`, `.sqlite3` ou rien du tout.
+  if (magic === "sqlite") return HANDOFF_TARGETS.sqliteExplorer;
   switch (family) {
     case "archive":
       // Un flux `.gz`/`.xz` n'a pas de table des matières : c'est le
@@ -104,4 +109,5 @@ const PATH_HANDOFF_TOOLS = new Set<string>([
   HANDOFF_TARGETS.checksumVerify,
   HANDOFF_TARGETS.hash,
   HANDOFF_TARGETS.rename,
+  HANDOFF_TARGETS.sqliteExplorer,
 ]);

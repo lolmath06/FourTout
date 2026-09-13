@@ -8,6 +8,7 @@ import { fileTools } from "./files";
 import { converterTools } from "./converters";
 import { developerTools } from "./developer";
 import { calculatorTools } from "./calculators";
+import { networkTools } from "./network";
 import { securityTools } from "./security";
 
 /**
@@ -27,5 +28,6 @@ export const ALL_TOOLS: ToolDefinition[] = [
   ...converterTools,
   ...developerTools,
   ...calculatorTools,
+  ...networkTools,
   ...securityTools,
 ];

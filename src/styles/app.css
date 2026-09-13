@@ -137,6 +137,7 @@
 [data-accent="amber"] { --ft-cat: oklch(58% 0.12 80); --ft-cat-soft: oklch(96.4% 0.016 85); }
 [data-accent="lime"] { --ft-cat: oklch(55% 0.14 130); --ft-cat-soft: oklch(96.4% 0.016 130); }
 [data-accent="emerald"] { --ft-cat: oklch(53% 0.12 160); --ft-cat-soft: oklch(96.2% 0.014 160); }
+[data-accent="teal"] { --ft-cat: oklch(53% 0.1 190); --ft-cat-soft: oklch(96.2% 0.012 190); }
 [data-accent="cyan"] { --ft-cat: oklch(54% 0.11 210); --ft-cat-soft: oklch(96.2% 0.014 210); }
 [data-accent="sky"] { --ft-cat: oklch(53% 0.14 245); --ft-cat-soft: oklch(96.2% 0.014 245); }
 [data-accent="violet"] { --ft-cat: oklch(53% 0.16 290); --ft-cat-soft: oklch(96.2% 0.014 290); }
@@ -148,6 +149,7 @@
 .dark [data-accent="amber"] { --ft-cat: oklch(80% 0.11 80); --ft-cat-soft: oklch(24% 0.026 80); }
 .dark [data-accent="lime"] { --ft-cat: oklch(77% 0.12 130); --ft-cat-soft: oklch(24% 0.026 130); }
 .dark [data-accent="emerald"] { --ft-cat: oklch(75% 0.11 160); --ft-cat-soft: oklch(24% 0.026 160); }
+.dark [data-accent="teal"] { --ft-cat: oklch(76% 0.09 190); --ft-cat-soft: oklch(24% 0.024 190); }
 .dark [data-accent="cyan"] { --ft-cat: oklch(77% 0.1 210); --ft-cat-soft: oklch(24% 0.026 210); }
 .dark [data-accent="sky"] { --ft-cat: oklch(74% 0.11 245); --ft-cat-soft: oklch(24% 0.026 245); }
 .dark [data-accent="violet"] { --ft-cat: oklch(74% 0.13 290); --ft-cat-soft: oklch(24% 0.03 290); }

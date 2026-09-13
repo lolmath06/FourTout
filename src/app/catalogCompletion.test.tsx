@@ -241,7 +241,12 @@ describe("développeur — jetons et outils", { timeout: APP_TIMEOUT }, () => {
     );
     await waitFor(() => expect(screen.getByText("1234567890")).toBeInTheDocument());
     expect(screen.getByText("Décodé n'est pas vérifié")).toBeInTheDocument();
-    expect(screen.getByText("non — la clé n'est pas connue")).toBeInTheDocument();
+    // La vérification existe, mais elle est un geste séparé : tant qu'aucune
+    // clé n'a été fournie, l'écran ne dit rien de la signature.
+    expect(screen.getByText("Vérifier la signature")).toBeInTheDocument();
+    expect(screen.getByLabelText("Algorithme attendu")).toBeInTheDocument();
+    expect(screen.queryByText("SIGNATURE VALIDE")).not.toBeInTheDocument();
+    expect(screen.queryByText("SIGNATURE INVALIDE")).not.toBeInTheDocument();
   });
 
   it("UUID : génère des identifiants uniques et conformes", async () => {

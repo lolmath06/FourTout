@@ -378,6 +378,36 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
       default: m.TextEncodingConvertTool,
     })),
   ),
+
+  // Développeur, calculateurs et réseau (phase 11)
+  "toml-format": lazy(() =>
+    import("./impl/dev/TomlTool").then((m) => ({ default: m.TomlTool })),
+  ),
+  base32: lazy(() => import("./impl/dev/Base32Tool").then((m) => ({ default: m.Base32Tool }))),
+  "sqlite-explorer": lazy(() =>
+    import("./impl/dev/SqliteExplorerTool").then((m) => ({ default: m.SqliteExplorerTool })),
+  ),
+  "calc-timezone": lazy(() =>
+    import("./impl/calculators/TimezoneTool").then((m) => ({ default: m.TimezoneTool })),
+  ),
+  "calc-bandwidth": lazy(() =>
+    import("./impl/calculators/BandwidthTools").then((m) => ({ default: m.BandwidthTool })),
+  ),
+  "calc-transfer-time": lazy(() =>
+    import("./impl/calculators/BandwidthTools").then((m) => ({ default: m.TransferTimeTool })),
+  ),
+  "calc-interest": lazy(() =>
+    import("./impl/calculators/InterestTool").then((m) => ({ default: m.InterestTool })),
+  ),
+  "network-ping": lazy(() =>
+    import("./impl/network/PingTool").then((m) => ({ default: m.PingTool })),
+  ),
+  "network-ports": lazy(() =>
+    import("./impl/network/PortCheckTool").then((m) => ({ default: m.PortCheckTool })),
+  ),
+  "network-lan": lazy(() =>
+    import("./impl/network/LanDiscoveryTool").then((m) => ({ default: m.LanDiscoveryTool })),
+  ),
 };
 
 export function getToolComponent(toolId: string): ToolComponent | undefined {

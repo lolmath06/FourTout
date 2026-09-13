@@ -22,6 +22,18 @@ import {
   type UuidVersion,
 } from "@/core/code/tokens";
 import { formatJson } from "@/core/code/data";
+import { PasswordField } from "@/components/files/PasswordField";
+import {
+  isSupportedAlgorithm,
+  JWT_ALGORITHM_LABELS,
+  keyKindFor,
+  SUPPORTED_JWT_ALGORITHMS,
+  verdictSentence,
+  verifyJwt,
+  type JwtAlgorithm,
+  type JwtVerification,
+} from "@/core/code/jwtVerify";
+import { isJwtVerifyAvailable, nativeSignatureChecker } from "@/core/code/jwtNative";
 import { notify } from "@/features/notifications/store";
 import { saveFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
@@ -133,12 +145,185 @@ export function JwtDecodeTool(_props: ToolComponentProps) {
             rows={[
               { label: "Algorithme annoncé", value: decoded.value.algorithm },
               { label: "Signature (base64url)", value: decoded.value.signature },
-              { label: "Vérifiée par FourTout", value: "non — la clé n'est pas connue" },
             ]}
           />
+
+          <JwtVerificationPanel token={token} headerAlgorithm={decoded.value.algorithm} />
         </>
       )}
     </div>
+  );
+}
+
+/**
+ * Vérification de la signature, dans le même écran que le décodage.
+ *
+ * Deux principes gouvernent cette section, et ils se voient :
+ *
+ * 1. **L'algorithme est choisi par vous, pas par le token.** Le sélecteur se
+ *    pré-remplit avec ce qu'annonce l'en-tête, par commodité, mais c'est bien
+ *    votre choix qui sert au calcul — et toute divergence est un refus, pas un
+ *    ajustement silencieux. C'est ce que visent les attaques « alg: none » et
+ *    « RS256 dégradé en HS256 ».
+ * 2. **Signature et claims sont deux verdicts distincts.** Un token peut être
+ *    authentique et pourtant expiré ; l'écran affiche les deux séparément,
+ *    parce que les confondre revient soit à accepter un token périmé, soit à
+ *    crier à la falsification sans raison.
+ *
+ * Le secret n'est ni enregistré, ni journalisé, ni transmis aux récents : il
+ * vit dans cet état de composant et disparaît avec lui.
+ */
+function JwtVerificationPanel({
+  token,
+  headerAlgorithm,
+}: {
+  token: string;
+  headerAlgorithm: string;
+}) {
+  const [algorithm, setAlgorithm] = useState<JwtAlgorithm>("HS256");
+  const [secret, setSecret] = useState("");
+  const [publicKey, setPublicKey] = useState("");
+  const [result, setResult] = useState<JwtVerification | undefined>();
+  const [error, setError] = useState<string | undefined>();
+  const [busy, setBusy] = useState(false);
+
+  // L'en-tête pré-remplit le sélecteur, sans jamais décider à votre place :
+  // c'est la valeur affichée qui servira, et vous pouvez la changer.
+  useEffect(() => {
+    if (isSupportedAlgorithm(headerAlgorithm)) setAlgorithm(headerAlgorithm);
+  }, [headerAlgorithm]);
+
+  // Un changement de token ou de réglage périme le verdict précédent : laisser
+  // « SIGNATURE VALIDE » affiché sous un autre token serait le pire des bugs.
+  useEffect(() => {
+    setResult(undefined);
+    setError(undefined);
+  }, [token, algorithm, secret, publicKey]);
+
+  const kind = keyKindFor(algorithm);
+  const key = kind === "secret" ? secret : publicKey;
+  const available = isJwtVerifyAvailable();
+
+  const run = async () => {
+    setBusy(true);
+    setError(undefined);
+    try {
+      setResult(await verifyJwt(token, { algorithm, key }, nativeSignatureChecker));
+    } catch (failure) {
+      setResult(undefined);
+      setError(failure instanceof Error ? failure.message : "Vérification impossible.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="space-y-3 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-3">
+      <h3 className="ft-section">Vérifier la signature</h3>
+
+      <Fieldset columns={1}>
+        <Field
+          label="Algorithme attendu"
+          hint="C'est votre choix qui sert au calcul. Si l'en-tête du token annonce autre chose, la vérification est refusée."
+        >
+          <Select
+            value={algorithm}
+            onChange={setAlgorithm}
+            aria-label="Algorithme attendu"
+            options={SUPPORTED_JWT_ALGORITHMS.map((value) => ({
+              value,
+              label: JWT_ALGORITHM_LABELS[value],
+            }))}
+          />
+        </Field>
+      </Fieldset>
+
+      {kind === "secret" ? (
+        <Fieldset columns={1}>
+          <PasswordField
+            value={secret}
+            onChange={setSecret}
+            label="Secret partagé"
+            hint="Masqué par défaut, jamais enregistré ni ajouté aux récents."
+          />
+        </Fieldset>
+      ) : (
+        <>
+          <TextPane
+            label="Clé publique (PEM)"
+            value={publicKey}
+            onChange={setPublicKey}
+            placeholder={"-----BEGIN PUBLIC KEY-----\n…\n-----END PUBLIC KEY-----"}
+            minHeight="7rem"
+            droppable={false}
+          />
+          <p className="ft-meta">
+            La clé <strong>publique</strong> suffit : vérifier une signature ne demande jamais la
+            clé privée, et aucun outil ne devrait vous la réclamer.
+          </p>
+        </>
+      )}
+
+      {!available && (
+        <Callout tone="info">
+          La vérification utilise le moteur cryptographique de FourTout et nécessite
+          l'application installée. Le décodage ci-dessus, lui, fonctionne partout.
+        </Callout>
+      )}
+
+      <Button
+        variant="primary"
+        onClick={run}
+        disabled={!available || busy || token.trim().length === 0 || key.length === 0}
+      >
+        <Icon name="ShieldCheck" size={14} /> {busy ? "Vérification…" : "Vérifier"}
+      </Button>
+
+      {error && <Callout tone="error">{error}</Callout>}
+
+      {result && (
+        <div className="space-y-2">
+          {result.signature === "refused" ? (
+            <Callout tone="error" title="VÉRIFICATION REFUSÉE">
+              {result.refusal}
+            </Callout>
+          ) : result.signature === "valid" ? (
+            <Callout tone="success" title="SIGNATURE VALIDE">
+              Le calcul a été refait avec la clé fournie et il concorde : ce token a bien été
+              produit par le détenteur de cette clé, et son contenu n'a pas été modifié depuis.
+            </Callout>
+          ) : (
+            <Callout tone="error" title="SIGNATURE INVALIDE">
+              Le calcul ne concorde pas : soit la clé n'est pas la bonne, soit le token a été
+              modifié après signature.
+            </Callout>
+          )}
+
+          {result.signature === "valid" && result.claims.expired && (
+            <Callout tone="warning" title="EXPIRÉ">
+              La signature est authentique, mais la date d'expiration est dépassée. Ce sont deux
+              choses différentes : le token est vrai, et inutilisable.
+            </Callout>
+          )}
+
+          {result.signature === "valid" && result.claims.notYetValid && (
+            <Callout tone="warning" title="PAS ENCORE VALIDE">
+              La signature est authentique, mais le claim <code>nbf</code> place le début de
+              validité dans le futur.
+            </Callout>
+          )}
+
+          <ValueTable
+            caption="Ce qui a été vérifié"
+            rows={[
+              { label: "Algorithme annoncé par le token", value: result.headerAlgorithm },
+              { label: "Algorithme utilisé pour vérifier", value: result.expectedAlgorithm },
+              { label: "Verdict", value: verdictSentence(result), highlight: true },
+            ]}
+          />
+        </div>
+      )}
+    </section>
   );
 }
 
