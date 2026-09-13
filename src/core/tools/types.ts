@@ -19,6 +19,7 @@ export type CategoryId =
   | "developer"
   | "calculators"
   | "network"
+  | "diagnostics"
   | "security";
 
 /**
@@ -147,6 +148,7 @@ export type AccentName =
   | "lime"
   | "orange"
   | "teal"
+  | "rose"
   | "slate";
 
 /**

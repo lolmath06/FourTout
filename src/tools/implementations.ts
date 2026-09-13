@@ -408,6 +408,23 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   "network-lan": lazy(() =>
     import("./impl/network/LanDiscoveryTool").then((m) => ({ default: m.LanDiscoveryTool })),
   ),
+
+  // Diagnostic et récupération (phase 12)
+  "file-diagnose": lazy(() =>
+    import("./impl/diagnostics/FileDiagnoseTool").then((m) => ({ default: m.FileDiagnoseTool })),
+  ),
+  "archive-repair": lazy(() =>
+    import("./impl/diagnostics/ArchiveRepairTool").then((m) => ({ default: m.ArchiveRepairTool })),
+  ),
+  "pdf-repair": lazy(() =>
+    import("./impl/diagnostics/PdfRepairTool").then((m) => ({ default: m.PdfRepairTool })),
+  ),
+  "image-repair": lazy(() =>
+    import("./impl/diagnostics/ImageRepairTool").then((m) => ({ default: m.ImageRepairTool })),
+  ),
+  "disk-inspect": lazy(() =>
+    import("./impl/diagnostics/DiskInspectTool").then((m) => ({ default: m.DiskInspectTool })),
+  ),
 };
 
 export function getToolComponent(toolId: string): ToolComponent | undefined {

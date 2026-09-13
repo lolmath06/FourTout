@@ -57,7 +57,29 @@ export const HANDOFF_TARGETS = {
   subtitleEdit: "subtitle-edit",
   /** Exploration en lecture seule d'une base SQLite. */
   sqliteExplorer: "sqlite-explorer",
+  /** Diagnostic universel d'un fichier. */
+  fileDiagnose: "file-diagnose",
+  /** Diagnostic et récupération d'une archive ZIP. */
+  archiveRepair: "archive-repair",
+  /** Diagnostic et réparation d'un PDF. */
+  pdfRepair: "pdf-repair",
+  /** Diagnostic et récupération d'une image. */
+  imageRepair: "image-repair",
 } as const;
+
+/**
+ * Outil qui connaît un format **en profondeur**, indexé par sa signature.
+ *
+ * Le diagnostic universel s'en sert pour passer la main. Un test vérifie que
+ * chaque identifiant existe au registre et porte une implémentation : aucun de
+ * ces relais ne peut devenir un lien mort sans faire échouer la suite.
+ */
+export const DIAGNOSTIC_SPECIALISTS: Record<string, { tool: HandoffTarget; label: string }> = {
+  zip: { tool: "archive-repair", label: "Diagnostiquer cette archive en détail" },
+  pdf: { tool: "pdf-repair", label: "Diagnostiquer ce PDF en détail" },
+  png: { tool: "image-repair", label: "Diagnostiquer cette image en détail" },
+  jpg: { tool: "image-repair", label: "Diagnostiquer cette image en détail" },
+};
 
 export type HandoffTarget = (typeof HANDOFF_TARGETS)[keyof typeof HANDOFF_TARGETS];
 
@@ -110,4 +132,8 @@ const PATH_HANDOFF_TOOLS = new Set<string>([
   HANDOFF_TARGETS.hash,
   HANDOFF_TARGETS.rename,
   HANDOFF_TARGETS.sqliteExplorer,
+  HANDOFF_TARGETS.fileDiagnose,
+  HANDOFF_TARGETS.archiveRepair,
+  HANDOFF_TARGETS.pdfRepair,
+  HANDOFF_TARGETS.imageRepair,
 ]);

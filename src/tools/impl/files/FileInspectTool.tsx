@@ -14,7 +14,7 @@ import {
   type HashAlgorithm,
 } from "@/core/files/native";
 import { detectEncoding, ENCODING_LABELS, type TextEncodingId } from "@/core/text/encoding";
-import { HANDOFF_TARGETS, specialistFor } from "@/features/handoff/targets";
+import { DIAGNOSTIC_SPECIALISTS, HANDOFF_TARGETS, specialistFor } from "@/features/handoff/targets";
 import { OpenToolButton } from "@/features/handoff/openTool";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
@@ -141,6 +141,10 @@ function Report({ inspection }: { inspection: Inspection }) {
   // L'outil proposé vient de la **famille détectée**, jamais de l'extension :
   // un « .jpg » qui contient un PNG doit mener au convertisseur d'image.
   const specialist = specialistFor(info.family, info.magic);
+  // Un fichier qui « ne s'ouvre pas » amène ici avant tout : l'inspecteur dit
+  // ce qu'il est, le diagnostic dit ce qui lui manque. Quand un outil connaît
+  // le format en profondeur, c'est lui qu'on propose plutôt que le généraliste.
+  const diagnosis = DIAGNOSTIC_SPECIALISTS[info.magic]?.tool ?? HANDOFF_TARGETS.fileDiagnose;
 
   return (
     <div className="space-y-3" data-testid="file-inspect">
@@ -164,6 +168,7 @@ function Report({ inspection }: { inspection: Inspection }) {
         <span className="ft-label">Continuer avec</span>
         <OpenToolButton toolId={HANDOFF_TARGETS.preview} paths={[info.path]} variant="primary" />
         {specialist && <OpenToolButton toolId={specialist} paths={[info.path]} />}
+        <OpenToolButton toolId={diagnosis} paths={[info.path]} label="Diagnostiquer" />
         {info.family === "archive" && info.magic !== "gz" && info.magic !== "xz" && (
           <OpenToolButton toolId={HANDOFF_TARGETS.archiveTest} paths={[info.path]} />
         )}
