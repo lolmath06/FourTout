@@ -215,7 +215,7 @@ sha256sum -c SHA256SUMS.txt --ignore-missing
 
 ```powershell
 # Windows PowerShell
-Get-FileHash .\FourTout-0.1.0-Windows-x64-Setup.exe -Algorithm SHA256
+Get-FileHash .\FourTout-1.0.0-Windows-x64-Setup.exe -Algorithm SHA256
 ```
 
 Comparez l'empreinte obtenue à celle du fichier. FourTout sait aussi le faire :

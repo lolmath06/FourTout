@@ -84,11 +84,11 @@ développement, contre plusieurs minutes pour l'AppImage.
 src-tauri/target/release/
   fourtout                                        exécutable
   bundle/
-    rpm/FourTout-0.1.0-1.x86_64.rpm
-    deb/FourTout_0.1.0_amd64.deb
-    appimage/FourTout_0.1.0_amd64.AppImage
-    nsis/FourTout_0.1.0_x64-setup.exe             (Windows)
-    msi/FourTout_0.1.0_x64_en-US.msi              (Windows)
+    rpm/FourTout-1.0.0-1.x86_64.rpm
+    deb/FourTout_1.0.0_amd64.deb
+    appimage/FourTout_1.0.0_amd64.AppImage
+    nsis/FourTout_1.0.0_x64-setup.exe             (Windows)
+    msi/FourTout_1.0.0_x64_en-US.msi              (Windows)
 ```
 
 ---
@@ -98,7 +98,7 @@ src-tauri/target/release/
 Utile en intégration continue, et sur un poste que l'on ne veut pas modifier.
 
 ```bash
-RPM=src-tauri/target/release/bundle/rpm/FourTout-0.1.0-1.x86_64.rpm
+RPM=src-tauri/target/release/bundle/rpm/FourTout-1.0.0-1.x86_64.rpm
 
 rpm -qip "$RPM"                 # nom, version, description
 rpm -qlp "$RPM"                 # contenu
@@ -126,8 +126,8 @@ Le paquet doit contenir :
 L'AppImage se teste directement, sans rien installer :
 
 ```bash
-chmod +x src-tauri/target/release/bundle/appimage/FourTout_0.1.0_amd64.AppImage
-./src-tauri/target/release/bundle/appimage/FourTout_0.1.0_amd64.AppImage
+chmod +x src-tauri/target/release/bundle/appimage/FourTout_1.0.0_amd64.AppImage
+./src-tauri/target/release/bundle/appimage/FourTout_1.0.0_amd64.AppImage
 ```
 
 ---

@@ -1,6 +1,6 @@
 [package]
 name = "fourtout"
-version = "0.1.0"
+version = "1.0.0"
 description = "FourTout — boîte à outils desktop locale"
 authors = ["Matheo Dolmen"]
 license = "LicenseRef-Proprietary"

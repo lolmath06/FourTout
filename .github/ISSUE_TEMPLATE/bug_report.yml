@@ -50,7 +50,7 @@ body:
     attributes:
       label: Version de FourTout
       description: Paramètres → Moteurs et traitement, ou le nom du fichier installé.
-      placeholder: 0.1.0
+      placeholder: 1.0.0
     validations:
       required: true
 

@@ -8,7 +8,7 @@ change pour lui. Pour l'historique détaillé du code, `git log`.
 
 ---
 
-## [Non publié]
+## [1.0.0] — 2026-09-13
 
 Première version complète de FourTout : **196 outils, tous utilisables**,
 répartis en douze catégories.
