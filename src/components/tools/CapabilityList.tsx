@@ -1,5 +1,6 @@
 import clsx from "clsx";
-import type { ToolCapability, ToolDefinition } from "@/core/tools/types";
+import type { NetworkReach, ToolCapability, ToolDefinition } from "@/core/tools/types";
+import { networkReach } from "@/core/tools/types";
 import { Icon } from "@/components/ui/Icon";
 
 /**
@@ -10,8 +11,10 @@ import { Icon } from "@/components/ui/Icon";
  * une information secondaire. Une icône fine suivie d'un mot, en gris, dit la
  * même chose sans occuper le premier plan.
  *
- * Seul l'accès réseau garde une couleur : c'est la seule propriété qui
+ * Seul le recours à Internet garde une couleur : c'est la seule propriété qui
  * contredit la promesse de FourTout, donc la seule qui doit accrocher l'œil.
+ * Utiliser le réseau **local** ne la contredit pas, et ne s'affiche donc pas
+ * sur le même ton.
  */
 interface Descriptor {
   label: string;
@@ -22,12 +25,6 @@ interface Descriptor {
 
 const DESCRIPTORS: Partial<Record<ToolCapability, Descriptor>> = {
   local: { label: "Local", icon: "ShieldCheck", title: "Traitement entièrement local" },
-  network: {
-    label: "Internet requis",
-    icon: "Wifi",
-    tone: "warn",
-    title: "Cet outil a besoin d'une connexion",
-  },
   batch: { label: "Par lots", icon: "Layers", title: "Accepte plusieurs fichiers" },
   "long-running": {
     label: "Peut être long",
@@ -52,6 +49,32 @@ const DESCRIPTORS: Partial<Record<ToolCapability, Descriptor>> = {
   },
 };
 
+/**
+ * Une seule mention réseau par outil, dérivée de `networkReach`.
+ *
+ * Les trois capacités réseau se cumulent dans le catalogue (`network` +
+ * `internet`, `network` + `local-network`) : les rendre une par une afficherait
+ * « Réseau » et « Internet requis » côte à côte, pour dire une seule chose.
+ */
+const REACH_DESCRIPTORS: Record<Exclude<NetworkReach, "none">, Descriptor> = {
+  "local-network": {
+    label: "Réseau local",
+    icon: "Network",
+    title: "Ouvre des connexions sur votre réseau local, jamais vers Internet",
+  },
+  network: {
+    label: "Réseau",
+    icon: "Network",
+    title: "Ouvre de vraies connexions réseau, sans exiger Internet",
+  },
+  internet: {
+    label: "Internet requis",
+    icon: "Wifi",
+    tone: "warn",
+    title: "Cet outil ne fonctionne pas sans connexion Internet",
+  },
+};
+
 const TONE_CLASS = {
   warn: "text-[var(--ft-warn)]",
   danger: "text-[var(--ft-danger)]",
@@ -64,9 +87,13 @@ export function CapabilityList({
   tool: ToolDefinition;
   className?: string;
 }) {
-  const visible = tool.capabilities
-    .map((capability) => DESCRIPTORS[capability])
-    .filter((descriptor): descriptor is Descriptor => descriptor !== undefined);
+  const reach = networkReach(tool);
+  const visible = [
+    ...tool.capabilities
+      .map((capability) => DESCRIPTORS[capability])
+      .filter((descriptor): descriptor is Descriptor => descriptor !== undefined),
+    ...(reach === "none" ? [] : [REACH_DESCRIPTORS[reach]]),
+  ];
   if (visible.length === 0) return null;
 
   return (

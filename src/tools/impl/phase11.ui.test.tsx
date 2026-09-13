@@ -14,6 +14,9 @@ import { PingTool } from "./network/PingTool";
 import { PortCheckTool } from "./network/PortCheckTool";
 import { LanDiscoveryTool } from "./network/LanDiscoveryTool";
 import { SqliteExplorerTool } from "./dev/SqliteExplorerTool";
+import { PrivacyNote } from "@/components/ui/PrivacyNote";
+import { CapabilityList } from "@/components/tools/CapabilityList";
+import { networkReach } from "@/core/tools/types";
 
 /**
  * Ce que les écrans de la phase 11 doivent garantir.
@@ -265,5 +268,68 @@ describe("outils natifs hors application", () => {
     // Ni plage, ni résultat : l'écran attend une interface et une confirmation.
     expect(screen.queryByText("Ce qui sera examiné")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Lancer la découverte/ })).not.toBeInTheDocument();
+  });
+});
+
+describe("ce que les outils disent de leur usage du réseau", () => {
+  /**
+   * Le défaut corrigé ici était un vrai mensonge d'interface : « Cet outil
+   * nécessite une connexion Internet » s'affichait sous la découverte du réseau
+   * local, qui ne sort précisément jamais du sous-réseau. Un rappel de
+   * confidentialité qui se trompe ne rassure plus sur les autres.
+   */
+  const reachOf = (id: string) => networkReach(toolRegistry.get(id)!);
+
+  it("classe chaque outil réseau à sa portée réelle", () => {
+    expect(reachOf("network-lan")).toBe("local-network");
+    expect(reachOf("network-ping")).toBe("network");
+    expect(reachOf("network-ports")).toBe("network");
+    expect(reachOf("calc-currency")).toBe("internet");
+    // Et un outil ordinaire n'ouvre rien du tout.
+    expect(reachOf("base32")).toBe("none");
+    expect(reachOf("sqlite-explorer")).toBe("none");
+  });
+
+  it("ne prétend jamais qu'une sonde locale exige Internet", () => {
+    for (const id of ["network-lan", "network-ping", "network-ports"]) {
+      const { unmount } = render(<PrivacyNote reach={reachOf(id)} />);
+      expect(document.body.textContent, id).not.toMatch(/nécessite une connexion Internet/);
+      expect(document.body.textContent, id).toMatch(/utilise (le réseau|votre réseau local)/);
+      unmount();
+    }
+  });
+
+  it("dit « réseau local » pour la découverte, et rien de plus", () => {
+    render(<PrivacyNote reach={reachOf("network-lan")} />);
+    expect(screen.getByText(/Cet outil utilise votre réseau local/)).toBeInTheDocument();
+    expect(screen.getByText(/Rien n'est envoyé sur Internet/)).toBeInTheDocument();
+  });
+
+  it("continue de dire qu'Internet est requis pour les taux de change", () => {
+    render(<PrivacyNote reach={reachOf("calc-currency")} />);
+    expect(
+      screen.getByText("Cet outil nécessite une connexion Internet."),
+    ).toBeInTheDocument();
+  });
+
+  it("garde le rappel local sur les outils qui n'ouvrent rien", () => {
+    render(<PrivacyNote reach={reachOf("base32")} />);
+    expect(screen.getByText(/Traitement local/)).toBeInTheDocument();
+  });
+
+  it("n'affiche qu'une seule mention réseau dans la ligne de propriétés", () => {
+    for (const [id, label] of [
+      ["network-lan", "Réseau local"],
+      ["network-ping", "Réseau"],
+      ["network-ports", "Réseau"],
+      ["calc-currency", "Internet requis"],
+    ] as const) {
+      const { unmount } = render(<CapabilityList tool={toolRegistry.get(id)!} />);
+      expect(screen.getAllByText(label), id).toHaveLength(1);
+      if (id !== "calc-currency") {
+        expect(screen.queryByText("Internet requis"), id).not.toBeInTheDocument();
+      }
+      unmount();
+    }
   });
 });

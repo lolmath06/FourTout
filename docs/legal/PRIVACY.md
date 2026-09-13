@@ -112,7 +112,10 @@ découverte affiche son interface, sa plage et son nombre de cibles, puis attend
 une confirmation explicite.
 
 **Pour éviter tout trafic :** n'ouvrez pas ces trois outils. Ils portent la
-capacité « réseau », et l'interface l'annonce sur leur page.
+capacité « réseau », et l'interface l'annonce sur leur page — en disant qu'ils
+**utilisent le réseau**, et non qu'ils exigent Internet. Seul le convertisseur
+de devises porte la capacité « internet », et c'est le seul dont la page
+annonce qu'une connexion Internet est nécessaire.
 
 Détails et limites : [NETWORK.md](../features/NETWORK.md).
 

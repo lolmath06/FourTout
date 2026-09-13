@@ -29,8 +29,28 @@ export type CategoryId =
 export type ToolCapability =
   /** Traitement 100 % local (aucune donnée ne quitte la machine). */
   | "local"
-  /** Nécessite un accès réseau (ex. taux de change). */
+  /**
+   * Ouvre de vraies connexions réseau.
+   *
+   * Dit ce que l'outil **fait**, pas ce dont il a besoin : un ping vers
+   * `127.0.0.1` utilise la pile réseau et fonctionne sans le moindre câble
+   * branché. Les deux capacités suivantes précisent jusqu'où il va.
+   */
   | "network"
+  /**
+   * Ne va pas au-delà du réseau local.
+   *
+   * Découverte du voisinage : rien ne sort du sous-réseau de la machine.
+   */
+  | "local-network"
+  /**
+   * Exige une connexion **Internet** pour fonctionner (ex. taux de change).
+   *
+   * Distinction essentielle : annoncer « Internet requis » sur un outil qui
+   * sonde le réseau local est faux, et c'est exactement le genre de message
+   * qui décrédibilise tous les autres.
+   */
+  | "internet"
   /** Accepte plusieurs fichiers en entrée. */
   | "batch"
   /** Produit un ou plusieurs fichiers en sortie. */
@@ -128,6 +148,30 @@ export type AccentName =
   | "orange"
   | "teal"
   | "slate";
+
+/**
+ * Jusqu'où un outil va sur le réseau.
+ *
+ * Calculé ici, et nulle part ailleurs : le rappel de confidentialité et la
+ * ligne de propriétés d'un outil doivent dire la même chose, et deux
+ * conditions écrites séparément finissent toujours par diverger.
+ */
+export type NetworkReach =
+  /** N'ouvre aucune connexion. */
+  | "none"
+  /** Ne sort pas du réseau local. */
+  | "local-network"
+  /** Ouvre des connexions, sans exiger Internet. */
+  | "network"
+  /** Ne fonctionne pas sans Internet. */
+  | "internet";
+
+export function networkReach(tool: ToolDefinition): NetworkReach {
+  if (tool.capabilities.includes("internet")) return "internet";
+  if (tool.capabilities.includes("local-network")) return "local-network";
+  if (tool.capabilities.includes("network")) return "network";
+  return "none";
+}
 
 /** Route canonique d'un outil. Unique endroit où cette URL est construite. */
 export function toolRoute(toolId: string): string {

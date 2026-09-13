@@ -2,7 +2,7 @@ import { Suspense, useEffect, useMemo } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { getCategory } from "@/core/tools/categories";
 import { toolRegistry } from "@/core/tools/registry";
-import { categoryRoute } from "@/core/tools/types";
+import { categoryRoute, networkReach } from "@/core/tools/types";
 import { getToolComponent } from "@/tools/implementations";
 import { useRecents } from "@/features/recents/store";
 import { useSettings } from "@/features/settings/store";
@@ -61,7 +61,7 @@ export function ToolPage() {
   if (!tool || !Implementation) return <Navigate to="/tools" replace />;
 
   const category = getCategory(tool.category);
-  const needsNetwork = tool.capabilities.includes("network");
+  const reach = networkReach(tool);
 
   return (
     <Page width={WIDE_TOOLS.has(tool.id) ? "wide" : "default"}>
@@ -118,7 +118,7 @@ export function ToolPage() {
 
       {showPrivacyNotes && (
         <div className="mt-6 border-t border-[var(--ft-rule)] pt-2.5">
-          <PrivacyNote requiresNetwork={needsNetwork} />
+          <PrivacyNote reach={reach} />
         </div>
       )}
     </Page>

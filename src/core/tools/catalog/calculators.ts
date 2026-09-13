@@ -204,7 +204,7 @@ export const calculatorTools = defineTools([
     icon: "Banknote",
     keywords: ["devises", "euro", "dollar", "change", "taux", "monnaie", "convertir des euros"],
     aliases: ["currency converter", "eur to usd", "exchange rate"],
-    capabilities: ["network"],
+    capabilities: ["network", "internet"],
     acceptedInputs: [IN.none()],
     outputs: [OUT.none()],
     note: "Seul outil de FourTout à nécessiter Internet, uniquement pour récupérer les taux du jour. Les derniers taux connus sont réutilisés hors ligne.",

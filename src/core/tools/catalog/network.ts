@@ -12,6 +12,11 @@ import { defineTools, IN, OUT } from "./shared";
  * pas porter la capacité « local » : ils ouvrent de vraies connexions. Mais
  * aucun ne parle à Internet de sa propre initiative, et aucun n'envoie quoi que
  * ce soit à un service distant.
+ *
+ * Aucun ne porte donc la capacité « internet », réservée au convertisseur de
+ * devises : pinguer `127.0.0.1` ou chercher une imprimante sur son propre
+ * réseau ne demande aucune connexion sortante. La découverte porte en plus
+ * « local-network », qui dit qu'elle ne franchit même pas le sous-réseau.
  */
 export const networkTools = defineTools([
   {
@@ -79,7 +84,7 @@ export const networkTools = defineTools([
       "voisinage",
     ],
     aliases: ["lan discovery", "network scan", "find devices", "arp table"],
-    capabilities: ["network"],
+    capabilities: ["network", "local-network"],
     acceptedInputs: [IN.none()],
     outputs: [OUT.none()],
     note: "Limité au sous-réseau directement connecté et à 256 adresses. La plage exacte est annoncée avant tout envoi, et rien ne part sans confirmation.",
