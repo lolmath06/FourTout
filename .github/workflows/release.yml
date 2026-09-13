@@ -134,23 +134,48 @@ jobs:
             if [ -n "$found" ]; then
               cp "$found" "artefacts/$2"
               echo "  $2"
+              return 0
+            fi
+            return 1
+          }
+
+          # `require` échoue bruyamment. Une publication à laquelle il manque un
+          # format sans que personne ne s'en aperçoive est pire qu'une
+          # publication qui n'a pas lieu : l'utilisateur qui cherche son paquet
+          # trouve une page incomplète.
+          require() {
+            if ! copy "$1" "$2"; then
+              echo "::error::Paquet attendu introuvable : $1"
+              exit 1
             fi
           }
 
-          copy '*.rpm'      "FourTout-${VERSION}-Fedora-x86_64.rpm"
-          copy '*.deb'      "FourTout-${VERSION}-Linux-amd64.deb"
-          copy '*.AppImage' "FourTout-${VERSION}-Linux-x86_64.AppImage"
-          copy '*-setup.exe' "FourTout-${VERSION}-Windows-x64-Setup.exe"
-          copy '*.msi'      "FourTout-${VERSION}-Windows-x64.msi"
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            require '*.rpm'      "FourTout-${VERSION}-Fedora-x86_64.rpm"
+            require '*.deb'      "FourTout-${VERSION}-Linux-amd64.deb"
+            require '*.AppImage' "FourTout-${VERSION}-Linux-x86_64.AppImage"
+          else
+            require '*-setup.exe' "FourTout-${VERSION}-Windows-x64-Setup.exe"
+            require '*.msi'       "FourTout-${VERSION}-Windows-x64.msi"
 
-          # Version portable Windows : l'exécutable et ses ressources, sans
-          # installeur. Produite seulement si l'exécutable existe — pas de ZIP
-          # vide juste pour avoir un fichier de plus.
-          if [ -f "src-tauri/target/release/FourTout.exe" ]; then
+            # Version portable : l'exécutable et ses ressources, sans installeur.
+            # Le nom du binaire dépend de la version de Tauri — nom du paquet
+            # Cargo ou nom de produit selon les versions : on le cherche au lieu
+            # de le supposer, et on échoue si aucun n'existe plutôt que de
+            # publier en silence une version portable manquante.
+            exe=$(find src-tauri/target/release -maxdepth 1 -type f \
+                    \( -iname 'fourtout.exe' \) | head -1)
+            if [ -z "$exe" ]; then
+              echo "::error::Exécutable Windows introuvable dans src-tauri/target/release"
+              ls -la src-tauri/target/release || true
+              exit 1
+            fi
             mkdir -p portable/FourTout
-            cp "src-tauri/target/release/FourTout.exe" portable/FourTout/
+            cp "$exe" portable/FourTout/FourTout.exe
             if [ -d "src-tauri/target/release/resources" ]; then
               cp -r "src-tauri/target/release/resources" portable/FourTout/
+            else
+              echo "::warning::Aucun dossier resources/ à côté de l'exécutable : la version portable est livrée sans les listes de mots."
             fi
             (cd portable && 7z a -tzip "../artefacts/FourTout-${VERSION}-Windows-x64-Portable.zip" FourTout >/dev/null)
             echo "  FourTout-${VERSION}-Windows-x64-Portable.zip"

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { constraintsForTool, type SelectedFile } from "@/core/files";
 import { FileDropZone } from "@/components/files/FileDropZone";
 import { PdfSourceList } from "@/components/pdf/PdfSourceList";
@@ -124,9 +124,30 @@ function Absent() {
   return <div className="flex h-40 items-center justify-center text-sm text-[var(--ft-text-muted)]">Page absente</div>;
 }
 
+/**
+ * URL d'objet pour un rendu de page, **libérée quand elle ne sert plus**.
+ *
+ * La comparaison rend une image par page et par document : parcourir un
+ * document de cent pages en crée trois cents. Sans révocation, elles
+ * s'accumulaient jusqu'à la fermeture de la fenêtre — un `useMemo` seul ne
+ * défait rien, il ne fait que recalculer.
+ */
 function useObjectUrl(bytes: Uint8Array | undefined): string | undefined {
-  return useMemo(() => {
-    if (!bytes) return undefined;
-    return URL.createObjectURL(new Blob([bytes.slice().buffer as ArrayBuffer], { type: "image/png" }));
+  const [url, setUrl] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (!bytes) {
+      setUrl(undefined);
+      return;
+    }
+    const created = URL.createObjectURL(
+      new Blob([bytes.slice().buffer as ArrayBuffer], { type: "image/png" }),
+    );
+    setUrl(created);
+    return () => {
+      URL.revokeObjectURL(created);
+    };
   }, [bytes]);
+
+  return url;
 }
