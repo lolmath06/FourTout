@@ -18,9 +18,11 @@ FourTout traite vos fichiers sur votre machine. Cette page dit exactement ce
 qui sort du poste, et ce qui n'en sort jamais — pas les intentions du projet,
 mais ce que fait le code.
 
-Tout ce qui suit est vérifiable : la couche réseau de FourTout tient dans un
-seul fichier natif, `src-tauri/src/rates.rs`, plus le gestionnaire de modèles
-`src-tauri/src/models/`. La politique de sécurité de contenu de l'application
+Tout ce qui suit est vérifiable : la couche réseau de FourTout tient dans trois
+endroits du code natif — `src-tauri/src/rates.rs` (taux de change),
+`src-tauri/src/models/` (modèles) et `src-tauri/src/network/` (les trois sondes
+de diagnostic, qui ne sortent jamais de votre réseau local). La politique de
+sécurité de contenu de l'application
 (`connect-src 'self' ipc:`) **interdit à l'interface d'émettre la moindre
 requête sortante** : aucune page, aucun outil, aucune dépendance JavaScript ne
 peut ouvrir une connexion, même par erreur.
@@ -38,7 +40,8 @@ peut ouvrir une connexion, même par erreur.
 | **Fichiers et archives** | Archives, empreintes, doublons, découpage, renommage, organisation, effacement : moteur natif Rust, sur des chemins locaux. |
 | **Chiffrement** | Argon2id et XChaCha20-Poly1305, en local. Le mot de passe n'est ni transmis, ni journalisé, ni écrit dans un fichier temporaire. |
 | **Mots de passe** | La génération utilise le générateur cryptographique du système. L'analyse de robustesse (zxcvbn) tourne dans l'application : le mot de passe saisi n'est jamais transmis. |
-| **JWT** | Décodé localement. Le token n'est envoyé nulle part — c'est exactement ce que ne garantissent pas les décodeurs JWT en ligne. |
+| **JWT** | Décodé **et vérifié** localement. Ni le token ni la clé ne sont envoyés nulle part — c'est exactement ce que ne garantissent pas les décodeurs JWT en ligne. La clé n'est ni journalisée, ni enregistrée, ni ajoutée aux récents. |
+| **Bases SQLite** | Ouvertes en lecture seule, sur votre disque. Aucune requête ne peut modifier le fichier, et son contenu n'est envoyé nulle part. |
 | **Parole** | Une fois les modèles installés, la synthèse et la transcription s'exécutent sur votre machine. |
 | **Détourage** | Le modèle de suppression d'arrière-plan tourne dans l'application, sur votre machine. L'image n'est envoyée nulle part — c'est précisément ce que ne font pas les services en ligne équivalents. |
 
@@ -46,7 +49,8 @@ peut ouvrir une connexion, même par erreur.
 
 ## Ce qui sort, et pourquoi
 
-Deux fonctions, deux seulement.
+Deux fonctions contactent Internet, deux seulement. Une troisième famille
+d'outils ouvre des connexions, mais sur votre réseau local uniquement.
 
 ### 1. Convertisseur de devises
 
@@ -67,9 +71,8 @@ et la promesse « FourTout n'envoie rien » se vérifie dans un seul fichier.
 affichée**. Si aucun relevé n'a jamais été téléchargé, FourTout le dit et
 n'affiche aucun chiffre. Aucun taux n'est jamais inventé.
 
-**Pour éviter tout appel réseau :** n'ouvrez pas cet outil. Il est le seul du
-catalogue à porter la capacité « réseau », et l'interface l'annonce sur sa
-page.
+**Pour éviter tout appel Internet :** n'ouvrez pas cet outil. Il est le seul du
+catalogue à contacter un serveur distant, et l'interface l'annonce sur sa page.
 
 ### 2. Modèles (parole et détourage)
 
@@ -85,6 +88,33 @@ Chaque téléchargement est vérifié par empreinte avant installation ; un fich
 dont l'empreinte ne correspond pas est rejeté et rien n'est installé.
 
 Détails : [MODELS.md](../technical/MODELS.md).
+
+### 3. Outils réseau — votre réseau local, et rien d'autre
+
+**Ping**, **Tester des ports** et **Découvrir les appareils du réseau local**
+ouvrent de vraies connexions. Elles vont exactement où vous les envoyez :
+
+**Ce qui part :** des paquets ICMP vers l'hôte que vous saisissez, des
+connexions TCP vers les ports que vous listez, et — pour la découverte — un écho
+vers chaque adresse du sous-réseau auquel votre machine est **directement
+connectée**, au maximum 256 adresses annoncées avant tout envoi.
+
+**Ce qui ne part pas :** rien vers un service distant. Aucun résultat n'est
+transmis, agrégé ni téléversé. Il n'existe aucun serveur FourTout.
+
+**Ce qui n'est pas gardé :** ni les adresses observées, ni les noms résolus, ni
+les adresses matérielles, ni l'historique des sondes. Les récents peuvent
+retenir qu'un outil réseau a été ouvert ; ils ne retiennent pas la topologie de
+votre réseau.
+
+**Rien ne part sans un clic.** Aucun de ces écrans ne sonde au chargement. La
+découverte affiche son interface, sa plage et son nombre de cibles, puis attend
+une confirmation explicite.
+
+**Pour éviter tout trafic :** n'ouvrez pas ces trois outils. Ils portent la
+capacité « réseau », et l'interface l'annonce sur leur page.
+
+Détails et limites : [NETWORK.md](../features/NETWORK.md).
 
 ---
 
@@ -158,8 +188,13 @@ directement le fichier de sortie, et le supprime si l'opération échoue.
 
 ```bash
 # Toute la couche réseau de FourTout :
-src-tauri/src/rates.rs        # taux BCE
-src-tauri/src/models/         # téléchargement des modèles
+src-tauri/src/rates.rs        # taux BCE — le seul appel vers Internet
+src-tauri/src/models/         # téléchargement des modèles, à votre demande
+src-tauri/src/network/        # sondes de diagnostic, réseau local uniquement
+
+# Les bornes des sondes, et les tests qui les vérifient :
+src-tauri/src/network/cidr.rs # 256 adresses au maximum, /24 au plus large
+src-tauri/src/network/ports.rs# 256 ports au maximum par lancement
 
 # La politique de sécurité de contenu, qui interdit à l'interface d'émettre
 # la moindre requête sortante :
@@ -167,5 +202,5 @@ src-tauri/tauri.conf.json     # app.security.csp
 ```
 
 Vous pouvez aussi observer le trafic réseau du processus pendant une session
-FourTout : hors convertisseur de devises et téléchargement de modèle, il n'y
-en a pas.
+FourTout : hors convertisseur de devises, téléchargement de modèle et sondes de
+diagnostic que vous avez lancées vous-même, il n'y en a pas.

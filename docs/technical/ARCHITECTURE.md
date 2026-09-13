@@ -49,10 +49,12 @@ src/
 │   ├── ocr/               Reconnaissance de texte (tesseract.js)
 │   ├── speech/            Synthèse et transcription, gestionnaire de modèles
 │   ├── text/              Socle texte : fonctions pures, sans React ni backend
-│   ├── code/              Outils développeur : JSON, XML, YAML, SQL, JWT, regex, cron, web
-│   ├── calc/              Calculatrice, pourcentages, dates, durées, âge
+│   ├── code/              Outils développeur : JSON, XML, YAML, TOML, SQL, Base32, JWT, regex, cron, web
+│   ├── calc/              Calculatrice, pourcentages, dates, durées, âge, fuseaux, débits, intérêts
 │   ├── units/             Moteur d'unités partagé par les dix convertisseurs
 │   ├── security/          Génération et évaluation de mots de passe
+│   ├── sqlite/            Client de l'explorateur SQLite natif (lecture seule)
+│   ├── network/           Client des sondes réseau natives (ping, ports, LAN)
 │   ├── currency/          Taux de change : cache, conversion, datation
 │   ├── convert/           Graphe de conversion dérivé du registre
 │   ├── hash/              Empreintes calculées dans la WebView (texte)
@@ -79,7 +81,10 @@ src-tauri/                 Application native (Rust)
 ├── src/speech/            Synthèse (Piper) et transcription (whisper.cpp)
 ├── src/models/            Téléchargement vérifié et installation des modèles
 ├── src/recovery/          Récupération de mot de passe PDF
-├── src/rates.rs           Taux BCE — la seule sortie réseau de l'application
+├── src/rates.rs           Taux BCE — la seule sortie vers Internet
+├── src/security/          Vérification de signature JWT (HMAC et RSA)
+├── src/sqlite/            Explorateur SQLite : trois verrous de lecture seule
+├── src/network/           Sondes bornées : ping ICMP, ports TCP, découverte LAN
 └── src/files/             Archives, empreintes, doublons, découpage, renommage,
                            chiffrement, effacement, organisation de dossier,
                            comparaison et synchronisation de dossiers, recherche,

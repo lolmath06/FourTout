@@ -10,7 +10,7 @@
 | --- | --- |
 | [Installation](guides/INSTALLATION.md) | Windows, Fedora, autres Linux. FFmpeg, modèles, vérification des téléchargements. |
 | [Guide d'utilisation](guides/USER_GUIDE.md) | Trouver un outil, déposer des fichiers, opérations longues, zoom, paramètres. |
-| [Tous les outils](guides/FEATURES.md) | Les 181 outils, catégorie par catégorie. |
+| [Tous les outils](guides/FEATURES.md) | Les 191 outils, catégorie par catégorie. |
 | [Dépannage](guides/TROUBLESHOOTING.md) | Ce qui peut coincer, et pourquoi. |
 
 ## Confidentialité et sécurité
@@ -49,8 +49,9 @@
 | [Vidéo](features/VIDEO.md) | Codecs éprouvés à l'exécution, préréglages, sous-titres. |
 | [Texte](features/TEXT.md) | Socle texte, assainissement HTML, lecture DOCX. |
 | [Fichiers](features/FILES.md) | Socle natif, sécurité des archives, portabilité. |
-| [Développeur](features/DEVELOPER.md) | Traitement des entrées non fiables. |
-| [Calculateurs](features/CALCULATORS.md) | Moteur d'unités, calculatrice, dates, devises. |
+| [Développeur](features/DEVELOPER.md) | Traitement des entrées non fiables, vérification JWT, explorateur SQLite. |
+| [Calculateurs](features/CALCULATORS.md) | Moteur d'unités, calculatrice, dates, devises, fuseaux, débits, intérêts. |
+| [Réseau](features/NETWORK.md) | Sondes bornées : ping ICMP, ports TCP, découverte du réseau local. |
 | [Convertisseurs](features/CONVERTERS.md) | Convertisseur universel dérivé du registre. |
 
 ## À la racine du dépôt

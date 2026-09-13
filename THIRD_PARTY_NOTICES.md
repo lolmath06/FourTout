@@ -52,6 +52,9 @@ présence change quelque chose pour l'utilisateur ou pour un juriste.
 | [js-yaml](https://github.com/nodeca/js-yaml) | 5.4 | MIT | Lecture et écriture YAML (schéma `core` uniquement) |
 | [cron-parser](https://github.com/harrisiirak/cron-parser) | 5.10 | MIT | Prochaines occurrences d'une expression cron |
 | [cronstrue](https://github.com/bradyholt/cRonstrue) | 3.24 | MIT | Explication d'une expression cron en français |
+| [smol-toml](https://github.com/squirrelchat/smol-toml) | 1.8 | BSD-3-Clause | Lecture et écriture TOML 1.0.0 |
+| [rusqlite](https://crates.io/crates/rusqlite) | 0.40 | MIT | Accès SQLite en lecture seule (explorateur de bases) |
+| [SQLite](https://sqlite.org) | 3.x, via `rusqlite` en mode `bundled` | Domaine public | Moteur de base de données, compilé avec l'application |
 
 ## Sécurité et chiffrement
 
@@ -63,6 +66,8 @@ présence change quelque chose pour l'utilisateur ou pour un juriste.
 | [sha2](https://crates.io/crates/sha2), [sha1](https://crates.io/crates/sha1), [md-5](https://crates.io/crates/md-5) | 0.10 | MIT / Apache-2.0 | Empreintes |
 | [getrandom](https://crates.io/crates/getrandom) | 0.2 | MIT / Apache-2.0 | Aléa cryptographique du système |
 | [@zxcvbn-ts](https://zxcvbn-ts.github.io/zxcvbn/) | 4.2 | MIT | Estimation de la robustesse d'un mot de passe |
+| [rsa](https://crates.io/crates/rsa) | 0.9 | MIT / Apache-2.0 | Vérification de signature JWT RS256/384/512, en Rust pur |
+| [base64](https://crates.io/crates/base64) | 0.22 | MIT / Apache-2.0 | Décodage base64url des signatures JWT |
 
 ## Fichiers et archives
 
@@ -84,6 +89,23 @@ aucun `liblzma` ou `p7zip` à trouver sur la machine de l'utilisateur, et rien
 aucune obligation incompatible avec la distribution de FourTout. La question
 était de toute façon tranchée d'avance : dépendre d'un `7z` ou d'un `xz`
 installé casserait la promesse « tout est embarqué, rien à installer ».
+
+---
+
+## Réseau
+
+| Composant | Version | Licence | Rôle |
+| --- | --- | --- | --- |
+| [socket2](https://crates.io/crates/socket2) | 0.6 | MIT / Apache-2.0 | Sockets ICMP non privilégiés (ping) et délais de connexion |
+| [if-addrs](https://crates.io/crates/if-addrs) | 0.15 | MIT / BSD-3-Clause | Énumération des interfaces réseau locales |
+| [dns-lookup](https://crates.io/crates/dns-lookup) | 4.0 | MIT / Apache-2.0 | Résolution inverse d'adresse (`getnameinfo`) |
+| [windows-sys](https://crates.io/crates/windows-sys) | 0.61 | MIT / Apache-2.0 | API IP Helper de Windows : `IcmpSendEcho`, table de voisinage |
+
+Aucune de ces bibliothèques ne contacte Internet : elles donnent accès aux
+sockets et aux tables du système. La contrainte de choix était la même que pour
+la phase 9 — des bibliothèques Rust pures, rien à installer sur la machine de
+l'utilisateur, et surtout **aucune dépendance à un binaire système** dont la
+sortie serait traduite et changerait de forme d'une version à l'autre.
 
 ---
 

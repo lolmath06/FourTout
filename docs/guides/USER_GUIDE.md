@@ -44,7 +44,7 @@ plutôt que de proposer un outil approximatif.
 
 ### Parcourir
 
-**Outils** montre les dix catégories. Un outil qui a du sens dans plusieurs
+**Outils** montre les onze catégories. Un outil qui a du sens dans plusieurs
 familles y apparaît sans être dupliqué : il est implémenté une fois, et
 découvrable là où on le cherche.
 

@@ -8,12 +8,16 @@
 - [La calculatrice scientifique — `src/core/calc/expression.ts`](#la-calculatrice-scientifique--srccorecalcexpressionts)
 - [Dates, durées et âge — `src/core/calc/datetime.ts`](#dates-durées-et-âge--srccorecalcdatetimets)
 - [Pourcentages et règle de trois — `src/core/calc/arithmetic.ts`](#pourcentages-et-règle-de-trois--srccorecalcarithmeticts)
+- [Fuseaux horaires — `src/core/calc/timezone.ts`](#fuseaux-horaires--srccorecalctimezonets)
+- [Bande passante et temps de transfert — `src/core/calc/bandwidth.ts`](#bande-passante-et-temps-de-transfert--srccorecalcbandwidthts)
+- [Intérêts — `src/core/calc/interest.ts`](#intérêts--srccorecalcinterestts)
 - [Convertisseur de devises — `src/core/currency/`, `src-tauri/src/rates.rs`](#convertisseur-de-devises--srccorecurrency-src-taurisrcratesrs)
 
 ---
 
-Dix-sept outils : dix convertisseurs d'unités, cinq calculateurs, une
-calculatrice scientifique, un convertisseur de devises.
+Vingt et un outils : dix convertisseurs d'unités, huit calculateurs, une
+calculatrice scientifique, un convertisseur de fuseaux horaires, un
+convertisseur de devises.
 
 Code : `src/core/units/`, `src/core/calc/`, `src/core/currency/`.
 Interfaces : `src/tools/impl/calculators/`.
@@ -167,6 +171,123 @@ vérifiable vaut mieux qu'un calcul juste.
 Une variation depuis une valeur négative ne change pas de signe en route, et
 les cas sans réponse (division par zéro) sont refusés plutôt que de renvoyer
 l'infini.
+
+
+---
+
+## Fuseaux horaires — `src/core/calc/timezone.ts`
+
+**Un fuseau n'est pas un décalage.** « Paris = UTC+1 » est faux la moitié de
+l'année, et « New York = UTC−5 » est faux à des dates qui ne sont pas les mêmes
+que celles de Paris. Une table de décalages figée donne des résultats justes en
+janvier et faux en juillet.
+
+Le module n'en contient donc aucune : il interroge la base IANA du système par
+`Intl.DateTimeFormat`, **à la date demandée**. Le décalage est *mesuré* — on
+demande l'heure murale à cet instant et on la compare à UTC — et non tabulé.
+
+### Les deux cas que l'outil refuse d'escamoter
+
+Un convertisseur naïf rend un chiffre plausible dans les deux cas suivants. Ce
+chiffre est faux une fois sur deux.
+
+| Cas | Exemple | Ce que FourTout fait |
+| --- | --- | --- |
+| **Heure inexistante** — l'horloge locale avance | Paris, 29 mars 2026, 2 h 30 | Le dit, et propose l'instant réel le plus proche (3 h 30) |
+| **Heure vécue deux fois** — l'horloge recule | Paris, 25 octobre 2026, 2 h 30 | Affiche **les deux** lectures, avec leurs décalages, et laisse choisir |
+
+La recherche des instants correspondant à une heure murale essaie les décalages
+en vigueur la veille et le lendemain, en plus de celui estimé sur place : autour
+d'une transition, ces décalages encadrent la bascule et donnent les deux
+lectures possibles ; ailleurs, ils sont identiques et une seule subsiste. Se
+contenter du décalage estimé sur place ferait disparaître l'une des deux
+occurrences — c'est-à-dire exactement le cas qu'il faut signaler.
+
+L'écran affiche l'heure de départ, l'heure d'arrivée, les deux décalages, les
+abréviations locales (CET, EDT…) et l'instant UTC correspondant. La recherche de
+fuseau se fait par ville, sans accent ni casse : « paris », « new york »,
+« tokyo ».
+
+**Limite** : les identifiants IANA et leurs règles viennent du système. Une
+machine dont la base de fuseaux n'a pas été mise à jour depuis un changement de
+législation donnera l'ancienne règle — FourTout n'embarque pas sa propre copie
+de la base.
+
+---
+
+## Bande passante et temps de transfert — `src/core/calc/bandwidth.ts`
+
+Deux outils, un module, et **deux confusions** à tenir à distance :
+
+1. **Bits et octets.** Un débit s'annonce en bits par seconde (« 1 Gb/s »), une
+   taille de fichier se lit en octets (« 1 Go »). Le facteur 8 explique à lui
+   seul pourquoi une fibre « 1 gigabit » ne télécharge pas un gigaoctet par
+   seconde.
+2. **1000 et 1024.** Les préfixes SI (ko, Mo, Go) valent 1000, les préfixes
+   binaires IEC (Kio, Mio, Gio) valent 1024. L'écart atteint 7 % au gigaoctet et
+   10 % au téraoctet.
+
+Chaque unité porte donc son facteur explicite, et les deux outils affichent le
+rappel en permanence. `Mbit/s` et `Mo/s` ne s'écrivent jamais de la même façon
+parce qu'elles ne désignent pas la même chose ; les lectures décimales et
+binaires sont présentées **côte à côte**, marquées `×1000` et `×1024`.
+
+Tous les calculs internes se font en bits, en flottants double précision dont la
+plage entière exacte (2^53 bits ≈ 1 Pio) couvre largement les volumes visés.
+
+Quelques résultats vérifiés par test :
+
+| Entrée | Résultat |
+| --- | --- |
+| 1 Gio en 8 s | 1 Gibit/s, soit 128 Mio/s, soit 1 073,741824 Mbit/s |
+| 100 Mbit/s | 12,5 Mo/s, mais 11,920929 Mio/s |
+| 100 Gio à 1 Gibit/s | 800 s, soit 13 min 20 s |
+| 100 Gio à 1 Gbit/s | 858,99 s — un débit décimal est plus faible |
+
+Le temps de transfert est **théorique** au sens strict : taille ÷ débit. Il
+ignore l'en-tête des protocoles (TCP, TLS, HTTP), la latence, la congestion et
+la vitesse d'écriture du disque. Un transfert réel est toujours plus long, de 5
+à 20 % dans les cas ordinaires — c'est écrit sous chaque résultat, et dans la
+note du catalogue.
+
+Une durée nulle ou une valeur négative est refusée avec un message, jamais
+convertie en infini.
+
+---
+
+## Intérêts — `src/core/calc/interest.ts`
+
+Intérêt simple `A = P(1 + r·t)` et intérêt composé `A = P(1 + r/n)^(n·t)`, avec
+capitalisation annuelle, semestrielle, trimestrielle, mensuelle ou quotidienne
+(365 jours, convention exact/365).
+
+**On n'arrondit qu'à l'affichage.** Arrondir le capital au centime à chaque
+période, comme le ferait une feuille de calcul mal écrite, décale le résultat de
+plusieurs euros sur vingt ans de capitalisation mensuelle. Le calcul se fait en
+double précision jusqu'au bout ; la mise en forme monétaire vient après.
+
+Le versement régulier est pris en compte à la fin de chaque période, par la
+valeur acquise d'une suite de versements : `C × ((1 + i)^N − 1) / i`, et `C × N`
+quand le taux est nul — sans quoi la division par zéro rendrait `NaN`. En
+intérêt simple, chaque versement ne produit d'intérêts que pour le temps qui lui
+reste à courir.
+
+Quelques résultats vérifiés par test :
+
+| Entrée | Résultat |
+| --- | --- |
+| 1 000 € à 5 % sur 2 ans, simple | 1 100 € |
+| 1 000 € à 5 % sur 2 ans, composé annuel | 1 102,50 € |
+| 1 000 € à 5 % sur 2 ans, composé mensuel | 1 104,94 € |
+| 5 % capitalisés mensuellement | taux annuel effectif 5,1162 % |
+
+Le tableau année par année est affiché pour que le total soit vérifiable ligne à
+ligne, et non pris sur parole. Il s'arrête à cent lignes ; le calcul, lui, porte
+sur la durée demandée.
+
+**C'est un outil mathématique, pas un conseil financier** : ni fiscalité, ni
+inflation, ni frais de gestion, ni variation du taux dans le temps. C'est écrit
+sous le résultat et dans la note du catalogue.
 
 ---
 

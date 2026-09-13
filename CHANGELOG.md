@@ -10,8 +10,8 @@ change pour lui. Pour l'historique détaillé du code, `git log`.
 
 ## [Non publié]
 
-Première version complète de FourTout : **181 outils, tous utilisables**,
-répartis en dix catégories.
+Première version complète de FourTout : **191 outils, tous utilisables**,
+répartis en onze catégories.
 
 ### PDF — 26 outils
 
@@ -194,19 +194,42 @@ ouvre l'outil spécialisé déjà prérempli. Il n'implémente rien lui-même �
 dérive la liste des entrées et sorties déclarées par les outils, ce qui
 interdit d'annoncer une conversion sans outil derrière.
 
-### Développeur — 18 outils
+### Développeur — 21 outils
 
 JSON, XML, YAML et SQL : formatage, validation, conversion. Base64, URL,
 empreintes de texte, JWT, UUID v4 et v7, testeur d'expressions régulières,
 timestamp Unix, bases numériques, diff de code, minification et formatage
 HTML/CSS/JS, assistant cron, QR codes.
 
+**TOML** : validation avec la ligne et la colonne de l'erreur, et reformatage
+canonique. Le reformatage réécrit le document depuis ses données : les valeurs,
+les tables et les types sont conservés à l'identique, mais les commentaires
+disparaissent — l'écran le dit avant, et compte les lignes concernées.
+
+**Base32** (RFC 4648), dans les deux sens, avec les deux alphabets normalisés et
+le padding en option.
+
+**Vérifier la signature d'un JWT** prolonge le décodeur existant plutôt que de
+former un second outil. L'algorithme attendu est **choisi par vous**, jamais lu
+dans le token : c'est ce qui ferme les attaques « alg: none » et « RS256 dégradé
+en HS256 », et toute divergence est un refus. HS256/384/512 avec un secret,
+RS256/384/512 avec une clé publique — jamais une clé privée. La signature reçoit
+un verdict distinct de celui des dates : un token peut être authentique **et**
+expiré, et l'écran affiche les deux séparément.
+
+**Explorer une base SQLite** ouvre un fichier de base en lecture : schéma,
+tables, vues, colonnes, index, clés étrangères, données paginées, requêtes
+`SELECT` et export CSV. La lecture seule est garantie par trois mécanismes
+indépendants du moteur SQLite lui-même, pas par un filtre sur le texte de la
+requête. Un test lance vingt-huit requêtes d'écriture et vérifie que l'empreinte
+du fichier n'a pas bougé d'un octet.
+
 Les entrées sont traitées comme non fiables : l'analyseur XML refuse toute
 entité et toute DTD externe, le lecteur YAML s'en tient au schéma `core`, et
 le testeur d'expressions régulières exécute le motif dans un fil séparé qu'il
 peut tuer.
 
-### Calculateurs — 17 outils
+### Calculateurs — 21 outils
 
 Dix convertisseurs d'unités (longueurs, masses, températures, volumes,
 surfaces, vitesses, pressions, énergie, puissance, données) avec les
@@ -216,6 +239,55 @@ contre cheval-vapeur métrique, préfixes décimaux contre binaires.
 Pourcentages, règle de trois, calculs de dates, de durées, d'âge. Calculatrice
 scientifique dotée de son propre analyseur — ni `eval`, ni `new Function`.
 Convertisseur de devises adossé aux taux de la Banque centrale européenne.
+
+**Convertir entre fuseaux horaires** interroge la base de fuseaux du système à
+la date demandée, et non une table de décalages figée qui serait fausse la
+moitié de l'année. Les deux pièges du changement d'heure sont signalés au lieu
+d'être escamotés : l'heure qui **n'existe pas** au passage à l'heure d'été, et
+celle qui existe **deux fois** au retour à l'heure d'hiver — les deux lectures
+sont alors affichées, et c'est vous qui tranchez.
+
+**Calculer une bande passante** et **calculer un temps de transfert** montrent
+toutes les lectures d'un même débit côte à côte, bits et octets, décimal et
+binaire. 1 Gio en 8 secondes, c'est 1 Gibit/s et 128 Mio/s ; 100 Mbit/s, c'est
+12,5 Mo/s mais 11,92 Mio/s. Le temps de transfert est théorique et le dit :
+taille ÷ débit, sans les en-têtes de protocole, la latence ni la congestion.
+
+**Calculer des intérêts**, simples ou composés, avec versements réguliers
+facultatifs et cinq fréquences de capitalisation. Le calcul n'arrondit qu'à
+l'affichage, et le tableau année par année rend le total vérifiable ligne à
+ligne. Outil mathématique, pas conseil financier : ni fiscalité, ni inflation.
+
+### Réseau — 3 outils
+
+Trois sondes de diagnostic local, bornées par construction.
+
+**Ping** fabrique ses propres paquets ICMP au lieu de lire la sortie de la
+commande système, qui est traduite et change de forme d'un système et d'une
+version à l'autre. Socket ICMP non privilégié sous Linux, `IcmpSendEcho` sous
+Windows : aucun privilège administrateur. Si le système refuse l'ICMP, l'outil
+le dit et s'arrête — il ne remplace pas la mesure par une connexion TCP, car
+« l'hôte répond au ping » et « le port 80 est ouvert » ne veulent pas dire la
+même chose.
+
+**Tester des ports** ouvre une connexion TCP ordinaire vers **un** hôte, 256
+ports au maximum par lancement. Une demande de `1-65535` est refusée. Le nom de
+service affiché vient d'une table de numéros et s'annonce comme « service
+habituellement associé », jamais « service détecté ».
+
+**Découvrir les appareils du réseau local** annonce d'abord ce qu'elle fera —
+interface, adresse locale, plage exacte, nombre d'adresses — et n'envoie rien
+avant confirmation. Elle se limite au sous-réseau directement connecté et à 256
+adresses : une interface en `/16` est ramenée au `/24` qui entoure votre adresse
+plutôt qu'étendue à 65 534 hôtes. Elle lit d'abord la table de voisinage du
+système, ce qui n'émet aucun paquet, puis envoie un écho par adresse. Le
+résultat s'annonce comme les **appareils observés**, pas comme un inventaire
+complet : un équipement qui ignore les pings reste invisible. Rien n'en est
+conservé.
+
+Pas de scan furtif, pas d'empreinte de système, pas de détection de service par
+bannière, pas de recherche de vulnérabilité. Ce sont des techniques de
+reconnaissance offensive, et leur absence est un choix.
 
 ### Sécurité & Confidentialité — 7 outils
 

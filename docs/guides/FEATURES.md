@@ -2,7 +2,7 @@
 
 [← Documentation](../README.md)
 
-181 outils, répartis en dix catégories. Chaque outil de cette liste est
+191 outils, répartis en 11 catégories. Chaque outil de cette liste est
 **utilisable** : FourTout n'enregistre pas d'outil incomplet, et il n'existe
 donc pas d'état « bientôt disponible ».
 
@@ -28,8 +28,9 @@ d'arriver.
 - [Texte & Documents](#texte--documents-20)
 - [Fichiers & Archives](#fichiers--archives-29)
 - [Convertisseurs](#convertisseurs-1)
-- [Développeur](#développeur-18)
-- [Calculateurs](#calculateurs-17)
+- [Développeur](#développeur-21)
+- [Calculateurs](#calculateurs-21)
+- [Réseau](#réseau-3)
 - [Sécurité & Confidentialité](#sécurité--confidentialité-7)
 
 ---
@@ -254,7 +255,7 @@ _Passer d'un format à un autre, quel que soit le type de fichier._
 - **Convertisseur universel** — Déposez un fichier : FourTout propose les conversions possibles vers les formats compatibles.
   <br>_Les conversions proposées sont dérivées des entrées/sorties déclarées par les outils du registre : aucune table séparée à maintenir, et jamais de conversion annoncée sans outil derrière._
 
-### Développeur (18)
+### Développeur (21)
 
 _Formater, encoder, générer et inspecter les formats techniques._
 
@@ -277,8 +278,13 @@ _Formater, encoder, générer et inspecter les formats techniques._
 - **Minifier HTML, CSS, JS** — Réduire la taille du code en supprimant espaces et commentaires.
 - **Formater HTML, CSS, JS** — Réindenter du code minifié ou mal formaté pour le rendre lisible.
 - **Assistant cron** — Construire et expliquer une expression cron en langage clair.
+- **TOML — formater et valider** — Vérifier un fichier TOML et le réécrire sous une forme canonique.
+  <br>_Le reformatage reconstruit le document depuis ses données : les commentaires et l'ordre d'écriture d'origine sont perdus. La validation, elle, ne touche à rien._
+- **Base32 — encoder et décoder** — Convertir du texte en Base32 et inversement, selon la RFC 4648.
+- **Base SQLite — explorer** — Ouvrir une base SQLite en lecture seule : schéma, données, requêtes, export CSV. · aussi dans *Fichiers & Archives*
+  <br>_Explorateur strictement en lecture : la base est ouverte en lecture seule et aucune requête ne peut la modifier._
 
-### Calculateurs (17)
+### Calculateurs (21)
 
 _Unités, pourcentages, dates, durées et calculs du quotidien._
 
@@ -300,6 +306,24 @@ _Unités, pourcentages, dates, durées et calculs du quotidien._
 - **Calculatrice scientifique** — Opérations avancées : puissances, racines, trigonométrie, logarithmes.
 - **Convertisseur de devises** — Convertir des montants entre devises avec des taux récents. · aussi dans *Convertisseurs*
   <br>_Seul outil de FourTout à nécessiter Internet, uniquement pour récupérer les taux du jour. Les derniers taux connus sont réutilisés hors ligne._
+- **Convertir entre fuseaux horaires** — Passer d'une heure locale à une autre, heure d'été comprise.
+  <br>_Les décalages viennent de la base de fuseaux du système, à la date demandée : les changements d'heure sont donc respectés, et les heures ambiguës ou inexistantes signalées._
+- **Calculer une bande passante** — Déduire un débit moyen d'un volume transféré et d'une durée.
+- **Calculer un temps de transfert** — Estimer la durée d'un transfert à partir d'une taille et d'un débit.
+  <br>_Calcul théorique : taille ÷ débit. Il ignore l'en-tête des protocoles, la latence et la congestion — un transfert réel est toujours plus long._
+- **Calculer des intérêts** — Intérêts simples ou composés, avec versements réguliers facultatifs.
+  <br>_Outil mathématique, pas conseil financier : fiscalité, inflation et frais ne sont pas pris en compte._
+
+### Réseau (3)
+
+_Diagnostiquer une connexion, tester des ports, voir ce qui est branché chez soi._
+
+- **Ping** — Mesurer si un hôte répond, et en combien de temps.
+  <br>_Envoie de vrais paquets ICMP, quatre par défaut. Si le système refuse les sockets ICMP, l'outil le dit plutôt que de mesurer autre chose._
+- **Tester des ports** — Voir quels ports TCP d'un hôte acceptent une connexion.
+  <br>_Un seul hôte, 256 ports au maximum par lancement, par connexion TCP ordinaire. Ce n'est pas un scanner : ni furtivité, ni détection de service, ni recherche de vulnérabilité._
+- **Découvrir les appareils du réseau local** — Lister les machines qui se manifestent sur votre sous-réseau.
+  <br>_Limité au sous-réseau directement connecté et à 256 adresses. La plage exacte est annoncée avant tout envoi, et rien ne part sans confirmation._
 
 ### Sécurité & Confidentialité (7)
 
@@ -320,9 +344,18 @@ _Mots de passe, chiffrement, empreintes et effacement de données._
 
 ## Une note sur le réseau
 
-Un seul outil de cette liste a besoin d'Internet : **Convertisseur de
+Un seul outil de cette liste a besoin d'**Internet** : **Convertisseur de
 devises**, pour récupérer les taux de référence de la Banque centrale
-européenne. Tous les autres travaillent hors ligne.
+européenne.
+
+Trois autres ouvrent de vraies connexions, mais **sur votre réseau seulement** :
+**Ping**, **Tester des ports** et **Découvrir les appareils du réseau local**.
+Ils ne parlent à aucun service distant, n'envoient rien nulle part, et ne sondent
+que ce que vous leur désignez — un hôte que vous saisissez, ou le sous-réseau
+auquel votre machine est directement connectée, borné à 256 adresses. Voir
+[NETWORK.md](../features/NETWORK.md).
+
+Tous les autres travaillent hors ligne.
 
 Les outils qui s'appuient sur un modèle — **Texte vers parole**,
 **Transcription audio**, **Générer des sous-titres**, **PDF vers audio** et

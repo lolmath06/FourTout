@@ -7,7 +7,7 @@
 **Une boîte à outils desktop locale regroupant PDF, image, audio, vidéo,
 documents, fichiers, outils développeur, conversions et confidentialité.**
 
-181 outils, une seule application, sur votre machine.
+191 outils, une seule application, sur votre machine.
 
 </div>
 
@@ -50,16 +50,17 @@ Trois principes tiennent le produit :
 
 | Catégorie | Outils | Exemples |
 | --- | ---: | --- |
-| **PDF** | 23 | Fusionner, séparer, compresser, caviarder, OCR, retrouver un mot de passe oublié |
-| **Images** | 21 | Convertir, compresser, rogner, filigrane, OCR, **retirer l'arrière-plan**, effacer l'EXIF |
-| **Audio** | 15 | Convertir, normaliser, couper les silences, synthèse vocale, transcription |
-| **Vidéo** | 19 | Convertir, compresser, rogner, sous-titrer, incruster, vidéo ↔ GIF |
-| **Texte & Documents** | 16 | Nettoyer, comparer, Markdown ↔ HTML, lire et convertir un DOCX |
-| **Fichiers & Archives** | 16 | Archives, empreintes, doublons, renommage par lot, organiser un dossier |
+| **PDF** | 26 | Fusionner, séparer, compresser, caviarder, OCR, retrouver un mot de passe oublié |
+| **Images** | 25 | Convertir, compresser, rogner, filigrane, OCR, **retirer l'arrière-plan**, effacer l'EXIF |
+| **Audio** | 18 | Convertir, normaliser, couper les silences, synthèse vocale, transcription |
+| **Vidéo** | 20 | Convertir, compresser, rogner, sous-titrer, incruster, vidéo ↔ GIF |
+| **Texte & Documents** | 20 | Nettoyer, comparer, Markdown ↔ HTML, lire et convertir un DOCX |
+| **Fichiers & Archives** | 29 | Archives, empreintes, doublons, renommage par lot, sauvegarde, éditeur hexadécimal |
 | **Convertisseurs** | 1 | Déposez un fichier : FourTout propose les conversions possibles |
-| **Développeur** | 18 | JSON, XML, YAML, SQL, JWT, UUID, regex, cron, diff, minification |
-| **Calculateurs** | 17 | Unités, pourcentages, dates, durées, âge, calculatrice, devises |
-| **Sécurité** | 6 | Mots de passe, chiffrement de fichiers, suppression des métadonnées |
+| **Développeur** | 21 | JSON, XML, YAML, TOML, SQL, Base32, JWT **vérifié**, **base SQLite**, regex, cron |
+| **Calculateurs** | 21 | Unités, pourcentages, dates, **fuseaux horaires**, **débits**, **intérêts**, devises |
+| **Réseau** | 3 | Ping, test de ports, découverte du réseau local — bornés, et jamais au-delà |
+| **Sécurité** | 7 | Mots de passe, chiffrement de fichiers, HMAC, suppression des métadonnées |
 
 La liste complète, outil par outil : **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.
 

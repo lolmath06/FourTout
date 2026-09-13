@@ -7,7 +7,7 @@ Captures utilisées par le `README.md` et par la page de publication.
 | Fichier | Écran |
 | --- | --- |
 | `accueil.png` | Accueil — « Que voulez-vous faire ? », favoris, catégories |
-| `outils.png` | Page Outils — les dix catégories |
+| `outils.png` | Page Outils — les onze catégories |
 | `pdf-fusion.png` | Un outil PDF en cours d'utilisation |
 | `video.png` | Un outil vidéo, avec progression |
 | `fichiers.png` | Un outil de fichiers (arborescence ou doublons) |

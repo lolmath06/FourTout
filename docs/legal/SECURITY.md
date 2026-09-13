@@ -12,7 +12,9 @@
 - [Générateurs aléatoires](#générateurs-aléatoires)
 - [Effacement sécurisé : ce qu'il vaut](#effacement-sécurisé--ce-quil-vaut)
 - [Récupération de mot de passe PDF](#récupération-de-mot-de-passe-pdf)
-- [Décodage JWT](#décodage-jwt)
+- [JWT : décodage et vérification](#jwt--décodage-et-vérification)
+- [Explorateur SQLite : lecture seule](#explorateur-sqlite--lecture-seule)
+- [Outils réseau : périmètre et bornes](#outils-réseau--périmètre-et-bornes)
 - [Intégrité de la chaîne de construction](#intégrité-de-la-chaîne-de-construction)
 - [Périmètre couvert par les tests](#périmètre-couvert-par-les-tests)
 
@@ -248,16 +250,112 @@ que vous êtes autorisé à ouvrir.
 
 ---
 
-## Décodage JWT
+## JWT : décodage et vérification
 
 **Décodé n'est pas vérifié.** Sans la clé, personne ne peut dire si la
-signature d'un token est authentique. L'outil affiche un avertissement
-permanent, indique explicitement « Vérifiée par FourTout : non — la clé n'est
-pas connue », et **n'affiche jamais de badge vert** de validité. L'algorithme
+signature d'un token est authentique. Le décodeur affiche un avertissement
+permanent et **n'affiche jamais de badge vert** de validité. L'algorithme
 `none` est signalé comme tel.
 
-Le token est décodé sur la machine et n'est envoyé nulle part — c'est ce que
-ne garantissent pas les décodeurs JWT en ligne.
+La vérification de signature est un geste séparé, dans le même écran, et elle
+obéit à trois règles :
+
+1. **L'algorithme attendu est choisi par l'utilisateur, jamais lu dans le
+   token.** Se fier au champ `alg` de l'en-tête revient à laisser l'attaquant
+   choisir comment on vérifie sa propre signature : c'est l'origine des
+   attaques « alg: none » et « RS256 dégradé en HS256 ». Toute divergence entre
+   l'en-tête et l'algorithme attendu est un **refus**, prononcé avant que la
+   moindre opération cryptographique soit faite.
+2. **`alg: none` est refusé sans condition.**
+3. **La validité de la signature et celle des dates sont deux verdicts
+   distincts.** Un token expiré garde une signature parfaitement valide :
+   l'écran affiche « SIGNATURE VALIDE » puis, séparément, « EXPIRÉ ». Une
+   expiration n'est jamais présentée comme un échec de signature, et une
+   signature valide n'a jamais valeur d'autorisation.
+
+Algorithmes réellement vérifiés : HS256, HS384, HS512 (HMAC-SHA), RS256, RS384,
+RS512 (RSA PKCS#1 v1.5, à partir d'une clé **publique**). `ES256` n'est pas
+proposé : annoncer un algorithme non implémenté serait pire que ne pas le
+proposer. Aucun téléchargement JWKS n'est fait.
+
+La comparaison HMAC utilise `Mac::verify_slice`, en **temps constant** : une
+comparaison octet par octet laisserait fuir, par son temps de réponse, de quoi
+reconstruire la signature attendue.
+
+Coller une clé privée est refusé avec un message qui explique pourquoi. Le
+secret est masqué à la saisie, n'est ni journalisé, ni enregistré, ni ajouté aux
+récents, ni placé dans le stockage persistant : il sert au calcul et disparaît.
+Ni le token ni la clé ne quittent la machine.
+
+---
+
+## Explorateur SQLite : lecture seule
+
+Une base SQLite est souvent la mémoire d'une application, et une écriture
+accidentelle y serait silencieuse — SQLite n'a pas de corbeille. L'explorateur
+est donc verrouillé par **trois mécanismes indépendants**, tous internes au
+moteur SQLite :
+
+1. Connexion ouverte avec `SQLITE_OPEN_READ_ONLY`.
+2. `PRAGMA query_only`, qui interdit aussi les écritures en mémoire et
+   temporaires.
+3. Un **autorisateur** consulté par SQLite pour chaque action, sur la requête
+   déjà analysée : seules les lectures et une liste blanche de `PRAGMA`
+   d'information passent.
+
+Le contrôle du texte de la requête existe, mais **uniquement pour expliquer** un
+refus avant exécution. Il n'est jamais la défense : un filtre syntaxique laisse
+toujours passer une tournure imprévue, et c'est précisément ce que les trois
+verrous rattrapent — écriture cachée dans un `WITH`, requêtes enchaînées,
+`ATTACH` vers un autre fichier, écriture dans `sqlite_master`.
+
+La garantie est éprouvée, pas affirmée : un test calcule le SHA-256 du fichier,
+lance vingt-huit requêtes d'écriture, et vérifie que l'empreinte est strictement
+identique ensuite.
+
+Les identifiants de tables sont échappés par redoublement du guillemet double,
+et l'affichage est plafonné (500 lignes par défaut, 5 000 au maximum).
+
+---
+
+## Outils réseau : périmètre et bornes
+
+Les trois sondes — ping, test de ports, découverte du réseau local — sont des
+outils de **diagnostic local**. Ce ne sont pas des outils de test d'intrusion,
+et plusieurs choix les maintiennent de ce côté de la ligne :
+
+| Limite | Valeur |
+| --- | --- |
+| Paquets par ping | 20 |
+| Ports par lancement | 256, sur **un** hôte explicite |
+| Adresses par découverte | 256, dans le sous-réseau directement connecté |
+| Préfixe exploré automatiquement | `/24` au plus large |
+| Connexions simultanées | 16 |
+
+Une interface en `/16` est ramenée au `/24` qui entoure l'adresse locale ; une
+demande de `1-65535` ports est refusée. La plage est **recalculée côté natif** à
+partir du nom, de l'adresse et du masque de l'interface : ce qui vient de la
+WebView ne décide jamais de l'étendue d'une sonde.
+
+Aucune commande système n'est construite à partir d'une saisie. Tout passe par
+des sockets, jamais par un interpréteur de commandes : il n'y a pas de chaîne à
+échapper, donc pas d'injection de commande possible. Le ping n'analyse pas non
+plus la sortie de `/bin/ping` ou `ping.exe`.
+
+Rien ne part sans une action explicite : aucun écran ne sonde au chargement, et
+la découverte annonce sa plage avant d'attendre une confirmation. L'annulation
+arrête réellement les sondes — le drapeau est vérifié avant d'ouvrir chaque
+connexion.
+
+Ce qui est délibérément absent : scan furtif ou SYN, évasion de détection,
+identification de service par bannière, empreinte de système d'exploitation,
+recherche de vulnérabilités, force brute, scan d'Internet, usurpation ARP,
+capture de paquets. Le nom de service affiché à côté d'un port vient d'une table
+de numéros et s'annonce comme « service habituellement associé », jamais
+« service détecté ».
+
+Rien n'est conservé : ni les adresses observées, ni les noms, ni les adresses
+matérielles, ni l'historique des sondes.
 
 ---
 
