@@ -1301,6 +1301,7 @@ dependencies = [
  "hmac",
  "if-addrs",
  "image",
+ "libc",
  "lzma-rust2",
  "md-5",
  "num_cpus",

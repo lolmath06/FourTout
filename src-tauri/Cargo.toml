@@ -54,6 +54,11 @@ if-addrs = "0.15"
 # réseau local quand le système sait le faire.
 dns-lookup = "4"
 
+# Espace disque des volumes montés : `statvfs`, seule interface portable pour
+# cette information, absente de la bibliothèque standard.
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
 # Ping sous Windows : l'API IcmpSendEcho de l'IP Helper, qui ne demande aucun
 # privilège administrateur, là où un socket ICMP brut en exigerait.
 [target.'cfg(windows)'.dependencies]

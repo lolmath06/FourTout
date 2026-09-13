@@ -513,6 +513,226 @@ function phase11() {
   return { toml, base32, jwt: { ...jwt, attendus: attendusJwt }, sqlite, calculateurs, fuseaux, reseau };
 }
 
+/* ------------------------------------------------------ phase 12 */
+
+/**
+ * Valeurs de la phase 12 — diagnostic et récupération.
+ *
+ * Chaque fixture abîmée descend d'un fichier sain, par une transformation
+ * décrite dans `generate-phase12-assets.mjs`. Ce contrat note donc, pour
+ * chacune, le diagnostic attendu, ce qui est récupérable, ce qui ne l'est pas,
+ * et les empreintes des contenus que la récupération doit rendre.
+ *
+ * Les empreintes des entrées ZIP sont calculées **ici**, à partir du texte
+ * attendu — jamais relevées sur une sortie de FourTout, ce qui ne prouverait
+ * rien d'autre que la constance d'un bogue.
+ */
+function phase12() {
+  const size = (name) => (existsSync(join(OUT, name)) ? sizeOf(OUT, name) : null);
+  const hash = (name) => (existsSync(join(OUT, name)) ? sha256(readFileSync(join(OUT, name))) : null);
+
+  const zipEntries = {
+    "alpha.txt": "Première entrée, en clair.\n",
+    "nested/bravo.txt": "Deuxième entrée, dans un sous-dossier.\n",
+    "unicode/été.txt": "Troisième entrée : accents, été, çà et là.\n",
+    "binary.bin": "0123456789".repeat(24),
+  };
+  const contenus = {};
+  for (const [name, text] of Object.entries(zipEntries)) {
+    contenus[name] = {
+      octets: Buffer.byteLength(text, "utf8"),
+      sha256: sha256(Buffer.from(text, "utf8")),
+    };
+  }
+
+  const zip = {
+    entrées: Object.keys(zipEntries),
+    contenus,
+    fixtures: {
+      "zip-healthy.zip": {
+        octets: size("zip-healthy.zip"),
+        sha256: hash("zip-healthy.zip"),
+        diagnostic: "zip.healthy",
+        récupérables: 4,
+        perdues: 0,
+      },
+      "zip-central-directory-missing.zip": {
+        octets: size("zip-central-directory-missing.zip"),
+        diagnostic: "zip.no-eocd",
+        cause: "fichier coupé juste avant le répertoire central",
+        enTêtesLocaux: 4,
+        récupérables: 4,
+        perdues: 0,
+      },
+      "zip-central-directory-corrupt.zip": {
+        octets: size("zip-central-directory-corrupt.zip"),
+        diagnostic: "zip.central-directory-corrupt",
+        cause: "signature de la deuxième entrée du répertoire central remplacée",
+        entréesAnnoncées: 4,
+        entréesLuesDansLeRépertoire: 1,
+        récupérables: 4,
+        perdues: 0,
+      },
+      "zip-one-entry-corrupt.zip": {
+        octets: size("zip-one-entry-corrupt.zip"),
+        diagnostic: "zip.healthy",
+        cause: "un octet retourné dans les données stockées de binary.bin",
+        récupérables: 3,
+        perdues: 1,
+        entréePerdue: "binary.bin",
+        étatAttendu: "checksumMismatch",
+      },
+      "zip-truncated.zip": {
+        octets: size("zip-truncated.zip"),
+        diagnostic: "zip.no-eocd",
+        cause: "fichier coupé au milieu des données de la dernière entrée",
+        récupérablesAuMoins: 3,
+        perduesAuMoins: 1,
+      },
+      "zip-trailing-garbage.zip": {
+        octets: size("zip-trailing-garbage.zip"),
+        diagnostic: "zip.trailing-garbage",
+        octetsParasites: 25,
+        réparabilité: "safeRepair",
+        sortieIdentiqueÀ: "zip-healthy.zip",
+      },
+    },
+  };
+
+  const pdf = {
+    fixtures: {
+      "pdf-healthy.pdf": {
+        octets: size("pdf-healthy.pdf"),
+        sha256: hash("pdf-healthy.pdf"),
+        diagnostic: "pdf.healthy",
+        version: "1.4",
+        objets: 5,
+        pages: 2,
+        réparabilité: "none",
+      },
+      "pdf-wrong-startxref.pdf": {
+        octets: size("pdf-wrong-startxref.pdf"),
+        diagnostic: "pdf.bad-startxref",
+        réparabilité: "safeRepair",
+        action: "pdf-fix-startxref",
+        pages: 2,
+        sortieIdentiqueÀ: "pdf-healthy.pdf",
+      },
+      "pdf-trailing-garbage.pdf": {
+        octets: size("pdf-trailing-garbage.pdf"),
+        diagnostic: "pdf.trailing-garbage",
+        octetsParasites: 39,
+        réparabilité: "safeRepair",
+        action: "pdf-strip-trailing",
+        pages: 2,
+        sortieIdentiqueÀ: "pdf-healthy.pdf",
+      },
+      "pdf-missing-eof.pdf": {
+        octets: size("pdf-missing-eof.pdf"),
+        diagnostic: "pdf.no-eof",
+        objets: 5,
+        réparabilité: "safeRepair",
+        action: "pdf-rebuild-xref",
+        pages: 2,
+      },
+      "pdf-broken-xref-recoverable.pdf": {
+        octets: size("pdf-broken-xref-recoverable.pdf"),
+        diagnostic: "pdf.no-startxref",
+        objets: 5,
+        réparabilité: "safeRepair",
+        action: "pdf-rebuild-xref",
+        objetsIndexés: 5,
+        pages: 2,
+      },
+      "pdf-truncated-stream.pdf": {
+        octets: size("pdf-truncated-stream.pdf"),
+        diagnostic: "pdf.no-eof",
+        cause: "document coupé au milieu du troisième objet",
+        objets: 2,
+        réparabilité: "recoverPartial",
+        note: "aucun PDF fiable ne peut être reconstruit : les deux derniers objets n'existent plus",
+      },
+    },
+  };
+
+  const images = {
+    dimensions: { largeur: 64, hauteur: 48 },
+    fixtures: {
+      "image-healthy.png": {
+        octets: size("image-healthy.png"),
+        sha256: hash("image-healthy.png"),
+        diagnostic: "image.healthy",
+        réparabilité: "none",
+      },
+      "image-healthy.jpg": {
+        octets: size("image-healthy.jpg"),
+        sha256: hash("image-healthy.jpg"),
+        diagnostic: "image.healthy",
+        réparabilité: "none",
+      },
+      "image-wrong-extension.jpg": {
+        octets: size("image-wrong-extension.jpg"),
+        diagnostic: "file.extension-mismatch",
+        typeRéel: "png",
+        extension: "jpg",
+        réparabilité: "safeRepair",
+        action: "fix-extension",
+      },
+      "image-png-trailing-garbage.png": {
+        octets: size("image-png-trailing-garbage.png"),
+        diagnostic: "png.trailing-garbage",
+        octetsParasites: 8,
+        réparabilité: "safeRepair",
+        décodeTelQuel: true,
+        sortieIdentiqueÀ: "image-healthy.png",
+      },
+      "image-png-bad-crc.png": {
+        octets: size("image-png-bad-crc.png"),
+        diagnostic: "png.broken-ancillary-chunk",
+        blocsAuxiliairesAbîmés: 1,
+        blocsEssentielsAbîmés: 0,
+        réparabilité: "safeRepair",
+        sansPerte: true,
+        pixelsIdentiquesÀ: "image-healthy.png",
+      },
+      "image-png-truncated.png": {
+        octets: size("image-png-truncated.png"),
+        diagnostic: "png.truncated",
+        décodeTelQuel: false,
+        réparabilité: "none",
+        note: "aucun fichier n'est écrit : les lignes manquantes ne sont pas inventées",
+      },
+      "image-jpeg-trailing-garbage.jpg": {
+        octets: size("image-jpeg-trailing-garbage.jpg"),
+        diagnostic: "jpeg.trailing-garbage",
+        octetsParasites: 8,
+        réparabilité: "safeRepair",
+      },
+      "image-jpeg-missing-eoi.jpg": {
+        octets: size("image-jpeg-missing-eoi.jpg"),
+        diagnostic: "jpeg.no-eoi",
+        réparabilité: "recoverVisual",
+        sansPerte: false,
+        sortie: "PNG réencodé depuis les pixels décodés",
+      },
+      "image-jpeg-truncated.jpg": {
+        octets: size("image-jpeg-truncated.jpg"),
+        diagnostic: "jpeg.no-eoi",
+        réparabilité: "recoverVisual",
+        note: "le décodeur ne rend que les lignes présentes ; rien n'est inventé",
+      },
+    },
+  };
+
+  return {
+    avertissement:
+      "Aucune donnée matérielle de la machine de développement ne figure ici : l'inventaire de stockage n'a pas de valeur attendue.",
+    zip,
+    pdf,
+    images,
+  };
+}
+
 const contract = {
   genereLe: new Date().toISOString().slice(0, 10),
   avertissement:
@@ -694,6 +914,7 @@ const contract = {
   },
 
   phase11: phase11(),
+  phase12: phase12(),
 
   inspection: {
     // Chaque fixture, et ce que la reconnaissance par signature doit en dire.
@@ -754,6 +975,18 @@ const lines = [
   `  1000 € 5 % 2 ans       : simple ${c.phase11.calculateurs.interets["simple 1000 € 5 % 2 ans"].total} €, ` +
     `composé annuel ${c.phase11.calculateurs.interets["compose annuel 1000 € 5 % 2 ans"].total.toFixed(2)} €`,
   `  LAN 10.2.3.4/16        : ramené à ${c.phase11.reseau.bornage["10.2.3.4/16"].ramenéA}, ${c.phase11.reseau.bornage["10.2.3.4/16"].cibles} cibles`,
+  "",
+  "Phase 12 — diagnostic et récupération",
+  "",
+  `  zip-central-directory-missing : ${c.phase12.zip.fixtures["zip-central-directory-missing.zip"].récupérables} entrées récupérables sur 4`,
+  `  zip-one-entry-corrupt        : ${c.phase12.zip.fixtures["zip-one-entry-corrupt.zip"].récupérables} récupérables, ` +
+    `${c.phase12.zip.fixtures["zip-one-entry-corrupt.zip"].perdues} perdue (${c.phase12.zip.fixtures["zip-one-entry-corrupt.zip"].entréePerdue})`,
+  `  zip-trailing-garbage         : ${c.phase12.zip.fixtures["zip-trailing-garbage.zip"].octetsParasites} octets parasites, retrait sans perte`,
+  `  pdf-wrong-startxref          : ${c.phase12.pdf.fixtures["pdf-wrong-startxref.pdf"].action}, ${c.phase12.pdf.fixtures["pdf-wrong-startxref.pdf"].pages} pages`,
+  `  pdf-broken-xref-recoverable  : ${c.phase12.pdf.fixtures["pdf-broken-xref-recoverable.pdf"].objetsIndexés} objets réindexés`,
+  `  pdf-truncated-stream         : ${c.phase12.pdf.fixtures["pdf-truncated-stream.pdf"].objets} objets seulement — non reconstructible`,
+  `  image-png-bad-crc            : ${c.phase12.images.fixtures["image-png-bad-crc.png"].blocsAuxiliairesAbîmés} bloc auxiliaire abîmé, récupération sans perte`,
+  `  images saines                : ${c.phase12.images.dimensions.largeur} × ${c.phase12.images.dimensions.hauteur}`,
   "",
   `  Écrit dans test-assets/generated/CONTRAT.json`,
 ];

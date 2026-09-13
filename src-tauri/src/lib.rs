@@ -6,6 +6,8 @@
 //! doivent être natifs (ffmpeg, OCR, chiffrement, accès disque), en gardant la
 //! règle : tout se fait localement, rien n'est envoyé sur le réseau.
 
+pub mod diagnostics;
+pub mod disks;
 pub mod files;
 pub mod image_native;
 pub mod media;
@@ -152,6 +154,18 @@ pub fn run() {
             network::command::network_interfaces,
             network::command::network_lan_plan,
             network::command::network_lan_discover,
+            diagnostics::command::diagnostics_inspect,
+            diagnostics::command::diagnostics_output_path,
+            diagnostics::command::diagnostics_fix_extension,
+            diagnostics::command::diagnostics_zip_strip,
+            diagnostics::command::diagnostics_zip_recover,
+            diagnostics::command::diagnostics_pdf_repair,
+            diagnostics::command::diagnostics_image_recover,
+            diagnostics::command::diagnostics_sha256,
+            diagnostics::command::diagnostics_discard,
+            disks::command::disks_inventory,
+            disks::command::disks_health,
+            disks::command::disks_health_provider,
         ])
         .run(tauri::generate_context!())
         .expect("erreur au démarrage de FourTout");
