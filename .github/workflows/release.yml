@@ -119,64 +119,31 @@ jobs:
 
       # Renommage en noms de publication : ce que l'utilisateur télécharge doit
       # dire son système et son architecture, pas la convention de l'empaqueteur.
+      #
+      # La sélection est déléguée à un script éprouvé par la suite de tests.
+      # Elle exige, pour chaque format, exactement un paquet portant la version
+      # publiée : zéro comme deux font échouer la publication. Choisir le
+      # premier résultat d'un `find` suffisait tant qu'une seule version
+      # occupait le dossier de construction ; un cache restauré ou une
+      # construction répétée y en laissent deux, et le paquet recopié sous le
+      # nom de la nouvelle version pouvait être l'ancien.
       - name: Rassembler et nommer les paquets
         shell: bash
         env:
           VERSION: ${{ needs.verify.outputs.version }}
         run: |
           set -euo pipefail
-          mkdir -p artefacts
-          B=src-tauri/target/release/bundle
+          node scripts/collect-release-artifacts.mjs \
+            --version "$VERSION" \
+            --os "$RUNNER_OS" \
+            --bundle-dir src-tauri/target/release/bundle \
+            --release-dir src-tauri/target/release \
+            --out artefacts \
+            --stage portable
 
-          copy() {  # copy <motif> <nom final>
-            local found
-            found=$(find "$B" -type f -name "$1" | head -1)
-            if [ -n "$found" ]; then
-              cp "$found" "artefacts/$2"
-              echo "  $2"
-              return 0
-            fi
-            return 1
-          }
-
-          # `require` échoue bruyamment. Une publication à laquelle il manque un
-          # format sans que personne ne s'en aperçoive est pire qu'une
-          # publication qui n'a pas lieu : l'utilisateur qui cherche son paquet
-          # trouve une page incomplète.
-          require() {
-            if ! copy "$1" "$2"; then
-              echo "::error::Paquet attendu introuvable : $1"
-              exit 1
-            fi
-          }
-
-          if [ "$RUNNER_OS" = "Linux" ]; then
-            require '*.rpm'      "FourTout-${VERSION}-Fedora-x86_64.rpm"
-            require '*.deb'      "FourTout-${VERSION}-Linux-amd64.deb"
-            require '*.AppImage' "FourTout-${VERSION}-Linux-x86_64.AppImage"
-          else
-            require '*-setup.exe' "FourTout-${VERSION}-Windows-x64-Setup.exe"
-            require '*.msi'       "FourTout-${VERSION}-Windows-x64.msi"
-
-            # Version portable : l'exécutable et ses ressources, sans installeur.
-            # Le nom du binaire dépend de la version de Tauri — nom du paquet
-            # Cargo ou nom de produit selon les versions : on le cherche au lieu
-            # de le supposer, et on échoue si aucun n'existe plutôt que de
-            # publier en silence une version portable manquante.
-            exe=$(find src-tauri/target/release -maxdepth 1 -type f \
-                    \( -iname 'fourtout.exe' \) | head -1)
-            if [ -z "$exe" ]; then
-              echo "::error::Exécutable Windows introuvable dans src-tauri/target/release"
-              ls -la src-tauri/target/release || true
-              exit 1
-            fi
-            mkdir -p portable/FourTout
-            cp "$exe" portable/FourTout/FourTout.exe
-            if [ -d "src-tauri/target/release/resources" ]; then
-              cp -r "src-tauri/target/release/resources" portable/FourTout/
-            else
-              echo "::warning::Aucun dossier resources/ à côté de l'exécutable : la version portable est livrée sans les listes de mots."
-            fi
+          # Version portable : l'exécutable et ses ressources, sans installeur.
+          # Le script a déjà rassemblé le dossier ; il ne reste qu'à le sceller.
+          if [ "$RUNNER_OS" = "Windows" ]; then
             (cd portable && 7z a -tzip "../artefacts/FourTout-${VERSION}-Windows-x64-Portable.zip" FourTout >/dev/null)
             echo "  FourTout-${VERSION}-Windows-x64-Portable.zip"
           fi
