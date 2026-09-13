@@ -18,9 +18,6 @@
 //! - **Aucune requête réseau.** Ni base de fabricants, ni table de modèles :
 //!   seules les données du système et du périphérique sont employées.
 
-use std::path::Path;
-use std::time::{Duration, Instant};
-
 use serde::{Deserialize, Serialize};
 
 /// Ce que l'on a pu apprendre de la santé d'un disque.
@@ -50,7 +47,14 @@ pub struct SmartReport {
 }
 
 impl SmartReport {
-    fn unavailable(provider: &str, note: &str) -> Self {
+    /// Un rapport qui dit pourquoi il est vide.
+    ///
+    /// `pub(super)` et non privé : le fournisseur Windows construisait le même
+    /// rapport à la main, à deux endroits. Un seul constructeur, employé par
+    /// les deux fournisseurs, garantit qu'un rapport indisponible a partout la
+    /// même forme — et le rend utilisé sur toutes les plateformes, là où un
+    /// constructeur réservé à Linux devenait du code mort sous Windows.
+    pub(super) fn unavailable(provider: &str, note: &str) -> Self {
         Self {
             available: false,
             provider: provider.to_string(),
@@ -64,7 +68,11 @@ impl SmartReport {
 ///
 /// Un `smartctl` qui interroge un disque qui ne répond pas peut rester bloqué
 /// plusieurs dizaines de secondes. L'inventaire n'a pas à attendre avec lui.
-pub const PROVIDER_TIMEOUT: Duration = Duration::from_secs(6);
+///
+/// Réservé à Linux, comme l'exécution qu'il borne : sous Windows, la santé
+/// passe par PowerShell et ce délai n'aurait rien à borner.
+#[cfg(target_os = "linux")]
+pub const PROVIDER_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(6);
 
 /// Le chemin de périphérique est-il de la forme attendue ?
 ///
@@ -83,8 +91,14 @@ pub fn is_device_path(path: &str) -> bool {
 }
 
 /// Exécute un programme et rend sa sortie standard, avec un délai maximal.
+///
+/// Seul `smartctl` est lancé ainsi, et seulement sous Linux : la fonction suit
+/// le `cfg` de son unique appelant plutôt que d'être compilée partout pour
+/// n'être appelée nulle part.
+#[cfg(target_os = "linux")]
 fn run_with_timeout(program: &str, args: &[&str]) -> Result<String, String> {
     use std::process::{Command, Stdio};
+    use std::time::{Duration, Instant};
 
     let mut child = Command::new(program)
         .args(args)
@@ -122,6 +136,8 @@ fn run_with_timeout(program: &str, args: &[&str]) -> Result<String, String> {
 pub fn smartctl_available() -> bool {
     #[cfg(unix)]
     {
+        use std::path::Path;
+
         for directory in ["/usr/sbin", "/usr/bin", "/sbin", "/bin", "/usr/local/sbin"] {
             if Path::new(&format!("{directory}/smartctl")).exists() {
                 return true;

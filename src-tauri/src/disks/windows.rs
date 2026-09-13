@@ -264,6 +264,12 @@ struct PsHealth {
     read_errors_uncorrected: Option<u64>,
 }
 
+/// Nom du fournisseur, tel qu'il est montré à l'utilisateur.
+///
+/// Un seul littéral : l'origine d'un chiffre affiché ne doit pas dépendre de
+/// la branche de code qui l'a produit.
+const PROVIDER: &str = "Windows — Get-StorageReliabilityCounter";
+
 /// Analyse la sortie JSON du script de santé, pour un disque donné.
 pub fn parse_health(json: &str, disk_number: u32) -> Result<SmartReport, String> {
     let entries: Vec<PsHealth> = match serde_json::from_str::<serde_json::Value>(json) {
@@ -288,20 +294,15 @@ pub fn parse_health(json: &str, disk_number: u32) -> Result<SmartReport, String>
     });
 
     let Some(entry) = matching else {
-        return Ok(SmartReport {
-            available: false,
-            provider: "Windows — Get-StorageReliabilityCounter".to_string(),
-            notes: vec![
-                "Ce disque ne figure pas dans les compteurs de fiabilité rapportés par Windows."
-                    .to_string(),
-            ],
-            ..SmartReport::default()
-        });
+        return Ok(SmartReport::unavailable(
+            PROVIDER,
+            "Ce disque ne figure pas dans les compteurs de fiabilité rapportés par Windows.",
+        ));
     };
 
     let mut report = SmartReport {
         available: true,
-        provider: "Windows — Get-StorageReliabilityCounter".to_string(),
+        provider: PROVIDER.to_string(),
         health: entry.health_status.as_ref().and_then(|status| match status {
             serde_json::Value::String(text) => Some(text.clone()),
             serde_json::Value::Number(number) => match number.as_u64() {
@@ -367,12 +368,10 @@ pub fn health(device: &str) -> SmartReport {
         .unwrap_or(0);
     match run(HEALTH_SCRIPT).and_then(|json| parse_health(&json, number)) {
         Ok(report) => report,
-        Err(error) => SmartReport {
-            available: false,
-            provider: "Windows — Get-StorageReliabilityCounter".to_string(),
-            notes: vec![format!("Informations de santé indisponibles : {error}")],
-            ..SmartReport::default()
-        },
+        Err(error) => {
+            let note = format!("Informations de santé indisponibles : {error}");
+            SmartReport::unavailable(PROVIDER, &note)
+        }
     }
 }
 
@@ -489,6 +488,13 @@ mod tests {
         let report = parse_health(r#"[{"DeviceId":"0","HealthStatus":"Healthy"}]"#, 7).unwrap();
         assert!(!report.available);
         assert!(report.notes[0].contains("ne figure pas"));
+        // Un rapport vide nomme quand même son fournisseur : c'est ce qui
+        // distingue « Windows n'a rien à dire sur ce disque » de « rien n'a été
+        // tenté ». Cette assertion tient le passage par le constructeur partagé
+        // `SmartReport::unavailable`, employé aussi par le fournisseur Linux —
+        // c'est cet usage commun qui le garde vivant sur les deux plateformes.
+        assert_eq!(report.provider, PROVIDER);
+        assert!(report.health.is_none());
     }
 
     #[test]
