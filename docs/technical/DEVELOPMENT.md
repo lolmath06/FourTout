@@ -40,7 +40,10 @@ sudo apt install libwebkit2gtk-4.1-dev libsoup-3.0-dev libgtk-3-dev \
 ### Windows
 
 - **Build Tools Visual Studio** avec la charge de travail « Développement
-  desktop en C++ ».
+  desktop en C++ ». Ils servent aussi à compiler SQLite, que `rusqlite`
+  embarque en mode `bundled` : la bibliothèque est bâtie avec l'application
+  plutôt que cherchée sur la machine de l'utilisateur, au prix d'environ une
+  minute au premier `cargo build`.
 - **WebView2**, présent d'origine sur Windows 11 et sur Windows 10 à jour.
 
 ### Facultatif mais recommandé
