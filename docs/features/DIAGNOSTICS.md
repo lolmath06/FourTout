@@ -156,6 +156,42 @@ compressés** (`/ObjStm`). Ces objets ne sont pas visibles au balayage : une
 table reconstruite serait incomplète, et FourTout ne peut pas prouver le
 contraire. L'écran le dit et ne propose pas le bouton.
 
+### La preuve structurelle, et pourquoi elle est venue après
+
+La première version de ce module se contentait de rouvrir la sortie avec
+pdf.js. C'était insuffisant, et un test manuel l'a montré : un document coupé au
+milieu de son troisième objet recevait une table de références, et le fichier
+produit — 295 octets, en-tête, table, trailer, `%%EOF` — s'ouvrait. pdf.js
+émettait bien `invalid /Pages tree /Count: 2`, mais il ouvrait, et annonçait
+deux pages dont aucune n'existait.
+
+Les lecteurs PDF sont tolérants par conception : ils ont été écrits pour
+afficher quelque chose plutôt que pour refuser un document. Leur acceptation ne
+prouve donc rien.
+
+`structural_check` a été ajouté **en plus** de la validation pdf.js, et vérifie
+ce que ce module sait démontrer :
+
+| Invariant | Ce qu'il empêche |
+| --- | --- |
+| Chaque `N G obj` a son `endobj`, avant l'en-tête suivant | Qu'un objet tronqué passe pour complet |
+| Le catalogue existe et est complet | Qu'un document sans racine soit reconstruit |
+| Le nœud `/Pages` désigné existe et est complet | Qu'un arbre de pages absent soit ignoré |
+| Chaque référence de `/Kids` désigne un objet complet | Qu'une page promise n'existe pas |
+| `/Count` est **confronté** aux pages réellement complètes | Que le nombre de pages soit cru sur parole |
+| Chaque entrée `xref` tombe sur le premier octet d'un objet | Qu'une table pointe à côté |
+
+La vérification a lieu **deux fois** : sur la source, avant d'offrir l'action —
+un document non prouvable n'a pas de bouton du tout —, et sur le candidat en
+mémoire, **avant qu'il n'atteigne le disque**. Écrire puis effacer laisserait,
+entre les deux, un fichier qu'un autre programme pourrait ouvrir ; et un échec
+d'effacement laisserait une fausse réparation derrière lui.
+
+Ce n'est pas un validateur PDF général, et cela ne le deviendra pas : c'est la
+vérification étroite du sous-ensemble que ce module sait reconstruire. Les
+documents plus complexes restent non réparables automatiquement, ce qui est la
+bonne réponse.
+
 ### La vérification, et pourquoi elle est indispensable
 
 Rust n'a pas d'analyseur PDF ici : il lit une structure, il ne rend pas une
@@ -200,6 +236,14 @@ Deux gestes sont explicitement refusés :
   masque la corruption. Un test le verrouille ;
 - **inventer les lignes manquantes** d'une image tronquée. La récupération
   échoue franchement et **n'écrit aucun fichier**.
+
+Et une règle qui découle de la seconde : lorsqu'aucun pixel n'est décodable,
+**aucune action n'est proposée**. Le moteur ne le déduit pas des constats — il
+tente réellement le nettoyage structurel puis un décodage, et inscrit la réponse
+dans `recoverable`. Une première version affichait « Le décodeur ne rend aucun
+pixel », puis juste en dessous un bouton « Récupérer les pixels décodables » qui
+ne pouvait que finir en erreur. La décision appartient au moteur, pas à
+l'affichage : toute interface qui lira ce rapport obtiendra le bon comportement.
 
 La récupération suit deux chemins, et ils ne portent pas le même nom :
 

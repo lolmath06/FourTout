@@ -73,6 +73,15 @@ pub struct ImageDetails {
     pub broken_ancillary: usize,
     /// Blocs essentiels dont la somme de contrôle est fausse.
     pub broken_critical: usize,
+    /// Le décodeur rend-il des pixels, sur le fichier tel quel **ou** après le
+    /// nettoyage structurel que FourTout sait justifier ?
+    ///
+    /// C'est la seule question qui décide si une récupération a un sens.
+    /// Proposer un bouton quand la réponse est « non » ne peut mener qu'à une
+    /// erreur : l'action n'est alors pas offerte du tout.
+    pub recoverable: bool,
+    /// La récupération serait-elle sans perte, ou seulement visuelle ?
+    pub recovery_lossless: bool,
 }
 
 fn crc32(bytes: &[u8]) -> u32 {
@@ -466,16 +475,46 @@ pub fn diagnose(bytes: &[u8], format_id: &str) -> (Vec<Finding>, ImageDetails) {
         Err(error) => {
             details.decodes = false;
             details.decode_error = Some(error.clone());
-            findings.push(Finding::error(
+        }
+    }
+
+    // La question qui décide de tout : reste-t-il un pixel à sauver ? On tente
+    // réellement le nettoyage et le décodage, plutôt que de le supposer d'après
+    // les constats. Une réponse négative n'est pas un échec à cacher : c'est le
+    // résultat, et il vaut mieux l'afficher qu'offrir un bouton qui ne peut que
+    // finir en erreur.
+    let (recoverable, lossless) = recoverability(bytes, format_id);
+    details.recoverable = recoverable;
+    details.recovery_lossless = lossless;
+
+    if !details.decodes {
+        findings.push(if recoverable {
+            Finding::error(
                 "image.decode-failed",
                 "Le décodeur refuse le fichier tel quel",
                 format!(
-                    "Message du décodeur : {error}. Si l'un des défauts ci-dessus peut être \
-                     corrigé sans toucher aux pixels, FourTout réessaiera après correction."
+                    "Message du décodeur : {}. Les défauts relevés ci-dessus peuvent être \
+                     corrigés sans toucher aux pixels, et le décodeur accepte le fichier une \
+                     fois nettoyé.",
+                    details.decode_error.clone().unwrap_or_default()
                 ),
                 Repairability::RecoverVisual,
-            ));
-        }
+            )
+        } else {
+            Finding::error(
+                "image.no-pixels",
+                "Le décodeur ne rend aucun pixel",
+                format!(
+                    "Message du décodeur : {}. FourTout a tenté le nettoyage structurel qu'il \
+                     sait justifier, puis un nouveau décodage : sans résultat. Les données \
+                     d'image manquantes n'existent nulle part, et aucune ne sera inventée. Ce \
+                     fichier est diagnosticable, il n'est pas récupérable — aucune action n'est \
+                     donc proposée.",
+                    details.decode_error.clone().unwrap_or_default()
+                ),
+                Repairability::None,
+            )
+        });
     }
 
     if findings.is_empty() {
@@ -560,20 +599,14 @@ pub struct ImageRecovery {
     pub output_size: u64,
 }
 
-/// Récupère ce qui est décodable d'une image, dans un fichier neuf.
+/// Nettoyage structurel, défendable octet par octet.
 ///
-/// Deux chemins, et ils ne portent pas le même nom :
-///
-/// - **sans perte** : le fichier est nettoyé de ce qui ne fait pas partie de
-///   l'image (octets parasites, blocs auxiliaires abîmés), et les octets des
-///   pixels sont recopiés tels quels ;
-/// - **visuelle** : le fichier ne peut pas être réparé, mais le décodeur rend
-///   des pixels ; ils sont réencodés en PNG. L'image est sauvée, le fichier
-///   d'origine ne l'est pas.
-pub fn recover(bytes: &[u8], format_id: &str, destination: &Path) -> Result<ImageRecovery, String> {
+/// Extrait du chemin de récupération pour être employé **aussi** au diagnostic :
+/// c'est en tentant ce nettoyage puis un décodage que l'on sait si une
+/// récupération a le moindre sens. Sans cette réponse, l'écran proposerait un
+/// bouton qui ne peut que finir en erreur.
+fn clean(bytes: &[u8], format_id: &str) -> Result<(Vec<u8>, Vec<String>), String> {
     let mut steps = Vec::new();
-
-    // 1. Nettoyage structurel, quand il est défendable octet par octet.
     let cleaned: Vec<u8> = match format_id {
         "png" => {
             let rebuilt = rebuild_png(bytes)
@@ -607,6 +640,38 @@ pub fn recover(bytes: &[u8], format_id: &str, destination: &Path) -> Result<Imag
         }
         other => return Err(format!("Récupération non prise en charge pour « {other} ».")),
     };
+    Ok((cleaned, steps))
+}
+
+/// Le décodeur rendrait-il des pixels, et l'opération serait-elle sans perte ?
+fn recoverability(bytes: &[u8], format_id: &str) -> (bool, bool) {
+    let decoder_format = match format_id {
+        "png" => ::image::ImageFormat::Png,
+        "jpg" => ::image::ImageFormat::Jpeg,
+        _ => return (false, false),
+    };
+    let Ok((cleaned, _)) = clean(bytes, format_id) else { return (false, false) };
+    let cleaned_ok = try_decode(&cleaned, decoder_format).is_ok();
+    // Seul un PNG dont le nettoyage suffit est réparable sans perte : les
+    // pixels d'origine sont alors recopiés tels quels. Tout le reste passe par
+    // un décodage, donc par une récupération visuelle.
+    let lossless = format_id == "png" && cleaned_ok;
+    let recoverable = cleaned_ok || try_decode(bytes, decoder_format).is_ok();
+    (recoverable, lossless)
+}
+
+/// Récupère ce qui est décodable d'une image, dans un fichier neuf.
+///
+/// Deux chemins, et ils ne portent pas le même nom :
+///
+/// - **sans perte** : le fichier est nettoyé de ce qui ne fait pas partie de
+///   l'image (octets parasites, blocs auxiliaires abîmés), et les octets des
+///   pixels sont recopiés tels quels ;
+/// - **visuelle** : le fichier ne peut pas être réparé, mais le décodeur rend
+///   des pixels ; ils sont réencodés en PNG. L'image est sauvée, le fichier
+///   d'origine ne l'est pas.
+pub fn recover(bytes: &[u8], format_id: &str, destination: &Path) -> Result<ImageRecovery, String> {
+    let (cleaned, mut steps) = clean(bytes, format_id)?;
 
     let decoder_format =
         if format_id == "png" { ::image::ImageFormat::Png } else { ::image::ImageFormat::Jpeg };

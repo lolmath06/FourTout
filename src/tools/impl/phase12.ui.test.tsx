@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { toolRegistry } from "@/core/tools/registry";
 import { DiagnosticShell } from "@/components/diagnostics/DiagnosticShell";
+import { ImageRepairTool } from "./diagnostics/ImageRepairTool";
 import type * as DiagnosticsModule from "@/core/diagnostics/native";
 import type { DiagnosticReport } from "@/core/diagnostics/native";
 
@@ -239,5 +240,155 @@ describe("catalogue des écrans de diagnostic", () => {
       expect(tool, id).toBeDefined();
       expect(tool!.note, `note manquante : ${id}`).toBeTruthy();
     }
+  });
+});
+
+describe("écran « Image endommagée »", () => {
+  /**
+   * Les deux rapports ci-dessous sont ceux que le moteur natif produit
+   * réellement pour les fixtures correspondantes — `actions` comprises. Deux
+   * tests d'intégration Rust
+   * (`an_image_without_a_single_decodable_pixel_offers_no_action` et
+   * `an_image_whose_pixels_survive_keeps_its_action`) verrouillent ce contrat
+   * du côté du moteur ; celui-ci vérifie que l'écran l'honore.
+   */
+  function imageReport(overrides: Partial<DiagnosticReport>): DiagnosticReport {
+    return report({
+      name: "image.png",
+      extension: "png",
+      detected: "png",
+      detectedLabel: "Image PNG",
+      details: {},
+      ...overrides,
+    });
+  }
+
+  const truncated = imageReport({
+    name: "image-png-truncated.png",
+    health: "damaged",
+    findings: [
+      {
+        severity: "error",
+        code: "png.truncated",
+        title: "Image tronquée",
+        detail: "Le bloc « IDAT » annonce plus d'octets que le fichier n'en contient.",
+        repairability: "recoverVisual",
+      },
+      {
+        severity: "error",
+        code: "image.no-pixels",
+        title: "Le décodeur ne rend aucun pixel",
+        detail:
+          "FourTout a tenté le nettoyage structurel qu'il sait justifier, puis un nouveau " +
+          "décodage : sans résultat. Aucune action n'est donc proposée.",
+        repairability: "none",
+      },
+    ],
+    // Le moteur ne produit aucune action : c'est le correctif.
+    actions: [],
+    details: {
+      image: {
+        format: "png",
+        width: 64,
+        height: 48,
+        decodes: false,
+        decodeError: "Image tronquée",
+        chunks: [],
+        segments: [],
+        trailingBytes: 0,
+        endMarker: false,
+        brokenAncillary: 0,
+        brokenCritical: 0,
+        recoverable: false,
+        recoveryLossless: false,
+      },
+    },
+  });
+
+  const badCrc = imageReport({
+    name: "image-png-bad-crc.png",
+    health: "suspicious",
+    findings: [
+      {
+        severity: "warning",
+        code: "png.broken-ancillary-chunk",
+        title: "Métadonnées altérées",
+        detail: "Un bloc auxiliaire porte une somme de contrôle fausse.",
+        repairability: "safeRepair",
+      },
+    ],
+    actions: [
+      {
+        id: "image-recover",
+        title: "Réécrire une image saine",
+        detail: "Les blocs non conformes sont écartés ; les octets des pixels sont recopiés.",
+        costs: ["Les métadonnées portées par les blocs écartés"],
+        repairability: "safeRepair",
+        outputExtension: "png",
+      },
+    ],
+    details: {
+      image: {
+        format: "png",
+        width: 64,
+        height: 48,
+        decodes: true,
+        decodeError: null,
+        chunks: [
+          { kind: "IHDR", offset: 8, length: 13, crcValid: true, ancillary: false },
+          { kind: "tEXt", offset: 33, length: 15, crcValid: false, ancillary: true },
+          { kind: "IDAT", offset: 60, length: 200, crcValid: true, ancillary: false },
+        ],
+        segments: [],
+        trailingBytes: 0,
+        endMarker: true,
+        brokenAncillary: 1,
+        brokenCritical: 0,
+        recoverable: true,
+        recoveryLossless: true,
+      },
+    },
+  });
+
+  async function mount() {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <ImageRepairTool tool={toolRegistry.get("image-repair")!} />
+      </MemoryRouter>,
+    );
+    await user.click(screen.getByRole("button", { name: "Choisir un fichier" }));
+    return user;
+  }
+
+  it("n'offre aucune récupération quand le décodeur ne rend aucun pixel", async () => {
+    inspectFile.mockResolvedValue(truncated);
+    await mount();
+
+    await waitFor(() => expect(screen.getByText("Image tronquée")).toBeInTheDocument());
+    expect(screen.getByText("Le décodeur ne rend aucun pixel")).toBeInTheDocument();
+    expect(screen.getByText(/Le décodeur accepte-t-il le fichier \?/)).toBeInTheDocument();
+
+    // Le bouton contradictoire a disparu — c'est le correctif.
+    expect(
+      screen.queryByRole("button", { name: /Récupérer les pixels décodables/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Ce que FourTout peut faire")).not.toBeInTheDocument();
+    // Et l'écran explique pourquoi, au lieu de se taire.
+    expect(screen.getByText("Aucune correction automatique")).toBeInTheDocument();
+  });
+
+  it("garde le bouton quand les pixels survivent", async () => {
+    inspectFile.mockResolvedValue(badCrc);
+    await mount();
+
+    await waitFor(() => expect(screen.getByText("Métadonnées altérées")).toBeInTheDocument());
+    expect(screen.getByText("Ce que FourTout peut faire")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Réécrire une image saine/ }),
+    ).toBeInTheDocument();
+    // Le tableau des blocs montre lequel est fautif.
+    expect(screen.getByText("tEXt")).toBeInTheDocument();
+    expect(screen.getByText("fausse")).toBeInTheDocument();
   });
 });

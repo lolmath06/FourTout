@@ -104,6 +104,29 @@ export interface ZipDetails {
   recoverableBytes: number;
 }
 
+/**
+ * Ce que le moteur a pu **prouver** de la structure du document.
+ *
+ * `problems` vide signifie : cohérence démontrée. Tant qu'il ne l'est pas,
+ * aucune reconstruction n'est proposée — un document tronqué recevant une table
+ * de références produit un fichier que des lecteurs tolérants ouvrent, et qui
+ * ment sur son contenu.
+ */
+export interface StructuralCheck {
+  completeObjects: number;
+  /** Objets ouverts et jamais refermés : ils sont tronqués. */
+  incompleteObjects: number[];
+  /** Références qui désignent un objet absent ou incomplet. */
+  danglingReferences: string[];
+  /** Pages réellement présentes **et complètes**. */
+  pageObjects: number;
+  /** Ce que `/Count` annonce, qui n'est jamais cru sur parole. */
+  declaredCount: number | null;
+  root: number | null;
+  pagesNode: number | null;
+  problems: string[];
+}
+
 export interface PdfDetails {
   version: string | null;
   eofOffset: number | null;
@@ -116,8 +139,10 @@ export interface PdfDetails {
   objectStreams: boolean;
   xrefStreams: boolean;
   signed: boolean;
+  /** Pages **complètes** trouvées, jamais le `/Count` annoncé. */
   pageObjects: number;
   trailer: boolean;
+  structure: StructuralCheck;
 }
 
 export interface PngChunk {
@@ -147,6 +172,16 @@ export interface ImageDetails {
   endMarker: boolean;
   brokenAncillary: number;
   brokenCritical: number;
+  /**
+   * Le décodeur rend-il des pixels, tel quel ou après nettoyage ?
+   *
+   * Seule question qui décide si une récupération a un sens. Quand elle vaut
+   * `false`, le moteur ne produit aucune action : proposer un bouton ne pourrait
+   * mener qu'à une erreur.
+   */
+  recoverable: boolean;
+  /** La récupération serait-elle sans perte, ou seulement visuelle ? */
+  recoveryLossless: boolean;
 }
 
 export interface DiagnosticDetails {

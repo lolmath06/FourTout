@@ -318,28 +318,120 @@ fn a_document_without_its_table_gets_one_rebuilt_from_its_objects() {
     std::fs::remove_dir_all(&directory).ok();
 }
 
+/// La régression qui a motivé ce correctif.
+///
+/// Le document est coupé au milieu de l'objet 3 : l'objet n'a pas de `endobj`,
+/// l'objet 4 annoncé par `/Kids` n'existe pas, et `/Count` promet deux pages
+/// alors qu'aucune n'est complète. La première version acceptait pourtant de
+/// lui ajouter une table de références, et laissait sur le disque un fichier de
+/// 295 octets que des lecteurs tolérants ouvrent.
 #[test]
-fn a_pdf_truncated_mid_stream_is_declared_unreparable() {
+fn a_pdf_truncated_mid_object_is_refused_and_leaves_nothing_behind() {
     let Some(bytes) = fixture("pdf-truncated-stream.pdf") else { return };
     let (findings, details) = pdf_diag::diagnose(&bytes);
 
     assert!(codes(&findings).contains(&"pdf.no-eof"));
     assert!(codes(&findings).contains(&"pdf.no-startxref"));
-    // Le flux de la première page est coupé : la page n'est plus complète.
-    assert!(details.objects < 5, "{} objets trouvés", details.objects);
 
-    // La reconstruction d'une table ne prétend pas rendre le contenu manquant :
-    // elle échoue franchement quand il n'y a pas de catalogue identifiable, et
-    // quand elle aboutit, elle n'indexe que ce qui existe réellement.
+    // Ce que la preuve structurelle voit, et que le balayage seul ne voyait pas.
+    assert_eq!(details.structure.incomplete_objects, vec![3]);
+    assert!(details.structure.dangling_references.iter().any(|r| r.starts_with("4 0 R")));
+    assert_eq!(details.structure.declared_count, Some(2));
+    assert_eq!(details.structure.page_objects, 0, "aucune page n'est complète");
+    assert_eq!(details.page_objects, 0, "le compte affiché suit les pages réelles");
+    assert!(!details.structure.proven());
+
+    assert!(codes(&findings).contains(&"pdf.incomplete-objects"));
+    assert!(codes(&findings).contains(&"pdf.dangling-references"));
+    assert!(codes(&findings).contains(&"pdf.page-count-mismatch"));
+
+    // Aucune action n'est proposée : l'impossibilité est connue dès le
+    // diagnostic, il n'y a donc pas de bouton qui ne pourrait que finir en
+    // erreur.
+    let report = diagnostics::command::build_report(&assets().join("pdf-truncated-stream.pdf"))
+        .expect("diagnostic");
+    assert!(
+        report.actions.is_empty(),
+        "actions proposées : {:?}",
+        report.actions.iter().map(|action| &action.id).collect::<Vec<_>>()
+    );
+
+    // Et si la réparation est appelée malgré tout, elle refuse **sans écrire**.
     let directory = workspace("pdf-truncated");
     let out = directory.join("tentative.pdf");
-    match pdf_diag::repair(&bytes, pdf_diag::PdfRepair::RebuildXref, &out) {
-        Ok(report) => {
-            assert_eq!(report.indexed_objects, details.objects);
-            assert!(report.indexed_objects < 5);
-        }
-        Err(message) => assert!(!message.is_empty()),
+    let error = pdf_diag::repair(&bytes, pdf_diag::PdfRepair::RebuildXref, &out)
+        .expect_err("la reconstruction devait être refusée");
+    assert!(error.contains("jamais refermé"), "message obtenu : {error}");
+    assert!(!out.exists(), "aucun fichier ne doit subsister");
+    std::fs::remove_dir_all(&directory).ok();
+}
+
+/// Pourquoi « un lecteur l'ouvre » ne prouve rien.
+///
+/// On refabrique ici, octet pour octet, ce que produisait la première version :
+/// le document tronqué suivi d'une table de références, d'un trailer et d'un
+/// `%%EOF`. Le fichier a une allure impeccable — en-tête, table, trailer, fin —
+/// et c'est précisément le piège. La preuve structurelle, elle, voit que sa
+/// table désigne un objet jamais refermé et que ses deux pages annoncées
+/// n'existent pas.
+#[test]
+fn a_well_formed_looking_file_is_not_a_valid_document() {
+    let Some(bytes) = fixture("pdf-truncated-stream.pdf") else { return };
+
+    let mut forged = bytes.clone();
+    forged.extend_from_slice(b"\n");
+    let xref_offset = forged.len();
+    forged.extend_from_slice(b"xref\n0 4\n0000000000 65535 f \n");
+    for offset in [9_usize, 58, 121] {
+        forged.extend_from_slice(format!("{offset:010} 00000 n \n").as_bytes());
     }
+    forged.extend_from_slice(b"trailer\n<< /Size 4 /Root 1 0 R >>\nstartxref\n");
+    forged.extend_from_slice(format!("{xref_offset}\n").as_bytes());
+    forged.extend_from_slice(b"%%EOF\n");
+
+    // Toutes les marques d'un document sain sont là.
+    let (_, details) = pdf_diag::diagnose(&forged);
+    assert!(details.startxref_valid, "le pointeur désigne bien une table");
+    assert!(details.trailer);
+    assert_eq!(details.root_object, Some(1));
+    assert!(details.eof_offset.is_some());
+    assert_eq!(details.trailing_bytes, 0);
+
+    // Et pourtant.
+    assert!(!details.structure.proven());
+    assert_eq!(details.structure.incomplete_objects, vec![3]);
+    assert_eq!(details.structure.page_objects, 0);
+    assert_eq!(details.structure.declared_count, Some(2));
+
+    // Le diagnostic ne le déclare donc pas sain, et n'offre rien.
+    let (findings, _) = pdf_diag::diagnose(&forged);
+    assert!(!codes(&findings).contains(&"pdf.healthy"));
+    assert!(codes(&findings).contains(&"pdf.incomplete-objects"));
+}
+
+/// La table reconstruite doit désigner les objets, pas tomber à côté.
+#[test]
+fn a_rebuilt_table_that_points_beside_its_objects_is_refused() {
+    let Some(bytes) = fixture("pdf-broken-xref-recoverable.pdf") else { return };
+
+    // Table volontairement décalée d'un octet.
+    let mut forged = bytes.clone();
+    forged.extend_from_slice(b"\n");
+    let xref_offset = forged.len();
+    forged.extend_from_slice(b"xref\n0 2\n0000000000 65535 f \n0000000010 00000 n \n");
+    forged.extend_from_slice(b"trailer\n<< /Size 2 /Root 1 0 R >>\nstartxref\n");
+    forged.extend_from_slice(format!("{xref_offset}\n").as_bytes());
+    forged.extend_from_slice(b"%%EOF\n");
+
+    let error = pdf_diag::xref_points_at_objects(&forged).unwrap_err();
+    assert!(error.contains("où ne commence aucun objet"), "message obtenu : {error}");
+
+    // Alors que la vraie sortie du moteur, elle, passe.
+    let directory = workspace("pdf-xref-check");
+    let out = directory.join("repare.pdf");
+    pdf_diag::repair(&bytes, pdf_diag::PdfRepair::RebuildXref, &out).unwrap();
+    let rebuilt = std::fs::read(&out).unwrap();
+    assert_eq!(pdf_diag::xref_points_at_objects(&rebuilt).unwrap(), 5);
     std::fs::remove_dir_all(&directory).ok();
 }
 
@@ -450,6 +542,56 @@ fn a_jpeg_missing_its_end_marker_is_closed_and_recovered_visually() {
     assert!(recovery.steps.iter().any(|step| step.contains("EOI")));
     assert!(image::open(&out).is_ok(), "la sortie est un PNG relisible");
     std::fs::remove_dir_all(&directory).ok();
+}
+
+/// L'autre régression de ce correctif.
+///
+/// L'écran affichait « Le décodeur ne rend aucun pixel », puis proposait juste
+/// en dessous « Récupérer les pixels décodables ». Le bouton ne pouvait que
+/// finir en erreur : le moteur ne doit donc pas produire l'action du tout.
+#[test]
+fn an_image_without_a_single_decodable_pixel_offers_no_action() {
+    let path = assets().join("image-png-truncated.png");
+    if !path.exists() {
+        eprintln!("fixture absente : lancer `pnpm test:assets`.");
+        return;
+    }
+    let bytes = std::fs::read(&path).unwrap();
+    let (findings, details) = image_diag::diagnose(&bytes, "png");
+
+    assert!(!details.decodes);
+    assert!(!details.recoverable, "aucun pixel n'est récupérable");
+    assert!(codes(&findings).contains(&"png.truncated"));
+    assert!(codes(&findings).contains(&"image.no-pixels"));
+    // Et le constat porte bien « aucune correction défendable ».
+    let verdict = findings.iter().find(|f| f.code == "image.no-pixels").unwrap();
+    assert_eq!(verdict.repairability, Repairability::None);
+
+    let report = diagnostics::command::build_report(&path).expect("diagnostic");
+    assert!(
+        report.actions.is_empty(),
+        "actions proposées : {:?}",
+        report.actions.iter().map(|action| &action.id).collect::<Vec<_>>()
+    );
+}
+
+/// Et l'inverse : une image dont les pixels survivent garde son bouton.
+#[test]
+fn an_image_whose_pixels_survive_keeps_its_action() {
+    let path = assets().join("image-png-bad-crc.png");
+    if !path.exists() {
+        eprintln!("fixture absente : lancer `pnpm test:assets`.");
+        return;
+    }
+    let bytes = std::fs::read(&path).unwrap();
+    let (_, details) = image_diag::diagnose(&bytes, "png");
+    assert!(details.recoverable);
+    assert!(details.recovery_lossless, "un PNG nettoyé se réécrit sans perte");
+
+    let report = diagnostics::command::build_report(&path).expect("diagnostic");
+    let ids: Vec<&str> = report.actions.iter().map(|action| action.id.as_str()).collect();
+    assert_eq!(ids, vec!["image-recover"]);
+    assert_eq!(report.actions[0].repairability, Repairability::SafeRepair);
 }
 
 #[test]

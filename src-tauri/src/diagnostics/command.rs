@@ -20,7 +20,10 @@ use super::{
 use crate::files::{magic, FilesState, Reporter};
 
 /// Assemble le rapport : constats génériques, puis constats du format.
-fn build_report(path: &Path) -> Result<DiagnosticReport, String> {
+///
+/// Public pour que les tests d'intégration éprouvent **le vrai chemin** — celui
+/// qui décide des actions proposées —, et non une reconstitution approchée.
+pub fn build_report(path: &Path) -> Result<DiagnosticReport, String> {
     let bytes = read_all(path)?;
     let meta = std::fs::metadata(path).map_err(|e| format!("Fichier illisible : {e}"))?;
     let extension =
@@ -190,8 +193,21 @@ fn actions_for(
                     output_extension: "pdf".into(),
                 });
             }
+            // La reconstruction n'est offerte que si la structure de la source
+            // est **prouvée** cohérente : objets complets, références qui
+            // aboutissent, pages réellement présentes. Ajouter une table à un
+            // document amputé produirait un fichier que certains lecteurs
+            // ouvrent, et qui ment sur son contenu.
+            let provable = pdf
+                .and_then(|value| value.get("structure"))
+                .and_then(|structure| structure.get("problems"))
+                .and_then(serde_json::Value::as_array)
+                .map(|problems| problems.is_empty())
+                .unwrap_or(false);
+
             if objects > 0
                 && !object_streams
+                && provable
                 && (has(findings, "pdf.no-startxref")
                     || has(findings, "pdf.no-eof")
                     || findings.iter().any(|f| {
@@ -216,19 +232,27 @@ fn actions_for(
             }
         }
         "png" | "jpg" => {
-            let decodes = details
-                .get("image")
-                .and_then(|value| value.get("decodes"))
-                .and_then(serde_json::Value::as_bool)
-                .unwrap_or(false);
+            let image = details.get("image");
+            let flag = |key: &str| {
+                image
+                    .and_then(|value| value.get(key))
+                    .and_then(serde_json::Value::as_bool)
+                    .unwrap_or(false)
+            };
+            // `recoverable` ne se déduit pas des constats : le moteur a
+            // réellement tenté le nettoyage et le décodage. Sans ce fait, un
+            // fichier tronqué se voyait offrir un bouton « Récupérer les pixels
+            // décodables » alors que le décodeur n'en rendait aucun.
+            let recoverable = flag("recoverable");
+            let lossless = flag("recoveryLossless");
             let repairable = findings.iter().any(|f| {
                 matches!(
                     f.repairability,
                     Repairability::SafeRepair | Repairability::RecoverVisual
                 ) && f.code != "file.extension-mismatch"
             });
-            if repairable && (decodes || has(findings, "image.decode-failed")) {
-                let visual = !decodes || format == "jpg";
+            if repairable && recoverable {
+                let visual = !lossless;
                 actions.push(RepairAction {
                     id: "image-recover".into(),
                     title: if visual {
@@ -448,27 +472,115 @@ mod tests {
         assert!(actions_for("zip", &findings, &details).is_empty());
     }
 
+    /// Document dont la structure est prouvée cohérente.
+    fn provable_pdf(object_streams: bool) -> serde_json::Value {
+        serde_json::json!({
+            "pdf": {
+                "objects": 12,
+                "objectStreams": object_streams,
+                "signed": false,
+                "structure": { "problems": [] }
+            }
+        })
+    }
+
     #[test]
     fn never_offers_to_rebuild_a_pdf_that_hides_objects_in_streams() {
         let findings =
             vec![Finding::error("pdf.no-startxref", "x", "x", Repairability::RecoverPartial)];
-        let with_streams =
-            serde_json::json!({ "pdf": { "objects": 12, "objectStreams": true, "signed": false } });
-        assert!(actions_for("pdf", &findings, &with_streams).is_empty());
+        assert!(actions_for("pdf", &findings, &provable_pdf(true)).is_empty());
 
-        let without =
-            serde_json::json!({ "pdf": { "objects": 12, "objectStreams": false, "signed": false } });
-        let actions = actions_for("pdf", &findings, &without);
+        let actions = actions_for("pdf", &findings, &provable_pdf(false));
         assert_eq!(actions.len(), 1);
         assert_eq!(actions[0].id, "pdf-rebuild-xref");
+    }
+
+    #[test]
+    fn never_offers_to_rebuild_a_pdf_whose_structure_is_not_proven() {
+        // Le défaut corrigé ici : un document tronqué au milieu d'un objet se
+        // voyait offrir une reconstruction, qui produisait un fichier que
+        // certains lecteurs ouvrent — et qui ment sur son contenu.
+        let findings =
+            vec![Finding::error("pdf.no-startxref", "x", "x", Repairability::RecoverPartial)];
+        let truncated = serde_json::json!({
+            "pdf": {
+                "objects": 3,
+                "objectStreams": false,
+                "signed": false,
+                "structure": { "problems": ["Objet 3 ouvert et jamais refermé."] }
+            }
+        });
+        assert!(actions_for("pdf", &findings, &truncated).is_empty());
+
+        // Et l'absence du constat de structure vaut absence de preuve.
+        let unknown = serde_json::json!({
+            "pdf": { "objects": 3, "objectStreams": false, "signed": false }
+        });
+        assert!(actions_for("pdf", &findings, &unknown).is_empty());
+    }
+
+    #[test]
+    fn never_offers_an_image_recovery_without_a_single_decodable_pixel() {
+        // L'autre défaut corrigé : l'écran affichait « Récupérer les pixels
+        // décodables » sous un diagnostic qui venait d'annoncer que le décodeur
+        // n'en rendait aucun.
+        let findings = vec![
+            Finding::error("png.truncated", "x", "x", Repairability::RecoverVisual),
+            Finding::error("image.no-pixels", "x", "x", Repairability::None),
+        ];
+        let hopeless = serde_json::json!({
+            "image": { "decodes": false, "recoverable": false, "recoveryLossless": false }
+        });
+        assert!(actions_for("png", &findings, &hopeless).is_empty());
+    }
+
+    #[test]
+    fn still_offers_a_lossless_rewrite_when_the_pixels_survive() {
+        let findings = vec![Finding::warning(
+            "png.broken-ancillary-chunk",
+            "x",
+            "x",
+            Repairability::SafeRepair,
+        )];
+        let salvageable = serde_json::json!({
+            "image": { "decodes": true, "recoverable": true, "recoveryLossless": true }
+        });
+        let actions = actions_for("png", &findings, &salvageable);
+        assert_eq!(actions.len(), 1);
+        assert_eq!(actions[0].id, "image-recover");
+        assert_eq!(actions[0].repairability, Repairability::SafeRepair);
+        assert_eq!(actions[0].title, "Réécrire une image saine");
+    }
+
+    #[test]
+    fn calls_a_jpeg_recovery_visual_even_when_it_decodes() {
+        let findings = vec![Finding::warning(
+            "jpeg.trailing-garbage",
+            "x",
+            "x",
+            Repairability::SafeRepair,
+        )];
+        let jpeg = serde_json::json!({
+            "image": { "decodes": true, "recoverable": true, "recoveryLossless": false }
+        });
+        let actions = actions_for("jpg", &findings, &jpeg);
+        assert_eq!(actions.len(), 1);
+        assert_eq!(actions[0].repairability, Repairability::RecoverVisual);
+        assert_eq!(actions[0].title, "Récupérer les pixels décodables");
     }
 
     #[test]
     fn a_signed_pdf_carries_its_cost_on_every_action() {
         let findings =
             vec![Finding::warning("pdf.trailing-garbage", "x", "x", Repairability::SafeRepair)];
-        let details =
-            serde_json::json!({ "pdf": { "objects": 3, "objectStreams": false, "signed": true } });
+        let details = serde_json::json!({
+            "pdf": {
+                "objects": 3,
+                "objectStreams": false,
+                "signed": true,
+                "structure": { "problems": [] }
+            }
+        });
         let actions = actions_for("pdf", &findings, &details);
         assert_eq!(actions.len(), 1);
         assert!(actions[0].costs.iter().any(|cost| cost.contains("signature")));

@@ -55,10 +55,12 @@ pub struct PdfDetails {
     pub xref_streams: bool,
     /// Le fichier semble-t-il porter une signature numérique ?
     pub signed: bool,
-    /// Nombre d'objets `/Type /Page` trouvés par balayage.
+    /// Nombre d'objets `/Type /Page` **complets** trouvés par balayage.
     pub page_objects: usize,
     /// Un `trailer` classique a-t-il été trouvé ?
     pub trailer: bool,
+    /// Ce que FourTout a pu prouver de la cohérence du document.
+    pub structure: StructuralCheck,
 }
 
 /// Un objet indirect repéré dans le fichier.
@@ -198,26 +200,6 @@ fn find_root(bytes: &[u8]) -> Option<u32> {
         .map(|object| object.number)
 }
 
-/// Compte les objets `/Type /Page`.
-///
-/// Le piège : `/Type /Pages` — le nœud de l'arbre des pages — commence par la
-/// même suite d'octets. Un comptage naïf ajoute donc un faux page à chaque
-/// document. On exige que le mot s'arrête là.
-fn count_pages(bytes: &[u8]) -> usize {
-    let mut total = 0;
-    for needle in [b"/Type /Page".as_slice(), b"/Type/Page".as_slice()] {
-        let mut position = 0;
-        while let Some(at) = find_from(bytes, needle, position) {
-            let next = bytes.get(at + needle.len()).copied();
-            if next != Some(b's') {
-                total += 1;
-            }
-            position = at + needle.len();
-        }
-    }
-    total
-}
-
 /// Diagnostic structurel d'un PDF.
 pub fn diagnose(bytes: &[u8]) -> (Vec<Finding>, PdfDetails) {
     let mut findings = Vec::new();
@@ -263,7 +245,12 @@ pub fn diagnose(bytes: &[u8]) -> (Vec<Finding>, PdfDetails) {
     details.trailer = rfind(bytes, b"trailer").is_some();
     details.signed = find_from(bytes, b"/ByteRange", 0).is_some()
         || find_from(bytes, b"/Adobe.PPKLite", 0).is_some();
-    details.page_objects = count_pages(bytes);
+    // Les pages sont comptées sur les objets **complets**, jamais sur ce que
+    // `/Count` annonce : un document tronqué au milieu de sa première page
+    // continue d'annoncer deux pages, et c'est précisément ce qu'il ne faut pas
+    // croire.
+    details.structure = structural_check(bytes);
+    details.page_objects = details.structure.page_objects;
 
     let objects = scan_objects(bytes);
     details.objects = objects.len();
@@ -365,6 +352,54 @@ pub fn diagnose(bytes: &[u8]) -> (Vec<Finding>, PdfDetails) {
         ));
     }
 
+    // Les objets tronqués et les références sans destination décident de ce qui
+    // est reconstructible. Sans ce constat, une table de références ajoutée à un
+    // document amputé produit un fichier que certains lecteurs ouvrent — et qui
+    // ne contient pourtant pas les pages qu'il annonce.
+    if !details.structure.incomplete_objects.is_empty() {
+        findings.push(Finding::error(
+            "pdf.incomplete-objects",
+            "Objets tronqués",
+            format!(
+                "Le ou les objets {} sont ouverts et jamais refermés : le fichier s'arrête au                  milieu de leur contenu. Ces octets n'existent nulle part, et FourTout ne les                  fabriquera pas. Aucune table de références ajoutée par-dessus ne rendrait ce                  document complet.",
+                details
+                    .structure
+                    .incomplete_objects
+                    .iter()
+                    .map(u32::to_string)
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
+            Repairability::None,
+        ));
+    }
+
+    if !details.structure.dangling_references.is_empty() {
+        findings.push(Finding::error(
+            "pdf.dangling-references",
+            "Références sans destination",
+            format!(
+                "L'arbre de pages désigne des objets absents du fichier : {}. Un lecteur                  indulgent ouvrira peut-être le document, mais les pages annoncées n'y sont pas.",
+                details.structure.dangling_references.join(" ; ")
+            ),
+            Repairability::None,
+        ));
+    }
+
+    if let Some(declared) = details.structure.declared_count {
+        if declared != details.structure.page_objects {
+            findings.push(Finding::error(
+                "pdf.page-count-mismatch",
+                "Le nombre de pages annoncé est faux",
+                format!(
+                    "Le document annonce {declared} page(s) ; {} seulement sont présentes et                      complètes. FourTout ne croit pas le chiffre annoncé sur parole : il compte                      les pages qu'il trouve.",
+                    details.structure.page_objects
+                ),
+                Repairability::None,
+            ));
+        }
+    }
+
     if details.signed {
         findings.push(Finding::warning(
             "pdf.signed",
@@ -386,6 +421,15 @@ pub fn diagnose(bytes: &[u8]) -> (Vec<Finding>, PdfDetails) {
         ));
     }
 
+    if findings.is_empty() && !details.structure.proven() {
+        findings.push(Finding::error(
+            "pdf.unprovable-structure",
+            "Structure incohérente",
+            details.structure.problems.join(" "),
+            Repairability::None,
+        ));
+    }
+
     if findings.is_empty() {
         findings.push(Finding::info(
             "pdf.healthy",
@@ -400,6 +444,340 @@ pub fn diagnose(bytes: &[u8]) -> (Vec<Finding>, PdfDetails) {
     }
 
     (findings, details)
+}
+
+
+/* ------------------------------------------------------------------------ */
+/* Preuve de cohérence structurelle                                          */
+/* ------------------------------------------------------------------------ */
+
+/// Ce que l'on a pu **prouver** de la structure d'un document.
+///
+/// Ce n'est pas un validateur PDF général — FourTout n'en écrit pas un. C'est
+/// la vérification étroite du sous-ensemble que ce module sait reconstruire :
+/// des objets indirects complets, un catalogue, un nœud de pages, et des pages.
+/// Tout ce qui dépasse ce cadre reste **non réparable automatiquement**, et
+/// c'est la bonne réponse.
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StructuralCheck {
+    /// Objets dont l'en-tête `N G obj` a bien son `endobj`.
+    pub complete_objects: usize,
+    /// Numéros des objets ouverts et jamais refermés : ils sont tronqués.
+    pub incomplete_objects: Vec<u32>,
+    /// Références qui désignent un objet absent ou incomplet.
+    pub dangling_references: Vec<String>,
+    /// Pages réellement présentes **et complètes**.
+    pub page_objects: usize,
+    /// Nombre de pages annoncé par `/Count`, qui n'est jamais cru sur parole.
+    pub declared_count: Option<usize>,
+    pub root: Option<u32>,
+    pub pages_node: Option<u32>,
+    /// Motifs pour lesquels la structure n'est pas prouvable. Vide = prouvée.
+    pub problems: Vec<String>,
+}
+
+impl StructuralCheck {
+    /// La structure est-elle démontrée cohérente ?
+    pub fn proven(&self) -> bool {
+        self.problems.is_empty()
+    }
+}
+
+/// Un objet indirect avec ses bornes réelles dans le fichier.
+#[derive(Clone, Copy, Debug)]
+struct ObjectSpan {
+    number: u32,
+    start: usize,
+    /// Début du corps, juste après `obj`.
+    body: usize,
+    /// Fin du corps : position du `endobj`, ou `None` si l'objet n'est jamais
+    /// refermé — c'est-à-dire s'il est tronqué.
+    end: Option<usize>,
+}
+
+/// Repère les objets et vérifie que chacun est refermé.
+///
+/// Le `endobj` retenu doit se trouver **avant l'en-tête de l'objet suivant** :
+/// sans cette condition, un document tronqué au milieu d'un objet emprunterait
+/// le `endobj` d'un objet ultérieur et passerait pour complet.
+fn object_spans(bytes: &[u8]) -> Vec<ObjectSpan> {
+    let headers = scan_objects(bytes);
+    let mut spans = Vec::with_capacity(headers.len());
+
+    for (index, header) in headers.iter().enumerate() {
+        let body = match find_from(bytes, b"obj", header.offset) {
+            Some(at) => at + 3,
+            None => continue,
+        };
+        let limit = headers.get(index + 1).map(|next| next.offset).unwrap_or(bytes.len());
+        let end = find_from(bytes, b"endobj", body).filter(|at| *at < limit);
+        spans.push(ObjectSpan { number: header.number, start: header.offset, body, end });
+    }
+    spans
+}
+
+/// Corps d'un objet, entre `obj` et `endobj`.
+fn body_of<'a>(bytes: &'a [u8], span: &ObjectSpan) -> &'a [u8] {
+    let end = span.end.unwrap_or(bytes.len());
+    &bytes[span.body.min(end)..end]
+}
+
+/// Lit le numéro d'objet d'une référence `/Clé N G R`.
+fn reference_after(body: &[u8], key: &[u8]) -> Option<u32> {
+    let at = find_from(body, key, 0)? + key.len();
+    let mut cursor = at;
+    while cursor < body.len() && body[cursor].is_ascii_whitespace() {
+        cursor += 1;
+    }
+    let start = cursor;
+    while cursor < body.len() && body[cursor].is_ascii_digit() {
+        cursor += 1;
+    }
+    if cursor == start {
+        return None;
+    }
+    std::str::from_utf8(&body[start..cursor]).ok()?.parse().ok()
+}
+
+/// Lit les numéros d'objet d'un tableau `/Kids [1 0 R 2 0 R]`.
+fn kids_of(body: &[u8]) -> Vec<u32> {
+    let Some(at) = find_from(body, b"/Kids", 0) else { return Vec::new() };
+    let Some(open) = find_from(body, b"[", at) else { return Vec::new() };
+    let close = find_from(body, b"]", open).unwrap_or(body.len());
+    let text = String::from_utf8_lossy(&body[open + 1..close]).to_string();
+
+    let mut kids = Vec::new();
+    let tokens: Vec<&str> = text.split_whitespace().collect();
+    for window in tokens.windows(3) {
+        if window[2] == "R" {
+            if let Ok(number) = window[0].parse::<u32>() {
+                kids.push(number);
+            }
+        }
+    }
+    kids
+}
+
+/// Lit `/Count N`.
+fn count_of(body: &[u8]) -> Option<usize> {
+    let at = find_from(body, b"/Count", 0)? + 6;
+    let mut cursor = at;
+    while cursor < body.len() && body[cursor].is_ascii_whitespace() {
+        cursor += 1;
+    }
+    let start = cursor;
+    while cursor < body.len() && body[cursor].is_ascii_digit() {
+        cursor += 1;
+    }
+    if cursor == start {
+        return None;
+    }
+    std::str::from_utf8(&body[start..cursor]).ok()?.parse().ok()
+}
+
+/// Vrai si ce corps d'objet se déclare page — et pas nœud de pages.
+fn is_page(body: &[u8]) -> bool {
+    for needle in [b"/Type /Page".as_slice(), b"/Type/Page".as_slice()] {
+        let mut position = 0;
+        while let Some(at) = find_from(body, needle, position) {
+            if body.get(at + needle.len()).copied() != Some(b's') {
+                return true;
+            }
+            position = at + needle.len();
+        }
+    }
+    false
+}
+
+/// Vérifie ce que FourTout sait prouver d'un document.
+///
+/// Le point de méthode : **rien n'est cru sur parole**. `/Count` annonce deux
+/// pages ? On compte les objets page réellement présents et complets. `/Kids`
+/// référence l'objet 4 ? On vérifie que l'objet 4 existe et qu'il est refermé.
+/// C'est exactement ce qui manquait : un document tronqué au milieu de sa
+/// première page annonçait deux pages, et un lecteur tolérant l'ouvrait.
+pub fn structural_check(bytes: &[u8]) -> StructuralCheck {
+    let mut check = StructuralCheck::default();
+    let spans = object_spans(bytes);
+
+    if spans.is_empty() {
+        check.problems.push("Aucun objet indirect n'a été trouvé.".to_string());
+        return check;
+    }
+
+    // La dernière définition d'un numéro fait foi, comme dans un PDF mis à jour
+    // par ajouts successifs.
+    let mut latest: std::collections::BTreeMap<u32, ObjectSpan> =
+        std::collections::BTreeMap::new();
+    for span in &spans {
+        latest
+            .entry(span.number)
+            .and_modify(|existing| {
+                if span.start > existing.start {
+                    *existing = *span;
+                }
+            })
+            .or_insert(*span);
+    }
+
+    for (number, span) in &latest {
+        if span.end.is_some() {
+            check.complete_objects += 1;
+        } else {
+            check.incomplete_objects.push(*number);
+        }
+    }
+
+    if !check.incomplete_objects.is_empty() {
+        check.problems.push(format!(
+            "Objet(s) {} ouvert(s) et jamais refermé(s) : le fichier s'arrête au milieu de leur \
+             contenu. Les octets manquants n'existent nulle part.",
+            check
+                .incomplete_objects
+                .iter()
+                .map(u32::to_string)
+                .collect::<Vec<_>>()
+                .join(", ")
+        ));
+    }
+
+    let complete = |number: u32| latest.get(&number).map(|span| span.end.is_some()).unwrap_or(false);
+
+    // Pages réellement présentes : comptées sur les objets complets.
+    check.page_objects = latest
+        .values()
+        .filter(|span| span.end.is_some() && is_page(body_of(bytes, span)))
+        .count();
+
+    // Le catalogue.
+    check.root = find_root(bytes);
+    let Some(root) = check.root else {
+        check.problems.push("Le catalogue du document est introuvable.".to_string());
+        return check;
+    };
+    if !complete(root) {
+        check.problems.push(format!("Le catalogue (objet {root}) est absent ou incomplet."));
+        return check;
+    }
+
+    // Le nœud de pages désigné par le catalogue.
+    let catalog = body_of(bytes, latest.get(&root).unwrap());
+    check.pages_node = reference_after(catalog, b"/Pages");
+    let Some(pages_node) = check.pages_node else {
+        check.problems
+            .push(format!("Le catalogue (objet {root}) ne désigne aucun arbre de pages."));
+        return check;
+    };
+    if !complete(pages_node) {
+        check.problems.push(format!(
+            "L'arbre de pages (objet {pages_node}) est absent ou incomplet : le document n'a plus \
+             de table des matières."
+        ));
+        return check;
+    }
+
+    // Les enfants annoncés existent-ils tous, et sont-ils complets ?
+    let pages_body = body_of(bytes, latest.get(&pages_node).unwrap());
+    let kids = kids_of(pages_body);
+    check.declared_count = count_of(pages_body);
+
+    for kid in &kids {
+        if !complete(*kid) {
+            check.dangling_references.push(format!("{kid} 0 R, référencé par /Kids"));
+        }
+    }
+    if !check.dangling_references.is_empty() {
+        check.problems.push(format!(
+            "Référence(s) sans destination : {}. L'arbre de pages désigne des objets qui \
+             n'existent pas dans le fichier.",
+            check.dangling_references.join(" ; ")
+        ));
+    }
+
+    // `/Count` n'est pas cru sur parole : on le confronte aux pages réelles.
+    if let Some(declared) = check.declared_count {
+        if declared != check.page_objects {
+            check.problems.push(format!(
+                "L'arbre de pages annonce {declared} page(s), le fichier n'en contient que \
+                 {} complète(s). Accepter le chiffre annoncé reviendrait à promettre des pages \
+                 qui n'existent pas.",
+                check.page_objects
+            ));
+        }
+    }
+
+    if check.page_objects == 0 {
+        check.problems.push(
+            "Aucune page complète n'a été trouvée : il n'y a pas de document à reconstruire."
+                .to_string(),
+        );
+    }
+
+    check
+}
+
+/// Vérifie qu'une table de références reconstruite désigne bien des objets.
+///
+/// Chaque entrée `n` doit tomber exactement sur le premier octet d'un en-tête
+/// `N G obj`. Une table qui pointe à côté est une table fausse, même si un
+/// lecteur indulgent s'en accommode.
+pub fn xref_points_at_objects(bytes: &[u8]) -> Result<usize, String> {
+    let at = rfind(bytes, b"\nxref")
+        .map(|position| position + 1)
+        .or_else(|| bytes.starts_with(b"xref").then_some(0))
+        .ok_or_else(|| "Aucune table `xref` dans le document produit.".to_string())?;
+
+    let text = String::from_utf8_lossy(&bytes[at..]);
+    let mut lines = text.lines();
+    lines.next(); // « xref »
+    let header = lines.next().ok_or_else(|| "Table `xref` vide.".to_string())?;
+    let mut header_fields = header.split_whitespace();
+    let first: u32 = header_fields
+        .next()
+        .and_then(|value| value.parse().ok())
+        .ok_or_else(|| "En-tête de sous-section `xref` illisible.".to_string())?;
+    let count: usize = header_fields
+        .next()
+        .and_then(|value| value.parse().ok())
+        .ok_or_else(|| "En-tête de sous-section `xref` illisible.".to_string())?;
+
+    let starts: std::collections::BTreeMap<usize, u32> =
+        object_spans(bytes).into_iter().map(|span| (span.start, span.number)).collect();
+
+    let mut used = 0;
+    for index in 0..count {
+        let Some(line) = lines.next() else {
+            return Err("Table `xref` plus courte que ce qu'elle annonce.".to_string());
+        };
+        let mut fields = line.split_whitespace();
+        let offset: usize = match fields.next().and_then(|value| value.parse().ok()) {
+            Some(value) => value,
+            None => return Err(format!("Entrée `xref` n° {index} illisible.")),
+        };
+        let _generation = fields.next();
+        let kind = fields.next().unwrap_or("f");
+        if kind != "n" {
+            continue;
+        }
+        let number = first + index as u32;
+        match starts.get(&offset) {
+            Some(found) if *found == number => used += 1,
+            Some(found) => {
+                return Err(format!(
+                    "La table désigne l'objet {number} à l'octet {offset}, où commence en réalité \
+                     l'objet {found}."
+                ))
+            }
+            None => {
+                return Err(format!(
+                    "La table désigne l'objet {number} à l'octet {offset}, où ne commence aucun \
+                     objet."
+                ))
+            }
+        }
+    }
+    Ok(used)
 }
 
 /// Réparation demandée.
@@ -505,6 +883,19 @@ pub fn repair(bytes: &[u8], action: PdfRepair, destination: &Path) -> Result<Pdf
             if objects.is_empty() {
                 return Err("Aucun objet indirect trouvé : rien à indexer.".to_string());
             }
+            // Première barrière : la source elle-même doit être cohérente.
+            // Ajouter une table à un document amputé produit un fichier que
+            // certains lecteurs ouvrent, et qui ne contient pourtant pas les
+            // pages qu'il annonce.
+            let source_check = structural_check(bytes);
+            if !source_check.proven() {
+                return Err(format!(
+                    "Ce document ne peut pas être reconstruit de façon fiable. {} Une table de \
+                     références ajoutée par-dessus ne rendrait pas les octets manquants : elle \
+                     produirait un fichier qui s'ouvre peut-être, mais qui ment sur son contenu.",
+                    source_check.problems.join(" ")
+                ));
+            }
             let root = find_root(bytes)
                 .ok_or_else(|| "Catalogue du document introuvable : la table reconstruite \
                                 n'aurait pas de racine.".to_string())?;
@@ -551,6 +942,29 @@ pub fn repair(bytes: &[u8], action: PdfRepair, destination: &Path) -> Result<Pdf
             output.extend_from_slice(b"startxref\n");
             output.extend_from_slice(format!("{xref_offset}\n").as_bytes());
             output.extend_from_slice(b"%%EOF\n");
+
+            // Le candidat est éprouvé **avant** d'atteindre le disque. Écrire
+            // puis effacer laisserait, entre les deux, un fichier qu'un autre
+            // programme pourrait ouvrir — et surtout, un échec d'effacement
+            // laisserait une fausse réparation derrière lui.
+            let check = structural_check(&output);
+            if !check.proven() {
+                return Err(format!(
+                    "Table de références reconstruite, puis vérifiée : le document obtenu n'est                      pas cohérent, et FourTout ne l'écrira pas. {} Ce document est diagnosticable,                      mais il n'est pas réparable automatiquement.",
+                    check.problems.join(" ")
+                ));
+            }
+            let indexed = xref_points_at_objects(&output).map_err(|problem| {
+                format!(
+                    "Table de références reconstruite, puis vérifiée : {problem} FourTout                      n'écrira pas un document dont la table désigne autre chose que ses objets."
+                )
+            })?;
+            if indexed != latest.len() {
+                return Err(format!(
+                    "Table de références reconstruite, puis vérifiée : {indexed} entrées valides                      pour {} objets. FourTout n'écrira pas un document incohérent.",
+                    latest.len()
+                ));
+            }
 
             std::fs::write(destination, &output).map_err(|e| format!("Écriture impossible : {e}"))?;
 

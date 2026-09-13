@@ -59,7 +59,9 @@ export function PdfRepairTool({ tool }: ToolComponentProps) {
 
       // La preuve : le moteur qui affichera ce document accepte-t-il de l'ouvrir ?
       const verification = await verifyPdf(destination);
-      const before = report.details.pdf?.pageObjects ?? 0;
+      // Le nombre de pages de référence est celui des pages **complètes**
+      // trouvées dans la source, jamais le `/Count` qu'elle annonce.
+      const before = report.details.pdf?.structure.pageObjects ?? 0;
 
       if (!verification.readable) {
         // Rien n'est présenté comme réparé : le candidat est retiré.
@@ -137,7 +139,35 @@ export function PdfRepairTool({ tool }: ToolComponentProps) {
             rows={[
               { label: "Version annoncée", value: pdf.version ? `PDF ${pdf.version}` : "illisible" },
               { label: "Objets indirects trouvés", value: String(pdf.objects) },
-              { label: "Objets de type page", value: String(pdf.pageObjects) },
+              {
+                label: "Objets complets (avec leur « endobj »)",
+                value: String(pdf.structure.completeObjects),
+              },
+              {
+                label: "Objets tronqués",
+                value:
+                  pdf.structure.incompleteObjects.length === 0
+                    ? "aucun"
+                    : pdf.structure.incompleteObjects.join(", "),
+              },
+              {
+                label: "Pages complètes trouvées",
+                value: String(pdf.pageObjects),
+              },
+              {
+                label: "Pages annoncées par /Count",
+                value:
+                  pdf.structure.declaredCount === null
+                    ? "non annoncé"
+                    : String(pdf.structure.declaredCount),
+              },
+              {
+                label: "Références sans destination",
+                value:
+                  pdf.structure.danglingReferences.length === 0
+                    ? "aucune"
+                    : pdf.structure.danglingReferences.join(" ; "),
+              },
               {
                 label: "Catalogue du document",
                 value: pdf.rootObject === null ? "introuvable" : `objet ${pdf.rootObject}`,
