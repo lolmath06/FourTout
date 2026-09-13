@@ -1,4 +1,4 @@
-import { parseFrameRate } from "./types";
+import { parseFrameRate, readProbeJson } from "./types";
 
 /**
  * Fiche d'identité détaillée d'un fichier média.
@@ -168,7 +168,7 @@ function frameRateOf(stream: Raw): FrameRateInfo {
 
 /** Analyse le JSON ffprobe complet en une fiche détaillée. */
 export function inspectMedia(json: string): MediaDetails {
-  const data = JSON.parse(json) as { format?: Raw; streams?: Raw[] };
+  const data = readProbeJson(json) as { format?: Raw; streams?: Raw[] };
   const format = data.format ?? {};
   const streams = data.streams ?? [];
 

@@ -96,9 +96,40 @@ export interface MediaOperation {
   mimeType: string;
 }
 
-/** Analyse le JSON ffprobe en informations exploitables. */
+/**
+ * Lit la sortie de `ffprobe`, ou explique pourquoi elle est inexploitable.
+ *
+ * Partagée par l'analyse rapide et par la fiche détaillée : les deux lisent la
+ * même sortie et doivent échouer de la même façon.
+ */
+export function readProbeJson(json: string): unknown {
+  if (json.trim().length === 0) {
+    throw new Error(
+      "FFprobe n'a rien renvoyé sur ce fichier. Il est peut-être vide, tronqué, ou d'un format " +
+        "que le moteur installé ne reconnaît pas.",
+    );
+  }
+  try {
+    return JSON.parse(json);
+  } catch {
+    throw new Error(
+      "La réponse de FFprobe n'a pas pu être lue : elle ne contient pas les informations " +
+        "attendues. Le fichier est probablement abîmé ou d'un format non pris en charge.",
+    );
+  }
+}
+
+/**
+ * Analyse le JSON ffprobe en informations exploitables.
+ *
+ * La sortie de `ffprobe` n'est pas toujours du JSON : un fichier illisible, un
+ * processus interrompu ou une compilation bavarde produisent une sortie vide ou
+ * préfixée d'un avertissement. Sans ce garde-fou, l'utilisateur recevait le
+ * message brut du moteur JavaScript — en anglais, et sans rapport avec ce qu'il
+ * venait de faire.
+ */
 export function parseProbe(json: string): MediaInfo {
-  const data = JSON.parse(json) as {
+  const data = readProbeJson(json) as {
     format?: { duration?: string; format_name?: string; bit_rate?: string };
     streams?: Array<Record<string, unknown>>;
   };

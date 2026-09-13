@@ -82,8 +82,13 @@ function buildIndex(tools: ToolDefinition[]): IndexedTool[] {
       { field: "keyword", weight: 7, values: (tool.keywords ?? []).map(normalize) },
       { field: "id", weight: 6, values: [normalize(tool.id)] },
       {
+        // Assez pour qu'un nom de catégorie tapé seul franchisse le seuil
+        // (5 × 1 > 4,5) : « Développeur », « Réseau » ou « Sécurité » doivent
+        // remonter leurs outils, et pas un écran vide. Le poids reste sous
+        // celui des mots-clés propres à l'outil, qui doivent continuer de
+        // l'emporter sur son voisinage.
         field: "category",
-        weight: 3,
+        weight: 5,
         values: category
           ? [normalize(category.name), ...(category.keywords ?? []).map(normalize)]
           : [],
