@@ -142,6 +142,13 @@ Le poussée d'une étiquette `v*` déclenche `.github/workflows/release.yml`, qu
 construit sur Ubuntu **et** sur Windows, calcule les empreintes SHA-256, et
 crée une publication **en brouillon**.
 
+Le rassemblement des paquets **échoue bruyamment** lorsqu'un format attendu
+manque : une publication à laquelle il manquerait le RPM ou l'installeur
+Windows sans que personne ne s'en aperçoive serait pire qu'une publication qui
+n'a pas lieu — l'utilisateur qui cherche son paquet trouverait une page
+incomplète. La version portable Windows cherche l'exécutable au lieu de
+supposer son nom, qui dépend de la version de Tauri.
+
 - [ ] Le workflow est vert sur les deux plateformes
 - [ ] La publication brouillon contient, nommés par système :
       `FourTout-<version>-Fedora-x86_64.rpm`,

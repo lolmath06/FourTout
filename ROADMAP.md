@@ -30,6 +30,20 @@ touche jamais à l'original.
 
 ---
 
+## Taille des paquets
+
+- **Runtime ONNX embarqué deux fois.** Le moteur de détourage charge son
+  runtime WebAssembly depuis `public/ort/`, par des URL explicites. Vite en
+  émet malgré tout une seconde copie dans `dist/assets/`, parce qu'il suit
+  l'import du paquet : 13 Mo présents dans chaque installeur et jamais lus.
+  Les retirer demande une exclusion au niveau de l'empaqueteur, et une
+  vérification de bout en bout du détourage dans l'application construite —
+  pas seulement dans les tests, qui chargent le runtime par un autre chemin.
+  Sans risque fonctionnel tant que ce n'est pas fait : c'est du poids mort,
+  pas un défaut.
+
+---
+
 ## Distribution
 
 - **Signature des installeurs.** Windows (certificat de signature de code) et
