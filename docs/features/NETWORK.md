@@ -9,6 +9,7 @@
 - [Test de ports — `src-tauri/src/network/ports.rs`](#test-de-ports--src-taurisrcnetworkportsrs)
 - [Découverte du réseau local — `src-tauri/src/network/lan.rs`](#découverte-du-réseau-local--src-taurisrcnetworklanrs)
 - [Bornage des plages — `src-tauri/src/network/cidr.rs`](#bornage-des-plages--src-taurisrcnetworkcidrrs)
+- [Réactivité de l'interface](#réactivité-de-linterface)
 - [Ce qui n'est pas conservé](#ce-qui-nest-pas-conservé)
 - [Portabilité](#portabilité)
 - [Ce que ces outils ne font pas](#ce-que-ces-outils-ne-font-pas)
@@ -154,6 +155,51 @@ préfixes possibles et vérifie que le plafond tient pour chacun.
 La commande native **recalcule** la plage à partir du nom, de l'adresse et du
 masque de l'interface : ce qui vient de la WebView ne décide jamais de l'étendue
 d'une sonde.
+
+---
+
+## Réactivité de l'interface
+
+Une commande Tauri déclarée `pub fn` s'exécute **en ligne, sur le fil qui traite
+le message IPC** — donc, sous Linux, sur la boucle d'événements GTK. Une
+découverte de 254 adresses met plusieurs secondes : déclarée ainsi, elle gelait
+la fenêtre du début à la fin, jusqu'à ce que GNOME propose de forcer la
+fermeture. Le résultat finissait par arriver, correct ; l'application, elle,
+avait cessé de répondre.
+
+Les trois sondes longues sont donc déclarées `pub async fn`, et leur travail
+part dans `tauri::async_runtime::spawn_blocking` :
+
+| Commande | Exécution |
+| --- | --- |
+| `network_lan_discover`, `network_ping`, `network_check_ports` | `async` + `spawn_blocking` |
+| `network_cancel`, `network_parse_ports`, `network_interfaces`, `network_lan_plan` | synchrones — immédiates, et l'annulation doit être traitée sans attendre |
+
+Deux conséquences voulues : le fil d'interface reste libre, donc les événements
+`network://progress` atteignent réellement React pendant la sonde et le bouton
+« Arrêter » est traité tout de suite ; et le travail bloquant occupe le vivier
+de fils prévu pour cela plutôt qu'un fil d'exécution asynchrone, qu'il
+affamerait.
+
+Un test lit le texte de `network/command.rs` et vérifie ces déclarations.
+C'est le seul endroit où la propriété est observable : aucune assertion
+d'exécution en environnement headless ne verrait une fenêtre gelée.
+
+### La résolution inverse, bornée
+
+`getnameinfo` n'accepte aucun délai. Face à une adresse sans enregistrement PTR,
+il attend ce que le résolveur du système veut bien y mettre — souvent cinq
+secondes par serveur de noms. Une seule adresse muette immobiliserait un fil de
+travail dix secondes, et la découverte avec lui.
+
+La résolution part donc dans un fil dédié, attendu **1,5 s au plus**. Passé ce
+délai, l'appareil s'affiche sans nom : c'est ce que l'on sait. Le nom n'est pas
+supprimé pour masquer le problème — il est demandé, puis abandonné s'il tarde.
+
+La résolution se fait par ailleurs **avant** de prendre le verrou de la liste
+des appareils. L'écrire à l'intérieur de l'expression de construction la plaçait
+dans le `lock()`, ce qui sérialisait les résolutions des seize fils de travail
+derrière un seul mutex.
 
 ---
 

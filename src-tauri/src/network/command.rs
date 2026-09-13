@@ -3,6 +3,29 @@
 //! Chaque sonde longue reçoit un identifiant de travail : c'est lui qui permet
 //! à l'interface de suivre l'avancement et, surtout, d'arrêter réellement les
 //! sondes en cours plutôt que d'ignorer leur résultat.
+//!
+//! # Pourquoi ces commandes sont `async`
+//!
+//! Une commande Tauri déclarée `pub fn` est exécutée **en ligne, sur le fil qui
+//! traite le message IPC** — c'est-à-dire, sous Linux, la boucle d'événements
+//! GTK. Tant qu'elle n'a pas rendu la main, la WebView ne repeint plus, la
+//! fenêtre ne se déplace plus, et le gestionnaire de bureau finit par afficher
+//! « l'application ne répond pas ». Une découverte de 254 adresses met
+//! plusieurs secondes : elle gelait donc l'interface du début à la fin.
+//!
+//! Les trois sondes longues sont donc déclarées `pub async fn`, et leur travail
+//! bloquant part dans `tauri::async_runtime::spawn_blocking`. Deux conséquences
+//! voulues :
+//!
+//! - le fil d'interface reste libre, donc les événements `network://progress`
+//!   émis par les fils de travail arrivent réellement jusqu'à React, et
+//!   `network_cancel` est traité immédiatement ;
+//! - le travail bloquant occupe le vivier de fils prévu pour cela, et non un
+//!   fil d'exécution asynchrone, qu'il affamerait.
+//!
+//! `network_cancel`, `network_parse_ports`, `network_interfaces` et
+//! `network_lan_plan` restent synchrones : ils sont immédiats, et l'annulation
+//! doit justement être traitée sans attendre son tour.
 
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
@@ -22,7 +45,7 @@ pub fn network_cancel(state: State<'_, NetworkState>, job_id: String) {
 
 /// Ping ICMP d'un hôte.
 #[tauri::command]
-pub fn network_ping(
+pub async fn network_ping(
     app: AppHandle,
     state: State<'_, NetworkState>,
     job_id: String,
@@ -35,20 +58,23 @@ pub fn network_ping(
         count: count.unwrap_or(ping::DEFAULT_PACKETS),
         timeout_ms: timeout_ms.unwrap_or(ping::DEFAULT_TIMEOUT_MS),
     };
-    let cancelled = {
-        let flag = Arc::clone(&flag);
-        move || flag.load(Ordering::SeqCst)
-    };
 
     report(&app, &job_id, 0, options.count as usize, "Envoi des paquets…");
-    let result = ping::ping(&host, options, &cancelled);
+
+    let result = tauri::async_runtime::spawn_blocking(move || {
+        let cancelled = move || flag.load(Ordering::SeqCst);
+        ping::ping(&host, options, &cancelled)
+    })
+    .await
+    .unwrap_or_else(|error| Err(format!("Ping interrompu : {error}")));
+
     state.release(&job_id);
     result
 }
 
 /// Test d'une liste de ports sur un hôte.
 #[tauri::command]
-pub fn network_check_ports(
+pub async fn network_check_ports(
     app: AppHandle,
     state: State<'_, NetworkState>,
     job_id: String,
@@ -56,20 +82,24 @@ pub fn network_check_ports(
     ports_spec: String,
     timeout_ms: Option<u64>,
 ) -> Result<PortScanSummary, String> {
+    // La liste est validée avant d'occuper un fil : une plage trop large doit
+    // être refusée tout de suite, pas au terme d'un aller-retour.
     let list = ports::parse_ports(&ports_spec)?;
     let flag = state.register(&job_id);
-    let cancelled: Arc<dyn Fn() -> bool + Send + Sync> = {
-        let flag = Arc::clone(&flag);
-        Arc::new(move || flag.load(Ordering::SeqCst))
-    };
+    let timeout = timeout_ms.unwrap_or(ports::DEFAULT_TIMEOUT_MS);
 
-    let result = ports::scan(
-        &host,
-        &list,
-        timeout_ms.unwrap_or(ports::DEFAULT_TIMEOUT_MS),
-        cancelled,
-        &|done, total| report(&app, &job_id, done, total, "Test des ports…"),
-    );
+    let emitter = app.clone();
+    let worker_job = job_id.clone();
+    let result = tauri::async_runtime::spawn_blocking(move || {
+        let cancelled: Arc<dyn Fn() -> bool + Send + Sync> =
+            Arc::new(move || flag.load(Ordering::SeqCst));
+        ports::scan(&host, &list, timeout, cancelled, &|done, total| {
+            report(&emitter, &worker_job, done, total, "Test des ports…")
+        })
+    })
+    .await
+    .unwrap_or_else(|error| Err(format!("Test des ports interrompu : {error}")));
+
     state.release(&job_id);
     result
 }
@@ -126,7 +156,7 @@ pub fn network_lan_plan(
 
 /// Découverte des appareils du réseau local, dans la plage annoncée.
 #[tauri::command]
-pub fn network_lan_discover(
+pub async fn network_lan_discover(
     app: AppHandle,
     state: State<'_, NetworkState>,
     job_id: String,
@@ -134,17 +164,25 @@ pub fn network_lan_discover(
     address: String,
     netmask: String,
 ) -> Result<DiscoveryResult, String> {
+    // La plage est recalculée ici, avant tout travail : une interface illisible
+    // est refusée immédiatement plutôt qu'au bout d'une sonde.
     let plan = lan::plan(&interface_from(name, address, netmask)?)?;
     let flag = state.register(&job_id);
-    let cancelled = {
-        let flag = Arc::clone(&flag);
-        move || flag.load(Ordering::SeqCst)
-    };
 
-    let probe = SystemProbe::new();
-    let result = lan::discover(&plan, &probe, &cancelled, &|done, total| {
-        report(&app, &job_id, done, total, "Examen des adresses…")
-    });
+    report(&app, &job_id, 0, plan.range.target_count, "Examen des adresses…");
+
+    let emitter = app.clone();
+    let worker_job = job_id.clone();
+    let result = tauri::async_runtime::spawn_blocking(move || {
+        let cancelled = move || flag.load(Ordering::SeqCst);
+        let probe = SystemProbe::new();
+        lan::discover(&plan, &probe, &cancelled, &|done, total| {
+            report(&emitter, &worker_job, done, total, "Examen des adresses…")
+        })
+    })
+    .await
+    .unwrap_or_else(|error| Err(format!("Découverte interrompue : {error}")));
+
     state.release(&job_id);
     result
 }

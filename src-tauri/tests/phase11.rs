@@ -439,3 +439,50 @@ fn checks_ports_against_a_local_server_only() {
         PortStatus::Closed
     );
 }
+
+/* ------------------------------------------------------------------------ */
+/* Réactivité : aucune sonde longue sur le fil d'interface                   */
+/* ------------------------------------------------------------------------ */
+
+/// Le texte des commandes réseau, lu à la compilation.
+///
+/// Ce test garde une propriété qu'aucune assertion d'exécution ne peut
+/// atteindre : une commande Tauri déclarée `pub fn` s'exécute **en ligne sur le
+/// fil qui traite l'IPC**, donc sur la boucle d'événements. Une sonde longue
+/// déclarée ainsi gèle la fenêtre, et rien dans une suite de tests headless ne
+/// s'en apercevrait — seul l'utilisateur verrait « l'application ne répond
+/// pas ». On vérifie donc la forme de la déclaration, là où le défaut se loge.
+const NETWORK_COMMANDS: &str = include_str!("../src/network/command.rs");
+
+#[test]
+fn long_network_probes_never_run_on_the_ui_thread() {
+    for command in ["network_lan_discover", "network_ping", "network_check_ports"] {
+        assert!(
+            NETWORK_COMMANDS.contains(&format!("pub async fn {command}")),
+            "{command} doit être `pub async fn` : déclarée `pub fn`, elle bloquerait \
+             la boucle d'événements pendant toute la sonde"
+        );
+    }
+
+    // Et le travail bloquant part bien dans le vivier prévu pour cela, plutôt
+    // que d'occuper un fil d'exécution asynchrone. On compte les **appels**,
+    // parenthèse comprise : la mention du procédé dans le commentaire de tête
+    // ne doit pas suffire à faire passer le test.
+    assert_eq!(
+        NETWORK_COMMANDS.matches("tauri::async_runtime::spawn_blocking(").count(),
+        3,
+        "les trois sondes longues doivent déporter leur travail bloquant"
+    );
+}
+
+#[test]
+fn cancellation_stays_on_the_ui_thread() {
+    // L'inverse du test précédent : l'annulation doit être traitée
+    // immédiatement, sans attendre un tour de vivier de fils. Elle ne fait que
+    // poser un drapeau.
+    assert!(
+        NETWORK_COMMANDS.contains("pub fn network_cancel"),
+        "network_cancel doit rester synchrone pour être traitée sans délai"
+    );
+    assert!(!NETWORK_COMMANDS.contains("pub async fn network_cancel"));
+}

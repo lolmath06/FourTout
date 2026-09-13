@@ -117,6 +117,12 @@ pub trait LanProbe: Sync {
 pub const PROBE_TIMEOUT_MS: u64 = 400;
 /// Sondes menées de front. Un réseau domestique n'apprécie pas mieux.
 pub const MAX_CONCURRENCY: usize = 16;
+/// Attente maximale d'une résolution inverse de nom.
+///
+/// Sur un réseau local, un nom arrive en quelques millisecondes ou n'arrive
+/// pas : au-delà, l'adresse n'a pas d'enregistrement PTR et insister ne ferait
+/// qu'allonger la découverte.
+pub const HOSTNAME_TIMEOUT_MS: u64 = 1_500;
 
 /// Prépare une découverte : interface, plage bornée, phrase de confirmation.
 pub fn plan(interface: &Interface) -> Result<DiscoveryPlan, String> {
@@ -195,8 +201,15 @@ pub fn discover(
                     evidence.push("adresse de cette machine".to_string());
                 }
 
+                // La résolution du nom se fait **avant** de prendre le verrou.
+                // L'écrire dans l'expression de construction de `Device` la
+                // plaçait à l'intérieur du `lock()`, et sérialisait donc toutes
+                // les résolutions des seize fils de travail derrière un seul
+                // mutex — pour une opération qui peut durer une seconde.
+                let hostname = probe.hostname(address);
+
                 found.lock().unwrap().push(Device {
-                    hostname: probe.hostname(address),
+                    hostname,
                     address: address.to_string(),
                     mac,
                     latency_ms: latency,
@@ -304,10 +317,33 @@ impl LanProbe for SystemProbe {
         summary.attempts.first().and_then(|attempt| attempt.rtt_ms)
     }
 
+    /// Résolution inverse **bornée dans le temps**.
+    ///
+    /// `getnameinfo` n'accepte aucun délai : face à une adresse sans
+    /// enregistrement PTR, il attend le temps que le résolveur du système veut
+    /// bien y mettre — souvent cinq secondes par serveur de noms, parfois deux
+    /// tentatives. Une seule adresse muette immobiliserait ainsi un fil de
+    /// travail pendant dix secondes, et la découverte entière avec lui.
+    ///
+    /// La résolution part donc dans un fil dédié et on l'attend au plus
+    /// [`HOSTNAME_TIMEOUT_MS`]. Passé ce délai, l'appareil est simplement
+    /// affiché **sans nom** : c'est ce que l'on sait, et le nom n'a jamais été
+    /// la raison d'être de cet outil. Le fil abandonné se terminera de son côté,
+    /// et son résultat sera ignoré ; leur nombre est borné par celui des
+    /// appareils observés.
     fn hostname(&self, address: Ipv4Addr) -> Option<String> {
-        dns_lookup::lookup_addr(&std::net::IpAddr::V4(address))
-            .ok()
-            .filter(|name| name != &address.to_string())
+        let (sender, receiver) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
+            let resolved = dns_lookup::lookup_addr(&std::net::IpAddr::V4(address)).ok();
+            let _ = sender.send(resolved);
+        });
+
+        match receiver.recv_timeout(Duration::from_millis(HOSTNAME_TIMEOUT_MS)) {
+            // Certains résolveurs rendent l'adresse elle-même faute de PTR :
+            // ce n'est pas un nom, c'est la question reposée.
+            Ok(Some(name)) if name != address.to_string() => Some(name),
+            _ => None,
+        }
     }
 
     fn icmp_available(&self) -> bool {
@@ -531,6 +567,48 @@ mod tests {
         assert_eq!(result.examined, 0);
         assert!(result.cancelled);
         assert!(result.devices.is_empty());
+    }
+
+    #[test]
+    fn cancellation_in_flight_stops_launching_probes() {
+        // Annulation déclenchée **pendant** la découverte, et non avant : c'est
+        // le cas réel du bouton « Arrêter ». Les fils de travail doivent cesser
+        // d'ouvrir de nouvelles sondes au lieu de terminer la plage entière.
+        let plan = plan(&interface("192.168.1.42", 24)).unwrap();
+        let probed = std::sync::atomic::AtomicUsize::new(0);
+
+        struct Counting<'a>(&'a std::sync::atomic::AtomicUsize);
+        impl LanProbe for Counting<'_> {
+            fn neighbours(&self) -> Vec<Neighbour> {
+                Vec::new()
+            }
+            fn reachable(&self, _address: Ipv4Addr, _timeout: Duration) -> Option<f64> {
+                self.0.fetch_add(1, Ordering::SeqCst);
+                std::thread::sleep(Duration::from_millis(2));
+                None
+            }
+            fn hostname(&self, _address: Ipv4Addr) -> Option<String> {
+                None
+            }
+        }
+
+        // Le drapeau bascule dès que trente-deux adresses ont été sondées.
+        let cancelled = || probed.load(Ordering::SeqCst) >= 32;
+        let result = discover(&plan, &Counting(&probed), &cancelled, &|_, _| {}).unwrap();
+
+        assert!(result.cancelled, "la découverte doit se déclarer interrompue");
+        assert!(
+            result.examined < plan.range.target_count,
+            "{} adresses examinées sur {} : l'annulation n'a rien arrêté",
+            result.examined,
+            plan.range.target_count
+        );
+        // Les seize fils en vol peuvent terminer la sonde commencée : on tolère
+        // une sonde de plus par fil, pas la plage entière.
+        assert!(
+            probed.load(Ordering::SeqCst) <= 32 + MAX_CONCURRENCY,
+            "trop de sondes lancées après l'annulation"
+        );
     }
 
     #[test]
