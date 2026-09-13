@@ -29,11 +29,31 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      # `pnpm test:assets` compile deux exemples Cargo : on fige la chaîne
+      # d'outils au lieu de dépendre de celle que l'image porte ce jour-là,
+      # et on réutilise le cache du travail natif.
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
       # FFmpeg : les tests média exécutent le vrai moteur et relisent le
       # résultat avec ffprobe. Sans lui, ils s'ignorent proprement — mais on
       # veut qu'ils s'exécutent.
       - name: Installer FFmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      # `pnpm test:assets` termine par deux exemples Cargo (phase9_fixtures,
+      # phase11_fixtures) : compiler la caisse Tauri réclame les bibliothèques
+      # système de GTK/WebKit, même lorsque le reste du travail est purement
+      # frontal. Sans elles, `glib-sys` échoue à sa compilation.
+      - name: Dépendances système (Tauri)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev libsoup-3.0-dev libgtk-3-dev \
+            librsvg2-dev libssl-dev patchelf
 
       - run: pnpm install --frozen-lockfile
 

@@ -34,6 +34,24 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      # `pnpm test:assets` termine par deux exemples Cargo (phase9_fixtures,
+      # phase11_fixtures) : compiler la caisse Tauri réclame les bibliothèques
+      # système de GTK/WebKit, même lorsque le reste du travail est purement
+      # frontal. Sans elles, `glib-sys` échoue à sa compilation.
+      - name: Dépendances système (Tauri)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev libsoup-3.0-dev libgtk-3-dev \
+            librsvg2-dev libssl-dev patchelf
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:assets
       - run: pnpm verify
