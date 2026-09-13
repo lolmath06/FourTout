@@ -13,11 +13,11 @@
  * Lancé par `pnpm test:assets`.
  */
 import { deflateRawSync } from "node:zlib";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PDFDocument, StandardFonts, rgb } from "@cantoo/pdf-lib";
-import { createCanvas } from "@napi-rs/canvas";
+import { createCanvas, GlobalFonts } from "@napi-rs/canvas";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "test-assets", "generated");
@@ -36,11 +36,30 @@ function write(name, bytes, ...segments) {
 }
 
 /**
- * Police de rendu des pages-images. La liste de repli garantit un résultat
- * lisible aussi bien sur une machine de développement Fedora que sur un
- * exécuteur d'intégration continue nu.
+ * Police de rendu des pages-images, **figée**.
+ *
+ * Une liste de repli — « Cantarell, DejaVu Sans, Liberation Sans, sans-serif »
+ * — laissait la machine choisir : Fedora fournit Cantarell, l'exécuteur
+ * ubuntu-24.04 l'ignore et retombait sur DejaVu Sans, dont le zéro gras est un
+ * ovale nu. Tesseract y lisait la lettre « o » : « Repere 01 » devenait
+ * « Repere o1 », et deux tests d'OCR multipage échouaient sur l'intégration
+ * continue seulement. Une fixture qui change de pixels selon l'hôte ne prouve
+ * rien — on emploie donc la police que le projet distribue déjà avec pdf.js,
+ * présente dès `pnpm install`, identique sous Fedora, Ubuntu et Windows.
  */
-const FONT_STACK = '"Cantarell", "DejaVu Sans", "Liberation Sans", sans-serif';
+const FONT_FAMILY = "FourTout Fixture Sans";
+const FONT_DIR = join(ROOT, "node_modules", "pdfjs-dist", "standard_fonts");
+for (const file of ["LiberationSans-Regular.ttf", "LiberationSans-Bold.ttf"]) {
+  const font = join(FONT_DIR, file);
+  // Se rabattre sur les polices du système est exactement ce qu'on refuse :
+  // mieux vaut s'arrêter net que produire une fixture muette sur son origine.
+  if (!existsSync(font)) {
+    console.error(`Police ${file} introuvable dans pdfjs-dist — lancez \`pnpm install\` d'abord.`);
+    process.exit(1);
+  }
+  GlobalFonts.registerFromPath(font, FONT_FAMILY);
+}
+const FONT_STACK = `"${FONT_FAMILY}"`;
 
 /* ===================================================== pages-images (scans) */
 
