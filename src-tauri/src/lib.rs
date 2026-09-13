@@ -11,9 +11,12 @@ pub mod image_native;
 pub mod media;
 pub mod microphone;
 pub mod models;
+pub mod network;
 pub mod rates;
 pub mod recovery;
+pub mod security;
 pub mod speech;
+pub mod sqlite;
 
 use serde::Serialize;
 
@@ -61,6 +64,7 @@ pub fn run() {
         .manage(media::command::MediaState::default())
         .manage(models::command::ModelsState::default())
         .manage(speech::command::SpeechState::default())
+        .manage(network::NetworkState::default())
         .invoke_handler(tauri::generate_handler![
             app_info,
             image_native::encode_webp,
@@ -137,6 +141,17 @@ pub fn run() {
             speech::command::speech_cancel,
             recovery::command::recover_password,
             recovery::command::recover_cancel,
+            security::command::security_jwt_verify,
+            sqlite::command::sqlite_overview,
+            sqlite::command::sqlite_query,
+            sqlite::command::sqlite_browse,
+            network::command::network_cancel,
+            network::command::network_ping,
+            network::command::network_check_ports,
+            network::command::network_parse_ports,
+            network::command::network_interfaces,
+            network::command::network_lan_plan,
+            network::command::network_lan_discover,
         ])
         .run(tauri::generate_context!())
         .expect("erreur au démarrage de FourTout");

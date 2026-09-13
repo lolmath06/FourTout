@@ -74,6 +74,9 @@ importers:
       react-router-dom:
         specifier: ^7.9.1
         version: 7.18.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      smol-toml:
+        specifier: ^1.8.0
+        version: 1.8.0
       sql-formatter:
         specifier: ^15.8.2
         version: 15.8.2
@@ -2033,6 +2036,10 @@ packages:
 
   simple-swizzle@0.2.4:
     resolution: {integrity: sha512-nAu1WFPQSMNr2Zn9PGSZK9AGn4t/y97lEm+MXTtUDwfP0ksAIX4nO+6ruD9Jwut4C49SB1Ws+fbXsm/yScWOHw==}
+
+  smol-toml@1.8.0:
+    resolution: {integrity: sha512-kCZr2V3ch9i00x8zXRhjUNVcjG9ijES5dDudkXvUVCT5QlJNQWElSJdZqyPemffHoLNUYwOcou0Fy+ojN0uHSQ==}
+    engines: {node: '>= 18'}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -4029,6 +4036,8 @@ snapshots:
   simple-swizzle@0.2.4:
     dependencies:
       is-arrayish: 0.3.4
+
+  smol-toml@1.8.0: {}
 
   source-map-js@1.2.1: {}
 

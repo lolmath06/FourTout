@@ -19,6 +19,7 @@ import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
+import { parse as parseToml } from "smol-toml";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "test-assets", "generated");
@@ -316,6 +317,202 @@ function audioTags(name) {
 const CONTACT_SETTINGS = { colonnes: 2, largeurVignette: 120, espacement: 12, marge: 24, hauteurLegende: 22 };
 const contactRows = Math.ceil(5 / CONTACT_SETTINGS.colonnes);
 
+
+/* ------------------------------------------------------ phase 11 */
+
+/**
+ * Valeurs de la phase 11.
+ *
+ * Trois origines, toutes vérifiables :
+ *
+ * - ce qui est **lu sur le disque** (fichiers TOML, jetons JWT, relevé de la
+ *   base SQLite écrit par `cargo run --example phase11_fixtures`) ;
+ * - ce qui vient d'une **norme** (les vecteurs de la RFC 4648) ;
+ * - ce qui est **recalculé ici**, indépendamment du code de l'application
+ *   (débits, durées, intérêts, conversions horaires par `Intl`).
+ *
+ * Aucune valeur n'est recopiée d'un résultat obtenu dans l'interface.
+ */
+function phase11() {
+  const toml = {
+    fichiers: ["sample-valid.toml", "sample-invalid.toml", "sample-comments.toml"],
+    valide: {},
+    invalide: {},
+    commentaires: {},
+  };
+
+  const valid = readFileSync(join(OUT, "sample-valid.toml"), "utf8");
+  const invalid = readFileSync(join(OUT, "sample-invalid.toml"), "utf8");
+  const commented = readFileSync(join(OUT, "sample-comments.toml"), "utf8");
+
+  const parsed = parseToml(valid);
+  toml.valide = {
+    clesRacine: Object.keys(parsed).length,
+    tables: ["serveur", "serveur.limites"],
+    tableauxDeTables: ["journal"],
+    entreesJournal: parsed.journal.length,
+    port: parsed.serveur.port,
+  };
+
+  try {
+    parseToml(invalid);
+    toml.invalide = { erreur: "AUCUNE — la fixture invalide a été acceptée" };
+  } catch (error) {
+    toml.invalide = {
+      ligne: error.line,
+      colonne: error.column,
+      cause: "clé « port » définie deux fois",
+    };
+  }
+
+  // Lignes commençant par un dièse, hors chaînes multilignes : ce que le
+  // reformatage fera disparaître.
+  const countComments = (text) => {
+    let count = 0;
+    let inside = false;
+    for (const line of text.split(/\r?\n/)) {
+      const delimiters = (line.match(/"""/g) ?? []).length;
+      const wasInside = inside;
+      if (delimiters % 2 === 1) inside = !inside;
+      if (wasInside) continue;
+      if (/^\s*#/.test(line)) count += 1;
+    }
+    return count;
+  };
+  toml.commentaires = {
+    lignesDeCommentaire: countComments(commented),
+    perduesAuFormatage: countComments(commented),
+    note: "Le reformatage reconstruit le document depuis ses données : les commentaires disparaissent.",
+  };
+
+  /* Base32 — vecteurs de la RFC 4648, section 10. */
+  const base32 = {
+    source: "RFC 4648, section 10",
+    vecteurs: {
+      "": "",
+      f: "MY======",
+      fo: "MZXQ====",
+      foo: "MZXW6===",
+      foob: "MZXW6YQ=",
+      fooba: "MZXW6YTB",
+      foobar: "MZXW6YTBOI======",
+    },
+    allerRetourUnicode: {
+      texte: "FourTout — été",
+      octets: Buffer.from("FourTout — été", "utf8").length,
+    },
+  };
+
+  /* JWT — état attendu de chaque jeton produit. */
+  const jwt = JSON.parse(readFileSync(join(OUT, "jwt-fixtures.json"), "utf8"));
+  const attendusJwt = {
+    hs256Valid: { signature: "valide", expire: false, acceptable: true },
+    hs256WrongKey: { signature: "invalide", expire: false, acceptable: false },
+    hs256Expired: { signature: "valide", expire: true, acceptable: false },
+    hs384Valid: { signature: "valide", expire: false, acceptable: true },
+    hs512Valid: { signature: "valide", expire: false, acceptable: true },
+    rs256Valid: { signature: "valide", expire: false, acceptable: true, cle: jwt.rsaPublicKeyFile },
+    rs256Expired: { signature: "valide", expire: true, acceptable: false, cle: jwt.rsaPublicKeyFile },
+    rs384Valid: { signature: "valide", expire: false, acceptable: true, cle: jwt.rsaPublicKeyFile },
+    rs512Valid: { signature: "valide", expire: false, acceptable: true, cle: jwt.rsaPublicKeyFile },
+    none: { signature: "refusée", motif: "alg: none" },
+  };
+
+  /* SQLite — relevé écrit par l'exemple Rust au moment de la génération. */
+  const sqlitePath = join(OUT, "sample.sqlite");
+  const sqlite = existsSync(sqlitePath)
+    ? {
+        fichier: "sample.sqlite",
+        octets: sizeOf(OUT, "sample.sqlite"),
+        sha256: sha256(readFileSync(sqlitePath)),
+        ...JSON.parse(readFileSync(join(OUT, "sample.sqlite.json"), "utf8")),
+        note: "Le SHA-256 doit être identique après toute tentative d'écriture : la base est ouverte en lecture seule.",
+      }
+    : { fichier: "ABSENT — lancer cargo run --example phase11_fixtures" };
+
+  /* Calculateurs — recalculés ici, sans le code de l'application. */
+  const GiB = 1024 ** 3 * 8; // en bits
+  const Gibit = 1024 ** 3;
+  const calculateurs = {
+    bandePassante: {
+      "1 Gio en 8 s": {
+        bits: GiB,
+        bitsParSeconde: GiB / 8,
+        gibitParSeconde: GiB / 8 / Gibit,
+        mioParSeconde: GiB / 8 / 8 / 1024 ** 2,
+      },
+      "100 Mbit/s": {
+        bitsParSeconde: 100e6,
+        moParSeconde: 100e6 / 8 / 1e6,
+        mioParSeconde: 100e6 / 8 / 1024 ** 2,
+      },
+    },
+    tempsDeTransfert: {
+      "100 Gio à 1 Gibit/s": {
+        bits: 100 * GiB,
+        secondes: (100 * GiB) / Gibit,
+        lisible: "13 min 20 s",
+      },
+      "100 Gio à 1 Gbit/s": { secondes: (100 * GiB) / 1e9 },
+    },
+    interets: {
+      "simple 1000 € 5 % 2 ans": { total: 1000 * (1 + 0.05 * 2), interets: 1000 * 0.05 * 2 },
+      "compose annuel 1000 € 5 % 2 ans": {
+        total: 1000 * Math.pow(1.05, 2),
+        interets: 1000 * Math.pow(1.05, 2) - 1000,
+      },
+      "compose mensuel 1000 € 5 % 2 ans": { total: 1000 * Math.pow(1 + 0.05 / 12, 24) },
+    },
+  };
+
+  /* Fuseaux horaires — recalculés par Intl, pas tabulés. */
+  const zoneHour = (zone, epochMs) =>
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: zone,
+      hourCycle: "h23",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(epochMs));
+
+  const fuseaux = {
+    "2026-01-15 14:30 Europe/Paris → UTC": {
+      utc: "2026-01-15T13:30:00.000Z",
+      decalageSource: "+01:00",
+      heureArrivee: zoneHour("UTC", Date.parse("2026-01-15T13:30:00Z")),
+    },
+    "2026-07-15 14:00 Europe/Paris → America/New_York": {
+      utc: "2026-07-15T12:00:00.000Z",
+      decalageSource: "+02:00",
+      decalageArrivee: "-04:00",
+      heureArrivee: zoneHour("America/New_York", Date.parse("2026-07-15T12:00:00Z")),
+    },
+    "2026-03-29 02:30 Europe/Paris": {
+      cas: "heure inexistante (passage à l'heure d'été)",
+      instantLePlusProche: "03:30 heure locale",
+    },
+    "2026-10-25 02:30 Europe/Paris": {
+      cas: "heure vécue deux fois (retour à l'heure d'hiver)",
+      premiereOccurrenceUtc: "2026-10-25T00:30:00.000Z",
+      secondeOccurrenceUtc: "2026-10-25T01:30:00.000Z",
+    },
+  };
+
+  /* Réseau — rien qui dépende du réseau du développeur. */
+  const reseau = {
+    note: "Aucune valeur ne dépend de l'adresse IP de la machine de développement.",
+    bornage: {
+      "192.168.1.42/24": { reseau: "192.168.1.0/24", premiere: "192.168.1.1", derniere: "192.168.1.254", cibles: 254 },
+      "10.2.3.4/16": { ramenéA: "10.2.3.0/24", cibles: 254, raison: "65536 adresses refusées" },
+      "10.0.0.4/31": { cibles: 2 },
+      "10.0.0.4/32": { cibles: 1 },
+    },
+    plafonds: { adressesMax: 256, portsMax: 256, paquetsPingMax: 20, connexionsSimultanees: 16 },
+    ping: { hoteDeTest: "127.0.0.1", paquetsParDefaut: 4, pertesAttendues: "0 %" },
+  };
+
+  return { toml, base32, jwt: { ...jwt, attendus: attendusJwt }, sqlite, calculateurs, fuseaux, reseau };
+}
+
 const contract = {
   genereLe: new Date().toISOString().slice(0, 10),
   avertissement:
@@ -496,6 +693,8 @@ const contract = {
     "video-vfr.mp4": videoFixture("video-vfr.mp4"),
   },
 
+  phase11: phase11(),
+
   inspection: {
     // Chaque fixture, et ce que la reconnaissance par signature doit en dire.
     attendus: {
@@ -541,6 +740,20 @@ const lines = [
   `  backup-source          : ${c.sauvegarde.fichiers} fichiers, ${c.sauvegarde.dossiers} dossiers`,
   `  checksum-set           : ${c.checksums.fichiers} fichiers`,
   `  archive-sample         : ${c.archive.fichiers} entrées`,
+  "",
+  "Phase 11 — développeur, calculateurs et réseau",
+  "",
+  `  sample.sqlite          : ${c.phase11.sqlite.octets} octets, ${c.phase11.sqlite.lignes?.users ?? "?"} utilisateurs, ` +
+    `${c.phase11.sqlite.lignes?.projects ?? "?"} projets, ${c.phase11.sqlite.lignes?.events ?? "?"} événements`,
+  `    SHA-256              : ${c.phase11.sqlite.sha256 ?? "?"}`,
+  `    jointure Alice       : ${c.phase11.sqlite.evenementsDesProjetsDAlice ?? "?"} événements`,
+  `  sample-invalid.toml    : erreur ligne ${c.phase11.toml.invalide.ligne}, colonne ${c.phase11.toml.invalide.colonne}`,
+  `  sample-comments.toml   : ${c.phase11.toml.commentaires.lignesDeCommentaire} lignes de commentaire, toutes perdues au reformatage`,
+  `  Base32 « foobar »      : ${c.phase11.base32.vecteurs.foobar}`,
+  `  100 Gio à 1 Gibit/s    : ${c.phase11.calculateurs.tempsDeTransfert["100 Gio à 1 Gibit/s"].secondes} s (${c.phase11.calculateurs.tempsDeTransfert["100 Gio à 1 Gibit/s"].lisible})`,
+  `  1000 € 5 % 2 ans       : simple ${c.phase11.calculateurs.interets["simple 1000 € 5 % 2 ans"].total} €, ` +
+    `composé annuel ${c.phase11.calculateurs.interets["compose annuel 1000 € 5 % 2 ans"].total.toFixed(2)} €`,
+  `  LAN 10.2.3.4/16        : ramené à ${c.phase11.reseau.bornage["10.2.3.4/16"].ramenéA}, ${c.phase11.reseau.bornage["10.2.3.4/16"].cibles} cibles`,
   "",
   `  Écrit dans test-assets/generated/CONTRAT.json`,
 ];
