@@ -54,6 +54,8 @@ src/
 │   ├── units/             Moteur d'unités partagé par les dix convertisseurs
 │   ├── security/          Génération et évaluation de mots de passe
 │   ├── sqlite/            Client de l'explorateur SQLite natif (lecture seule)
+│   ├── diagnostics/       Diagnostic de fichiers abîmés, récupération prudente
+│   ├── disks/             Inventaire disques et santé, en lecture seule
 │   ├── network/           Client des sondes réseau natives (ping, ports, LAN)
 │   ├── currency/          Taux de change : cache, conversion, datation
 │   ├── convert/           Graphe de conversion dérivé du registre
@@ -85,6 +87,8 @@ src-tauri/                 Application native (Rust)
 ├── src/security/          Vérification de signature JWT (HMAC et RSA)
 ├── src/sqlite/            Explorateur SQLite : trois verrous de lecture seule
 ├── src/network/           Sondes bornées : ping ICMP, ports TCP, découverte LAN
+├── src/diagnostics/       Structure ZIP, PDF, PNG, JPEG ; réparations prouvables
+├── src/disks/             /sys, /proc, PowerShell figé, SMART opportuniste
 └── src/files/             Archives, empreintes, doublons, découpage, renommage,
                            chiffrement, effacement, organisation de dossier,
                            comparaison et synchronisation de dossiers, recherche,

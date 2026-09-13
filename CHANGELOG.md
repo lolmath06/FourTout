@@ -10,8 +10,8 @@ change pour lui. Pour l'historique détaillé du code, `git log`.
 
 ## [Non publié]
 
-Première version complète de FourTout : **191 outils, tous utilisables**,
-répartis en onze catégories.
+Première version complète de FourTout : **196 outils, tous utilisables**,
+répartis en douze catégories.
 
 ### PDF — 26 outils
 
@@ -288,6 +288,53 @@ conservé.
 Pas de scan furtif, pas d'empreinte de système, pas de détection de service par
 bannière, pas de recherche de vulnérabilité. Ce sont des techniques de
 reconnaissance offensive, et leur absence est un choix.
+
+### Diagnostic & récupération — 5 outils
+
+Cinq outils pour les fichiers qui « ne s'ouvrent pas », et un inventaire de
+disques. Trois règles valent pour tous : **le fichier d'origine n'est jamais
+modifié**, **rien n'est inventé**, et **réparé, récupéré et visuellement
+récupéré ne sont pas des synonymes**.
+
+**Diagnostiquer un fichier** dit ce qu'un fichier est vraiment — par sa
+signature, jamais par son nom —, s'il est entier, et ce qui suit sa marque de
+fin. Une extension trompeuse se corrige par une **copie** renommée, jamais en
+renommant l'original.
+
+**Archive ZIP endommagée** retrouve les entrées par balayage de leurs en-têtes
+locaux, ce qui fonctionne même lorsque le répertoire central a disparu — le cas
+où tous les autres logiciels déclarent « ce n'est pas une archive » alors que
+les données sont intactes. Chaque entrée est décompressée et vérifiée par sa
+somme de contrôle avant d'être écrite, dans un dossier ou dans une archive
+neuve. Celles dont les données sont tronquées sont déclarées perdues, avec leur
+motif : elles ne sont jamais reconstituées. Les protections contre les chemins
+piégés restent entières — une archive cassée n'autorise aucun relâchement.
+
+**PDF endommagé** corrige trois défauts, et trois seulement, parce que ce sont
+les trois qu'on peut justifier octet par octet : des données parasites après la
+fin du document, un pointeur de table de références qui ne désigne rien, une
+table absente alors que les objets sont là. Chaque fichier produit est
+**rouvert par le moteur PDF et ses pages comptées** ; s'il refuse de s'ouvrir,
+l'écran parle de réparation manquée et supprime le fichier. Un document signé
+numériquement fait l'objet d'un avertissement : toute réécriture invalide la
+signature, et FourTout ne prétend pas la préserver.
+
+**Image endommagée** distingue ce qui coûte un pixel de ce qui ne coûte qu'une
+métadonnée. Un bloc PNG auxiliaire abîmé s'écarte sans perdre un point ; une
+somme de contrôle fausse n'est **jamais recalculée**, car cela masquerait la
+corruption sans rien réparer ; et les lignes manquantes d'une image tronquée ne
+sont **jamais inventées** — la récupération échoue franchement et n'écrit aucun
+fichier. Quand seuls les pixels peuvent être sauvés, l'opération s'appelle
+« récupération visuelle », pas « réparation ».
+
+**Inspecter les disques et partitions** montre les disques physiques, leurs
+partitions, les systèmes de fichiers, l'espace occupé et les indicateurs de
+santé. **En lecture seule, sans exception** : FourTout ne sait ni partitionner,
+ni formater, ni monter, ni cloner, ni effacer, et il n'y a aucun bouton
+« Réparer le disque ». Les indicateurs détaillés passent par `smartctl`
+lorsqu'il est déjà installé — FourTout ne l'embarque pas, ne l'installe pas, et
+ne lance jamais d'autotest. Numéros de série et identifiants de volume sont
+affichés pendant la session et enregistrés nulle part.
 
 ### Sécurité & Confidentialité — 7 outils
 

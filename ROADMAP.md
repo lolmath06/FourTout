@@ -1,9 +1,32 @@
 # Feuille de route
 
-FourTout est complet pour l’usage qu’il vise : 191 outils, tous utilisables.
+FourTout est complet pour l’usage qu’il vise : 196 outils, tous utilisables.
 Cette page liste ce qui pourrait venir ensuite. Rien de ce qui y figure n'est
 promis, et **aucun de ces éléments n'apparaît dans l'application** : le
 catalogue ne contient que des outils qui fonctionnent.
+
+---
+
+## Hors périmètre : PROMĒTHEÚS Rescue
+
+Ces fonctions ne viendront **pas** dans FourTout, quel que soit l'avenir du
+projet. Elles appartiennent à une suite de sauvetage dédiée :
+
+- image disque, restauration d'image, clonage ;
+- récupération de partitions, reconstruction d'une table GPT ou MBR ;
+- récupération de système de fichiers destructive, `fsck` avec écriture ;
+- écriture brute sur un périphérique bloc ;
+- média amorçable, environnement de secours ;
+- sauvegarde et restauration bare-metal.
+
+La raison n'est pas technique. Ces opérations demandent un environnement
+différent — souvent hors du système installé —, un modèle de risque différent,
+et une confirmation d'un tout autre ordre que celle d'un utilitaire de bureau.
+Les mêler à FourTout reviendrait à placer un bouton capable d'effacer un disque
+à côté d'un convertisseur d'images.
+
+FourTout diagnostique, récupère ce qui est prouvablement récupérable, et ne
+touche jamais à l'original.
 
 ---
 

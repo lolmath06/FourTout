@@ -120,7 +120,7 @@ cargo clippy --all-targets
 
 | Commande | Rôle |
 | --- | --- |
-| `pnpm test:assets` | Régénère `test-assets/generated/` (PDF, images, média, archives, DOCX, parole, TOML, jetons JWT, base SQLite) et `CONTRAT.json` |
+| `pnpm test:assets` | Régénère `test-assets/generated/` (PDF, images, média, archives, DOCX, parole, TOML, jetons JWT, base SQLite, fichiers abîmés de la phase 12) et `CONTRAT.json` |
 | `pnpm pdfjs:assets` | Recopie les ressources pdf.js dans `public/` |
 | `pnpm ocr:assets` | Recopie le worker et les données Tesseract dans `public/` |
 | `pnpm wordlist` | Régénère le corpus de récupération de mot de passe PDF |

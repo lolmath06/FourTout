@@ -81,6 +81,7 @@ présence change quelque chose pour l'utilisateur ou pour un juriste.
 | [hmac](https://crates.io/crates/hmac) | 0.12 | MIT / Apache-2.0 | HMAC-SHA-1, SHA-256 et SHA-512 |
 | [rayon](https://crates.io/crates/rayon) | 1.12 | MIT / Apache-2.0 | Parallélisme (empreintes, récupération de mot de passe) |
 | [ureq](https://crates.io/crates/ureq) | 2.12 | MIT / Apache-2.0 | Client HTTP : taux BCE et téléchargement des modèles |
+| [libc](https://crates.io/crates/libc) | 0.2 | MIT / Apache-2.0 | `statvfs` : espace occupé et disponible d'un volume monté (Unix) |
 
 Les trois derniers sont arrivés avec la phase 9. Deux points ont pesé dans leur
 choix, avant même leurs fonctions : ce sont des bibliothèques **Rust pures** —
@@ -110,6 +111,20 @@ sortie serait traduite et changerait de forme d'une version à l'autre.
 ---
 
 ## Appelé sur la machine de l'utilisateur
+
+### smartmontools (`smartctl`)
+
+**Licence :** GPL-2.0-or-later.
+**Site :** <https://www.smartmontools.org>
+
+`smartctl` n'est **ni embarqué, ni téléchargé, ni installé** par FourTout. S'il
+est déjà présent sur la machine, l'outil « Inspecter les disques et partitions »
+s'en sert comme fournisseur optionnel d'indicateurs de santé, avec des arguments
+figés et une sortie JSON. FourTout ne le redistribue donc pas et n'hérite
+d'aucune de ses obligations.
+
+En son absence, l'écran l'explique et se contente des informations que le
+système expose lui-même. Aucune fonction de FourTout ne dépend de sa présence.
 
 ### FFmpeg
 

@@ -10,7 +10,7 @@
 | --- | --- |
 | [Installation](guides/INSTALLATION.md) | Windows, Fedora, autres Linux. FFmpeg, modèles, vérification des téléchargements. |
 | [Guide d'utilisation](guides/USER_GUIDE.md) | Trouver un outil, déposer des fichiers, opérations longues, zoom, paramètres. |
-| [Tous les outils](guides/FEATURES.md) | Les 191 outils, catégorie par catégorie. |
+| [Tous les outils](guides/FEATURES.md) | Les 196 outils, catégorie par catégorie. |
 | [Dépannage](guides/TROUBLESHOOTING.md) | Ce qui peut coincer, et pourquoi. |
 
 ## Confidentialité et sécurité
@@ -52,6 +52,8 @@
 | [Développeur](features/DEVELOPER.md) | Traitement des entrées non fiables, vérification JWT, explorateur SQLite. |
 | [Calculateurs](features/CALCULATORS.md) | Moteur d'unités, calculatrice, dates, devises, fuseaux, débits, intérêts. |
 | [Réseau](features/NETWORK.md) | Sondes bornées : ping ICMP, ports TCP, découverte du réseau local. |
+| [Diagnostic & récupération](features/DIAGNOSTICS.md) | ZIP, PDF et images abîmés : ce qui est prouvable, ce qui ne l'est pas. |
+| [Disques et santé](features/STORAGE.md) | Inventaire en lecture seule, SMART opportuniste, et ce qui reste hors périmètre. |
 | [Convertisseurs](features/CONVERTERS.md) | Convertisseur universel dérivé du registre. |
 
 ## À la racine du dépôt

@@ -42,6 +42,8 @@ peut ouvrir une connexion, même par erreur.
 | **Mots de passe** | La génération utilise le générateur cryptographique du système. L'analyse de robustesse (zxcvbn) tourne dans l'application : le mot de passe saisi n'est jamais transmis. |
 | **JWT** | Décodé **et vérifié** localement. Ni le token ni la clé ne sont envoyés nulle part — c'est exactement ce que ne garantissent pas les décodeurs JWT en ligne. La clé n'est ni journalisée, ni enregistrée, ni ajoutée aux récents. |
 | **Bases SQLite** | Ouvertes en lecture seule, sur votre disque. Aucune requête ne peut modifier le fichier, et son contenu n'est envoyé nulle part. |
+| **Diagnostic et récupération** | Le fichier abîmé est lu, jamais modifié : un test recalcule son empreinte après chaque opération. Les fichiers produits sont écrits à côté, sous un nouveau nom. Rien n'est téléversé. |
+| **Disques et partitions** | Inventaire en lecture seule. Les numéros de série et identifiants de volume sont affichés pendant la session et enregistrés nulle part — ni récents, ni paramètres, ni journaux. Aucune recherche en ligne de fabricant. |
 | **Parole** | Une fois les modèles installés, la synthèse et la transcription s'exécutent sur votre machine. |
 | **Détourage** | Le modèle de suppression d'arrière-plan tourne dans l'application, sur votre machine. L'image n'est envoyée nulle part — c'est précisément ce que ne font pas les services en ligne équivalents. |
 

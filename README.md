@@ -7,7 +7,7 @@
 **Une boîte à outils desktop locale regroupant PDF, image, audio, vidéo,
 documents, fichiers, outils développeur, conversions et confidentialité.**
 
-191 outils, une seule application, sur votre machine.
+196 outils, une seule application, sur votre machine.
 
 </div>
 
@@ -60,6 +60,7 @@ Trois principes tiennent le produit :
 | **Développeur** | 21 | JSON, XML, YAML, TOML, SQL, Base32, JWT **vérifié**, **base SQLite**, regex, cron |
 | **Calculateurs** | 21 | Unités, pourcentages, dates, **fuseaux horaires**, **débits**, **intérêts**, devises |
 | **Réseau** | 3 | Ping, test de ports, découverte du réseau local — bornés, et jamais au-delà |
+| **Diagnostic & récupération** | 5 | Fichier corrompu, archive illisible, PDF cassé, image abîmée, disques et partitions |
 | **Sécurité** | 7 | Mots de passe, chiffrement de fichiers, HMAC, suppression des métadonnées |
 
 La liste complète, outil par outil : **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.

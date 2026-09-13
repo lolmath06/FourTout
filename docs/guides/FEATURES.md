@@ -2,7 +2,7 @@
 
 [← Documentation](../README.md)
 
-191 outils, répartis en 11 catégories. Chaque outil de cette liste est
+196 outils, répartis en 12 catégories. Chaque outil de cette liste est
 **utilisable** : FourTout n'enregistre pas d'outil incomplet, et il n'existe
 donc pas d'état « bientôt disponible ».
 
@@ -31,6 +31,7 @@ d'arriver.
 - [Développeur](#développeur-21)
 - [Calculateurs](#calculateurs-21)
 - [Réseau](#réseau-3)
+- [Diagnostic & récupération](#diagnostic--récupération-5)
 - [Sécurité & Confidentialité](#sécurité--confidentialité-7)
 
 ---
@@ -324,6 +325,21 @@ _Diagnostiquer une connexion, tester des ports, voir ce qui est branché chez so
   <br>_Un seul hôte, 256 ports au maximum par lancement, par connexion TCP ordinaire. Ce n'est pas un scanner : ni furtivité, ni détection de service, ni recherche de vulnérabilité._
 - **Découvrir les appareils du réseau local** — Lister les machines qui se manifestent sur votre sous-réseau.
   <br>_Limité au sous-réseau directement connecté et à 256 adresses. La plage exacte est annoncée avant tout envoi, et rien ne part sans confirmation._
+
+### Diagnostic & récupération (5)
+
+_Comprendre ce qu'un fichier abîmé a de cassé, et sauver ce qui peut l'être._
+
+- **Diagnostiquer un fichier** — Comprendre ce qu'un fichier est vraiment, et ce qui lui manque. · aussi dans *Fichiers & Archives*
+  <br>_Le fichier d'origine n'est jamais modifié. FourTout analyse la structure interne du ZIP, du PDF, du PNG et du JPEG, et le dit franchement pour les autres formats._
+- **Archive ZIP endommagée** — Diagnostiquer une archive illisible et récupérer ce qu'elle contient encore. · aussi dans *Fichiers & Archives*
+  <br>_Récupère par balayage des en-têtes locaux, même sans répertoire central. Les entrées dont les données sont tronquées sont déclarées perdues — elles ne sont jamais reconstituées. L'archive d'origine n'est pas touchée._
+- **PDF endommagé** — Diagnostiquer un PDF illisible et le réparer quand c'est démontrable. · aussi dans *PDF*
+  <br>_Chaque fichier produit est rouvert par le moteur PDF et ses pages comptées : si le moteur le refuse, la réparation est déclarée manquée et le fichier supprimé. Une réécriture invalide toute signature numérique._
+- **Image endommagée** — Diagnostiquer un PNG ou un JPEG abîmé et sauver les pixels lisibles. · aussi dans *Images*
+  <br>_Une somme de contrôle fausse n'est jamais recalculée, et les lignes manquantes d'une image tronquée ne sont jamais inventées. La récupération visuelle réencode les pixels décodés : elle sauve l'image, pas le fichier._
+- **Inspecter les disques et partitions** — Voir les disques, partitions, volumes et indicateurs de santé du système. · aussi dans *Fichiers & Archives*
+  <br>_Lecture seule, sans exception : FourTout ne sait ni partitionner, ni formater, ni monter, ni cloner, ni effacer un disque. Les indicateurs de santé détaillés dépendent de `smartctl`, que FourTout n'embarque pas._
 
 ### Sécurité & Confidentialité (7)
 
