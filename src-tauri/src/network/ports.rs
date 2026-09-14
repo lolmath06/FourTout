@@ -179,6 +179,41 @@ fn parse_port(text: &str) -> Result<u16, String> {
     Ok(value as u16)
 }
 
+/// Traduit l'échec d'une connexion en état de port.
+///
+/// Isolée du réseau pour rester vérifiable : c'est ici que se joue la seule
+/// distinction que l'outil promet à l'utilisateur. « Fermé » est une
+/// affirmation forte — *la machine a répondu que rien n'écoute là* — et elle
+/// n'est justifiée que par un refus explicite (RST TCP, soit `ECONNREFUSED`
+/// sous Fedora et `WSAECONNREFUSED` sous Windows). Tout le reste — silence,
+/// route absente, refus du système d'ouvrir le socket — laisse la question
+/// sans réponse, et c'est exactement ce que « filtré » veut dire.
+fn classify_failure(kind: std::io::ErrorKind, elapsed: Duration, timeout: Duration) -> PortStatus {
+    use std::io::ErrorKind;
+    match kind {
+        // Le port a répondu, pour dire que personne n'écoute.
+        ErrorKind::ConnectionRefused => PortStatus::Closed,
+        // Personne n'a répondu avant la fin du délai.
+        ErrorKind::TimedOut => PortStatus::Filtered,
+        // L'hôte est injoignable, ou le système a refusé d'émettre : le port
+        // n'a rien dit. L'annoncer « fermé » affirmerait que rien n'écoute
+        // derrière, ce que cette tentative n'établit pas.
+        ErrorKind::HostUnreachable
+        | ErrorKind::NetworkUnreachable
+        | ErrorKind::NetworkDown
+        | ErrorKind::PermissionDenied => PortStatus::Filtered,
+        _ => {
+            // `connect_timeout` rend parfois `WouldBlock` au lieu de
+            // `TimedOut` : on tranche sur le temps écoulé.
+            if elapsed >= timeout {
+                PortStatus::Filtered
+            } else {
+                PortStatus::Closed
+            }
+        }
+    }
+}
+
 /// Teste un port unique par une connexion TCP ordinaire.
 pub fn probe_port(address: IpAddr, port: u16, timeout: Duration) -> PortResult {
     let target = SocketAddr::new(address, port);
@@ -189,19 +224,7 @@ pub fn probe_port(address: IpAddr, port: u16, timeout: Duration) -> PortResult {
             let _ = stream.shutdown(std::net::Shutdown::Both);
             PortStatus::Open
         }
-        Err(error) => match error.kind() {
-            std::io::ErrorKind::TimedOut => PortStatus::Filtered,
-            std::io::ErrorKind::ConnectionRefused => PortStatus::Closed,
-            _ => {
-                // `connect_timeout` rend parfois `WouldBlock` au lieu de
-                // `TimedOut` : on tranche sur le temps écoulé.
-                if started.elapsed() >= timeout {
-                    PortStatus::Filtered
-                } else {
-                    PortStatus::Closed
-                }
-            }
-        },
+        Err(error) => classify_failure(error.kind(), started.elapsed(), timeout),
     };
     PortResult {
         port,
@@ -282,11 +305,41 @@ pub fn scan(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use socket2::{Domain, Protocol, Socket, Type};
+    use std::io::ErrorKind;
     use std::net::TcpListener;
     use std::sync::atomic::AtomicBool;
 
     fn never_cancelled() -> Arc<dyn Fn() -> bool + Send + Sync> {
         Arc::new(|| false)
+    }
+
+    /// Un port de la boucle locale que rien n'écoute — et que personne ne peut
+    /// venir prendre pendant le test.
+    ///
+    /// La méthode naïve consiste à lier un `TcpListener` puis à le refermer
+    /// aussitôt pour « récupérer un port libre ». C'est une course : entre la
+    /// fermeture et la sonde, le port n'appartient plus à personne. Sous
+    /// Windows, un port éphémère tout juste relâché peut ne renvoyer aucun RST,
+    /// et la sonde le classe alors « filtré » — ce qui est la bonne réponse à
+    /// ce qui s'est réellement passé, mais ne vérifie plus rien du produit.
+    ///
+    /// Le socket rendu ici est lié sans que `listen` soit jamais appelé : la
+    /// pile TCP refuse donc les connexions par un RST, sur Fedora comme sous
+    /// Windows, et le port reste réservé tant que le socket vit. L'appelant
+    /// doit le garder en vie pendant toute la durée du test.
+    fn a_port_that_refuses() -> (Socket, u16) {
+        let socket = Socket::new(Domain::IPV4, Type::STREAM, Some(Protocol::TCP))
+            .expect("ouverture d'un socket TCP");
+        let address: SocketAddr = ([127, 0, 0, 1], 0).into();
+        socket.bind(&address.into()).expect("liaison sur un port libre");
+        let port = socket
+            .local_addr()
+            .expect("adresse locale")
+            .as_socket()
+            .expect("adresse IP")
+            .port();
+        (socket, port)
     }
 
     #[test]
@@ -326,17 +379,12 @@ mod tests {
     }
 
     /// Banc d'essai local : un vrai serveur TCP sur un port attribué par le
-    /// système, et un port dont on sait qu'il vient d'être libéré.
+    /// système, et un port que la pile TCP refuse activement.
     #[test]
     fn finds_an_open_port_and_a_closed_one() {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let open_port = listener.local_addr().unwrap().port();
-
-        // Un second socket, refermé aussitôt : son port n'écoute plus.
-        let closed_port = {
-            let temporary = TcpListener::bind("127.0.0.1:0").unwrap();
-            temporary.local_addr().unwrap().port()
-        };
+        let (reserved, closed_port) = a_port_that_refuses();
 
         let summary = scan(
             "127.0.0.1",
@@ -349,11 +397,51 @@ mod tests {
 
         assert_eq!(summary.tested, 2);
         let open = summary.results.iter().find(|r| r.port == open_port).unwrap();
-        assert_eq!(open.status, PortStatus::Open);
+        assert_eq!(open.status, PortStatus::Open, "port {open_port}");
         let closed = summary.results.iter().find(|r| r.port == closed_port).unwrap();
-        assert_eq!(closed.status, PortStatus::Closed, "port {closed_port}");
+        assert_eq!(
+            closed.status,
+            PortStatus::Closed,
+            "port {closed_port} : {:?} après {:.0} ms",
+            closed.status,
+            closed.elapsed_ms
+        );
 
+        // Les deux sockets devaient vivre pendant toute la durée de la sonde.
+        drop(reserved);
         drop(listener);
+    }
+
+    /// Seul un refus explicite autorise à écrire « fermé ».
+    #[test]
+    fn only_an_explicit_refusal_counts_as_closed() {
+        let timeout = Duration::from_millis(500);
+        let quick = Duration::from_millis(1);
+        assert_eq!(
+            classify_failure(ErrorKind::ConnectionRefused, quick, timeout),
+            PortStatus::Closed
+        );
+        assert_eq!(classify_failure(ErrorKind::TimedOut, timeout, timeout), PortStatus::Filtered);
+        // Injoignable ou interdit, et cela même si l'échec est immédiat :
+        // le port n'a rien répondu, on ne peut pas le déclarer fermé.
+        for kind in [
+            ErrorKind::HostUnreachable,
+            ErrorKind::NetworkUnreachable,
+            ErrorKind::NetworkDown,
+            ErrorKind::PermissionDenied,
+        ] {
+            assert_eq!(
+                classify_failure(kind, quick, timeout),
+                PortStatus::Filtered,
+                "{kind:?} ne dit pas que le port est fermé"
+            );
+        }
+        // `WouldBlock` reste tranché sur le temps écoulé.
+        assert_eq!(classify_failure(ErrorKind::WouldBlock, quick, timeout), PortStatus::Closed);
+        assert_eq!(
+            classify_failure(ErrorKind::WouldBlock, timeout, timeout),
+            PortStatus::Filtered
+        );
     }
 
     #[test]
