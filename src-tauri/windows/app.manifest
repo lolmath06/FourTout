@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  Manifeste Windows de la caisse, rattaché à *toutes* ses cibles.
+
+  Tout exécutable qui lie `fourtout_lib` lie la pile Tauri, et importe donc des
+  symboles que seule la version 6 de `comctl32.dll` exporte :
+  TaskDialogIndirect, SetWindowSubclass, RemoveWindowSubclass, DefSubclassProc.
+  Sans la dépendance ci-dessous, le chargeur résout `comctl32.dll` vers la
+  version 5.82 de System32, où ces points d'entrée sont absents : le processus
+  meurt avant `main` sur 0xC0000139, STATUS_ENTRYPOINT_NOT_FOUND.
+
+  Cela vaut pour l'application distribuée, pour les exemples générateurs de
+  fixtures, et pour les exécutables de test — y compris celui des tests
+  unitaires de la bibliothèque, que `cargo` ne range dans aucune des catégories
+  que sait viser un script de construction.
+
+  Le contenu reprend mot pour mot le manifeste par défaut de `tauri-build`, dont
+  on a repris la charge (`WindowsAttributes::new_without_app_manifest`) : ce que
+  reçoit l'application distribuée est donc inchangé.
+-->
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity
+        type="win32"
+        name="Microsoft.Windows.Common-Controls"
+        version="6.0.0.0"
+        processorArchitecture="*"
+        publicKeyToken="6595b64144ccf1df"
+        language="*"
+      />
+    </dependentAssembly>
+  </dependency>
+</assembly>
