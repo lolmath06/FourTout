@@ -1,0 +1,53 @@
+# TEMPORAIRE — à supprimer avant la finalisation de la branche.
+#
+# Boucle Windows courte sur *un* test, quand la CI complète (dix minutes,
+# cinq travaux) n'apporte rien de plus qu'une réponse déjà connue sur le
+# reste. Aucun frontend, aucun paquet, aucun Ubuntu, aucune suite Rust
+# complète : la caisse se compile sans `dist/`, et le test visé n'a besoin ni
+# de pnpm, ni des fixtures, ni de FFmpeg.
+#
+# Ce travail ne remplace pas la CI : il ne prouve que ce test-là. La CI
+# complète reste la condition de fusion.
+#
+# Déclencheur : `push` sur la branche de préflight, et non `workflow_dispatch`.
+# GitHub n'expose au dispatch que les workflows présents sur la branche par
+# défaut ; celui-ci n'existe que sur `ci/windows-preflight`, et `master` ne doit
+# pas bouger. Un événement `push`, lui, utilise les workflows du commit poussé :
+# c'est le seul déclencheur disponible sans toucher à `master`.
+# `workflow_dispatch` reste déclaré pour le jour où ce fichier vivrait ailleurs.
+name: Preflight Windows ciblé
+
+on:
+  push:
+    branches: [ci/windows-preflight]
+  workflow_dispatch:
+
+concurrency:
+  group: windows-targeted-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  cible:
+    name: Un seul test (windows-2022)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      # Le binaire de test doit porter le manifeste Common Controls v6 : on
+      # filtre sur ce seul essai, ce qui évite aussi de construire les exemples
+      # dont dépend son voisin.
+      - name: Le binaire de test embarque le manifeste
+        run: >
+          cargo test --manifest-path src-tauri/Cargo.toml
+          --test windows_manifest
+          le_binaire_de_test_embarque_le_manifeste
+          -- --exact --nocapture

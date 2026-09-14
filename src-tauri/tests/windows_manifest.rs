@@ -81,30 +81,76 @@ fn le_manifeste_est_rattache_a_toutes_les_cibles() {
     );
 }
 
-/// Cherche le manifeste Common Controls v6 dans les octets d'un exécutable.
+/// La déclaration Common Controls telle qu'elle est écrite dans le manifeste,
+/// du nom jusqu'à la version — le motif que doit porter un exécutable.
+///
+/// Elle est **lue dans le fichier**, jamais écrite ici en toutes lettres, et
+/// elle couvre les deux attributs d'un seul tenant. Les deux points comptent.
+///
+/// Une chaîne littérale de ce fichier atterrit dans les données du binaire de
+/// test, et c'est elle que la recherche trouvait : sous Windows, le nom du
+/// premier test de ce fichier était rencontré avant la ressource, sans version
+/// à portée, et l'essai annonçait un manifeste sans version 6 alors qu'il
+/// n'avait lu que son propre texte. Sous Fedora, les deux littéraux tombaient
+/// à 88 octets l'un de l'autre et l'essai passait sans rien prouver. Un motif
+/// qui enjambe le nom *et* la version ne peut venir d'aucun littéral d'ici :
+/// il n'existe que dans le manifeste et dans ce qui l'embarque.
+fn declaration_attendue() -> Vec<u8> {
+    let source = std::fs::read_to_string(manifest_dir().join("windows/app.manifest"))
+        .expect("windows/app.manifest est introuvable");
+
+    let nom = r#"name="Microsoft.Windows.Common-Controls""#;
+    let version = r#"version="6.0.0.0""#;
+    let debut = source.find(nom).expect("le manifeste ne déclare plus Common Controls");
+    let fin = source[debut..]
+        .find(version)
+        .map(|offset| debut + offset + version.len())
+        .expect("le manifeste ne demande plus la version 6 après le nom de l'assemblage");
+
+    source.as_bytes()[debut..fin].to_vec()
+}
+
+/// `haystack` contient-il exactement cette suite d'octets ?
+fn contient(haystack: &[u8], needle: &[u8]) -> bool {
+    needle.len() <= haystack.len() && haystack.windows(needle.len()).any(|w| w == needle)
+}
+
+/// Le motif doit enjamber le nom et la version, et se retrouver tel quel dans
+/// le manifeste — sans quoi la recherche dans les exécutables ne prouve rien.
+///
+/// Le piège reproduit ici est celui qui a fait tomber le CI : un nom suivi
+/// d'une version trop lointaine pour être la sienne.
+#[test]
+fn le_motif_enjambe_le_nom_et_la_version() {
+    let motif = declaration_attendue();
+    let texte = String::from_utf8(motif.clone()).expect("le motif est du texte");
+    assert!(texte.starts_with(r#"name="Microsoft.Windows.Common-Controls""#), "{texte}");
+    assert!(texte.ends_with(r#"version="6.0.0.0""#), "{texte}");
+
+    let source = std::fs::read(manifest_dir().join("windows/app.manifest")).unwrap();
+    assert!(contient(&source, &motif), "le motif n'est pas une tranche du manifeste");
+
+    let mut piege = Vec::new();
+    piege.extend_from_slice(r#"name="Microsoft.Windows.Common-Controls""#.as_bytes());
+    piege.extend_from_slice(&[b'.'; 300]);
+    piege.extend_from_slice(r#"version="6.0.0.0""#.as_bytes());
+    assert!(
+        !contient(&piege, &motif),
+        "un nom et une version qui ne se touchent pas ne sont pas une déclaration",
+    );
+}
+
+/// Cherche la déclaration Common Controls v6 dans les octets d'un exécutable.
 #[cfg(windows)]
 fn exige_le_manifeste(exe: &Path) {
     let bytes =
         std::fs::read(exe).unwrap_or_else(|error| panic!("{} illisible : {error}", exe.display()));
 
-    let needle = b"Microsoft.Windows.Common-Controls";
-    let at = bytes
-        .windows(needle.len())
-        .position(|window| window == needle)
-        .unwrap_or_else(|| {
-            panic!(
-                "{} n'embarque aucun manifeste Common Controls : il mourra sur \
-                 STATUS_ENTRYPOINT_NOT_FOUND avant d'atteindre main",
-                exe.display()
-            )
-        });
-
-    // La version compte autant que le nom : c'est elle qui écarte la 5.82.
-    let end = (at + needle.len() + 256).min(bytes.len());
     assert!(
-        bytes[at..end].windows(7).any(|window| window == b"6.0.0.0"),
-        "{} déclare Common Controls sans exiger la version 6",
-        exe.display()
+        contient(&bytes, &declaration_attendue()),
+        "{} n'embarque pas la déclaration Common Controls v6 du manifeste : il \
+         mourra sur STATUS_ENTRYPOINT_NOT_FOUND avant d'atteindre main",
+        exe.display(),
     );
 }
 
