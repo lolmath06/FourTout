@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  Manifeste des exécutables `example` sous Windows.
+
+  Le vrai exécutable, lui, reçoit le manifeste par défaut de `tauri-build` :
+  celui-ci est compilé dans une ressource Windows que `embed-resource` rattache
+  aux seules cibles `bin` (`cargo:rustc-link-arg-bins=…`). Les cibles `example`
+  en sont donc dépourvues.
+
+  Or ces exemples lient `fourtout_lib`, donc la pile Tauri, et importent des
+  symboles de `comctl32.dll` qui n'existent que dans la version 6 de la
+  bibliothèque : TaskDialogIndirect, SetWindowSubclass, RemoveWindowSubclass,
+  DefSubclassProc. Sans la dépendance ci-dessous, le chargeur résout
+  `comctl32.dll` vers la version 5.82 de System32, où ces points d'entrée sont
+  absents : le processus meurt avant `main` sur 0xC0000139,
+  STATUS_ENTRYPOINT_NOT_FOUND.
+
+  Ce fichier ne concerne QUE les exemples ; il ne modifie pas le manifeste de
+  l'application distribuée.
+-->
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity
+        type="win32"
+        name="Microsoft.Windows.Common-Controls"
+        version="6.0.0.0"
+        processorArchitecture="*"
+        publicKeyToken="6595b64144ccf1df"
+        language="*"
+      />
+    </dependentAssembly>
+  </dependency>
+</assembly>

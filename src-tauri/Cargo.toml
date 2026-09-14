@@ -14,6 +14,9 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
+# Rattache le manifeste Common Controls v6 aux cibles `example` sous Windows :
+# `tauri-build` ne le fait que pour les cibles `bin`. Sans effet ailleurs.
+embed-resource = "3"
 
 [dependencies]
 tauri = { version = "2", features = [] }
