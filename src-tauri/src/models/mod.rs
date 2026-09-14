@@ -332,19 +332,10 @@ pub fn is_installed(root: &Path, asset: &Asset) -> bool {
     !asset.files.is_empty() && asset.check.iter().all(|rel| root.join(rel).exists())
 }
 
-/// Nom d'exécutable selon la plateforme.
-pub fn exe(name: &str) -> String {
-    if cfg!(windows) {
-        format!("{name}.exe")
-    } else {
-        name.to_string()
-    }
-}
-
 /// Localise le binaire d'un moteur de parole : embarqué dans l'application,
 /// puis installé par l'utilisateur, puis PATH (pratique en développement).
 pub fn resolve_engine(app: &AppHandle, engine: &str) -> Option<PathBuf> {
-    let file = exe(engine_binary(engine));
+    let file = crate::exec::exe(engine_binary(engine));
 
     if let Ok(dir) = app.path().resource_dir() {
         for candidate in [
@@ -362,7 +353,7 @@ pub fn resolve_engine(app: &AppHandle, engine: &str) -> Option<PathBuf> {
         return Some(installed);
     }
 
-    which(&file)
+    crate::exec::find_in_path(engine_binary(engine))
 }
 
 /// Nom du binaire fourni par chaque moteur.
@@ -371,14 +362,6 @@ fn engine_binary(engine: &str) -> &str {
         "whisper" => "whisper-cli",
         other => other,
     }
-}
-
-/// Recherche dans le PATH, sans dépendance externe.
-fn which(file: &str) -> Option<PathBuf> {
-    let path = std::env::var_os("PATH")?;
-    std::env::split_paths(&path)
-        .map(|dir| dir.join(file))
-        .find(|candidate| candidate.is_file())
 }
 
 #[cfg(test)]

@@ -22,14 +22,7 @@ use std::process::Command;
 
 use tauri::{AppHandle, Manager};
 
-/// Nom du binaire selon la plateforme.
-fn exe(name: &str) -> String {
-    if cfg!(windows) {
-        format!("{name}.exe")
-    } else {
-        name.to_string()
-    }
-}
+use crate::exec::exe;
 
 /// Localise un binaire média : d'abord embarqué (ressources de l'app), puis le
 /// système. On documente le packaging plutôt que de dépendre silencieusement du

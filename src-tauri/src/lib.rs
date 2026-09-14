@@ -8,6 +8,7 @@
 
 pub mod diagnostics;
 pub mod disks;
+pub mod exec;
 pub mod files;
 pub mod image_native;
 pub mod media;

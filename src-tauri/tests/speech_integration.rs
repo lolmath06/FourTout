@@ -20,15 +20,12 @@ fn models_root() -> PathBuf {
     home.join(".local/share/app.fourtout.desktop/models")
 }
 
-fn exe(name: &str) -> String {
-    if cfg!(windows) { format!("{name}.exe") } else { name.to_string() }
-}
 
 /// Renvoie les chemins nécessaires, ou `None` si l'installation est absente.
 fn setup(voice: &str, model: &str) -> Option<(PathBuf, PathBuf, PathBuf, PathBuf)> {
     let root = models_root();
-    let piper = root.join("engines/piper").join(exe("piper"));
-    let whisper = root.join("engines/whisper").join(exe("whisper-cli"));
+    let piper = root.join("engines/piper").join(fourtout_lib::exec::exe("piper"));
+    let whisper = root.join("engines/whisper").join(fourtout_lib::exec::exe("whisper-cli"));
     let voice = root.join("voices").join(voice);
     let model = root.join("stt").join(model);
     let all = [&piper, &whisper, &voice, &model];
@@ -39,10 +36,11 @@ fn setup(voice: &str, model: &str) -> Option<(PathBuf, PathBuf, PathBuf, PathBuf
     }
 }
 
+/// Même piège que dans `media_integration` : `sh -c 'command -v X'` rend sous
+/// Windows une route MSYS que `Command` ne sait pas ouvrir. On passe donc par
+/// le mécanisme du projet, qui construit un chemin natif depuis le `PATH`.
 fn which(name: &str) -> Option<PathBuf> {
-    let out = Command::new("sh").arg("-c").arg(format!("command -v {name}")).output().ok()?;
-    let path = String::from_utf8_lossy(&out.stdout).trim().to_string();
-    (out.status.success() && !path.is_empty()).then(|| PathBuf::from(path))
+    fourtout_lib::exec::find_in_path(name)
 }
 
 /// Synthétise une phrase avec le vrai Piper, exactement comme l'application.

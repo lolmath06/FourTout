@@ -9,13 +9,24 @@ use std::process::Command;
 
 use fourtout_lib::media::{encoder_works, probe_with, run_ffmpeg};
 
+/// Emplacement d'un outil média, sous une forme que `Command` accepte.
+///
+/// La résolution passe par le mécanisme du projet plutôt que par
+/// `sh -c 'command -v X'` : sous Windows, le `sh` de Git rend une route MSYS
+/// que `Command` ne sait pas ouvrir, et le test échouait alors en
+/// `ERROR_PATH_NOT_FOUND` au lieu de s'exécuter. Voir `fourtout_lib::exec`.
+///
+/// Un chemin trouvé mais impossible à lancer n'est **pas** une absence d'outil :
+/// le laisser passer ferait réussir à vide les tests qui attendent une erreur.
+/// On l'éprouve donc une fois, et on s'arrête net s'il ne répond pas.
 fn which(name: &str) -> Option<PathBuf> {
-    let out = Command::new("sh").arg("-c").arg(format!("command -v {name}")).output().ok()?;
-    if !out.status.success() {
-        return None;
-    }
-    let path = String::from_utf8_lossy(&out.stdout).trim().to_string();
-    if path.is_empty() { None } else { Some(PathBuf::from(path)) }
+    let path = fourtout_lib::exec::find_in_path(name)?;
+    let version = Command::new(&path)
+        .arg("-version")
+        .output()
+        .unwrap_or_else(|error| panic!("{} a été trouvé mais ne se lance pas : {error:?}", path.display()));
+    assert!(version.status.success(), "{} -version a échoué", path.display());
+    Some(path)
 }
 
 /// Génère une tonalité WAV de `secs` secondes via ffmpeg (source lavfi).
