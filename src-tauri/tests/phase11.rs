@@ -419,25 +419,49 @@ fn checks_ports_against_a_local_server_only() {
     // le système attribue.
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let open = listener.local_addr().unwrap().port();
-    let closed = {
+
+    // Un port sans serveur. On ne présume **pas** de la réponse de la pile.
+    // Fedora renvoie un RST immédiat, et la sonde dit « fermé » ; sous Windows,
+    // un port éphémère tout juste relâché peut rester muet, et la sonde dit
+    // alors « filtré » — la lecture exacte de ce qui s'est passé. Exiger
+    // « fermé » ici reviendrait à tester la pile TCP de la machine d'essai, pas
+    // FourTout, et c'est la mésaventure que ce test a déjà causée.
+    //
+    // La distinction fermé/filtré se prouve là où elle se décide : par
+    // injection d'un refus explicite, dans les tests unitaires de
+    // `network::ports`. Ce que l'intégration doit établir, elle, c'est qu'un
+    // serveur qui écoute est vu, et qu'un port sans serveur n'est jamais
+    // annoncé ouvert.
+    let quiet = {
         let temporary = TcpListener::bind("127.0.0.1:0").unwrap();
         temporary.local_addr().unwrap().port()
     };
 
     let never: Arc<dyn Fn() -> bool + Send + Sync> = Arc::new(|| false);
-    let summary = scan("127.0.0.1", &[open, closed], 500, never, &|_, _| {}).unwrap();
+    let summary = scan("127.0.0.1", &[open, quiet], 500, never, &|_, _| {}).unwrap();
 
     assert_eq!(summary.tested, 2);
-    assert_eq!(summary.open, 1);
-    assert_eq!(summary.closed, 1);
     assert_eq!(
-        summary.results.iter().find(|r| r.port == open).unwrap().status,
-        PortStatus::Open
+        summary.open + summary.closed + summary.filtered,
+        summary.tested,
+        "chaque port testé doit être classé une fois et une seule",
     );
-    assert_eq!(
-        summary.results.iter().find(|r| r.port == closed).unwrap().status,
-        PortStatus::Closed
+
+    // Le serveur écoute pour de bon : c'est la seule chose que le réseau réel
+    // établisse partout, et elle doit l'être exactement.
+    let served = summary.results.iter().find(|r| r.port == open).unwrap();
+    assert_eq!(served.status, PortStatus::Open, "le serveur local n'a pas été vu sur {open}");
+    assert_eq!(summary.open, 1, "un seul port écoutait");
+
+    let silent = summary.results.iter().find(|r| r.port == quiet).unwrap();
+    assert_ne!(
+        silent.status,
+        PortStatus::Open,
+        "rien n'écoute sur {quiet} : l'annoncer ouvert serait une invention",
     );
+
+    // Le serveur devait rester en vie pendant toute la durée de la sonde.
+    drop(listener);
 }
 
 /* ------------------------------------------------------------------------ */
