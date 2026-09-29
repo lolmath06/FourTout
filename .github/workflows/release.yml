@@ -1,0 +1,232 @@
+name: Publication
+
+# Déclenché par une étiquette de version. Rien ne part sans étiquette, et la
+# publication est créée **en brouillon** : c'est un humain qui la rend
+# publique, après avoir testé les artefacts.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Étiquette à publier (ex. v1.0.0)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  verify:
+    name: Vérifier avant de publier
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.value }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      # `pnpm test:assets` termine par deux exemples Cargo (phase9_fixtures,
+      # phase11_fixtures) : compiler la caisse Tauri réclame les bibliothèques
+      # système de GTK/WebKit, même lorsque le reste du travail est purement
+      # frontal. Sans elles, `glib-sys` échoue à sa compilation.
+      - name: Dépendances système (Tauri)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev libsoup-3.0-dev libgtk-3-dev \
+            librsvg2-dev libssl-dev patchelf
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:assets
+      - run: pnpm verify
+
+      # Les trois manifestes doivent porter le même numéro. Un désaccord ici
+      # produirait des fichiers dont le nom ment sur leur contenu.
+      - name: Version, et cohérence des manifestes
+        id: version
+        run: |
+          set -euo pipefail
+          pkg=$(node -p "require('./package.json').version")
+          tauri=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          cargo=$(grep -m1 '^version = ' src-tauri/Cargo.toml | cut -d'"' -f2)
+          echo "package.json=$pkg tauri.conf.json=$tauri Cargo.toml=$cargo"
+          if [ "$pkg" != "$tauri" ] || [ "$pkg" != "$cargo" ]; then
+            echo "::error::Les versions des manifestes diffèrent."
+            exit 1
+          fi
+          echo "value=$pkg" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Construire (${{ matrix.os }})
+    needs: verify
+    runs-on: ${{ matrix.os }}
+    # Les secrets sont déclarés au niveau du job, et non de l'étape : le
+    # contexte `env` d'un `if` d'étape ne voit pas le bloc `env` de cette même
+    # étape, et la condition serait toujours fausse. Aucun secret n'existe
+    # aujourd'hui : ces variables restent vides, et la construction produit un
+    # installeur non signé — ce que la documentation annonce.
+    env:
+      WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+      WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            artefact: linux
+          - os: windows-2022
+            artefact: windows
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Dépendances système (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev libsoup-3.0-dev libgtk-3-dev \
+            librsvg2-dev libssl-dev patchelf rpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Rien n'est signé tant qu'aucun certificat n'a été déposé dans les
+      # secrets du dépôt. Aucune clé n'est versionnée, aucune n'est générée ici.
+      - name: Certificat de signature Windows (si fourni)
+        if: runner.os == 'Windows' && env.WINDOWS_CERTIFICATE != ''
+        shell: pwsh
+        run: |
+          $bytes = [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE)
+          [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\fourtout.pfx", $bytes)
+          "WINDOWS_CERTIFICATE_FILE=$env:RUNNER_TEMP\fourtout.pfx" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Construire les paquets
+        run: pnpm tauri build
+
+      # Renommage en noms de publication : ce que l'utilisateur télécharge doit
+      # dire son système et son architecture, pas la convention de l'empaqueteur.
+      #
+      # La sélection est déléguée à un script éprouvé par la suite de tests.
+      # Elle exige, pour chaque format, exactement un paquet portant la version
+      # publiée : zéro comme deux font échouer la publication. Choisir le
+      # premier résultat d'un `find` suffisait tant qu'une seule version
+      # occupait le dossier de construction ; un cache restauré ou une
+      # construction répétée y en laissent deux, et le paquet recopié sous le
+      # nom de la nouvelle version pouvait être l'ancien.
+      - name: Rassembler et nommer les paquets
+        shell: bash
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          set -euo pipefail
+          node scripts/collect-release-artifacts.mjs \
+            --version "$VERSION" \
+            --os "$RUNNER_OS" \
+            --bundle-dir src-tauri/target/release/bundle \
+            --release-dir src-tauri/target/release \
+            --out artefacts \
+            --stage portable
+
+          # Version portable : l'exécutable et ses ressources, sans installeur.
+          # Le script a déjà rassemblé le dossier ; il ne reste qu'à le sceller.
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            (cd portable && 7z a -tzip "../artefacts/FourTout-${VERSION}-Windows-x64-Portable.zip" FourTout >/dev/null)
+            echo "  FourTout-${VERSION}-Windows-x64-Portable.zip"
+          fi
+
+          ls -la artefacts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: paquets-${{ matrix.artefact }}
+          if-no-files-found: error
+          path: artefacts/*
+
+  publish:
+    name: Créer la publication (brouillon)
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: telechargements
+          merge-multiple: true
+
+      - name: Empreintes SHA-256
+        working-directory: telechargements
+        run: |
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Publication en brouillon
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          # Brouillon : un humain vérifie les artefacts avant de publier.
+          draft: true
+          generate_release_notes: true
+          files: telechargements/*
+          body: |
+            ## Installation
+
+            | Système | Fichier |
+            | --- | --- |
+            | Windows 10 / 11 | `FourTout-*-Windows-x64-Setup.exe` |
+            | Fedora, RHEL | `FourTout-*-Fedora-x86_64.rpm` |
+            | Debian, Ubuntu | `FourTout-*-Linux-amd64.deb` |
+            | Autres Linux | `FourTout-*-Linux-x86_64.AppImage` |
+
+            N'utilisez pas « Code → Download ZIP » : cette archive contient le
+            code source, pas l'application.
+
+            Instructions détaillées :
+            [docs/guides/INSTALLATION.md](docs/guides/INSTALLATION.md).
+
+            ## Vérifier votre téléchargement
+
+            `SHA256SUMS.txt` contient l'empreinte de chaque fichier.
+
+            ```bash
+            sha256sum -c SHA256SUMS.txt --ignore-missing
+            ```
+
+            ## Windows : avertissement SmartScreen
+
+            Les installeurs ne sont pas encore signés par un certificat de
+            signature de code. Windows affichera un avertissement au premier
+            lancement — c'est attendu. Vérifiez l'empreinte SHA-256 avant
+            d'installer.

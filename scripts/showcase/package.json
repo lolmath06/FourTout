@@ -1,0 +1,16 @@
+{
+  "name": "fourtout-showcase",
+  "private": true,
+  "type": "module",
+  "description": "Régénère les captures, la bannière, l'aperçu social, la démo animée et la vidéo de présentation.",
+  "scripts": {
+    "fixtures": "node fixtures.mjs",
+    "capture": "node capture.mjs",
+    "branding": "node branding.mjs",
+    "demo": "node demo.mjs",
+    "all": "node fixtures.mjs && node capture.mjs && node branding.mjs && node demo.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "1.56.1"
+  }
+}

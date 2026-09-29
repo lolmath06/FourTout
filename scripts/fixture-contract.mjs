@@ -1,0 +1,999 @@
+#!/usr/bin/env node
+/**
+ * Contrat des fixtures de la phase 9.
+ *
+ * Ce script ne décide de rien : il **observe** ce qui est réellement sur le
+ * disque après génération, et écrit ce constat dans
+ * `test-assets/generated/CONTRAT.json`, doublé d'un résumé lisible.
+ *
+ * Il existe parce qu'un rapport de recette manuelle avait dérivé des fixtures :
+ * il annonçait quatre fichiers `.txt` là où il y en avait six. Désormais, les
+ * valeurs attendues ne se recopient plus — elles se lisent ici, et
+ * `src-tauri/tests/phase9.rs` vérifie que les moteurs sont d'accord avec elles.
+ *
+ * Usage : `pnpm fixtures:contract` (inclus dans `pnpm test:assets`)
+ */
+import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
+import { parse as parseToml } from "smol-toml";
+import { which } from "./lib/which.mjs";
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const OUT = join(ROOT, "test-assets", "generated");
+
+/** Chemins relatifs de tous les fichiers d'une arborescence, triés, en `/`. */
+function walk(root) {
+  const found = [];
+  const visit = (directory) => {
+    for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    )) {
+      const full = join(directory, entry.name);
+      if (entry.isDirectory()) visit(full);
+      else if (entry.isFile()) found.push(relative(root, full).split(/[\\/]/).join("/"));
+    }
+  };
+  visit(root);
+  return found.sort();
+}
+
+function directoriesOf(root) {
+  const found = [];
+  const visit = (directory) => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const full = join(directory, entry.name);
+      found.push(relative(root, full).split(/[\\/]/).join("/"));
+      visit(full);
+    }
+  };
+  visit(root);
+  return found.sort();
+}
+
+const bytesOf = (root, relative) => readFileSync(join(root, relative));
+const sizeOf = (root, relative) => statSync(join(root, relative)).size;
+const sha256 = (buffer) => createHash("sha256").update(buffer).digest("hex");
+
+/**
+ * Décode un fichier comme le ferait le moteur de recherche : marque d'ordre
+ * des octets d'abord, motif UTF-16 ensuite, UTF-8 sinon, et repli sur un
+ * encodage à un octet.
+ */
+function decode(bytes) {
+  if (bytes.length >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) {
+    return bytes.subarray(3).toString("utf8");
+  }
+  if (bytes.length >= 2 && bytes[0] === 0xff && bytes[1] === 0xfe) {
+    return bytes.subarray(2).toString("utf16le");
+  }
+  if (bytes.length >= 2 && bytes[0] === 0xfe && bytes[1] === 0xff) {
+    const swapped = Buffer.from(bytes.subarray(2));
+    swapped.swap16();
+    return swapped.toString("utf16le");
+  }
+  // UTF-16 sans marque : un octet sur deux est nul, toujours du même côté.
+  const limit = Math.min(bytes.length, 4096);
+  let even = 0;
+  let odd = 0;
+  for (let index = 0; index < limit; index += 1) {
+    if (bytes[index] === 0) (index % 2 === 0 ? (even += 1) : (odd += 1));
+  }
+  if (limit >= 4 && (even + odd) / limit > 0.2) {
+    if (odd > even * 4) return bytes.toString("utf16le");
+    if (even > odd * 4) {
+      const swapped = Buffer.from(bytes);
+      swapped.swap16();
+      return swapped.toString("utf16le");
+    }
+    return ""; // octets nuls dispersés : ce n'est pas du texte
+  }
+  // Proportion d'octets de contrôle : au-delà, ce n'est pas du texte.
+  let control = 0;
+  for (let index = 0; index < limit; index += 1) {
+    const byte = bytes[index];
+    const printable = byte >= 0x20 || byte === 9 || byte === 10 || byte === 13 || byte === 12;
+    if (!printable || byte === 0x7f) control += 1;
+  }
+  if (limit > 0 && control / limit > 0.05) return "";
+  const utf8 = bytes.toString("utf8");
+  return utf8.includes("�") ? bytes.toString("latin1") : utf8;
+}
+
+const contains = (root, relative, needle) =>
+  decode(bytesOf(root, relative)).toLowerCase().includes(needle.toLowerCase());
+
+/* ------------------------------------------------------------- collecte */
+
+const searchRoot = join(OUT, "search-tree");
+const searchFiles = walk(searchRoot);
+
+const compareLeft = join(OUT, "folder-compare-left");
+const compareRight = join(OUT, "folder-compare-right");
+const leftFiles = walk(compareLeft);
+const rightFiles = walk(compareRight);
+const inBoth = leftFiles.filter((entry) => rightFiles.includes(entry));
+
+const syncSource = join(OUT, "sync-source");
+const syncUpdate = join(OUT, "sync-destination-update");
+const syncMirror = join(OUT, "sync-destination-mirror");
+const sourceFiles = walk(syncSource);
+const updateFiles = walk(syncUpdate);
+
+const spaceRoot = join(OUT, "space-analysis");
+const spaceFiles = walk(spaceRoot);
+
+const backupRoot = join(OUT, "backup-source");
+const checksumRoot = join(OUT, "checksum-set");
+const archiveRoot = join(OUT, "archive-sample");
+
+
+/* --------------------------------------------------- phase 10 : images et média */
+
+/**
+ * Deuxième implémentation, volontairement.
+ *
+ * Les valeurs de comparaison d'images ci-dessous sont recalculées ici, en dehors
+ * du moteur de FourTout et sans partager une ligne de code avec lui. Un test qui
+ * comparerait le moteur à lui-même ne prouverait rien ; celui-ci compare deux
+ * calculs indépendants du même énoncé.
+ */
+async function pixelsOf(name) {
+  const image = await loadImage(join(OUT, name));
+  const canvas = createCanvas(image.width, image.height);
+  const context = canvas.getContext("2d");
+  context.drawImage(image, 0, 0);
+  const { data } = context.getImageData(0, 0, image.width, image.height);
+  return { width: image.width, height: image.height, data };
+}
+
+/** Écart de Tchebychev par pixel, sur trois canaux ou quatre. */
+function diffStats(a, b, includeAlpha = false) {
+  const channels = includeAlpha ? 4 : 3;
+  const count = a.width * a.height;
+  let different = 0;
+  let maxDifference = 0;
+  let squares = 0;
+  let changedAt;
+  for (let p = 0; p < count; p += 1) {
+    const i = p * 4;
+    let pixelMax = 0;
+    for (let c = 0; c < channels; c += 1) {
+      const delta = a.data[i + c] - b.data[i + c];
+      squares += delta * delta;
+      const magnitude = Math.abs(delta);
+      if (magnitude > pixelMax) pixelMax = magnitude;
+    }
+    if (pixelMax > 0) {
+      different += 1;
+      changedAt ??= { x: p % a.width, y: Math.floor(p / a.width) };
+    }
+    if (pixelMax > maxDifference) maxDifference = pixelMax;
+  }
+  const mse = squares / (count * channels);
+  return {
+    pixels: count,
+    pixelsDifferents: different,
+    ecartMaximal: maxDifference,
+    eqm: Number(mse.toFixed(6)),
+    psnr: mse === 0 ? null : Number((10 * Math.log10((255 * 255) / mse)).toFixed(3)),
+    premierPixelChange: changedAt,
+  };
+}
+
+/** SSIM par blocs disjoints de 8 × 8 sur la luminance BT.601 — même énoncé que le moteur. */
+function ssimOf(a, b) {
+  const C1 = (0.01 * 255) ** 2;
+  const C2 = (0.03 * 255) ** 2;
+  const block = 8;
+  const blocksX = Math.floor(a.width / block);
+  const blocksY = Math.floor(a.height / block);
+  const luma = (data, i) => 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+  let total = 0;
+  let blocks = 0;
+  for (let by = 0; by < blocksY; by += 1) {
+    for (let bx = 0; bx < blocksX; bx += 1) {
+      const values = [];
+      for (let y = 0; y < block; y += 1) {
+        for (let x = 0; x < block; x += 1) {
+          const i = ((by * block + y) * a.width + bx * block + x) * 4;
+          values.push([luma(a.data, i), luma(b.data, i)]);
+        }
+      }
+      const n = values.length;
+      const meanA = values.reduce((sum, [va]) => sum + va, 0) / n;
+      const meanB = values.reduce((sum, [, vb]) => sum + vb, 0) / n;
+      const varA = values.reduce((sum, [va]) => sum + (va - meanA) ** 2, 0) / n;
+      const varB = values.reduce((sum, [, vb]) => sum + (vb - meanB) ** 2, 0) / n;
+      const cov = values.reduce((sum, [va, vb]) => sum + (va - meanA) * (vb - meanB), 0) / n;
+      const numerator = (2 * meanA * meanB + C1) * (2 * cov + C2);
+      const denominator = (meanA ** 2 + meanB ** 2 + C1) * (varA + varB + C2);
+      total += denominator === 0 ? 1 : numerator / denominator;
+      blocks += 1;
+    }
+  }
+  return blocks === 0 ? 1 : Number((total / blocks).toFixed(6));
+}
+
+const reference = await pixelsOf("image-reference.png");
+const identical = await pixelsOf("image-identical.png");
+const onePixel = await pixelsOf("image-one-pixel.png");
+const smallNoise = await pixelsOf("image-small-noise.png");
+const heavyChange = await pixelsOf("image-heavy-change.png");
+const alphaChange = await pixelsOf("image-alpha-change.png");
+const differentSize = await pixelsOf("image-different-size.png");
+const colorKnown = await pixelsOf("color-known.png");
+
+const onePixelStats = diffStats(reference, onePixel);
+const alphaStats = diffStats(reference, alphaChange, true);
+
+/** Couleur exacte d'un pixel de `color-known.png`, en hexadécimal. */
+function hexAt(pixels, x, y) {
+  const i = (y * pixels.width + x) * 4;
+  return `#${[0, 1, 2].map((c) => pixels.data[i + c].toString(16).padStart(2, "0")).join("")}`;
+}
+
+/** Rapport de contraste WCAG entre deux couleurs `#rrggbb`. */
+function contrast(hexA, hexB) {
+  const luminance = (hex) => {
+    const parts = [1, 3, 5].map((start) => Number.parseInt(hex.slice(start, start + 2), 16) / 255);
+    const [r, g, b] = parts.map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const la = luminance(hexA);
+  const lb = luminance(hexB);
+  return Number(((Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05)).toFixed(4));
+}
+
+/** Compte les blocs d'un fichier de sous-titres, sans rien interpréter de plus. */
+function subtitleBlocks(name) {
+  const text = readFileSync(join(OUT, name), "utf8").replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+  return text.split(/\n{2,}/).filter((block) => block.includes("-->")).length;
+}
+
+const ffprobe = which("ffprobe");
+
+/** Ce que ffprobe dit du premier flux d'un type donné — valeurs stables seulement. */
+function probeStream(name, selector) {
+  if (!ffprobe || !existsSync(join(OUT, name))) return null;
+  const result = spawnSync(
+    ffprobe,
+    ["-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", "-select_streams", selector, join(OUT, name)],
+    { encoding: "utf8" },
+  );
+  if (result.status !== 0) return null;
+  try {
+    const data = JSON.parse(result.stdout);
+    const stream = data.streams?.[0];
+    if (!stream) return null;
+    return { stream, format: data.format ?? {} };
+  } catch {
+    return null;
+  }
+}
+
+function audioFixture(name) {
+  const probed = probeStream(name, "a:0");
+  if (!probed) return null;
+  return {
+    canaux: probed.stream.channels ?? null,
+    dispositionCanaux: probed.stream.channel_layout ?? null,
+    frequenceHz: Number(probed.stream.sample_rate ?? 0),
+    dureeSecondes: Number(Number(probed.format.duration ?? 0).toFixed(2)),
+  };
+}
+
+function videoFixture(name) {
+  const probed = probeStream(name, "v:0");
+  if (!probed) return null;
+  return {
+    cadenceReelle: probed.stream.r_frame_rate ?? null,
+    cadenceMoyenne: probed.stream.avg_frame_rate ?? null,
+    largeur: probed.stream.width ?? null,
+    hauteur: probed.stream.height ?? null,
+    images: probed.stream.nb_frames ? Number(probed.stream.nb_frames) : null,
+    dureeSecondes: Number(Number(probed.format.duration ?? 0).toFixed(2)),
+  };
+}
+
+function audioTags(name) {
+  const probed = probeStream(name, "a:0");
+  if (!probed) return null;
+  const tags = probed.format.tags ?? {};
+  const wanted = ["title", "artist", "album", "date", "genre", "track"];
+  return Object.fromEntries(wanted.filter((key) => tags[key]).map((key) => [key, String(tags[key])]));
+}
+
+/** Géométrie attendue de la planche-contact de recette (5 images, 2 colonnes). */
+const CONTACT_SETTINGS = { colonnes: 2, largeurVignette: 120, espacement: 12, marge: 24, hauteurLegende: 22 };
+const contactRows = Math.ceil(5 / CONTACT_SETTINGS.colonnes);
+
+
+/* ------------------------------------------------------ phase 11 */
+
+/**
+ * Valeurs de la phase 11.
+ *
+ * Trois origines, toutes vérifiables :
+ *
+ * - ce qui est **lu sur le disque** (fichiers TOML, jetons JWT, relevé de la
+ *   base SQLite écrit par `cargo run --example phase11_fixtures`) ;
+ * - ce qui vient d'une **norme** (les vecteurs de la RFC 4648) ;
+ * - ce qui est **recalculé ici**, indépendamment du code de l'application
+ *   (débits, durées, intérêts, conversions horaires par `Intl`).
+ *
+ * Aucune valeur n'est recopiée d'un résultat obtenu dans l'interface.
+ */
+function phase11() {
+  const toml = {
+    fichiers: ["sample-valid.toml", "sample-invalid.toml", "sample-comments.toml"],
+    valide: {},
+    invalide: {},
+    commentaires: {},
+  };
+
+  const valid = readFileSync(join(OUT, "sample-valid.toml"), "utf8");
+  const invalid = readFileSync(join(OUT, "sample-invalid.toml"), "utf8");
+  const commented = readFileSync(join(OUT, "sample-comments.toml"), "utf8");
+
+  const parsed = parseToml(valid);
+  toml.valide = {
+    clesRacine: Object.keys(parsed).length,
+    tables: ["serveur", "serveur.limites"],
+    tableauxDeTables: ["journal"],
+    entreesJournal: parsed.journal.length,
+    port: parsed.serveur.port,
+  };
+
+  try {
+    parseToml(invalid);
+    toml.invalide = { erreur: "AUCUNE — la fixture invalide a été acceptée" };
+  } catch (error) {
+    toml.invalide = {
+      ligne: error.line,
+      colonne: error.column,
+      cause: "clé « port » définie deux fois",
+    };
+  }
+
+  // Lignes commençant par un dièse, hors chaînes multilignes : ce que le
+  // reformatage fera disparaître.
+  const countComments = (text) => {
+    let count = 0;
+    let inside = false;
+    for (const line of text.split(/\r?\n/)) {
+      const delimiters = (line.match(/"""/g) ?? []).length;
+      const wasInside = inside;
+      if (delimiters % 2 === 1) inside = !inside;
+      if (wasInside) continue;
+      if (/^\s*#/.test(line)) count += 1;
+    }
+    return count;
+  };
+  toml.commentaires = {
+    lignesDeCommentaire: countComments(commented),
+    perduesAuFormatage: countComments(commented),
+    note: "Le reformatage reconstruit le document depuis ses données : les commentaires disparaissent.",
+  };
+
+  /* Base32 — vecteurs de la RFC 4648, section 10. */
+  const base32 = {
+    source: "RFC 4648, section 10",
+    vecteurs: {
+      "": "",
+      f: "MY======",
+      fo: "MZXQ====",
+      foo: "MZXW6===",
+      foob: "MZXW6YQ=",
+      fooba: "MZXW6YTB",
+      foobar: "MZXW6YTBOI======",
+    },
+    allerRetourUnicode: {
+      texte: "FourTout — été",
+      octets: Buffer.from("FourTout — été", "utf8").length,
+    },
+  };
+
+  /* JWT — état attendu de chaque jeton produit. */
+  const jwt = JSON.parse(readFileSync(join(OUT, "jwt-fixtures.json"), "utf8"));
+  const attendusJwt = {
+    hs256Valid: { signature: "valide", expire: false, acceptable: true },
+    hs256WrongKey: { signature: "invalide", expire: false, acceptable: false },
+    hs256Expired: { signature: "valide", expire: true, acceptable: false },
+    hs384Valid: { signature: "valide", expire: false, acceptable: true },
+    hs512Valid: { signature: "valide", expire: false, acceptable: true },
+    rs256Valid: { signature: "valide", expire: false, acceptable: true, cle: jwt.rsaPublicKeyFile },
+    rs256Expired: { signature: "valide", expire: true, acceptable: false, cle: jwt.rsaPublicKeyFile },
+    rs384Valid: { signature: "valide", expire: false, acceptable: true, cle: jwt.rsaPublicKeyFile },
+    rs512Valid: { signature: "valide", expire: false, acceptable: true, cle: jwt.rsaPublicKeyFile },
+    none: { signature: "refusée", motif: "alg: none" },
+  };
+
+  /* SQLite — relevé écrit par l'exemple Rust au moment de la génération. */
+  const sqlitePath = join(OUT, "sample.sqlite");
+  const sqlite = existsSync(sqlitePath)
+    ? {
+        fichier: "sample.sqlite",
+        octets: sizeOf(OUT, "sample.sqlite"),
+        sha256: sha256(readFileSync(sqlitePath)),
+        ...JSON.parse(readFileSync(join(OUT, "sample.sqlite.json"), "utf8")),
+        note: "Le SHA-256 doit être identique après toute tentative d'écriture : la base est ouverte en lecture seule.",
+      }
+    : { fichier: "ABSENT — lancer cargo run --example phase11_fixtures" };
+
+  /* Calculateurs — recalculés ici, sans le code de l'application. */
+  const GiB = 1024 ** 3 * 8; // en bits
+  const Gibit = 1024 ** 3;
+  const calculateurs = {
+    bandePassante: {
+      "1 Gio en 8 s": {
+        bits: GiB,
+        bitsParSeconde: GiB / 8,
+        gibitParSeconde: GiB / 8 / Gibit,
+        mioParSeconde: GiB / 8 / 8 / 1024 ** 2,
+      },
+      "100 Mbit/s": {
+        bitsParSeconde: 100e6,
+        moParSeconde: 100e6 / 8 / 1e6,
+        mioParSeconde: 100e6 / 8 / 1024 ** 2,
+      },
+    },
+    tempsDeTransfert: {
+      "100 Gio à 1 Gibit/s": {
+        bits: 100 * GiB,
+        secondes: (100 * GiB) / Gibit,
+        lisible: "13 min 20 s",
+      },
+      "100 Gio à 1 Gbit/s": { secondes: (100 * GiB) / 1e9 },
+    },
+    interets: {
+      "simple 1000 € 5 % 2 ans": { total: 1000 * (1 + 0.05 * 2), interets: 1000 * 0.05 * 2 },
+      "compose annuel 1000 € 5 % 2 ans": {
+        total: 1000 * Math.pow(1.05, 2),
+        interets: 1000 * Math.pow(1.05, 2) - 1000,
+      },
+      "compose mensuel 1000 € 5 % 2 ans": { total: 1000 * Math.pow(1 + 0.05 / 12, 24) },
+    },
+  };
+
+  /* Fuseaux horaires — recalculés par Intl, pas tabulés. */
+  const zoneHour = (zone, epochMs) =>
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: zone,
+      hourCycle: "h23",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(epochMs));
+
+  const fuseaux = {
+    "2026-01-15 14:30 Europe/Paris → UTC": {
+      utc: "2026-01-15T13:30:00.000Z",
+      decalageSource: "+01:00",
+      heureArrivee: zoneHour("UTC", Date.parse("2026-01-15T13:30:00Z")),
+    },
+    "2026-07-15 14:00 Europe/Paris → America/New_York": {
+      utc: "2026-07-15T12:00:00.000Z",
+      decalageSource: "+02:00",
+      decalageArrivee: "-04:00",
+      heureArrivee: zoneHour("America/New_York", Date.parse("2026-07-15T12:00:00Z")),
+    },
+    "2026-03-29 02:30 Europe/Paris": {
+      cas: "heure inexistante (passage à l'heure d'été)",
+      instantLePlusProche: "03:30 heure locale",
+    },
+    "2026-10-25 02:30 Europe/Paris": {
+      cas: "heure vécue deux fois (retour à l'heure d'hiver)",
+      premiereOccurrenceUtc: "2026-10-25T00:30:00.000Z",
+      secondeOccurrenceUtc: "2026-10-25T01:30:00.000Z",
+    },
+  };
+
+  /* Réseau — rien qui dépende du réseau du développeur. */
+  const reseau = {
+    note: "Aucune valeur ne dépend de l'adresse IP de la machine de développement.",
+    bornage: {
+      "192.168.1.42/24": { reseau: "192.168.1.0/24", premiere: "192.168.1.1", derniere: "192.168.1.254", cibles: 254 },
+      "10.2.3.4/16": { ramenéA: "10.2.3.0/24", cibles: 254, raison: "65536 adresses refusées" },
+      "10.0.0.4/31": { cibles: 2 },
+      "10.0.0.4/32": { cibles: 1 },
+    },
+    plafonds: { adressesMax: 256, portsMax: 256, paquetsPingMax: 20, connexionsSimultanees: 16 },
+    ping: { hoteDeTest: "127.0.0.1", paquetsParDefaut: 4, pertesAttendues: "0 %" },
+  };
+
+  return { toml, base32, jwt: { ...jwt, attendus: attendusJwt }, sqlite, calculateurs, fuseaux, reseau };
+}
+
+/* ------------------------------------------------------ phase 12 */
+
+/**
+ * Valeurs de la phase 12 — diagnostic et récupération.
+ *
+ * Chaque fixture abîmée descend d'un fichier sain, par une transformation
+ * décrite dans `generate-phase12-assets.mjs`. Ce contrat note donc, pour
+ * chacune, le diagnostic attendu, ce qui est récupérable, ce qui ne l'est pas,
+ * et les empreintes des contenus que la récupération doit rendre.
+ *
+ * Les empreintes des entrées ZIP sont calculées **ici**, à partir du texte
+ * attendu — jamais relevées sur une sortie de FourTout, ce qui ne prouverait
+ * rien d'autre que la constance d'un bogue.
+ */
+function phase12() {
+  const size = (name) => (existsSync(join(OUT, name)) ? sizeOf(OUT, name) : null);
+  const hash = (name) => (existsSync(join(OUT, name)) ? sha256(readFileSync(join(OUT, name))) : null);
+
+  const zipEntries = {
+    "alpha.txt": "Première entrée, en clair.\n",
+    "nested/bravo.txt": "Deuxième entrée, dans un sous-dossier.\n",
+    "unicode/été.txt": "Troisième entrée : accents, été, çà et là.\n",
+    "binary.bin": "0123456789".repeat(24),
+  };
+  const contenus = {};
+  for (const [name, text] of Object.entries(zipEntries)) {
+    contenus[name] = {
+      octets: Buffer.byteLength(text, "utf8"),
+      sha256: sha256(Buffer.from(text, "utf8")),
+    };
+  }
+
+  const zip = {
+    entrées: Object.keys(zipEntries),
+    contenus,
+    fixtures: {
+      "zip-healthy.zip": {
+        octets: size("zip-healthy.zip"),
+        sha256: hash("zip-healthy.zip"),
+        diagnostic: "zip.healthy",
+        récupérables: 4,
+        perdues: 0,
+      },
+      "zip-central-directory-missing.zip": {
+        octets: size("zip-central-directory-missing.zip"),
+        diagnostic: "zip.no-eocd",
+        cause: "fichier coupé juste avant le répertoire central",
+        enTêtesLocaux: 4,
+        récupérables: 4,
+        perdues: 0,
+      },
+      "zip-central-directory-corrupt.zip": {
+        octets: size("zip-central-directory-corrupt.zip"),
+        diagnostic: "zip.central-directory-corrupt",
+        cause: "signature de la deuxième entrée du répertoire central remplacée",
+        entréesAnnoncées: 4,
+        entréesLuesDansLeRépertoire: 1,
+        récupérables: 4,
+        perdues: 0,
+      },
+      "zip-one-entry-corrupt.zip": {
+        octets: size("zip-one-entry-corrupt.zip"),
+        diagnostic: "zip.healthy",
+        cause: "un octet retourné dans les données stockées de binary.bin",
+        récupérables: 3,
+        perdues: 1,
+        entréePerdue: "binary.bin",
+        étatAttendu: "checksumMismatch",
+      },
+      "zip-truncated.zip": {
+        octets: size("zip-truncated.zip"),
+        diagnostic: "zip.no-eocd",
+        cause: "fichier coupé au milieu des données de la dernière entrée",
+        récupérablesAuMoins: 3,
+        perduesAuMoins: 1,
+      },
+      "zip-trailing-garbage.zip": {
+        octets: size("zip-trailing-garbage.zip"),
+        diagnostic: "zip.trailing-garbage",
+        octetsParasites: 25,
+        réparabilité: "safeRepair",
+        sortieIdentiqueÀ: "zip-healthy.zip",
+      },
+    },
+  };
+
+  const pdf = {
+    fixtures: {
+      "pdf-healthy.pdf": {
+        octets: size("pdf-healthy.pdf"),
+        sha256: hash("pdf-healthy.pdf"),
+        diagnostic: "pdf.healthy",
+        version: "1.4",
+        objets: 5,
+        pages: 2,
+        réparabilité: "none",
+      },
+      "pdf-wrong-startxref.pdf": {
+        octets: size("pdf-wrong-startxref.pdf"),
+        diagnostic: "pdf.bad-startxref",
+        réparabilité: "safeRepair",
+        action: "pdf-fix-startxref",
+        pages: 2,
+        sortieIdentiqueÀ: "pdf-healthy.pdf",
+      },
+      "pdf-trailing-garbage.pdf": {
+        octets: size("pdf-trailing-garbage.pdf"),
+        diagnostic: "pdf.trailing-garbage",
+        octetsParasites: 39,
+        réparabilité: "safeRepair",
+        action: "pdf-strip-trailing",
+        pages: 2,
+        sortieIdentiqueÀ: "pdf-healthy.pdf",
+      },
+      "pdf-missing-eof.pdf": {
+        octets: size("pdf-missing-eof.pdf"),
+        diagnostic: "pdf.no-eof",
+        objets: 5,
+        réparabilité: "safeRepair",
+        action: "pdf-rebuild-xref",
+        pages: 2,
+      },
+      "pdf-broken-xref-recoverable.pdf": {
+        octets: size("pdf-broken-xref-recoverable.pdf"),
+        diagnostic: "pdf.no-startxref",
+        objets: 5,
+        réparabilité: "safeRepair",
+        action: "pdf-rebuild-xref",
+        objetsIndexés: 5,
+        pages: 2,
+      },
+      "pdf-truncated-stream.pdf": {
+        octets: size("pdf-truncated-stream.pdf"),
+        diagnostic: "pdf.incomplete-objects",
+        cause: "document coupé au milieu du dictionnaire de l'objet 3",
+        enTêtesDObjet: 3,
+        objetsIncomplets: [3],
+        référencesPendantes: ["3 0 R", "4 0 R"],
+        pagesAnnoncées: 2,
+        pagesRéellementComplètes: 0,
+        réparabilité: "none",
+        actionsProposées: 0,
+        note: "aucune action n'est proposée, et une reconstruction appelée de force échoue sans écrire le moindre fichier",
+      },
+    },
+  };
+
+  const images = {
+    dimensions: { largeur: 64, hauteur: 48 },
+    fixtures: {
+      "image-healthy.png": {
+        octets: size("image-healthy.png"),
+        sha256: hash("image-healthy.png"),
+        diagnostic: "image.healthy",
+        réparabilité: "none",
+      },
+      "image-healthy.jpg": {
+        octets: size("image-healthy.jpg"),
+        sha256: hash("image-healthy.jpg"),
+        diagnostic: "image.healthy",
+        réparabilité: "none",
+      },
+      "image-wrong-extension.jpg": {
+        octets: size("image-wrong-extension.jpg"),
+        diagnostic: "file.extension-mismatch",
+        typeRéel: "png",
+        extension: "jpg",
+        réparabilité: "safeRepair",
+        action: "fix-extension",
+      },
+      "image-png-trailing-garbage.png": {
+        octets: size("image-png-trailing-garbage.png"),
+        diagnostic: "png.trailing-garbage",
+        octetsParasites: 8,
+        réparabilité: "safeRepair",
+        décodeTelQuel: true,
+        sortieIdentiqueÀ: "image-healthy.png",
+      },
+      "image-png-bad-crc.png": {
+        octets: size("image-png-bad-crc.png"),
+        diagnostic: "png.broken-ancillary-chunk",
+        blocsAuxiliairesAbîmés: 1,
+        blocsEssentielsAbîmés: 0,
+        réparabilité: "safeRepair",
+        sansPerte: true,
+        récupérable: true,
+        actionsProposées: 1,
+        pixelsIdentiquesÀ: "image-healthy.png",
+      },
+      "image-png-truncated.png": {
+        octets: size("image-png-truncated.png"),
+        diagnostic: "png.truncated",
+        secondDiagnostic: "image.no-pixels",
+        décodeTelQuel: false,
+        récupérable: false,
+        réparabilité: "none",
+        actionsProposées: 0,
+        note: "aucune action n'est proposée et aucun fichier n'est écrit : les lignes manquantes ne sont pas inventées",
+      },
+      "image-jpeg-trailing-garbage.jpg": {
+        octets: size("image-jpeg-trailing-garbage.jpg"),
+        diagnostic: "jpeg.trailing-garbage",
+        octetsParasites: 8,
+        réparabilité: "safeRepair",
+      },
+      "image-jpeg-missing-eoi.jpg": {
+        octets: size("image-jpeg-missing-eoi.jpg"),
+        diagnostic: "jpeg.no-eoi",
+        réparabilité: "recoverVisual",
+        sansPerte: false,
+        sortie: "PNG réencodé depuis les pixels décodés",
+      },
+      "image-jpeg-truncated.jpg": {
+        octets: size("image-jpeg-truncated.jpg"),
+        diagnostic: "jpeg.no-eoi",
+        réparabilité: "recoverVisual",
+        note: "le décodeur ne rend que les lignes présentes ; rien n'est inventé",
+      },
+    },
+  };
+
+  return {
+    avertissement:
+      "Aucune donnée matérielle de la machine de développement ne figure ici : l'inventaire de stockage n'a pas de valeur attendue.",
+    zip,
+    pdf,
+    images,
+  };
+}
+
+const contract = {
+  genereLe: new Date().toISOString().slice(0, 10),
+  avertissement:
+    "Fichier dérivé du disque, pas écrit à la main. Toute valeur attendue d'un test ou d'une recette doit venir d'ici.",
+
+  rechercheArborescence: {
+    fichiers: searchFiles.length,
+    fichiersTxt: searchFiles.filter((entry) => entry.endsWith(".txt")).length,
+    listeTxt: searchFiles.filter((entry) => entry.endsWith(".txt")),
+    contenantFourTout: searchFiles.filter((entry) => contains(searchRoot, entry, "FourTout")),
+    contenantFourToutSensibleCasse: searchFiles.filter((entry) =>
+      decode(bytesOf(searchRoot, entry)).includes("FourTout"),
+    ),
+    // Ce binaire contient le mot, et ne doit jamais ressortir d'une recherche
+    // de contenu : c'est le piège que la fixture existe pour tendre.
+    piegeBinaire: "piege-binaire.bin",
+    fichiersAuMoins1Mio: searchFiles.filter((entry) => sizeOf(searchRoot, entry) >= 1024 * 1024),
+    extensions: [...new Set(searchFiles.map((entry) => entry.split(".").pop()))].sort(),
+  },
+
+  comparaisonDossiers: {
+    fichiersGauche: leftFiles.length,
+    fichiersDroite: rightFiles.length,
+    gaucheUniquement: leftFiles.filter((entry) => !rightFiles.includes(entry)),
+    droiteUniquement: rightFiles.filter((entry) => !leftFiles.includes(entry)),
+    identiques: inBoth.filter(
+      (entry) => sha256(bytesOf(compareLeft, entry)) === sha256(bytesOf(compareRight, entry)),
+    ),
+    differents: inBoth.filter(
+      (entry) => sha256(bytesOf(compareLeft, entry)) !== sha256(bytesOf(compareRight, entry)),
+    ),
+    // Ceux que le mode rapide ne peut pas voir : même taille, contenu différent.
+    differentsMemeTaille: inBoth.filter(
+      (entry) =>
+        sizeOf(compareLeft, entry) === sizeOf(compareRight, entry) &&
+        sha256(bytesOf(compareLeft, entry)) !== sha256(bytesOf(compareRight, entry)),
+    ),
+    octetsRelusEnModeFiable: inBoth
+      .filter((entry) => sizeOf(compareLeft, entry) === sizeOf(compareRight, entry))
+      .reduce((sum, entry) => sum + sizeOf(compareLeft, entry) * 2, 0),
+  },
+
+  synchronisation: {
+    fichiersSource: sourceFiles.length,
+    dossiersSource: directoriesOf(syncSource),
+    aCopier: sourceFiles.filter((entry) => !updateFiles.includes(entry)),
+    aRemplacer: sourceFiles.filter(
+      (entry) =>
+        updateFiles.includes(entry) &&
+        sha256(bytesOf(syncSource, entry)) !== sha256(bytesOf(syncUpdate, entry)),
+    ),
+    inchanges: sourceFiles.filter(
+      (entry) =>
+        updateFiles.includes(entry) &&
+        sha256(bytesOf(syncSource, entry)) === sha256(bytesOf(syncUpdate, entry)),
+    ),
+    dossiersACreer: directoriesOf(syncSource).filter(
+      (entry) => !directoriesOf(syncUpdate).includes(entry),
+    ),
+    octetsAEcrire: sourceFiles
+      .filter(
+        (entry) =>
+          !updateFiles.includes(entry) ||
+          sha256(bytesOf(syncSource, entry)) !== sha256(bytesOf(syncUpdate, entry)),
+      )
+      .reduce((sum, entry) => sum + sizeOf(syncSource, entry), 0),
+    aSupprimerEnMiroir: [
+      ...walk(syncMirror).filter((entry) => !sourceFiles.includes(entry)),
+      ...directoriesOf(syncMirror).filter(
+        (entry) => !directoriesOf(syncSource).includes(entry),
+      ),
+    ].sort(),
+  },
+
+  analyseEspace: {
+    fichiers: spaceFiles.length,
+    dossiers: directoriesOf(spaceRoot).length,
+    octetsTotal: spaceFiles.reduce((sum, entry) => sum + sizeOf(spaceRoot, entry), 0),
+    plusGrosFichier: spaceFiles
+      .map((entry) => ({ entry, size: sizeOf(spaceRoot, entry) }))
+      .sort((a, b) => b.size - a.size)[0],
+  },
+
+  sauvegarde: {
+    fichiers: walk(backupRoot).length,
+    dossiers: directoriesOf(backupRoot).length,
+    octets: walk(backupRoot).reduce((sum, entry) => sum + sizeOf(backupRoot, entry), 0),
+  },
+
+  checksums: {
+    fichiers: walk(checksumRoot).length,
+    liste: walk(checksumRoot),
+  },
+
+  archive: {
+    fichiers: walk(archiveRoot).length,
+    entrees: walk(archiveRoot).map((entry) => `archive-sample/${entry}`),
+  },
+
+  comparaisonImages: {
+    largeur: reference.width,
+    hauteur: reference.height,
+    pixels: reference.width * reference.height,
+    tailleDifferente: { largeur: differentSize.width, hauteur: differentSize.height },
+    identique: diffStats(reference, identical),
+    unPixel: {
+      ...onePixelStats.premierPixelChange,
+      ecart: onePixelStats.ecartMaximal,
+      pixelsDifferents: onePixelStats.pixelsDifferents,
+      psnr: onePixelStats.psnr,
+      ssim: ssimOf(reference, onePixel),
+    },
+    alpha: {
+      pixels: alphaStats.pixelsDifferents,
+      ecart: alphaStats.ecartMaximal,
+      pixelsSansAlpha: diffStats(reference, alphaChange, false).pixelsDifferents,
+    },
+    petitBruit: { ...diffStats(reference, smallNoise), ssim: ssimOf(reference, smallNoise) },
+    grosseModification: { ...diffStats(reference, heavyChange), ssim: ssimOf(reference, heavyChange) },
+  },
+
+  plancheContact: {
+    images: 5,
+    reglages: CONTACT_SETTINGS,
+    lignes: contactRows,
+    // marges + colonnes × vignette + espacements intérieurs
+    largeur:
+      CONTACT_SETTINGS.marge * 2 +
+      CONTACT_SETTINGS.colonnes * CONTACT_SETTINGS.largeurVignette +
+      (CONTACT_SETTINGS.colonnes - 1) * CONTACT_SETTINGS.espacement,
+    hauteurAvecLegendes:
+      CONTACT_SETTINGS.marge * 2 +
+      contactRows * (CONTACT_SETTINGS.largeurVignette + CONTACT_SETTINGS.hauteurLegende) +
+      (contactRows - 1) * CONTACT_SETTINGS.espacement,
+    hauteurSansLegendes:
+      CONTACT_SETTINGS.marge * 2 +
+      contactRows * CONTACT_SETTINGS.largeurVignette +
+      (contactRows - 1) * CONTACT_SETTINGS.espacement,
+  },
+
+  couleurs: {
+    imageTaille: { largeur: colorKnown.width, hauteur: colorKnown.height },
+    quadrants: [
+      { x: 5, y: 5, hex: hexAt(colorKnown, 5, 5) },
+      { x: 25, y: 5, hex: hexAt(colorKnown, 25, 5) },
+      { x: 5, y: 25, hex: hexAt(colorKnown, 5, 25) },
+      { x: 25, y: 25, hex: hexAt(colorKnown, 25, 25) },
+    ],
+    contrastes: {
+      noirSurBlanc: contrast("#000000", "#ffffff"),
+      identique: contrast("#777777", "#777777"),
+      rougeSurBlanc: contrast("#ff0000", "#ffffff"),
+    },
+  },
+
+  sousTitres: {
+    "subtitle-sample.srt": { repliques: subtitleBlocks("subtitle-sample.srt") },
+    "subtitle-sample.vtt": { repliques: subtitleBlocks("subtitle-sample.vtt") },
+    "subtitle-offset.srt": { repliques: subtitleBlocks("subtitle-offset.srt"), decalageMs: 2500 },
+    "subtitle-overlap.srt": { repliques: subtitleBlocks("subtitle-overlap.srt"), chevauchements: 2 },
+    "subtitle-broken.srt": { blocs: subtitleBlocks("subtitle-broken.srt") },
+    "subtitle-second.srt": { repliques: subtitleBlocks("subtitle-second.srt") },
+    "subtitle-windows.srt": {
+      repliques: 2,
+      encodage: "utf-16le",
+      finsDeLigne: "crlf",
+      marqueOrdreOctets: true,
+    },
+  },
+
+  mediaPhase10: {
+    "audio-mono.wav": audioFixture("audio-mono.wav"),
+    "audio-stereo-distinct.wav": audioFixture("audio-stereo-distinct.wav"),
+    "audio-multichannel.wav": audioFixture("audio-multichannel.wav"),
+    "audio-tagged.mp3": { ...audioFixture("audio-tagged.mp3"), etiquettes: audioTags("audio-tagged.mp3") },
+    "video-24fps.mp4": videoFixture("video-24fps.mp4"),
+    "video-30fps.mp4": videoFixture("video-30fps.mp4"),
+    "video-vfr.mp4": videoFixture("video-vfr.mp4"),
+  },
+
+  phase11: phase11(),
+  phase12: phase12(),
+
+  inspection: {
+    // Chaque fixture, et ce que la reconnaissance par signature doit en dire.
+    attendus: {
+      "inspect/wrong-extension.jpg": { typeReel: "png", extensionCoherente: false },
+      "inspect/wrong-extension.png": { typeReel: "jpg", extensionCoherente: false },
+      "inspect/vraie-image.png": { typeReel: "png", extensionCoherente: true },
+      "inspect/vraie-photo.jpg": { typeReel: "jpg", extensionCoherente: true },
+      "inspect/encoding-utf16le.txt": { typeReel: "utf16le", extensionCoherente: true },
+      "inspect/encoding-utf16be.txt": { typeReel: "utf16be", extensionCoherente: true },
+      "inspect/encoding-utf8-bom.txt": { typeReel: "utf8bom", extensionCoherente: true },
+      "inspect/sample.mp3": { typeReel: "mp3", extensionCoherente: true },
+      "inspect/faux-mp3.bin": { typeReel: "inconnu", extensionCoherente: true },
+      "inspect/sample.sqlite": { typeReel: "sqlite", extensionCoherente: true },
+      "inspect/sample.pdf": { typeReel: "pdf", extensionCoherente: true },
+      "inspect/entete-pe.exe": { typeReel: "exe", extensionCoherente: true },
+    },
+  },
+};
+
+writeFileSync(join(OUT, "CONTRAT.json"), JSON.stringify(contract, null, 2) + "\n");
+
+/* ------------------------------------------------------------- résumé */
+
+const c = contract;
+const lines = [
+  "Contrat des fixtures phase 9 — valeurs dérivées du disque",
+  "",
+  `  search-tree            : ${c.rechercheArborescence.fichiers} fichiers, dont ${c.rechercheArborescence.fichiersTxt} en .txt`,
+  `    contenant « FourTout »: ${c.rechercheArborescence.contenantFourTout.length} → ${c.rechercheArborescence.contenantFourTout.join(", ")}`,
+  `    ≥ 1 Mio              : ${c.rechercheArborescence.fichiersAuMoins1Mio.join(", ") || "aucun"}`,
+  "",
+  `  folder-compare         : ${c.comparaisonDossiers.identiques.length} identiques, ${c.comparaisonDossiers.differents.length} différents,`,
+  `                           ${c.comparaisonDossiers.gaucheUniquement.length} à gauche seulement, ${c.comparaisonDossiers.droiteUniquement.length} à droite seulement`,
+  `    invisibles en rapide : ${c.comparaisonDossiers.differentsMemeTaille.join(", ")}`,
+  `    octets relus (fiable): ${c.comparaisonDossiers.octetsRelusEnModeFiable}`,
+  "",
+  `  sync (mise à jour)     : ${c.synchronisation.aCopier.length} à copier, ${c.synchronisation.aRemplacer.length} à remplacer,`,
+  `                           ${c.synchronisation.inchanges.length} inchangé(s), ${c.synchronisation.dossiersACreer.length} dossier(s) à créer`,
+  `                           → ${c.synchronisation.aCopier.length + c.synchronisation.aRemplacer.length + c.synchronisation.dossiersACreer.length} opérations, ${c.synchronisation.octetsAEcrire} octets`,
+  `  sync (miroir)          : ${c.synchronisation.aSupprimerEnMiroir.length} suppression(s)`,
+  "",
+  `  space-analysis         : ${c.analyseEspace.fichiers} fichiers, ${c.analyseEspace.dossiers} dossiers, ${c.analyseEspace.octetsTotal} octets`,
+  `  backup-source          : ${c.sauvegarde.fichiers} fichiers, ${c.sauvegarde.dossiers} dossiers`,
+  `  checksum-set           : ${c.checksums.fichiers} fichiers`,
+  `  archive-sample         : ${c.archive.fichiers} entrées`,
+  "",
+  "Phase 11 — développeur, calculateurs et réseau",
+  "",
+  `  sample.sqlite          : ${c.phase11.sqlite.octets} octets, ${c.phase11.sqlite.lignes?.users ?? "?"} utilisateurs, ` +
+    `${c.phase11.sqlite.lignes?.projects ?? "?"} projets, ${c.phase11.sqlite.lignes?.events ?? "?"} événements`,
+  `    SHA-256              : ${c.phase11.sqlite.sha256 ?? "?"}`,
+  `    jointure Alice       : ${c.phase11.sqlite.evenementsDesProjetsDAlice ?? "?"} événements`,
+  `  sample-invalid.toml    : erreur ligne ${c.phase11.toml.invalide.ligne}, colonne ${c.phase11.toml.invalide.colonne}`,
+  `  sample-comments.toml   : ${c.phase11.toml.commentaires.lignesDeCommentaire} lignes de commentaire, toutes perdues au reformatage`,
+  `  Base32 « foobar »      : ${c.phase11.base32.vecteurs.foobar}`,
+  `  100 Gio à 1 Gibit/s    : ${c.phase11.calculateurs.tempsDeTransfert["100 Gio à 1 Gibit/s"].secondes} s (${c.phase11.calculateurs.tempsDeTransfert["100 Gio à 1 Gibit/s"].lisible})`,
+  `  1000 € 5 % 2 ans       : simple ${c.phase11.calculateurs.interets["simple 1000 € 5 % 2 ans"].total} €, ` +
+    `composé annuel ${c.phase11.calculateurs.interets["compose annuel 1000 € 5 % 2 ans"].total.toFixed(2)} €`,
+  `  LAN 10.2.3.4/16        : ramené à ${c.phase11.reseau.bornage["10.2.3.4/16"].ramenéA}, ${c.phase11.reseau.bornage["10.2.3.4/16"].cibles} cibles`,
+  "",
+  "Phase 12 — diagnostic et récupération",
+  "",
+  `  zip-central-directory-missing : ${c.phase12.zip.fixtures["zip-central-directory-missing.zip"].récupérables} entrées récupérables sur 4`,
+  `  zip-one-entry-corrupt        : ${c.phase12.zip.fixtures["zip-one-entry-corrupt.zip"].récupérables} récupérables, ` +
+    `${c.phase12.zip.fixtures["zip-one-entry-corrupt.zip"].perdues} perdue (${c.phase12.zip.fixtures["zip-one-entry-corrupt.zip"].entréePerdue})`,
+  `  zip-trailing-garbage         : ${c.phase12.zip.fixtures["zip-trailing-garbage.zip"].octetsParasites} octets parasites, retrait sans perte`,
+  `  pdf-wrong-startxref          : ${c.phase12.pdf.fixtures["pdf-wrong-startxref.pdf"].action}, ${c.phase12.pdf.fixtures["pdf-wrong-startxref.pdf"].pages} pages`,
+  `  pdf-broken-xref-recoverable  : ${c.phase12.pdf.fixtures["pdf-broken-xref-recoverable.pdf"].objetsIndexés} objets réindexés`,
+  `  pdf-truncated-stream         : ${c.phase12.pdf.fixtures["pdf-truncated-stream.pdf"].pagesRéellementComplètes} page complète sur ` +
+    `${c.phase12.pdf.fixtures["pdf-truncated-stream.pdf"].pagesAnnoncées} annoncées — aucune action, aucun fichier produit`,
+  `  image-png-bad-crc            : ${c.phase12.images.fixtures["image-png-bad-crc.png"].blocsAuxiliairesAbîmés} bloc auxiliaire abîmé, récupération sans perte`,
+  `  images saines                : ${c.phase12.images.dimensions.largeur} × ${c.phase12.images.dimensions.hauteur}`,
+  "",
+  `  Écrit dans test-assets/generated/CONTRAT.json`,
+];
+console.log(lines.join("\n"));

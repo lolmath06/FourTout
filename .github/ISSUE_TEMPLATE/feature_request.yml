@@ -1,0 +1,44 @@
+name: Proposer un outil ou une amélioration
+description: Une idée pour FourTout
+labels: ["proposition"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        FourTout compte 151 outils. Vérifiez d'abord dans
+        [docs/FEATURES.md](../blob/main/docs/FEATURES.md) et dans
+        [ROADMAP.md](../blob/main/ROADMAP.md) que votre idée n'y est pas déjà.
+
+  - type: textarea
+    id: besoin
+    attributes:
+      label: Quel est le besoin ?
+      description: >-
+        Ce que vous cherchez à faire, et comment vous le faites aujourd'hui.
+        Le besoin réel aide plus que la solution imaginée.
+      placeholder: >-
+        Je dois régulièrement extraire la première page d'une centaine de PDF.
+        Aujourd'hui je le fais un par un avec « Extraire des pages ».
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposition
+    attributes:
+      label: Ce que vous imaginez
+      placeholder: >-
+        Un mode « par lots » sur l'outil d'extraction de pages, avec un dossier
+        de destination.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: contraintes
+    attributes:
+      label: Contraintes du projet
+      description: >-
+        FourTout traite les fichiers localement et n'annonce jamais plus qu'il
+        ne fait.
+      options:
+        - label: Cette fonctionnalité peut se faire sans envoyer de fichier sur le réseau
+          required: true

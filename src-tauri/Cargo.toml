@@ -1,0 +1,81 @@
+[package]
+name = "fourtout"
+version = "1.0.0"
+description = "FourTout — boîte à outils desktop locale"
+authors = ["Matheo Dolmen"]
+license = "LicenseRef-Proprietary"
+edition = "2021"
+rust-version = "1.85"
+
+[lib]
+# Le suffixe `_lib` évite un conflit de noms avec le binaire sous Windows.
+name = "fourtout_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+# Rattache le manifeste Common Controls v6 à toutes les cibles sous Windows :
+# `tauri-build` ne sert que les cibles `bin`. Sans effet hors Windows.
+embed-resource = "3"
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri-plugin-dialog = "2.7.3"
+tauri-plugin-fs = "2.5.2"
+md-5 = "0.10.6"
+sha1 = "0.10.6"
+sha2 = "0.10.9"
+aes = "0.8.4"
+rayon = "1.10.0"
+flate2 = "1.1.10"
+num_cpus = "1.17.0"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
+# Installation des moteurs de parole : téléchargement vérifié puis extraction.
+ureq = "2.12"
+tar = "0.4"
+zip = { version = "2", default-features = false, features = ["aes-crypto", "deflate"] }
+argon2 = "0.5.3"
+chacha20poly1305 = "0.10.1"
+getrandom = "0.3.4"
+sevenz-rust2 = { version = "0.21", default-features = false, features = ["compress"] }
+hmac = "0.12"
+lzma-rust2 = "0.19"
+base64 = "0.22"
+# Vérification de signature JWT RS256/384/512 : RSA pur Rust, aucune OpenSSL.
+rsa = { version = "0.9", features = ["sha2"] }
+# Explorateur SQLite : `bundled` compile la bibliothèque avec l'application,
+# ce qui garantit la même version et le même comportement sur Fedora et Windows.
+rusqlite = { version = "0.40", features = ["bundled", "column_decltype", "hooks"] }
+# Sondes réseau : sockets ICMP non privilégiés et connexions TCP avec délai.
+socket2 = { version = "0.6", features = ["all"] }
+# Énumération des interfaces réseau locales, Fedora et Windows compris.
+if-addrs = "0.15"
+# Résolution inverse d'adresse (getnameinfo), pour nommer les appareils du
+# réseau local quand le système sait le faire.
+dns-lookup = "4"
+
+# Espace disque des volumes montés : `statvfs`, seule interface portable pour
+# cette information, absente de la bibliothèque standard.
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+# Ping sous Windows : l'API IcmpSendEcho de l'IP Helper, qui ne demande aucun
+# privilège administrateur, là où un socket ICMP brut en exigerait.
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_NetworkManagement_IpHelper", "Win32_Networking_WinSock", "Win32_System_IO"] }
+
+# Arbitrage des permissions de la WebView (microphone). La version est figée sur
+# celle de wry : c'est la même WebView qui est manipulée.
+[target.'cfg(target_os = "linux")'.dependencies]
+webkit2gtk = { version = "=2.0.2", features = ["v2_38"] }
+
+[profile.release]
+# Application distribuée : on privilégie la taille du binaire.
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
