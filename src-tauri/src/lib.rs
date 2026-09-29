@@ -1,0 +1,187 @@
+//! Cœur natif de FourTout.
+//!
+//! Phase 1 : l'application est entièrement rendue par le frontend. Ce module
+//! n'expose donc qu'une commande d'information, utilisée pour vérifier que le
+//! pont IPC fonctionne. Les phases suivantes y brancheront les traitements qui
+//! doivent être natifs (ffmpeg, OCR, chiffrement, accès disque), en gardant la
+//! règle : tout se fait localement, rien n'est envoyé sur le réseau.
+
+pub mod diagnostics;
+pub mod disks;
+pub mod exec;
+pub mod files;
+pub mod image_native;
+pub mod media;
+pub mod microphone;
+pub mod models;
+pub mod network;
+pub mod rates;
+pub mod recovery;
+pub mod security;
+pub mod speech;
+pub mod sqlite;
+
+use serde::Serialize;
+
+#[derive(Serialize)]
+pub struct AppInfo {
+    name: String,
+    version: String,
+    os: String,
+    arch: String,
+}
+
+/// Informations d'exécution, affichables dans les Paramètres.
+#[tauri::command]
+fn app_info() -> AppInfo {
+    AppInfo {
+        name: "FourTout".into(),
+        version: env!("CARGO_PKG_VERSION").into(),
+        os: std::env::consts::OS.into(),
+        arch: std::env::consts::ARCH.into(),
+    }
+}
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
+        .setup(|app| {
+            // WebKitGTK refuse toute capture tant que l'hôte n'arbitre pas les
+            // demandes de permission : on branche l'arbitrage dès le départ.
+            // Aucune autorisation n'est demandée ici (voir `microphone`).
+            #[cfg(target_os = "linux")]
+            {
+                use tauri::Manager;
+                if let Some(window) = app.get_webview_window("main") {
+                    microphone::attach(&window);
+                }
+            }
+            let _ = app;
+            Ok(())
+        })
+        .manage(recovery::command::RecoveryState::default())
+        .manage(files::FilesState::default())
+        .manage(media::command::MediaState::default())
+        .manage(models::command::ModelsState::default())
+        .manage(speech::command::SpeechState::default())
+        .manage(network::NetworkState::default())
+        .invoke_handler(tauri::generate_handler![
+            app_info,
+            image_native::encode_webp,
+            media::command::media_available,
+            media::command::media_temp,
+            media::command::media_encoders,
+            media::command::media_probe_encoders,
+            media::command::media_reset_encoder_probes,
+            media::command::media_stage,
+            media::command::media_probe,
+            media::command::media_read,
+            media::command::media_cleanup,
+            media::command::media_exec,
+            media::command::media_cancel,
+            files::command::files_cancel,
+            files::command::files_hash,
+            files::command::files_compare,
+            files::command::files_binary_diff,
+            files::command::files_info,
+            files::command::files_archive_create,
+            files::command::files_archive_list,
+            files::command::files_archive_extract,
+            files::command::files_archive_create_encrypted,
+            files::command::files_archive_extract_encrypted,
+            files::command::files_encrypt,
+            files::command::files_decrypt,
+            files::command::files_organize_plan,
+            files::command::files_organize_apply,
+            files::command::files_secure_delete,
+            rates::currency_rates,
+            files::command::files_folder_stats,
+            files::command::files_tree,
+            files::command::files_duplicates,
+            files::command::files_split,
+            files::command::files_join,
+            files::command::files_rename_plan,
+            files::command::files_rename_apply,
+            files::command::files_docx_read,
+            files::command::files_read_text,
+            files::command::files_read_bytes,
+            files::command::files_folder_compare,
+            files::command::files_sync_plan,
+            files::command::files_sync_apply,
+            files::command::files_search,
+            files::command::files_hex_read,
+            files::command::files_hex_find,
+            files::command::files_hex_find_all,
+            files::command::files_hex_write,
+            files::command::files_backup_create,
+            files::command::files_backup_verify,
+            files::command::files_backup_preview,
+            files::command::files_backup_restore,
+            files::command::files_manifest_create,
+            files::command::files_manifest_verify,
+            files::command::files_hmac_text,
+            files::command::files_hmac_file,
+            files::command::files_stream_compress,
+            files::command::files_stream_decompress,
+            files::command::files_stream_test,
+            files::command::files_stream_suggest,
+            files::command::files_archive_test,
+            files::command::files_write_text,
+            microphone::mic_permission_state,
+            microphone::mic_request_permission,
+            models::command::models_list,
+            models::command::models_dir,
+            models::command::models_install,
+            models::command::models_cancel,
+            models::command::models_remove,
+            models::command::models_read_file,
+            speech::command::tts_speak,
+            speech::command::tts_concat,
+            speech::command::stt_transcribe,
+            speech::command::speech_cancel,
+            recovery::command::recover_password,
+            recovery::command::recover_cancel,
+            security::command::security_jwt_verify,
+            sqlite::command::sqlite_overview,
+            sqlite::command::sqlite_query,
+            sqlite::command::sqlite_browse,
+            network::command::network_cancel,
+            network::command::network_ping,
+            network::command::network_check_ports,
+            network::command::network_parse_ports,
+            network::command::network_interfaces,
+            network::command::network_lan_plan,
+            network::command::network_lan_discover,
+            diagnostics::command::diagnostics_inspect,
+            diagnostics::command::diagnostics_output_path,
+            diagnostics::command::diagnostics_fix_extension,
+            diagnostics::command::diagnostics_zip_strip,
+            diagnostics::command::diagnostics_zip_recover,
+            diagnostics::command::diagnostics_pdf_repair,
+            diagnostics::command::diagnostics_image_recover,
+            diagnostics::command::diagnostics_sha256,
+            diagnostics::command::diagnostics_discard,
+            disks::command::disks_inventory,
+            disks::command::disks_health,
+            disks::command::disks_health_provider,
+        ])
+        .run(tauri::generate_context!())
+        .expect("erreur au démarrage de FourTout");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn app_info_reports_current_build() {
+        let info = app_info();
+        assert_eq!(info.name, "FourTout");
+        assert!(!info.version.is_empty());
+        assert!(!info.os.is_empty());
+        assert!(!info.arch.is_empty());
+    }
+}

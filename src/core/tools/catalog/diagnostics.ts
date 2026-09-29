@@ -1,0 +1,138 @@
+import { defineTools, IN, OUT } from "./shared";
+
+/**
+ * Diagnostic et récupération.
+ *
+ * Cinq outils, et pas un de plus. Chacun répond à une question que l'on se pose
+ * réellement — « qu'est-ce qui cloche dans ce fichier ? », « que reste-t-il de
+ * cette archive ? », « qu'y a-t-il sur mes disques ? » — et aucun ne promet ce
+ * qu'il ne peut pas prouver.
+ *
+ * Deux règles valent pour tout ce groupe, et figurent dans chaque note :
+ * **le fichier d'origine n'est jamais modifié**, et **rien n'est inventé**. Une
+ * réparation qui ne serait pas justifiable octet par octet n'est pas proposée,
+ * fût-ce au prix d'un écran qui se contente de dire pourquoi.
+ */
+export const diagnosticTools = defineTools([
+  {
+    id: "file-diagnose",
+    name: "Diagnostiquer un fichier",
+    description: "Comprendre ce qu'un fichier est vraiment, et ce qui lui manque.",
+    category: "diagnostics",
+    alsoIn: ["files"],
+    icon: "Stethoscope",
+    keywords: [
+      "diagnostiquer fichier",
+      "fichier corrompu",
+      "fichier abîmé",
+      "fichier illisible",
+      "type de fichier",
+      "extension",
+      "tronqué",
+      "signature",
+      "analyser",
+    ],
+    aliases: ["file diagnosis", "corrupt file", "file check", "inspect file"],
+    capabilities: ["local"],
+    acceptedInputs: [IN.anyFile(false)],
+    outputs: [OUT.none()],
+    note: "Le fichier d'origine n'est jamais modifié. FourTout analyse la structure interne du ZIP, du PDF, du PNG et du JPEG, et le dit franchement pour les autres formats.",
+  },
+  {
+    id: "archive-repair",
+    name: "Archive ZIP endommagée",
+    description: "Diagnostiquer une archive illisible et récupérer ce qu'elle contient encore.",
+    category: "diagnostics",
+    alsoIn: ["files"],
+    icon: "ArchiveX",
+    keywords: [
+      "reparer zip",
+      "zip cassé",
+      "zip corrompu",
+      "archive endommagée",
+      "recuperer archive",
+      "archive illisible",
+      "répertoire central",
+      "extraire malgré tout",
+    ],
+    aliases: ["repair zip", "recover zip", "broken archive", "zip repair"],
+    capabilities: ["local", "produces-files", "long-running"],
+    acceptedInputs: [{ kind: "archive", extensions: ["zip"] }],
+    outputs: [OUT.archive(["zip"])],
+    note: "Récupère par balayage des en-têtes locaux, même sans répertoire central. Les entrées dont les données sont tronquées sont déclarées perdues — elles ne sont jamais reconstituées. L'archive d'origine n'est pas touchée.",
+  },
+  {
+    id: "pdf-repair",
+    name: "PDF endommagé",
+    description: "Diagnostiquer un PDF illisible et le réparer quand c'est démontrable.",
+    category: "diagnostics",
+    alsoIn: ["pdf"],
+    icon: "FileWarning",
+    keywords: [
+      "reparer pdf",
+      "pdf corrompu",
+      "pdf cassé",
+      "pdf illisible",
+      "xref pdf",
+      "startxref",
+      "pdf tronqué",
+      "reconstruire pdf",
+    ],
+    aliases: ["repair pdf", "fix pdf", "broken pdf", "pdf recovery"],
+    capabilities: ["local", "produces-files"],
+    acceptedInputs: [IN.pdf()],
+    outputs: [OUT.pdf()],
+    note: "Chaque fichier produit est rouvert par le moteur PDF et ses pages comptées : si le moteur le refuse, la réparation est déclarée manquée et le fichier supprimé. Une réécriture invalide toute signature numérique.",
+  },
+  {
+    id: "image-repair",
+    name: "Image endommagée",
+    description: "Diagnostiquer un PNG ou un JPEG abîmé et sauver les pixels lisibles.",
+    category: "diagnostics",
+    alsoIn: ["images"],
+    icon: "ImageOff",
+    keywords: [
+      "recuperer image",
+      "image corrompue",
+      "jpeg cassé",
+      "png corrompu",
+      "photo abîmée",
+      "image illisible",
+      "image tronquée",
+      "crc png",
+    ],
+    aliases: ["repair image", "recover photo", "broken jpeg", "png repair"],
+    capabilities: ["local", "produces-files"],
+    acceptedInputs: [{ kind: "image", extensions: ["png", "jpg", "jpeg"] }],
+    outputs: [OUT.image(["png"])],
+    note: "Une somme de contrôle fausse n'est jamais recalculée, et les lignes manquantes d'une image tronquée ne sont jamais inventées. La récupération visuelle réencode les pixels décodés : elle sauve l'image, pas le fichier.",
+  },
+  {
+    id: "disk-inspect",
+    name: "Inspecter les disques et partitions",
+    description: "Voir les disques, partitions, volumes et indicateurs de santé du système.",
+    category: "diagnostics",
+    alsoIn: ["files"],
+    icon: "HardDrive",
+    keywords: [
+      "disque",
+      "disques",
+      "partitions",
+      "filesystem",
+      "systeme de fichiers",
+      "espace disque",
+      "volume",
+      "smart",
+      "sante disque",
+      "ssd",
+      "nvme",
+      "usb",
+      "montage",
+    ],
+    aliases: ["disk info", "partitions", "smart health", "drive inspector", "storage"],
+    capabilities: ["local"],
+    acceptedInputs: [IN.none()],
+    outputs: [OUT.none()],
+    note: "Lecture seule, sans exception : FourTout ne sait ni partitionner, ni formater, ni monter, ni cloner, ni effacer un disque. Les indicateurs de santé détaillés dépendent de `smartctl`, que FourTout n'embarque pas.",
+  },
+]);

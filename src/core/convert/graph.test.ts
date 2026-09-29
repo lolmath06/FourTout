@@ -1,0 +1,148 @@
+import { describe, expect, it } from "vitest";
+import { buildConversionEdges, conversionsFor, convertibleExtensions, presetForTarget } from "./graph";
+import { toolRegistry } from "@/core/tools/registry";
+import { implementedToolIds } from "@/tools/implementations";
+
+/**
+ * Le convertisseur universel ne doit jamais proposer une conversion qui
+ * n'existe pas. Ces tests verrouillent les deux garanties : ce qui est proposé
+ * est réellement branché, et ce qui est prévu n'apparaît nulle part.
+ */
+
+const targetsFor = (extension: string) => conversionsFor(extension).map((target) => target.to);
+const toolsFor = (extension: string) => conversionsFor(extension).map((target) => target.toolId);
+
+describe("dérivation du graphe depuis le registre", () => {
+  it("ne retient que des outils réellement implémentés", () => {
+    const implemented = new Set(implementedToolIds());
+    for (const edge of buildConversionEdges()) {
+      expect(implemented.has(edge.toolId), `outil non branché : ${edge.toolId}`).toBe(true);
+    }
+  });
+
+  it("ne propose jamais une arête sans outil au catalogue", () => {
+    for (const edge of buildConversionEdges()) {
+      expect(toolRegistry.get(edge.toolId), edge.toolId).toBeDefined();
+    }
+  });
+
+  it("n'inclut pas le convertisseur universel lui-même", () => {
+    expect(buildConversionEdges().map((edge) => edge.toolId)).not.toContain("universal-converter");
+  });
+
+  it("ne propose pas de conversion d'un format vers lui-même", () => {
+    for (const edge of buildConversionEdges()) {
+      expect(edge.from).not.toBe(edge.to);
+    }
+  });
+
+  it("ne propose qu'un seul outil par format cible", () => {
+    const targets = conversionsFor("png").map((target) => target.to);
+    expect(new Set(targets).size).toBe(targets.length);
+  });
+});
+
+describe("conversions proposées par format", () => {
+  it("PNG : JPEG, WebP et PDF", () => {
+    const targets = targetsFor("png");
+    expect(targets).toContain("jpg");
+    expect(targets).toContain("webp");
+    expect(targets).toContain("pdf");
+    expect(toolsFor("png")).toContain("image-convert");
+  });
+
+  it("MP4 : autres formats vidéo, GIF, audio et image fixe", () => {
+    const targets = targetsFor("mp4");
+    expect(targets).toContain("webm");
+    expect(targets).toContain("mkv");
+    expect(targets).toContain("gif");
+    expect(targets).toContain("mp3");
+    expect(targets).toContain("png");
+    const tools = toolsFor("mp4");
+    expect(tools).toContain("video-convert");
+    expect(tools).toContain("video-extract-audio");
+  });
+
+  it("PDF : images, texte et audio", () => {
+    const targets = targetsFor("pdf");
+    expect(targets).toContain("png");
+    expect(targets).toContain("txt");
+    expect(targets.some((target) => ["mp3", "wav"].includes(target))).toBe(true);
+    expect(toolsFor("pdf")).toContain("pdf-to-images");
+  });
+
+  it("TXT : PDF, audio et HTML", () => {
+    const targets = targetsFor("txt");
+    expect(targets).toContain("pdf");
+    expect(targets).toContain("html");
+    expect(targets.some((target) => ["mp3", "wav"].includes(target))).toBe(true);
+  });
+
+  it("DOCX : texte, Markdown et HTML", () => {
+    const targets = targetsFor("docx");
+    expect(targets).toEqual(expect.arrayContaining(["txt", "md", "html"]));
+    expect(toolsFor("docx")).toContain("docx-extract");
+  });
+
+  it("MP3 : autres formats audio", () => {
+    expect(targetsFor("mp3")).toContain("wav");
+  });
+
+  it("ignore la casse et le point de l'extension", () => {
+    expect(targetsFor("PNG")).toEqual(targetsFor("png"));
+    expect(conversionsFor(".png").map((t) => t.to)).toEqual(targetsFor("png"));
+  });
+
+  it("ne propose, pour un format inconnu, que ce qui marche vraiment dessus", () => {
+    // Un `.xyz` n'a ni conversion d'image, ni conversion de document — mais la
+    // compression d'un fichier seul, elle, ne regarde pas le format de son
+    // entrée. La proposer est exact ; la taire serait une omission.
+    const targets = conversionsFor("xyz").map((target) => target.to).sort();
+    expect(targets).toEqual(["gz", "xz"]);
+  });
+
+  it("propose la compression d'un fichier seul quel que soit son format", () => {
+    for (const extension of ["log", "bin", "sql", "iso"]) {
+      const targets = conversionsFor(extension).map((target) => target.to);
+      expect(targets, extension).toContain("gz");
+      expect(targets, extension).toContain("xz");
+    }
+    // Mais jamais vers son propre format : compresser un `.gz` en `.gz` n'est
+    // pas une conversion.
+    expect(conversionsFor("gz").map((target) => target.to)).not.toContain("gz");
+  });
+
+  it("ne propose que des conversions réellement exécutables", () => {
+    const implemented = new Set(implementedToolIds());
+    // L'invariant du graphe, et la seule chose qui compte : une conversion
+    // proposée doit toujours pouvoir être exécutée. Comme le catalogue ne
+    // contient plus que des outils livrés, il suffit que la cible existe et
+    // porte une implémentation.
+    for (const extension of convertibleExtensions()) {
+      for (const target of conversionsFor(extension)) {
+        expect(
+          implemented.has(target.toolId),
+          `${extension} → ${target.to} via ${target.toolId}`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it("propose DOCX vers PDF", () => {
+    expect(toolsFor("docx")).toContain("docx-to-pdf");
+  });
+});
+
+describe("relais vers l'outil spécialisé", () => {
+  it("transmet le format cible en préréglage", () => {
+    const target = conversionsFor("png").find((entry) => entry.to === "webp")!;
+    expect(presetForTarget(target)).toEqual({ format: "webp" });
+  });
+
+  it("couvre les familles de fichiers courantes", () => {
+    const extensions = convertibleExtensions();
+    for (const extension of ["png", "jpg", "webp", "pdf", "mp4", "mp3", "wav", "txt", "md", "docx"]) {
+      expect(extensions, `aucune conversion depuis ${extension}`).toContain(extension);
+    }
+  });
+});
