@@ -8,6 +8,33 @@ change pour lui. Pour l'historique détaillé du code, `git log`.
 
 ---
 
+## [1.0.1] — 2026-10-02
+
+### Internationalisation
+
+- Interface disponible dans **16 langues**, avec détection automatique de la
+  langue du système et retour possible à `System`.
+- Catalogue complet : tous les messages de l'application sont traduits dans
+  chaque langue prise en charge.
+- Recherche des outils localisée et déterministe dans les différentes langues.
+- Correction de chaînes qui restaient en français, de pluriels construits
+  manuellement et de résumés partiellement traduits.
+
+### Documentation
+
+- Documentation publique canonique désormais disponible en **anglais**, avec
+  un miroir français complet sous `docs/fr/`.
+- `CONTRIBUTING` et `ROADMAP` disponibles en anglais et en français.
+- Liens bilingues ajoutés dans la documentation et audit des liens relatifs.
+- Les dix README traduits sont conservés et pointent vers la documentation
+  appropriée.
+
+### Présentation
+
+- Nouvelle démonstration anglaise utilisée par le README principal et les
+  README non francophones.
+- Le README français conserve la démonstration française.
+
 ## [1.0.0] — 2026-09-13
 
 Première version complète de FourTout : **196 outils, tous utilisables**,
