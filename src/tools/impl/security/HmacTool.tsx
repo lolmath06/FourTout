@@ -12,6 +12,7 @@ import { formatFileSize } from "@/core/files";
 import { hmacFile, hmacText, type HmacAlgorithm, type HmacResult } from "@/core/files/native";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t, tx } from "@/i18n";
 
 /**
  * Calcul d'un HMAC sur un texte ou un fichier.
@@ -27,15 +28,15 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * Le fichier, lui, est lu en flux : un HMAC sur une image disque de 40 Go se
  * calcule sans que rien ne passe en mémoire.
  */
-const ALGORITHMS: { value: HmacAlgorithm; label: string; hint: string }[] = [
-  { value: "sha256", label: "HMAC-SHA-256", hint: "Le choix usuel : webhooks, signatures d'API, jetons." },
-  { value: "sha512", label: "HMAC-SHA-512", hint: "Même usage, empreinte plus longue." },
+const ALGORITHMS: { value: HmacAlgorithm; label: string; hint: string }[] = localized(() => [
+  { value: "sha256", label: "HMAC-SHA-256", hint: t("Le choix usuel : webhooks, signatures d'API, jetons.") },
+  { value: "sha512", label: "HMAC-SHA-512", hint: t("Même usage, empreinte plus longue.") },
   {
     value: "sha1",
     label: "HMAC-SHA-1",
-    hint: "Hérité. Contrairement à SHA-1 nu, HMAC-SHA-1 n'est pas cassé — mais ne l'employez que si un service ancien l'exige.",
+    hint: t("Hérité. Contrairement à SHA-1 nu, HMAC-SHA-1 n'est pas cassé — mais ne l'employez que si un service ancien l'exige."),
   },
-];
+]);
 
 export function HmacTool(_props: ToolComponentProps) {
   const [source, setSource] = useState<"text" | "file">("text");
@@ -63,32 +64,32 @@ export function HmacTool(_props: ToolComponentProps) {
   const copy = async (value: string, label: string) => {
     try {
       await navigator.clipboard.writeText(value);
-      notify.success("Copié", label);
+      notify.success(t("Copié"), label);
     } catch {
-      notify.error("Copie impossible", "Le presse-papiers n'est pas accessible.");
+      notify.error(t("Copie impossible"), t("Le presse-papiers n'est pas accessible."));
     }
   };
 
   return (
     <div className="space-y-4">
-      <Fieldset columns={2} title="Calcul">
-        <Field label="Entrée">
+      <Fieldset columns={2} title={t("Calcul")}>
+        <Field label={t("Entrée")}>
           <OptionGroup
-            ariaLabel="Nature de l'entrée"
+            ariaLabel={t("Nature de l'entrée")}
             value={source}
             onChange={(next) => {
               setSource(next);
               action.setResult(null);
             }}
             options={[
-              { value: "text", label: "Texte" },
-              { value: "file", label: "Fichier" },
+              { value: "text", label: t("Texte") },
+              { value: "file", label: t("Fichier") },
             ]}
           />
         </Field>
-        <Field label="Algorithme" hint={ALGORITHMS.find((entry) => entry.value === algorithm)?.hint}>
+        <Field label={t("Algorithme")} hint={tx(ALGORITHMS.find((entry) => entry.value === algorithm)?.hint)}>
           <OptionGroup
-            ariaLabel="Algorithme HMAC"
+            ariaLabel={t("Algorithme HMAC")}
             value={algorithm}
             onChange={(next) => {
               setAlgorithm(next);
@@ -103,14 +104,14 @@ export function HmacTool(_props: ToolComponentProps) {
             setKey(next);
             action.setResult(null);
           }}
-          label="Clé secrète"
-          hint="Elle n'est ni enregistrée, ni journalisée, ni ajoutée aux récents. Elle disparaît quand vous quittez l'outil."
+          label={t("Clé secrète")}
+          hint={t("Elle n'est ni enregistrée, ni journalisée, ni ajoutée aux récents. Elle disparaît quand vous quittez l'outil.")}
         />
       </Fieldset>
 
       {source === "text" ? (
-        <Fieldset columns={1} title="Message">
-          <Field label="Texte à signer" full>
+        <Fieldset columns={1} title={t("Message")}>
+          <Field label={t("Texte à signer")} full>
             <textarea
               value={text}
               onChange={(event) => {
@@ -118,7 +119,7 @@ export function HmacTool(_props: ToolComponentProps) {
                 action.setResult(null);
               }}
               rows={6}
-              aria-label="Texte à signer"
+              aria-label={t("Texte à signer")}
               className="w-full rounded-[var(--radius-md)] border border-[var(--ft-border-strong)] bg-[var(--ft-bg)] px-2 py-1.5 font-mono text-[13px] outline-none focus:border-[var(--ft-accent)]"
             />
           </Field>
@@ -131,33 +132,33 @@ export function HmacTool(_props: ToolComponentProps) {
             setPaths(next);
             action.setResult(null);
           }}
-          label="Fichier à signer"
-          hint="lu en flux : la taille n'a pas d'importance"
+          label={t("Fichier à signer")}
+          hint={t("lu en flux : la taille n'a pas d'importance")}
         />
       )}
 
       <RunBar
-        label="Calculer le HMAC"
+        label={t("Calculer le HMAC")}
         icon="KeyRound"
         disabled={!ready}
         running={action.job.isRunning}
         progress={action.job.progress}
         status={action.job.status}
-        error={action.error}
+        error={tx(action.error)}
         cancel={action.job.cancel}
         onRun={run}
       />
 
       {action.result && (
-        <Panel title={`${action.result.algorithm} — ${formatFileSize(action.result.bytes)} couverts`} testId="hmac-result">
+        <Panel title={t("{algorithm} — {size} couverts", { algorithm: action.result.algorithm, size: formatFileSize(action.result.bytes) })} testId="hmac-result">
           <div className="space-y-2 p-3">
             <Output
-              label="Hexadécimal"
+              label={t("Hexadécimal")}
               value={action.result.hex}
-              onCopy={() => void copy(action.result!.hex, "HMAC hexadécimal")}
+              onCopy={() => void copy(action.result!.hex, t("HMAC hexadécimal"))}
             />
             <Output
-              label="Base64"
+              label={t("Base64")}
               value={action.result.base64}
               onCopy={() => void copy(action.result!.base64, "HMAC Base64")}
             />
@@ -165,9 +166,8 @@ export function HmacTool(_props: ToolComponentProps) {
         </Panel>
       )}
 
-      <Callout tone="info" title="Ce qu'un HMAC prouve">
-        Qu'un message a bien été produit par quelqu'un qui connaît la clé, et qu'il n'a pas été
-        modifié depuis. Il ne chiffre rien : le message reste lisible par tous.
+      <Callout tone="info" title={t("Ce qu'un HMAC prouve")}>
+        {t("Qu'un message a bien été produit par quelqu'un qui connaît la clé, et qu'il n'a pas été modifié depuis. Il ne chiffre rien : le message reste lisible par tous.")}
       </Callout>
     </div>
   );
@@ -184,11 +184,11 @@ function Output({
 }) {
   return (
     <div className="flex items-start gap-2">
-      <span className="ft-label w-24 shrink-0 pt-1.5">{label}</span>
+      <span className="ft-label w-24 shrink-0 pt-1.5">{tx(label)}</span>
       <code className="min-w-0 flex-1 break-all rounded-md border border-[var(--ft-border)] bg-[var(--ft-bg)] px-2 py-1.5 font-mono text-[12px]">
         {value}
       </code>
-      <Button size="sm" variant="ghost" onClick={onCopy} aria-label={`Copier le HMAC ${label}`}>
+      <Button size="sm" variant="ghost" onClick={onCopy} aria-label={t("Copier le HMAC {label}", { label })}>
         <Icon name="Copy" size={13} />
       </Button>
     </div>

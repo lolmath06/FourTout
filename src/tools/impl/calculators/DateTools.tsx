@@ -16,6 +16,7 @@ import {
   type DateUnit,
 } from "@/core/calc/datetime";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, formatDate, formatNumber, t, tx } from "@/i18n";
 
 const today = () => toDateOnly(new Date());
 
@@ -32,13 +33,13 @@ function DateField({
   autoFocus?: boolean;
 }) {
   return (
-    <Field label={label}>
+    <Field label={tx(label)}>
       <TextInput
         type="date"
         value={value}
         autoFocus={autoFocus}
         onChange={(event) => onChange(event.target.value)}
-        aria-label={label}
+        aria-label={tx(label)}
       />
     </Field>
   );
@@ -76,14 +77,14 @@ export function DateDifferenceTool(_props: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <Fieldset columns={1}>
-        <Field label="Opération">
+        <Field label={t("Opération")}>
           <OptionGroup
-            ariaLabel="Opération"
+            ariaLabel={t("Opération")}
             value={mode}
             onChange={setMode}
             options={[
-              { value: "difference", label: "Entre deux dates" },
-              { value: "add", label: "Ajouter ou retirer" },
+              { value: "difference", label: t("Entre deux dates") },
+              { value: "add", label: t("Ajouter ou retirer") },
             ]}
           />
         </Field>
@@ -92,40 +93,40 @@ export function DateDifferenceTool(_props: ToolComponentProps) {
       {mode === "difference" ? (
         <>
           <Fieldset columns={2}>
-            <DateField label="Date de départ" value={from} onChange={setFrom} autoFocus />
-            <DateField label="Date d'arrivée" value={to} onChange={setTo} />
+            <DateField label={t("Date de départ")} value={from} onChange={setFrom} autoFocus />
+            <DateField label={t("Date d'arrivée")} value={to} onChange={setTo} />
           </Fieldset>
 
           <InputError
-            message={!start || !end ? "Renseignez deux dates valides (jour, mois, année)." : undefined}
+            message={!start || !end ? t("Renseignez deux dates valides (jour, mois, année).") : undefined}
           />
 
           {difference && (
             <>
               <ResultBlock
-                value={difference.days.toLocaleString("fr-FR")}
+                value={formatNumber(difference.days)}
                 unit={Math.abs(difference.days) > 1 ? "jours" : "jour"}
-                formula={`du ${from} au ${to}`}
+                formula={t("du {from} au {to}", { from, to })}
               />
               <ValueTable
-                caption="Autres lectures"
+                caption={t("Autres lectures")}
                 rows={[
                   {
-                    label: "Semaines et jours",
-                    value: `${difference.weeks} semaine${Math.abs(difference.weeks) > 1 ? "s" : ""} et ${Math.abs(difference.remainingDays)} jour${Math.abs(difference.remainingDays) > 1 ? "s" : ""}`,
+                    label: t("Semaines et jours"),
+                    value: t("{weeks} {value, plural, one {semaine} other {semaines}} et {value2} {value2, plural, one {jour} other {jours}}", { weeks: difference.weeks, value: Math.abs(difference.weeks), value2: Math.abs(difference.remainingDays) }),
                   },
                   {
-                    label: "Années, mois et jours",
-                    value: `${difference.years} an${Math.abs(difference.years) > 1 ? "s" : ""}, ${Math.abs(difference.months)} mois et ${Math.abs(difference.daysAfterMonths)} jour${Math.abs(difference.daysAfterMonths) > 1 ? "s" : ""}`,
+                    label: t("Années, mois et jours"),
+                    value: t("{years} {value, plural, one {an} other {ans}}, {value2} mois et {value3} {value3, plural, one {jour} other {jours}}", { years: difference.years, value: Math.abs(difference.years), value2: Math.abs(difference.months), value3: Math.abs(difference.daysAfterMonths) }),
                   },
                   {
-                    label: "Jours ouvrés",
-                    hint: "lundi à vendredi, bornes comprises",
-                    value: difference.businessDays.toLocaleString("fr-FR"),
+                    label: t("Jours ouvrés"),
+                    hint: t("lundi à vendredi, bornes comprises"),
+                    value: formatNumber(difference.businessDays),
                   },
                   {
-                    label: "Heures",
-                    value: (difference.days * 24).toLocaleString("fr-FR"),
+                    label: t("Heures"),
+                    value: formatNumber((difference.days * 24)),
                   },
                 ]}
               />
@@ -135,36 +136,36 @@ export function DateDifferenceTool(_props: ToolComponentProps) {
       ) : (
         <>
           <Fieldset columns={2}>
-            <DateField label="Date de départ" value={from} onChange={setFrom} autoFocus />
-            <Field label="Sens">
+            <DateField label={t("Date de départ")} value={from} onChange={setFrom} autoFocus />
+            <Field label={t("Sens")}>
               <OptionGroup
-                ariaLabel="Sens"
+                ariaLabel={t("Sens")}
                 value={direction}
                 onChange={setDirection}
                 options={[
-                  { value: "add", label: "Ajouter" },
-                  { value: "subtract", label: "Retirer" },
+                  { value: "add", label: t("Ajouter") },
+                  { value: "subtract", label: t("Retirer") },
                 ]}
               />
             </Field>
-            <Field label="Quantité">
+            <Field label={t("Quantité")}>
               <TextInput
                 value={amount}
                 inputMode="numeric"
                 onChange={(event) => setAmount(event.target.value)}
-                aria-label="Quantité"
+                aria-label={t("Quantité")}
               />
             </Field>
-            <Field label="Unité" hint="Mois et années suivent le calendrier, pas 30 ou 365 jours.">
+            <Field label={t("Unité")} hint={t("Mois et années suivent le calendrier, pas 30 ou 365 jours.")}>
               <Select
                 value={unit}
                 onChange={setUnit}
-                aria-label="Unité"
+                aria-label={t("Unité")}
                 options={[
                   { value: "days", label: "jours" },
                   { value: "weeks", label: "semaines" },
                   { value: "months", label: "mois" },
-                  { value: "years", label: "années" },
+                  { value: "years", label: t("années") },
                 ]}
               />
             </Field>
@@ -173,9 +174,9 @@ export function DateDifferenceTool(_props: ToolComponentProps) {
           <InputError
             message={
               !start
-                ? "Renseignez une date valide."
+                ? t("Renseignez une date valide.")
                 : !Number.isFinite(quantity)
-                  ? "La quantité doit être un nombre entier."
+                  ? t("La quantité doit être un nombre entier.")
                   : undefined
             }
           />
@@ -183,7 +184,7 @@ export function DateDifferenceTool(_props: ToolComponentProps) {
           {shifted && (
             <ResultBlock
               value={toDateOnly(shifted)}
-              formula={shifted.toLocaleDateString("fr-FR", {
+              formula={formatDate(shifted, {
                 weekday: "long",
                 day: "numeric",
                 month: "long",
@@ -216,7 +217,7 @@ export function DurationTool(_props: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <TextPane
-        label="Durées, une par ligne"
+        label={t("Durées, une par ligne")}
         value={input}
         onChange={setInput}
         placeholder={"01:30:00\n1h30\n90m\n-0:15"}
@@ -224,17 +225,15 @@ export function DurationTool(_props: ToolComponentProps) {
       />
 
       <p className="ft-meta">
-        Écritures acceptées : <code>hh:mm:ss</code>, <code>hh:mm</code>, <code>1h30</code>,{" "}
-        <code>90m</code>, <code>45s</code>, ou un nombre seul (minutes). Un signe moins en tête
-        soustrait la ligne.
+        <Trans source={"Écritures acceptées : <0>hh:mm:ss</0>, <1>hh:mm</1>, <2>1h30</2>, <3>90m</3>, <4>45s</4>, ou un nombre seul (minutes). Un signe moins en tête soustrait la ligne."} components={[<code />, <code />, <code />, <code />, <code />]} />
       </p>
 
       <InputError
         message={
           invalid.length > 0
-            ? `Ligne${invalid.length > 1 ? "s" : ""} non comprise${invalid.length > 1 ? "s" : ""} : ${invalid
+            ? t("{count, plural, one {Ligne} other {Lignes}} non {count, plural, one {comprise} other {comprises}} : {value}", { count: invalid.length, value: invalid
                 .map((entry) => `« ${entry.line} »`)
-                .join(", ")}`
+                .join(", ") })
             : undefined
         }
       />
@@ -243,16 +242,16 @@ export function DurationTool(_props: ToolComponentProps) {
         <>
           <ResultBlock value={breakdown.formatted} formula={breakdown.human} />
           <ValueTable
-            caption="Le même total, autrement"
+            caption={t("Le même total, autrement")}
             rows={[
-              { label: "Secondes", value: Math.round(breakdown.seconds).toLocaleString("fr-FR") },
-              { label: "Minutes", value: breakdown.minutes.toFixed(2) },
-              { label: "Heures", value: breakdown.hours.toFixed(3) },
-              { label: "Jours", value: breakdown.days.toFixed(4) },
+              { label: t("Secondes"), value: formatNumber(Math.round(breakdown.seconds)) },
+              { label: t("Minutes"), value: breakdown.minutes.toFixed(2) },
+              { label: t("Heures"), value: breakdown.hours.toFixed(3) },
+              { label: t("Jours"), value: breakdown.days.toFixed(4) },
             ]}
           />
           <ValueTable
-            caption="Détail des lignes"
+            caption={t("Détail des lignes")}
             rows={parsed.map((entry, index) => ({
               label: `${index + 1}. ${entry.line}`,
               value: formatDuration(entry.seconds ?? 0),
@@ -283,25 +282,25 @@ export function AgeTool(_props: ToolComponentProps) {
     try {
       age = computeAge(birthDate, referenceDate);
     } catch (failure) {
-      error = failure instanceof Error ? failure.message : "Calcul impossible.";
+      error = failure instanceof Error ? failure.message : t("Calcul impossible.");
     }
   }
 
   return (
     <div className="space-y-4">
       <Fieldset columns={2}>
-        <DateField label="Date de naissance" value={birth} onChange={setBirth} autoFocus />
-        <DateField label="Date de référence" value={reference} onChange={setReference} />
+        <DateField label={t("Date de naissance")} value={birth} onChange={setBirth} autoFocus />
+        <DateField label={t("Date de référence")} value={reference} onChange={setReference} />
       </Fieldset>
 
       <div className="flex justify-end">
         <Button size="sm" onClick={() => setReference(today())}>
-          <Icon name="Clock3" size={13} /> Aujourd'hui
+          <Icon name="Clock3" size={13} />{" "}{t("Aujourd'hui")}
         </Button>
       </div>
 
       <InputError
-        message={!birthDate || !referenceDate ? "Renseignez deux dates valides." : error}
+        message={!birthDate || !referenceDate ? t("Renseignez deux dates valides.") : error}
       />
 
       {age && (
@@ -312,14 +311,14 @@ export function AgeTool(_props: ToolComponentProps) {
             formula={`${age.years} an${age.years > 1 ? "s" : ""}, ${age.months} mois et ${age.days} jour${age.days > 1 ? "s" : ""}`}
           />
           <ValueTable
-            caption="Détail"
+            caption={t("Détail")}
             rows={[
-              { label: "Jours vécus", value: age.totalDays.toLocaleString("fr-FR") },
-              { label: "Semaines vécues", value: age.totalWeeks.toLocaleString("fr-FR") },
-              { label: "Prochain anniversaire", value: toDateOnly(age.nextBirthday) },
+              { label: t("Jours vécus"), value: formatNumber(age.totalDays) },
+              { label: t("Semaines vécues"), value: formatNumber(age.totalWeeks) },
+              { label: t("Prochain anniversaire"), value: toDateOnly(age.nextBirthday) },
               {
-                label: "Dans",
-                value: `${age.daysUntilNextBirthday.toLocaleString("fr-FR")} jour${age.daysUntilNextBirthday > 1 ? "s" : ""}`,
+                label: t("Dans"),
+                value: `${formatNumber(age.daysUntilNextBirthday)} jour${age.daysUntilNextBirthday > 1 ? "s" : ""}`,
               },
             ]}
           />

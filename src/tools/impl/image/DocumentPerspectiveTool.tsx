@@ -21,6 +21,7 @@ import {
 } from "@/core/image/perspective";
 import type { SelectedFile } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t, tx } from "@/i18n";
 
 /**
  * Correction de perspective : l'utilisateur place quatre coins, le moteur
@@ -38,12 +39,12 @@ type Corner = keyof NormQuad;
 
 const CORNER_ORDER: Corner[] = ["topLeft", "topRight", "bottomRight", "bottomLeft"];
 
-const CORNER_LABELS: Record<Corner, string> = {
-  topLeft: "Coin haut-gauche",
-  topRight: "Coin haut-droite",
-  bottomRight: "Coin bas-droite",
-  bottomLeft: "Coin bas-gauche",
-};
+const CORNER_LABELS: Record<Corner, string> = localized(() => ({
+  topLeft: t("Coin haut-gauche"),
+  topRight: t("Coin haut-droite"),
+  bottomRight: t("Coin bas-droite"),
+  bottomLeft: t("Coin bas-gauche"),
+}));
 
 /** Quadrilatère de départ : un rectangle légèrement rentré dans l'image. */
 const DEFAULT_QUAD: NormQuad = {
@@ -53,11 +54,11 @@ const DEFAULT_QUAD: NormQuad = {
   bottomLeft: { x: 0.1, y: 0.9 },
 };
 
-const RENDERINGS: { value: PerspectiveRendering; label: string; hint: string }[] = [
-  { value: "color", label: "Couleur", hint: "Conserve les couleurs de la photo" },
-  { value: "grayscale", label: "Niveaux de gris", hint: "Neutralise la dominante colorée" },
-  { value: "document", label: "Document N&B", hint: "Seuil adaptatif : texte net sur fond blanc" },
-];
+const RENDERINGS: { value: PerspectiveRendering; label: string; hint: string }[] = localized(() => [
+  { value: "color", label: t("Couleur"), hint: t("Conserve les couleurs de la photo") },
+  { value: "grayscale", label: t("Niveaux de gris"), hint: t("Neutralise la dominante colorée") },
+  { value: "document", label: t("Document N&B"), hint: t("Seuil adaptatif : texte net sur fond blanc") },
+]);
 
 const ASPECTS: PerspectiveAspect[] = ["auto", "a4-portrait", "a4-landscape", "letter-portrait", "square"];
 
@@ -81,9 +82,9 @@ export function DocumentPerspectiveTool({ tool }: ToolComponentProps) {
     <ImageToolShell
       tool={tool}
       selection="single"
-      actionLabel="Redresser"
+      actionLabel={t("Redresser")}
       actionDisabled={!isUsableQuad(toPixels(quad, 1000, 1000))}
-      hint="Placez les quatre coins de la feuille, puis redressez. Le calcul est une vraie transformation projective, pas un recadrage."
+      hint={t("Placez les quatre coins de la feuille, puis redressez. Le calcul est une vraie transformation projective, pas un recadrage.")}
       run={async ({ files, context }) => {
         const output = await processImage(
           files[0],
@@ -96,21 +97,21 @@ export function DocumentPerspectiveTool({ tool }: ToolComponentProps) {
           { format: "same", suffix: "redresse" },
           context,
         );
-        return { files: [output], summary: "Document redressé." };
+        return { files: [output], summary: t("Document redressé.") };
       }}
     >
       {(files) => (
         <div className="space-y-3">
           <Fieldset columns={2}>
-            <Field label="Rendu">
-              <OptionGroup ariaLabel="Rendu" value={rendering} onChange={setRendering} options={RENDERINGS} />
+            <Field label={t("Rendu")}>
+              <OptionGroup ariaLabel={t("Rendu")} value={rendering} onChange={setRendering} options={RENDERINGS} />
             </Field>
             <Field
-              label="Proportions du résultat"
-              hint="Les proportions déduites des coins sont approchées : imposer le format donne un résultat exact."
+              label={t("Proportions du résultat")}
+              hint={t("Les proportions déduites des coins sont approchées : imposer le format donne un résultat exact.")}
             >
               <OptionGroup
-                ariaLabel="Proportions du résultat"
+                ariaLabel={t("Proportions du résultat")}
                 value={aspect}
                 onChange={setAspect}
                 options={ASPECTS.map((value) => ({ value, label: ASPECT_LABELS[value] }))}
@@ -122,17 +123,16 @@ export function DocumentPerspectiveTool({ tool }: ToolComponentProps) {
 
           <div className="flex flex-wrap items-center gap-2">
             <Button size="sm" variant="ghost" onClick={() => setQuad(DEFAULT_QUAD)}>
-              <Icon name="Undo2" size={14} /> Réinitialiser les coins
+              <Icon name="Undo2" size={14} />{" "}{t("Réinitialiser les coins")}
             </Button>
             <p className="text-xs text-[var(--ft-text-muted)]">
-              Faites glisser chaque poignée sur un coin de la feuille.
+              {t("Faites glisser chaque poignée sur un coin de la feuille.")}
             </p>
           </div>
 
           {!isUsableQuad(toPixels(quad, 1000, 1000)) && (
-            <Callout tone="warning" title="Quadrilatère impossible">
-              Les quatre coins se croisent. Replacez-les dans l'ordre haut-gauche, haut-droite,
-              bas-droite, bas-gauche.
+            <Callout tone="warning" title={t("Quadrilatère impossible")}>
+              {t("Les quatre coins se croisent. Replacez-les dans l'ordre haut-gauche, haut-droite, bas-droite, bas-gauche.")}
             </Callout>
           )}
 
@@ -229,7 +229,7 @@ function PerspectiveStage({
           <button
             key={corner}
             type="button"
-            aria-label={CORNER_LABELS[corner]}
+            aria-label={tx(CORNER_LABELS[corner])}
             onPointerDown={(event) => {
               event.preventDefault();
               draggingRef.current = corner;
@@ -280,19 +280,19 @@ function PerspectivePreview({
 
   return (
     <div className="space-y-2">
-      <p className="ft-section">Aperçu du résultat</p>
+      <p className="ft-section">{t("Aperçu du résultat")}</p>
       <PreviewFrame maxHeight={420}>
         {url ? (
-          <img src={url} alt="Aperçu du document redressé" className="max-h-[420px] max-w-full object-contain" />
+          <img src={url} alt={t("Aperçu du document redressé")} className="max-h-[420px] max-w-full object-contain" />
         ) : (
-          <p className="p-6 text-xs text-[var(--ft-text-muted)]">Préparation de l'aperçu…</p>
+          <p className="p-6 text-xs text-[var(--ft-text-muted)]">{t("Préparation de l'aperçu…")}</p>
         )}
       </PreviewFrame>
       {size && (
         <p className="ft-meta ft-num">
           {aspect === "auto"
-            ? `Dimensions déduites : ${size.width} × ${size.height} px`
-            : `Format imposé : ${ASPECT_LABELS[aspect]}`}
+            ? t("Dimensions déduites : {width} × {height} px", { width: size.width, height: size.height })
+            : t("Format imposé : {value}", { value: ASPECT_LABELS[aspect] })}
         </p>
       )}
     </div>

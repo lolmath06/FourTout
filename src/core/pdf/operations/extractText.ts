@@ -2,6 +2,7 @@ import { openWithPdfJs } from "../pdfjs";
 import { report, throwIfCancelled } from "../document";
 import { outputName } from "../filenames";
 import type { OperationContext, OutputFile, PdfSource } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Extraction du texte réellement présent dans le document.
@@ -45,7 +46,7 @@ export async function extractText(
     await document.loadingTask?.destroy();
   }
 
-  report(context, 1, "Terminé");
+  report(context, 1, t("Terminé"));
   const emptyPages = pages.filter((page) => page.text.trim().length === 0).length;
   return {
     pages,

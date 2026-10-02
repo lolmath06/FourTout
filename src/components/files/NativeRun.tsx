@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Callout, ProgressBar } from "@/components/ui/Callout";
 import { NATIVE_REQUIRED } from "@/core/files/native";
+import { t, tx } from "@/i18n";
 
 /**
  * Présentation commune aux outils Fichiers qui composent eux-mêmes leur
@@ -24,8 +25,8 @@ import { NATIVE_REQUIRED } from "@/core/files/native";
 /** Repli explicite quand l'outil exige l'application installée. */
 export function NativeRequired() {
   return (
-    <Callout tone="info" title="Application installée requise">
-      {NATIVE_REQUIRED}
+    <Callout tone="info" title={t("Application installée requise")}>
+      {tx(NATIVE_REQUIRED)}
     </Callout>
   );
 }
@@ -66,7 +67,7 @@ export function RunBar({
         {secondary}
         {running && (
           <Button size="sm" variant="ghost" onClick={cancel}>
-            Annuler
+            {t("Annuler")}
           </Button>
         )}
         <Button
@@ -78,27 +79,27 @@ export function RunBar({
           {running ? (
             <>
               <Icon name="Loader" size={15} className="animate-spin" />
-              {progress.label ?? "Traitement…"}
+              {progress.label ?? t("Traitement…")}
             </>
           ) : (
             <>
               <Icon name={icon} size={15} />
-              {label}
+              {tx(label)}
             </>
           )}
         </Button>
       </div>
 
-      {running && <ProgressBar ratio={progress.ratio} label={progress.label} />}
+      {running && <ProgressBar ratio={progress.ratio} label={tx(progress.label)} />}
 
       {status === "cancelled" && (
-        <Callout tone="neutral" title="Opération annulée">
-          Le traitement s'est arrêté à votre demande.
+        <Callout tone="neutral" title={t("Opération annulée")}>
+          {t("Le traitement s'est arrêté à votre demande.")}
         </Callout>
       )}
       {error && (
-        <Callout tone="error" title="L'opération a échoué">
-          {error}
+        <Callout tone="error" title={t("L'opération a échoué")}>
+          {tx(error)}
         </Callout>
       )}
     </div>

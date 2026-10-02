@@ -17,25 +17,53 @@
 #   cargo build --release --manifest-path src-tauri/Cargo.toml
 #
 # Usage : scripts/showcase/native-capture.sh [chemin/du/binaire]
+#         SHOWCASE_LANG=en … : interface, fichiers et recherches en anglais,
+#         captures dans showcase-output/raw-en/ (la version française reste intacte).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 BIN="${1:-${CARGO_TARGET_DIR:-$ROOT/src-tauri/target}/release/fourtout}"
-RAW="$ROOT/showcase-output/raw"
+FIXTURES="$ROOT/showcase-output/fixtures"
 # Dossier de démonstration au chemin neutre : il apparaît dans les captures.
 DEMO_HOME="${DEMO_HOME:-/home/demo}"
 DISPLAY_NUM=":97"
+
+if [[ "${SHOWCASE_LANG:-fr}" == "en" ]]; then
+  RAW="$ROOT/showcase-output/raw-en"
+  PDFS=(annual-report-sample.pdf appendices-sample.pdf presentation-sample.pdf)
+  IMAGE=landscape-sample.jpg
+  ARCHIVE=sample-archive.zip
+  DAMAGED=damaged-archive.zip
+  VIDEO=presentation-sample.mp4
+  Q_HASH="compute a hash"; Q_ARCHIVE="inspect an archive"; Q_MEDIA="inspect a media file"; Q_DIAG="diagnose a file"
+  # La langue « Système » de l'application suit celle de l'environnement.
+  APP_LANG=(LANG=C.UTF-8 LANGUAGE=en_US:en)
+else
+  RAW="$ROOT/showcase-output/raw"
+  PDFS=(rapport-annuel-exemple.pdf annexes-exemple.pdf presentation-exemple.pdf)
+  IMAGE=paysage-exemple.jpg
+  ARCHIVE=archive-exemple.zip
+  DAMAGED=archive-abimee.zip
+  VIDEO=presentation-exemple.mp4
+  Q_HASH="calculer une empreinte"; Q_ARCHIVE="inspecter une archive"; Q_MEDIA="inspecter un media"; Q_DIAG="diagnostiquer un fichier"
+  APP_LANG=()
+fi
 mkdir -p "$RAW"
 
 # ------------------------------------------------------------ fichiers fictifs
+# Le dossier ne contient que les fichiers de la langue en cours : ils
+# apparaissent à l'écran, y compris dans le contenu des archives.
+rm -rf "$DEMO_HOME/Documents" "$DEMO_HOME/Videos"
 mkdir -p "$DEMO_HOME/Documents" "$DEMO_HOME/Videos"
-cp "$ROOT"/showcase-output/fixtures/*.pdf "$ROOT/showcase-output/fixtures/paysage-exemple.jpg" "$DEMO_HOME/Documents/"
-(cd "$DEMO_HOME/Documents" && rm -f archive-exemple.zip && zip -q archive-exemple.zip ./*.pdf paysage-exemple.jpg)
-head -c 20000 "$DEMO_HOME/Documents/archive-exemple.zip" > "$DEMO_HOME/Documents/archive-abimee.zip"
+for f in "${PDFS[@]}" "$IMAGE"; do cp "$FIXTURES/$f" "$DEMO_HOME/Documents/"; done
+# Ordre de l'archive : les PDF par ordre alphabétique, puis l'image (la dernière
+# entrée est celle que le diagnostic de l'archive tronquée signale).
+(cd "$DEMO_HOME/Documents" && zip -q "$ARCHIVE" $(printf '%s\n' "${PDFS[@]}" | sort) "$IMAGE")
+head -c 20000 "$DEMO_HOME/Documents/$ARCHIVE" > "$DEMO_HOME/Documents/$DAMAGED"
 ffmpeg -y -loglevel error -f lavfi -i "smptehdbars=size=1920x1080:rate=30" \
   -f lavfi -i "sine=frequency=440:sample_rate=48000" -t 12 \
   -c:v libx264 -pix_fmt yuv420p -c:a aac -b:a 128k \
-  "$DEMO_HOME/Videos/presentation-exemple.mp4"
+  "$DEMO_HOME/Videos/$VIDEO"
 
 # ------------------------------------------------------------ pilotage
 S=2 # facteur d'échelle : les coordonnées ci-dessous sont en pixels logiques.
@@ -84,7 +112,7 @@ run_theme() {
   local xvfb=$!
   sleep 1.5
   export DISPLAY="$DISPLAY_NUM"
-  dbus-run-session -- env GDK_SCALE=$S GTK_THEME="$gtk_theme" \
+  dbus-run-session -- env "${APP_LANG[@]}" GDK_SCALE=$S GTK_THEME="$gtk_theme" \
     WEBKIT_DISABLE_COMPOSITING_MODE=1 HOME="$DEMO_HOME" "$BIN" >/dev/null 2>&1 &
   local app=$!
   sleep 8
@@ -94,26 +122,26 @@ run_theme() {
   sleep 1.5
 
   # Fichiers & Archives — empreintes SHA-256 et SHA-512, calculées par Rust.
-  open_tool "calculer une empreinte"
-  pick_file 195 "$DEMO_HOME/Documents/rapport-annuel-exemple.pdf"
+  open_tool "$Q_HASH"
+  pick_file 195 "$DEMO_HOME/Documents/${PDFS[0]}"
   click 520 317 0.2        # case SHA-512
   click 1150 490 7         # « Calculer l'empreinte » (puis la notification s'efface)
   shot fichiers
 
   # Archives — contenu d'une archive, sans l'extraire.
-  open_tool "inspecter une archive"
-  pick_file 312 "$DEMO_HOME/Documents/archive-exemple.zip" 1
+  open_tool "$Q_ARCHIVE"
+  pick_file 312 "$DEMO_HOME/Documents/$ARCHIVE" 1
   click 1154 412 3         # « Inspecter l'archive »
   shot archives
 
   # Média — ce que FFmpeg lit réellement dans le fichier.
-  open_tool "inspecter un media"
-  pick_file 194 "$DEMO_HOME/Videos/presentation-exemple.mp4" 5
+  open_tool "$Q_MEDIA"
+  pick_file 194 "$DEMO_HOME/Videos/$VIDEO" 5
   shot media
 
   # Diagnostic — une archive tronquée.
-  open_tool "diagnostiquer un fichier"
-  pick_file 246 "$DEMO_HOME/Documents/archive-abimee.zip" 5
+  open_tool "$Q_DIAG"
+  pick_file 246 "$DEMO_HOME/Documents/$DAMAGED" 5
   shot diagnostic
 
   kill "$app" 2>/dev/null || true

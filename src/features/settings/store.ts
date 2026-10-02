@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { appStore, STORAGE_KEYS, type KeyValueStore } from "@/core/storage";
 import { clampZoom, ZOOM_DEFAULT } from "@/core/ui/zoom";
+import { isLocaleCode, type LanguagePreference } from "@/i18n/locales";
 
 export type ThemePreference = "system" | "light" | "dark";
 /** Densité : la passe visuelle « utilitaire desktop » définit `compact`. */
@@ -9,6 +10,11 @@ export type MotionPreference = "normal" | "reduced";
 
 export interface Settings {
   theme: ThemePreference;
+  /**
+   * Langue de l'interface : celle du système par défaut, ou une langue
+   * choisie. Indépendante du système d'unités.
+   */
+  language: LanguagePreference;
   /**
    * Échelle de l'interface, de 0,8 à 1,5. Une seule préférence globale : le
    * zoom n'est jamais mémorisé par page, comme dans n'importe quel logiciel.
@@ -22,6 +28,7 @@ export interface Settings {
 
 const DEFAULTS: Settings = {
   theme: "system",
+  language: "system",
   zoom: ZOOM_DEFAULT,
   density: "compact",
   motion: "normal",
@@ -47,6 +54,7 @@ function load(store: KeyValueStore): Settings {
   const raw = store.get<Partial<Settings>>(STORAGE_KEYS.settings, {});
   return {
     theme: raw?.theme === "light" || raw?.theme === "dark" ? raw.theme : DEFAULTS.theme,
+    language: isLocaleCode(raw?.language) ? raw.language : DEFAULTS.language,
     zoom: typeof raw?.zoom === "number" ? clampZoom(raw.zoom) : DEFAULTS.zoom,
     density: raw?.density === "comfortable" ? "comfortable" : DEFAULTS.density,
     motion: raw?.motion === "reduced" ? "reduced" : DEFAULTS.motion,
@@ -58,8 +66,8 @@ function load(store: KeyValueStore): Settings {
 }
 
 function persist(store: KeyValueStore, state: Settings): void {
-  const { theme, zoom, density, motion, showPrivacyNotes } = state;
-  store.set(STORAGE_KEYS.settings, { theme, zoom, density, motion, showPrivacyNotes });
+  const { theme, language, zoom, density, motion, showPrivacyNotes } = state;
+  store.set(STORAGE_KEYS.settings, { theme, language, zoom, density, motion, showPrivacyNotes });
 }
 
 export function createSettingsStore(store: KeyValueStore = appStore) {

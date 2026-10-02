@@ -3,6 +3,7 @@ import { cleanup, readBytes, stage, tempPath } from "@/core/media/client";
 import { JobCancelledError, type JobContext } from "@/core/jobs/types";
 import type { SelectedFile } from "@/core/files";
 import type { TranscriptSegment } from "./subtitles";
+import { localized, t } from "@/i18n";
 
 /**
  * Transcription vocale locale (whisper.cpp).
@@ -16,19 +17,19 @@ import type { TranscriptSegment } from "./subtitles";
 export const STT_ENGINE = "engine-whisper";
 
 /** Modèles proposés, du plus rapide au plus précis. */
-export const STT_MODELS = [
-  { id: "stt-base", label: "Rapide", detail: "Bon compromis, suffisant pour un audio net." },
-  { id: "stt-small", label: "Précis", detail: "Nettement meilleur en français, environ 3× plus lent." },
-] as const;
+export const STT_MODELS = localized(() => [
+  { id: "stt-base", label: t("Rapide"), detail: t("Bon compromis, suffisant pour un audio net.") },
+  { id: "stt-small", label: t("Précis"), detail: t("Nettement meilleur en français, environ 3× plus lent.") },
+] as const);
 
 export type SttModelId = (typeof STT_MODELS)[number]["id"];
 
 /** Langues proposées ; `auto` laisse whisper.cpp détecter. */
-export const STT_LANGUAGES = [
-  { value: "auto", label: "Détection automatique" },
-  { value: "fr", label: "Français" },
-  { value: "en", label: "Anglais" },
-] as const;
+export const STT_LANGUAGES = localized(() => [
+  { value: "auto", label: t("Détection automatique") },
+  { value: "fr", label: t("Français") },
+  { value: "en", label: t("Anglais") },
+] as const);
 
 export interface TranscriptionResult {
   segments: TranscriptSegment[];
@@ -53,7 +54,7 @@ export function parseWhisperJson(raw: string): { segments: TranscriptSegment[]; 
   try {
     parsed = JSON.parse(raw) as WhisperJson;
   } catch {
-    throw new Error("La transcription n'a pas pu être lue.");
+    throw new Error(t("La transcription n'a pas pu être lue."));
   }
 
   const segments = (parsed.transcription ?? [])
@@ -98,7 +99,7 @@ export async function transcribe(
   options: TranscribeOptions,
   context?: Pick<JobContext, "report" | "signal">,
 ): Promise<TranscriptionResult> {
-  if (!isTauri()) throw new Error("La transcription nécessite l'application FourTout installée.");
+  if (!isTauri()) throw new Error(t("La transcription nécessite l'application FourTout installée."));
 
   const { invoke } = await import("@tauri-apps/api/core");
   const { listen } = await import("@tauri-apps/api/event");
@@ -110,7 +111,7 @@ export async function transcribe(
       // La préparation occupe les premiers 10 % de la barre.
       context?.report?.({
         ratio: 0.1 + event.payload.ratio * 0.9,
-        label: "Transcription…",
+        label: t("Transcription…"),
       });
     }
   });
@@ -122,12 +123,12 @@ export async function transcribe(
   context?.signal?.addEventListener("abort", onAbort);
 
   try {
-    context?.report?.({ ratio: 0.02, label: "Préparation de l'audio…" });
+    context?.report?.({ ratio: 0.02, label: t("Préparation de l'audio…") });
     const { wav, staged } = await toWav16k(options.file, jobId);
     temporary.push(wav, staged);
     if (context?.signal?.aborted) throw new JobCancelledError();
 
-    context?.report?.({ ratio: 0.1, label: "Transcription…" });
+    context?.report?.({ ratio: 0.1, label: t("Transcription…") });
     let raw: string;
     try {
       raw = await invoke<string>("stt_transcribe", {
@@ -145,10 +146,10 @@ export async function transcribe(
 
     const { segments, language } = parseWhisperJson(raw);
     if (segments.length === 0) {
-      throw new Error("Aucune parole n'a été détectée dans ce fichier.");
+      throw new Error(t("Aucune parole n'a été détectée dans ce fichier."));
     }
 
-    context?.report?.({ ratio: 1, label: "Terminé" });
+    context?.report?.({ ratio: 1, label: t("Terminé") });
     return {
       segments,
       language: language || options.language,

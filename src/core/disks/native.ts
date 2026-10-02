@@ -12,6 +12,7 @@
  */
 
 import { isTauri } from "@/core/platform";
+import { formatBinarySize, localized, t } from "@/i18n";
 
 export const DISKS_NATIVE_REQUIRED =
   "L'inventaire des disques interroge le système : il nécessite l'application FourTout " +
@@ -19,14 +20,14 @@ export const DISKS_NATIVE_REQUIRED =
 
 export type Transport = "sata" | "nvme" | "usb" | "mmc" | "virtual" | "unknown";
 
-export const TRANSPORT_LABELS: Record<Transport, string> = {
+export const TRANSPORT_LABELS: Record<Transport, string> = localized(() => ({
   sata: "SATA / ATA",
   nvme: "NVMe",
   usb: "USB",
-  mmc: "Carte mémoire",
+  mmc: t("Carte mémoire"),
   virtual: "Virtuel",
   unknown: "Inconnu",
-};
+}));
 
 export interface Volume {
   filesystem: string | null;
@@ -97,7 +98,7 @@ async function invokeNative<T>(command: string, args: Record<string, unknown> = 
   } catch (error) {
     const message =
       typeof error === "string" ? error : error instanceof Error ? error.message : "";
-    throw new Error(message || "L'inventaire a échoué.");
+    throw new Error(message || t("L'inventaire a échoué."));
   }
 }
 
@@ -126,15 +127,7 @@ export function healthProvider(): Promise<string> {
 
 export function formatSize(bytes: number | null | undefined): string {
   if (bytes === null || bytes === undefined) return "—";
-  if (bytes < 1024) return `${bytes} o`;
-  const units = ["Kio", "Mio", "Gio", "Tio", "Pio"];
-  let value = bytes / 1024;
-  let index = 0;
-  while (value >= 1024 && index < units.length - 1) {
-    value /= 1024;
-    index += 1;
-  }
-  return `${value.toFixed(value >= 100 ? 0 : 1).replace(".", ",")} ${units[index]}`;
+  return formatBinarySize(bytes, (value) => (value >= 100 ? 0 : 1), 4);
 }
 
 /** Part occupée d'un volume, de 0 à 1. */
@@ -147,9 +140,9 @@ export function usedRatio(volume: Volume): number | undefined {
 
 /** Nature du support, telle que le système la rapporte. */
 export function mediaKind(disk: Disk): string {
-  if (disk.rotational === true) return "Disque à plateaux";
-  if (disk.rotational === false) return "Mémoire flash";
-  return "Nature du support non rapportée";
+  if (disk.rotational === true) return t("Disque à plateaux");
+  if (disk.rotational === false) return t("Mémoire flash");
+  return t("Nature du support non rapportée");
 }
 
 /**
@@ -160,9 +153,9 @@ export function mediaKind(disk: Disk): string {
  * mot, et un disque sans compteur détaillé n'est pas un disque en bonne santé.
  */
 export function healthSummary(report: SmartReport): string {
-  if (!report.available) return "Indisponible sur ce système";
+  if (!report.available) return t("Indisponible sur ce système");
   const parts: string[] = [];
-  parts.push(report.health ? `Santé rapportée : ${report.health}` : "Santé non rapportée");
+  parts.push(report.health ? t("Santé rapportée : {health}", { health: report.health }) : t("Santé non rapportée"));
   if (report.temperatureC !== null) parts.push(`${report.temperatureC} °C`);
   if (report.percentageUsed !== null) parts.push(`usure ${report.percentageUsed} %`);
   return parts.join(" · ");

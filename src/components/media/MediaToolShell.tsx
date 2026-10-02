@@ -13,6 +13,7 @@ import { AudioPreview } from "./AudioPreview";
 import { isMediaAvailable, probeFile } from "@/core/media/client";
 import { emptyMediaInfo, formatTimecode, type MediaInfo } from "@/core/media/types";
 import { useHandoff } from "@/features/handoff/store";
+import { t, tx } from "@/i18n";
 
 /**
  * Ossature commune aux outils média (audio et petits ponts vidéo), au-dessus du
@@ -100,7 +101,7 @@ export function MediaToolShell({
     );
     if (result) {
       setOutcome(result);
-      notify.success("Fichier prêt", result.summary);
+      notify.success(t("Fichier prêt"), result.summary);
     }
   };
 
@@ -113,9 +114,8 @@ export function MediaToolShell({
 
   if (available === false) {
     return (
-      <Callout tone="info" title="Traitement local requis">
-        Cet outil s'appuie sur le moteur média local (FFmpeg) et nécessite l'application FourTout
-        installée. Il n'est pas disponible dans l'aperçu navigateur.
+      <Callout tone="info" title={t("Traitement local requis")}>
+        {t("Cet outil s'appuie sur le moteur média local (FFmpeg) et nécessite l'application FourTout installée. Il n'est pas disponible dans l'aperçu navigateur.")}
       </Callout>
     );
   }
@@ -126,8 +126,8 @@ export function MediaToolShell({
         constraints={constraints}
         files={files}
         onChange={setFiles}
-        label={selection === "multiple" ? "Déposez vos fichiers ici" : "Déposez votre fichier ici"}
-        hint={hint}
+        label={selection === "multiple" ? t("Déposez vos fichiers ici") : t("Déposez votre fichier ici")}
+        hint={tx(hint)}
         disabled={job.isRunning}
       />
 
@@ -141,8 +141,8 @@ export function MediaToolShell({
               {infos[index]?.audioCodec && <span className="font-mono uppercase text-[var(--ft-text-faint)]">{infos[index].audioCodec}</span>}
               {reorderable && files.length > 1 && !job.isRunning && (
                 <span className="flex gap-0.5">
-                  <button onClick={() => move(file.id, -1)} className="rounded p-0.5 hover:text-[var(--ft-accent)]" aria-label="Monter"><Icon name="ChevronUp" size={13} /></button>
-                  <button onClick={() => move(file.id, 1)} className="rounded p-0.5 hover:text-[var(--ft-accent)]" aria-label="Descendre"><Icon name="ChevronDown" size={13} /></button>
+                  <button onClick={() => move(file.id, -1)} className="rounded p-0.5 hover:text-[var(--ft-accent)]" aria-label={t("Monter")}><Icon name="ChevronUp" size={13} /></button>
+                  <button onClick={() => move(file.id, 1)} className="rounded p-0.5 hover:text-[var(--ft-accent)]" aria-label={t("Descendre")}><Icon name="ChevronDown" size={13} /></button>
                 </span>
               )}
             </li>
@@ -154,21 +154,21 @@ export function MediaToolShell({
 
       {files.length > 0 && (
         <div className="flex items-center justify-end gap-2 border-t border-[var(--ft-border)] pt-4">
-          {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>Annuler</Button>}
+          {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>{t("Annuler")}</Button>}
           <Button size="md" variant="primary" onClick={execute} disabled={actionDisabled || job.isRunning}>
             {job.isRunning ? (
-              <><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? "Traitement…"}</>
+              <><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? t("Traitement…")}</>
             ) : (
-              <><Icon name="Play" size={15} />{actionLabel}</>
+              <><Icon name="Play" size={15} />{tx(actionLabel)}</>
             )}
           </Button>
         </div>
       )}
 
-      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
+      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={tx(job.progress.label)} />}
 
       {errorMessage && (
-        <Callout tone="error" title="L'opération a échoué">
+        <Callout tone="error" title={t("L'opération a échoué")}>
           {errorMessage}
         </Callout>
       )}
@@ -177,7 +177,7 @@ export function MediaToolShell({
         <>
           <ResultPanel outcome={outcome} />
           {outcome.files[0]?.mimeType.startsWith("audio/") && (
-            <AudioPreview bytes={outcome.files[0].bytes} mimeType={outcome.files[0].mimeType} label="Écouter le résultat" />
+            <AudioPreview bytes={outcome.files[0].bytes} mimeType={outcome.files[0].mimeType} label={t("Écouter le résultat")} />
           )}
           {outcome.files[0]?.mimeType.startsWith("image/") && <ResultImage file={outcome.files[0]} />}
         </>

@@ -7,6 +7,7 @@ import { usePageRange } from "@/components/pdf/usePageRange";
 import { removePages } from "@/core/pdf/operations/pages";
 import { parsePageRange } from "@/core/pdf/pageRange";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 export function PdfRemovePagesTool({ tool }: ToolComponentProps) {
   const [input, setInput] = useState("");
@@ -14,7 +15,7 @@ export function PdfRemovePagesTool({ tool }: ToolComponentProps) {
   return (
     <PdfToolShell
       tool={tool}
-      actionLabel="Supprimer les pages"
+      actionLabel={t("Supprimer les pages")}
       actionDisabled={input.trim().length === 0}
       run={async ({ documents, context }) => {
         const [document] = documents;
@@ -23,7 +24,7 @@ export function PdfRemovePagesTool({ tool }: ToolComponentProps) {
         const output = await removePages(document.source, pages, context);
         return singleResult(
           output,
-          `${pages.length} page${pages.length > 1 ? "s" : ""} retirée${pages.length > 1 ? "s" : ""} ; ${pageCount - pages.length} conservée${pageCount - pages.length > 1 ? "s" : ""}.`,
+          t("{count} {count, plural, one {page} other {pages}} {count, plural, one {retirée} other {retirées}} ; {value} {value, plural, one {conservée} other {conservées}}.", { count: pages.length, value: pageCount - pages.length }),
         );
       }}
     >
@@ -48,7 +49,7 @@ function RemoveFields({
   return (
     <Fieldset columns={1}>
       <PageRangeInput
-        label="Pages à supprimer"
+        label={t("Pages à supprimer")}
         value={value}
         onChange={onChange}
         pageCount={pageCount}
@@ -60,8 +61,8 @@ function RemoveFields({
           className={`text-xs ${remaining === 0 ? "text-[var(--ft-danger)]" : "text-[var(--ft-text-muted)]"}`}
         >
           {remaining === 0
-            ? "Impossible : toutes les pages du document seraient supprimées."
-            : `Le document final comptera ${remaining} page${remaining > 1 ? "s" : ""}.`}
+            ? t("Impossible : toutes les pages du document seraient supprimées.")
+            : t("Le document final comptera {remaining} {remaining, plural, one {page} other {pages}}.", { remaining })}
         </p>
       )}
     </Fieldset>

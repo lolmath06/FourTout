@@ -1,12 +1,14 @@
 <div align="center">
 
+**English** · [Français](README.fr.md) · [Español](README.es.md) · [Português (Brasil)](README.pt-BR.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
+
 <img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — 196 tools. 12 categories. One local desktop app." width="100%">
 
 ### 196 tools. 12 categories. One local desktop app.
 
-Une boîte à outils desktop qui regroupe PDF, images, audio, vidéo, documents,
-fichiers, outils développeur et confidentialité — 196 outils, une seule
-application, et vos fichiers ne quittent pas votre machine.
+A desktop toolbox that brings together PDF, images, audio, video, documents,
+files, developer tools and privacy — 196 tools in a single application, and
+your files never leave your machine.
 
 [![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-et-11)
 [![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#autres-distributions-linux)
@@ -16,243 +18,254 @@ application, et vos fichiers ne quittent pas votre machine.
 [![Local-first](https://img.shields.io/badge/local--first-0a84ff?style=flat-square)](docs/legal/PRIVACY.md)
 [![Release](https://img.shields.io/github/v/release/lolmath06/FourTout?style=flat-square&color=0a84ff&label=release)][releases]
 
-**[Télécharger][releases]** · **[Documentation](docs/README.md)** ·
-**[Tous les outils](docs/guides/FEATURES.md)** · **[Confidentialité](docs/legal/PRIVACY.md)**
+**[Download][releases]** · **[Documentation](docs/README.md)** ·
+**[All tools](docs/guides/FEATURES.md)** · **[Privacy](docs/legal/PRIVACY.md)**
 
 </div>
 
 <br>
 
 <div align="center">
-<img src="docs/assets/demo/fourtout-demo.webp" alt="Démonstration : recherche en langage courant, catégories, fusion de PDF, réglages d'image en direct, formatage JSON" width="100%">
-<sub>Recherche en langage courant, catalogue, fusion de PDF, réglages d'image en temps réel, JSON — l'interface réelle, enregistrée telle quelle puis accélérée (×1,3).</sub>
+<img src="docs/assets/demo/fourtout-demo-en.webp" alt="Demo: plain-language search, categories, merging PDFs, live image adjustments, JSON formatting" width="100%">
+<sub>Plain-language search, the catalog, merging PDFs, live image adjustments, JSON — the real interface, recorded as is and sped up (×1.3).</sub>
 </div>
 
-## Ce que fait FourTout
+## What FourTout does
 
 <table>
 <tr>
 <td width="33%" valign="top">
 
 **PDF & documents**<br>
-Fusionner, séparer, compresser, caviarder, OCR d'un scan, PDF recherchable,
-tableaux extraits, Word vers PDF.
+Merge, split, compress, redact, OCR a scan, make a PDF searchable,
+extract tables, Word to PDF.
 
 </td>
 <td width="33%" valign="top">
 
 **Images**<br>
-Convertir, compresser, rogner, **retirer l'arrière-plan**, extraire le texte,
-effacer l'EXIF, générer un favicon.
+Convert, compress, crop, **remove the background**, extract text,
+strip EXIF, generate a favicon.
 
 </td>
 <td width="33%" valign="top">
 
-**Audio & vidéo**<br>
-Convertir, compresser, découper, normaliser, transcrire, synthèse vocale,
-sous-titres, vidéo ↔ GIF.
+**Audio & video**<br>
+Convert, compress, trim, normalize, transcribe, text to speech,
+subtitles, video ↔ GIF.
 
 </td>
 </tr>
 <tr>
 <td valign="top">
 
-**Fichiers & archives**<br>
-ZIP, 7z, TAR, archives chiffrées AES-256, empreintes, doublons, renommage en
-masse, sauvegarde de dossiers.
+**Files & archives**<br>
+ZIP, 7z, TAR, AES-256 encrypted archives, hashes, duplicates, bulk
+renaming, folder backups.
 
 </td>
 <td valign="top">
 
-**Développeur**<br>
-JSON, YAML, TOML, XML, SQL, JWT vérifié, regex, cron, QR codes, explorateur
-SQLite en lecture seule.
+**Developer**<br>
+JSON, YAML, TOML, XML, SQL, verified JWT, regex, cron, QR codes, a
+read-only SQLite explorer.
 
 </td>
 <td valign="top">
 
-**Diagnostic & sécurité**<br>
-Fichiers et archives abîmés, santé des disques, chiffrement de fichiers,
-mots de passe, métadonnées.
+**Diagnostics & security**<br>
+Damaged files and archives, disk health, file encryption,
+passwords, metadata.
 
 </td>
 </tr>
 </table>
 
-Le tableau complet des douze catégories est [plus bas](#fonctionnalités) ;
-la liste outil par outil est dans **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.
+The full table of the twelve categories is [further down](#features); the
+tool-by-tool list is in **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.
 
-## Aperçu
+## Languages
 
-Captures de l'application réelle (thème clair ou sombre selon votre réglage
-GitHub), réalisées avec des fichiers fictifs.
+The interface speaks **16 languages**, all built into the application:
+English, Français, Español, Deutsch, Italiano, Português (Brasil), Nederlands,
+Polski, Русский, Türkçe, Bahasa Indonesia, हिन्दी, 日本語, 한국어, 简体中文 and
+繁體中文. By default FourTout follows your system language; you can switch
+in **Settings → Language** and the change is instant — nothing is downloaded.
+
+Search understands every one of them: “compress a pdf”, “comprimir un pdf”,
+“pdf komprimieren”, “сжать pdf”, “pdf を圧縮”, “pdf 압축” or “压缩 pdf” all
+lead to the same tool, and format names (PDF, PNG, MP4, JSON, SHA-256…) work
+whatever the language.
+
+## Preview
+
+Screenshots of the real application (light or dark theme depending on your
+GitHub setting), made with dummy files. They show the French interface.
 
 <table>
 <tr>
 <td width="50%">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/accueil-dark.webp">
-  <img src="docs/assets/screenshots/accueil-light.webp" alt="Accueil : favoris, outils récents et les douze catégories">
+  <img src="docs/assets/screenshots/accueil-light.webp" alt="Home: favorites, recent tools and the twelve categories">
 </picture>
-<p align="center"><sub><b>Accueil</b> — favoris, récents, catégories</sub></p>
+<p align="center"><sub><b>Home</b> — favorites, recents, categories</sub></p>
 </td>
 <td width="50%">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/recherche-dark.webp">
-  <img src="docs/assets/screenshots/recherche-light.webp" alt="Recherche en langage courant : « réduire la taille d'une vidéo »">
+  <img src="docs/assets/screenshots/recherche-light.webp" alt="Plain-language search: “reduce the size of a video”">
 </picture>
-<p align="center"><sub><b>Recherche</b> — décrivez le besoin, pas le nom de l'outil</sub></p>
+<p align="center"><sub><b>Search</b> — describe the need, not the tool's name</sub></p>
 </td>
 </tr>
 <tr>
 <td>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/pdf-dark.webp">
-  <img src="docs/assets/screenshots/pdf-light.webp" alt="Fusionner des PDF : trois documents prêts à être assemblés">
+  <img src="docs/assets/screenshots/pdf-light.webp" alt="Merge PDFs: three documents ready to be combined">
 </picture>
-<p align="center"><sub><b>PDF</b> — fusion, dans l'ordre choisi</sub></p>
+<p align="center"><sub><b>PDF</b> — merging, in the order you choose</sub></p>
 </td>
 <td>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/images-dark.webp">
-  <img src="docs/assets/screenshots/images-light.webp" alt="Ajuster une image : contraste et saturation, aperçu en temps réel">
+  <img src="docs/assets/screenshots/images-light.webp" alt="Adjust an image: contrast and saturation, live preview">
 </picture>
-<p align="center"><sub><b>Images</b> — réglages avec aperçu en temps réel</sub></p>
+<p align="center"><sub><b>Images</b> — adjustments with a live preview</sub></p>
 </td>
 </tr>
 <tr>
 <td>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/fichiers-dark.webp">
-  <img src="docs/assets/screenshots/fichiers-light.webp" alt="Calculer une empreinte : SHA-256 et SHA-512 d'un PDF">
+  <img src="docs/assets/screenshots/fichiers-light.webp" alt="Compute a hash: SHA-256 and SHA-512 of a PDF">
 </picture>
-<p align="center"><sub><b>Fichiers</b> — empreintes SHA-256 et SHA-512, calculées en Rust</sub></p>
+<p align="center"><sub><b>Files</b> — SHA-256 and SHA-512 hashes, computed in Rust</sub></p>
 </td>
 <td>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/media-dark.webp">
-  <img src="docs/assets/screenshots/media-light.webp" alt="Inspecter un média : conteneur, codecs, résolution, pistes audio">
+  <img src="docs/assets/screenshots/media-light.webp" alt="Inspect a media file: container, codecs, resolution, audio tracks">
 </picture>
-<p align="center"><sub><b>Média</b> — ce que le fichier contient vraiment, lu par FFmpeg</sub></p>
+<p align="center"><sub><b>Media</b> — what the file really contains, read by FFmpeg</sub></p>
 </td>
 </tr>
 <tr>
 <td>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/developpeur-dark.webp">
-  <img src="docs/assets/screenshots/developpeur-light.webp" alt="JSON : formater et valider">
+  <img src="docs/assets/screenshots/developpeur-light.webp" alt="JSON: format and validate">
 </picture>
-<p align="center"><sub><b>Développeur</b> — JSON formaté et validé</sub></p>
+<p align="center"><sub><b>Developer</b> — JSON formatted and validated</sub></p>
 </td>
 <td>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/diagnostic-dark.webp">
-  <img src="docs/assets/screenshots/diagnostic-light.webp" alt="Diagnostiquer un fichier : archive ZIP tronquée, constats et récupération possible">
+  <img src="docs/assets/screenshots/diagnostic-light.webp" alt="Diagnose a file: a truncated ZIP archive, findings and possible recovery">
 </picture>
-<p align="center"><sub><b>Diagnostic</b> — ce qu'une archive abîmée a de cassé</sub></p>
+<p align="center"><sub><b>Diagnostics</b> — what's broken in a damaged archive</sub></p>
 </td>
 </tr>
 </table>
 
-## Pourquoi
+## Why
 
-Compresser un PDF, convertir une image en WebP, extraire le son d'une vidéo,
-formater du JSON, convertir des kilomètres en miles, détourer une photo :
-chacune de ces tâches prend trente secondes. Les trouver prend plus longtemps,
-et le site gratuit qui les propose demande souvent de téléverser le fichier.
+Compressing a PDF, converting an image to WebP, pulling the sound out of a
+video, formatting JSON, converting kilometers to miles, cutting out a photo:
+each of these takes thirty seconds. Finding the right tool takes longer, and
+the free website that offers it often wants you to upload the file.
 
-FourTout part de l'idée inverse : **si l'opération peut se faire sur votre
-machine, elle s'y fait.**
+FourTout starts from the opposite idea: **if the job can be done on your
+machine, it's done there.**
 
-Trois principes tiennent le produit :
+Three principles hold the product together:
 
-1. **Ce qui est au catalogue fonctionne.** Il n'y a pas d'outil « bientôt
-   disponible » : un outil incomplet n'est pas enregistré.
-2. **Aucune promesse invérifiable.** Quand un outil a une limite — un
-   effacement qui n'est pas physique, une conversion Word qui n'est pas fidèle
-   au pixel, un JWT décodé mais pas vérifié — l'interface le dit, là où
-   l'utilisateur en a besoin.
-3. **Rien n'est inventé.** La recherche ne propose que des outils réellement
-   présents, et le convertisseur de devises affiche la date du relevé plutôt
-   qu'un taux d'origine inconnue.
+1. **What's in the catalog works.** There is no “coming soon” tool: an
+   unfinished tool is simply not registered.
+2. **No promise that can't be checked.** When a tool has a limit — an erasure
+   that isn't physical, a Word conversion that isn't pixel-perfect, a JWT
+   that's decoded but not verified — the interface says so, right where the
+   user needs it.
+3. **Nothing is made up.** Search only suggests tools that actually exist,
+   and the currency converter shows the date of its rates rather than a rate
+   of unknown origin.
 
-## Fonctionnalités
+## Features
 
-| Catégorie | Outils | Exemples |
+| Category | Tools | Examples |
 | --- | ---: | --- |
-| **PDF** | 26 | Fusionner, séparer, compresser, caviarder, OCR, retrouver un mot de passe oublié |
-| **Images** | 25 | Convertir, compresser, rogner, filigrane, OCR, **retirer l'arrière-plan**, effacer l'EXIF |
-| **Audio** | 18 | Convertir, normaliser, couper les silences, synthèse vocale, transcription |
-| **Vidéo** | 20 | Convertir, compresser, rogner, sous-titrer, incruster, vidéo ↔ GIF |
-| **Texte & Documents** | 20 | Nettoyer, comparer, Markdown ↔ HTML, lire et convertir un DOCX |
-| **Fichiers & Archives** | 29 | Archives, empreintes, doublons, renommage par lot, sauvegarde, éditeur hexadécimal |
-| **Convertisseurs** | 1 | Déposez un fichier : FourTout propose les conversions possibles |
-| **Développeur** | 21 | JSON, XML, YAML, TOML, SQL, Base32, JWT **vérifié**, **base SQLite**, regex, cron |
-| **Calculateurs** | 21 | Unités, pourcentages, dates, **fuseaux horaires**, **débits**, **intérêts**, devises |
-| **Réseau** | 3 | Ping, test de ports, découverte du réseau local — bornés, et jamais au-delà |
-| **Diagnostic & récupération** | 5 | Fichier corrompu, archive illisible, PDF cassé, image abîmée, disques et partitions |
-| **Sécurité** | 7 | Mots de passe, chiffrement de fichiers, HMAC, suppression des métadonnées |
+| **PDF** | 26 | Merge, split, compress, redact, OCR, recover a forgotten password |
+| **Images** | 25 | Convert, compress, crop, watermark, OCR, **remove the background**, strip EXIF |
+| **Audio** | 18 | Convert, normalize, cut silences, text to speech, transcription |
+| **Video** | 20 | Convert, compress, crop, subtitle, burn in, video ↔ GIF |
+| **Text & Documents** | 20 | Clean up, compare, Markdown ↔ HTML, read and convert a DOCX |
+| **Files & Archives** | 29 | Archives, hashes, duplicates, batch renaming, backups, hex editor |
+| **Converters** | 1 | Drop a file: FourTout suggests the possible conversions |
+| **Developer** | 21 | JSON, XML, YAML, TOML, SQL, Base32, **verified** JWT, **SQLite database**, regex, cron |
+| **Calculators** | 21 | Units, percentages, dates, **time zones**, **bandwidth**, **interest**, currencies |
+| **Network** | 3 | Ping, port test, local network discovery — bounded, and never beyond |
+| **Diagnostics & Recovery** | 5 | Corrupted file, unreadable archive, broken PDF, damaged image, disks and partitions |
+| **Security** | 7 | Passwords, file encryption, HMAC, metadata removal |
 
-Chaque outil est compté dans sa catégorie propriétaire : 196 au total. Un
-outil peut aussi être proposé dans d'autres catégories, là où on le cherche —
-c'est pourquoi l'application affiche des nombres plus élevés par catégorie.
+Each tool is counted in the category that owns it: 196 in total. A tool can
+also be offered in other categories, wherever people look for it — which is
+why the application shows higher counts per category.
 
-La liste complète, outil par outil : **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.
+The complete list, tool by tool: **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.
 
-## Confidentialité
+## Privacy
 
-Tout le traitement de fichiers est local : PDF, images, audio, vidéo, texte,
-archives, empreintes, chiffrement, détourage. Aucun fichier n'est téléversé.
-Ni compte, ni analytique, ni télémétrie, ni mise à jour automatique.
+All file processing is local: PDF, images, audio, video, text, archives,
+hashes, encryption, background removal. No file is ever uploaded. No account,
+no analytics, no telemetry, no automatic updates.
 
-Deux fonctions font exception, et les deux le disent dans l'interface :
+Two features are exceptions, and both say so in the interface:
 
-- le **convertisseur de devises** interroge le flux de référence quotidien de
-  la Banque centrale européenne. Le montant à convertir ne quitte jamais la
-  machine ; hors ligne, le dernier relevé connu est réutilisé **et daté** ;
-- les **modèles** de synthèse vocale, de transcription et de détourage sont
-  téléchargés une seule fois, à votre demande explicite. Ensuite, tout
-  s'exécute sur la machine.
+- the **currency converter** queries the European Central Bank's daily
+  reference feed. The amount being converted never leaves the machine;
+  offline, the last known rates are reused **and dated**;
+- the **models** for text to speech, transcription and background removal
+  are downloaded once, at your explicit request. After that, everything runs
+  on the machine.
 
-Les trois outils **réseau** (ping, ports, découverte du réseau local) ouvrent
-de vraies connexions, mais uniquement vers les hôtes que vous indiquez ou
-votre sous-réseau local, et jamais sans un clic.
+The three **network** tools (ping, ports, local network discovery) open real
+connections, but only to the hosts you specify or to your local subnet, and
+never without a click.
 
-Le détail, fonction par fonction : **[docs/legal/PRIVACY.md](docs/legal/PRIVACY.md)**.
+Feature by feature: **[docs/legal/PRIVACY.md](docs/legal/PRIVACY.md)**.
 
 ## Installation
 
-Téléchargez le paquet de votre système depuis la page **[Releases][releases]**.
+Download the package for your system from the **[Releases][releases]** page.
 
-| Système | Fichier |
+| System | File |
 | --- | --- |
 | Windows 10 / 11 | `FourTout-<version>-Windows-x64-Setup.exe` |
 | Fedora, RHEL | `FourTout-<version>-Fedora-x86_64.rpm` |
 | Debian, Ubuntu | `FourTout-<version>-Linux-amd64.deb` |
-| Autres Linux | `FourTout-<version>-Linux-x86_64.AppImage` |
+| Other Linux | `FourTout-<version>-Linux-x86_64.AppImage` |
 
-> **N'utilisez pas « Code → Download ZIP ».** Cette archive contient le code
-> source, pas l'application. Les fichiers installables sont sur la page
-> Releases.
+> **Don't use “Code → Download ZIP”.** That archive contains the source code,
+> not the application. The installable files are on the Releases page.
 
-Instructions détaillées, prérequis et vérification des empreintes :
+Detailed instructions, prerequisites and hash verification:
 **[docs/guides/INSTALLATION.md](docs/guides/INSTALLATION.md)**.
 
-> Les installeurs Windows ne sont pas encore signés : SmartScreen affichera un
-> avertissement au premier lancement. C'est attendu, et expliqué dans le guide
-> d'installation.
+> The Windows installers aren't signed yet: SmartScreen will show a warning on
+> first launch. That's expected, and explained in the installation guide.
 
 ## Architecture
 
 ```mermaid
 flowchart TB
-  UI["Interface React 19<br/>pages, outils, recherche"]
-  REG["Registre central des outils<br/>catalogue · recherche · convertisseur · travaux longs"]
-  WEB["Moteurs dans la WebView<br/>pdf.js · pdf-lib · tesseract.js · ONNX Runtime"]
-  IPC{{"Frontière Tauri 2"}}
-  RUST["Socle natif Rust<br/>fichiers · archives · chiffrement · diagnostic · réseau borné"]
-  SIDE["Moteurs locaux<br/>FFmpeg · Piper · whisper.cpp"]
-  FS[("Fichiers de l'utilisateur")]
+  UI["React 19 interface<br/>pages, tools, search"]
+  REG["Central tool registry<br/>catalog · search · converter · long-running jobs"]
+  WEB["Engines in the WebView<br/>pdf.js · pdf-lib · tesseract.js · ONNX Runtime"]
+  IPC{{"Tauri 2 boundary"}}
+  RUST["Native Rust core<br/>files · archives · encryption · diagnostics · bounded network"]
+  SIDE["Local engines<br/>FFmpeg · Piper · whisper.cpp"]
+  FS[("User's files")]
 
   UI --> REG
   REG --> WEB
@@ -262,66 +275,70 @@ flowchart TB
   RUST --> FS
 ```
 
-| Couche | Technologie |
+| Layer | Technology |
 | --- | --- |
 | Interface | React 19, TypeScript, Tailwind CSS 4, Vite 7 |
-| Application desktop | Tauri 2 (WebKitGTK sur Linux, WebView2 sur Windows) |
-| Traitements natifs | Rust — fichiers, archives, chiffrement, empreintes, sidecars |
-| PDF | pdf.js (lecture, rendu), @cantoo/pdf-lib (écriture) |
-| Média | FFmpeg (système ou embarqué), codecs éprouvés à l'exécution |
-| OCR | tesseract.js, entièrement local |
-| Détourage | U²-Net via ONNX Runtime, entièrement local |
-| Parole | Piper (synthèse), whisper.cpp (transcription) |
+| Desktop application | Tauri 2 (WebKitGTK on Linux, WebView2 on Windows) |
+| Native processing | Rust — files, archives, encryption, hashes, sidecars |
+| PDF | pdf.js (reading, rendering), @cantoo/pdf-lib (writing) |
+| Media | FFmpeg (system or bundled), codecs probed at runtime |
+| OCR | tesseract.js, entirely local |
+| Background removal | U²-Net via ONNX Runtime, entirely local |
+| Speech | Piper (synthesis), whisper.cpp (transcription) |
+| Languages | 16 built-in locales, ICU-style messages, `Intl` formatting |
 
-Tous les outils dérivent d'un **registre central** : catalogue, navigation,
-recherche, convertisseur universel et routage par glisser-déposer lisent la
-même source. Détails : **[docs/technical/ARCHITECTURE.md](docs/technical/ARCHITECTURE.md)**.
+Every tool derives from a **central registry**: catalog, navigation, search,
+the universal converter and drag-and-drop routing all read the same source.
+Translations sit next to it, keyed by tool id, so a tool is never duplicated
+per language. Details: **[docs/technical/ARCHITECTURE.md](docs/technical/ARCHITECTURE.md)**
+and **[docs/technical/I18N.md](docs/technical/I18N.md)**.
 
-## Développement
+## Development
 
 ```bash
-pnpm install     # dépendances Node
-pnpm app:dev     # lance l'application desktop (Tauri + Vite)
-pnpm verify      # lint + typecheck + tests + build
+pnpm install       # Node dependencies
+pnpm app:dev       # launch the desktop application (Tauri + Vite)
+pnpm verify        # lint + typecheck + tests + build
+pnpm i18n:status   # translation coverage, language by language
 ```
 
-Prérequis, conventions et pièges d'environnement :
+Prerequisites, conventions and environment pitfalls:
 **[docs/technical/DEVELOPMENT.md](docs/technical/DEVELOPMENT.md)**.
-Construire les paquets : **[docs/technical/BUILD.md](docs/technical/BUILD.md)**.
-Régénérer les captures, la bannière et la démo :
+Building the packages: **[docs/technical/BUILD.md](docs/technical/BUILD.md)**.
+Regenerating the screenshots, banner and demo:
 **[scripts/showcase/README.md](scripts/showcase/README.md)**.
 
-## Sécurité
+## Security
 
-Le chiffrement de fichiers utilise **Argon2id** pour dériver la clé et
-**XChaCha20-Poly1305** pour chiffrer, par blocs authentifiés. Les archives
-protégées utilisent **WinZip AES-256**, lisible par 7-Zip, WinRAR et
-l'Explorateur Windows.
+File encryption uses **Argon2id** to derive the key and
+**XChaCha20-Poly1305** to encrypt, in authenticated chunks. Protected archives
+use **WinZip AES-256**, readable by 7-Zip, WinRAR and Windows Explorer.
 
-Modèle de menace, format de fichier chiffré, limites de l'effacement sécurisé
-et signalement d'une vulnérabilité :
+Threat model, encrypted file format, the limits of secure deletion and how to
+report a vulnerability:
 **[docs/legal/SECURITY.md](docs/legal/SECURITY.md)**.
 
 ## Documentation
 
-L'index complet : **[docs/README.md](docs/README.md)**.
+The full index: **[docs/README.md](docs/README.md)**. The documentation is
+written in French.
 
-## Licence
+## License
 
-**FourTout est un logiciel propriétaire.**
-Copyright © 2026 Matheo Dolmen. Tous droits réservés.
+**FourTout is proprietary software.**
+Copyright © 2026 Matheo Dolmen. All rights reserved.
 
-Le code source publié sur GitHub l'est pour être lu, audité et discuté : sa
-publication n'emporte aucune licence de réutilisation ou de redistribution.
-Toute copie substantielle, redistribution, version modifiée publiée ou
-exploitation commerciale requiert une autorisation écrite préalable.
+The source code is published on GitHub to be read, audited and discussed: its
+publication grants no license to reuse or redistribute it. Any substantial
+copy, redistribution, published modified version or commercial use requires
+prior written permission.
 
-Voir **[LICENSE](LICENSE)**.
+See **[LICENSE](LICENSE)**.
 
-## Composants tiers
+## Third-party components
 
-FourTout s'appuie sur des logiciels libres, qui restent sous **leurs propres
-licences** — la licence de FourTout ne s'y substitue pas. Inventaire complet :
+FourTout builds on free software, which remains under **its own licenses** —
+FourTout's license does not replace them. Full inventory:
 **[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)**.
 
 [releases]: https://github.com/lolmath06/FourTout/releases

@@ -31,6 +31,7 @@ import { getRasterBackend } from "@/core/pdf/raster/types";
 import { JobCancelledError } from "@/core/jobs/types";
 import type { OperationContext } from "@/core/pdf/types";
 import { ImageError } from "./errors";
+import { t } from "@/i18n";
 
 /** Taille d'entrée du réseau. Fixée par le modèle, pas par nous. */
 export const SEGMENTATION_INPUT = 320;
@@ -266,11 +267,11 @@ export async function removeBackground(
   context?: OperationContext,
 ): Promise<RemoveBackgroundResult> {
   throwIfCancelled(context);
-  context?.report?.({ ratio: 0.05, label: "Préparation de l'image…" });
+  context?.report?.({ ratio: 0.05, label: t("Préparation de l'image…") });
 
   const input = buildInputTensor(source);
   throwIfCancelled(context);
-  context?.report?.({ ratio: 0.15, label: "Analyse du sujet…" });
+  context?.report?.({ ratio: 0.15, label: t("Analyse du sujet…") });
 
   const started = Date.now();
   const outputs = await session.run({
@@ -282,17 +283,17 @@ export async function removeBackground(
   // U²-Net rend sept cartes, de la plus fine à la plus grossière. La première
   // est celle que l'on utilise ; les six autres servent à l'entraînement.
   const raw = outputs[session.outputNames[0]];
-  if (!raw) throw new ImageError("segmentation-failed", "Le modèle n'a produit aucun résultat.");
+  if (!raw) throw new ImageError("segmentation-failed", t("Le modèle n'a produit aucun résultat."));
 
   const expected = SEGMENTATION_INPUT * SEGMENTATION_INPUT;
   if (raw.data.length !== expected) {
     throw new ImageError(
       "segmentation-failed",
-      `Sortie inattendue du modèle : ${raw.data.length} valeurs au lieu de ${expected}.`,
+      t("Sortie inattendue du modèle : {count} valeurs au lieu de {expected}.", { count: raw.data.length, expected }),
     );
   }
 
-  context?.report?.({ ratio: 0.75, label: "Découpe du sujet…" });
+  context?.report?.({ ratio: 0.75, label: t("Découpe du sujet…") });
   let mask = normalizeMask(raw.data, options.threshold ?? 0);
 
   const feather = Math.round(options.featherPx ?? 0);
@@ -308,9 +309,9 @@ export async function removeBackground(
 
   throwIfCancelled(context);
   const full = resampleMask(mask, SEGMENTATION_INPUT, source.width, source.height);
-  context?.report?.({ ratio: 0.9, label: "Application de la transparence…" });
+  context?.report?.({ ratio: 0.9, label: t("Application de la transparence…") });
 
   const { canvas, keptRatio } = applyMask(source, full);
-  context?.report?.({ ratio: 1, label: "Terminé" });
+  context?.report?.({ ratio: 1, label: t("Terminé") });
   return { canvas, keptRatio, elapsedMs };
 }

@@ -19,6 +19,7 @@
  */
 
 import { parse as parseToml, stringify as stringifyToml, TomlDate } from "smol-toml";
+import { t } from "@/i18n";
 
 export interface TomlPosition {
   /** Ligne, à partir de 1. */
@@ -73,7 +74,7 @@ export const TOML_COMMENT_NOTE =
 /** Traduit une erreur du parseur en problème affichable. */
 function toProblem(error: unknown): TomlProblem {
   if (!(error instanceof Error)) {
-    return { message: "Document TOML illisible." };
+    return { message: t("Document TOML illisible.") };
   }
   const candidate = error as Error & { line?: number; column?: number; codeblock?: string };
   // `smol-toml` préfixe systématiquement « Invalid TOML document: » et colle le
@@ -85,7 +86,7 @@ function toProblem(error: unknown): TomlProblem {
       ? { line: candidate.line, column: candidate.column }
       : undefined;
   return {
-    message: message.length > 0 ? message : "Document TOML invalide.",
+    message: message.length > 0 ? message : t("Document TOML invalide."),
     position,
     excerpt: typeof candidate.codeblock === "string" ? candidate.codeblock.trim() : undefined,
   };
@@ -165,8 +166,8 @@ export function formatToml(input: string): string {
     throw new TomlFormatError({
       message:
         error instanceof Error
-          ? `Document lu, mais impossible à réécrire : ${error.message}`
-          : "Document lu, mais impossible à réécrire.",
+          ? t("Document lu, mais impossible à réécrire : {message}", { message: error.message })
+          : t("Document lu, mais impossible à réécrire."),
     });
   }
 }

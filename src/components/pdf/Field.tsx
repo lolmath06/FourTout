@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { t, tx } from "@/i18n";
 
 /**
  * Contrôles de formulaire des outils PDF.
@@ -21,7 +22,7 @@ export function Fieldset({
   return (
     <section className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
       {title && (
-        <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">{title}</h3>
+        <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">{tx(title)}</h3>
       )}
       <div className={`grid gap-x-4 gap-y-3 p-3 ${layout}`}>{children}</div>
     </section>
@@ -50,7 +51,7 @@ export function FieldGroup({
   return (
     <section>
       <div className="mb-2 flex items-center gap-3 border-b border-[var(--ft-rule)] pb-1.5">
-        <h3 className="ft-section">{title}</h3>
+        <h3 className="ft-section">{tx(title)}</h3>
         <div className="flex-1" />
         {actions}
       </div>
@@ -72,9 +73,9 @@ export function Field({
 }) {
   return (
     <label className={`flex flex-col gap-1 ${full ? "sm:col-span-full" : ""}`}>
-      <span className="ft-label">{label}</span>
+      <span className="ft-label">{tx(label)}</span>
       {children}
-      {hint && <span className="text-[11px] leading-4 text-[var(--ft-text-faint)]">{hint}</span>}
+      {hint && <span className="text-[11px] leading-4 text-[var(--ft-text-faint)]">{tx(hint)}</span>}
     </label>
   );
 }
@@ -115,7 +116,7 @@ export function Select<T extends string>({
     >
       {options.map((option) => (
         <option key={option.value} value={option.value}>
-          {option.label}
+          {tx(option.label)}
         </option>
       ))}
     </select>
@@ -146,7 +147,7 @@ export function OptionGroup<T extends string>({
   return (
     <div
       role="radiogroup"
-      aria-label={ariaLabel}
+      aria-label={tx(ariaLabel)}
       aria-disabled={disabled || undefined}
       // `w-fit` : un segmented control se dimensionne sur ses libellés. Étiré sur
       // toute une colonne, il redevient une grande barre colorée — exactement ce
@@ -164,8 +165,8 @@ export function OptionGroup<T extends string>({
           // `Field` enveloppe ses enfants dans un `<label>`, et un `<button>`
           // est un élément étiquetable : sans nom explicite, la première option
           // hériterait du libellé du champ au lieu du sien.
-          aria-label={option.label}
-          title={option.hint}
+          aria-label={tx(option.label)}
+          title={tx(option.hint)}
           disabled={disabled}
           onClick={() => onChange(option.value)}
           className={`flex min-w-16 flex-1 items-center justify-center px-3 text-xs font-medium transition-colors disabled:cursor-not-allowed ${
@@ -174,7 +175,7 @@ export function OptionGroup<T extends string>({
               : "bg-[var(--ft-bg)] text-[var(--ft-text-muted)] hover:bg-[var(--ft-hover)] hover:text-[var(--ft-text)]"
           }`}
         >
-          {option.label}
+          {tx(option.label)}
         </button>
       ))}
     </div>
@@ -192,7 +193,7 @@ export function PositionPicker<T extends string>({
   options: readonly { value: T; label: string }[];
 }) {
   return (
-    <div role="radiogroup" aria-label="Position" className="grid grid-cols-3 gap-1">
+    <div role="radiogroup" aria-label={t("Position")} className="grid grid-cols-3 gap-1">
       {options.map((option) => (
         <button
           key={option.value}
@@ -206,7 +207,7 @@ export function PositionPicker<T extends string>({
               : "border-[var(--ft-border)] text-[var(--ft-text-muted)] hover:border-[var(--ft-border-strong)]"
           }`}
         >
-          {option.label}
+          {tx(option.label)}
         </button>
       ))}
     </div>

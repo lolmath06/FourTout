@@ -9,6 +9,7 @@ import type {
   PdfSource,
   RotationAngle,
 } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Opérations de structure : fusion, découpage, extraction, suppression,
@@ -29,18 +30,18 @@ export async function mergePdfs(
 
   for (const [index, source] of sources.entries()) {
     throwIfCancelled(context);
-    report(context, index / sources.length, `Ajout de ${source.name}`);
+    report(context, index / sources.length, t("Ajout de {name}", { name: source.name }));
 
     const document = await loadPdf(source);
     const pageCount = document.getPageCount();
     if (pageCount === 0) {
-      throw new PdfError("empty-document", `« ${source.name} » ne contient aucune page.`);
+      throw new PdfError("empty-document", t("« {name} » ne contient aucune page.", { name: source.name }));
     }
     const pages = await merged.copyPages(document, document.getPageIndices());
     pages.forEach((page) => merged.addPage(page));
   }
 
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   return savePdf(merged, outputName(sources[0].name, "fusionne"));
 }
 
@@ -62,7 +63,7 @@ async function documentFromPages(
   if (invalid.length > 0) {
     throw new PdfError(
       "page-out-of-range",
-      `Ce document a ${pageCount} page${pageCount > 1 ? "s" : ""} ; page(s) demandée(s) : ${invalid.join(", ")}.`,
+      t("Ce document a {pageCount} {pageCount, plural, one {page} other {pages}} ; page(s) demandée(s) : {value}.", { pageCount, value: invalid.join(", ") }),
     );
   }
 
@@ -83,7 +84,7 @@ export async function extractPages(
   context?: OperationContext,
 ): Promise<OutputFile> {
   const document = await documentFromPages(source, pages, context);
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   return savePdf(document, outputName(source.name, `pages-${formatPageRange(pages).replace(/,\s*/g, "_")}`));
 }
 
@@ -100,7 +101,7 @@ export async function removePages(
   if (kept.length === 0) throw new PdfError("would-remove-all-pages");
 
   const document = await documentFromPages(source, kept, context);
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   return savePdf(document, outputName(source.name, "pages-supprimees"));
 }
 
@@ -120,12 +121,12 @@ export async function reorderPages(
   if (unique.size !== order.length || order.length !== pageCount) {
     throw new PdfError(
       "invalid-range",
-      "Le nouvel ordre doit contenir chaque page du document exactement une fois.",
+      t("Le nouvel ordre doit contenir chaque page du document exactement une fois."),
     );
   }
 
   const document = await documentFromPages(source, order, context);
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   return savePdf(document, outputName(source.name, "reorganise"));
 }
 
@@ -156,7 +157,7 @@ export async function splitPdf(
   const outputs: OutputFile[] = [];
   for (const [index, pages] of groups.entries()) {
     throwIfCancelled(context);
-    report(context, index / groups.length, `Document ${index + 1} sur ${groups.length}`);
+    report(context, index / groups.length, t("Document {value} sur {count}", { value: index + 1, count: groups.length }));
 
     const document = await documentFromPages(source, pages, context);
     const label = formatPageRange(pages).replace(/,\s*/g, "_");
@@ -167,7 +168,7 @@ export async function splitPdf(
     outputs.push(await savePdf(document, name));
   }
 
-  report(context, 1, "Terminé");
+  report(context, 1, t("Terminé"));
   return outputs;
 }
 
@@ -205,7 +206,7 @@ export async function rotatePages(
     report(context, index / targets.length);
   }
 
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   return savePdf(document, outputName(source.name, "pivote"));
 }
 

@@ -13,9 +13,10 @@ import {
 } from "@/core/calc/bandwidth";
 import { formatWithGrouping, parseNumber } from "@/core/units";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t, tx } from "@/i18n";
 
-const sizeOptions = SIZE_UNITS.map((unit) => ({ value: unit.id, label: unit.label }));
-const rateOptions = RATE_UNITS.map((unit) => ({ value: unit.id, label: unit.label }));
+const sizeOptions = localized(() => SIZE_UNITS.map((unit) => ({ value: unit.id, label: unit.label })));
+const rateOptions = localized(() => RATE_UNITS.map((unit) => ({ value: unit.id, label: unit.label })));
 
 /** Nombre lisible : beaucoup de décimales pour les petites valeurs, peu sinon. */
 function pretty(value: number): string {
@@ -59,40 +60,40 @@ export function BandwidthTool(_props: ToolComponentProps) {
     try {
       return { result: bandwidthFromTransfer(size.value, sizeUnit, duration.value) };
     } catch (failure) {
-      return { error: failure instanceof Error ? failure.message : "Calcul impossible." };
+      return { error: failure instanceof Error ? failure.message : t("Calcul impossible.") };
     }
   }, [size.value, sizeUnit, duration.value]);
 
   return (
     <div className="space-y-4">
-      <Callout tone="info" title="Bits, octets, 1000 et 1024">
+      <Callout tone="info" title={t("Bits, octets, 1000 et 1024")}>
         {BITS_VERSUS_BYTES_NOTE}
       </Callout>
 
       <Fieldset columns={3}>
-        <Field label="Volume transféré">
+        <Field label={t("Volume transféré")}>
           <TextInput
             value={size.raw}
             inputMode="decimal"
             autoFocus
             onChange={(event) => size.setRaw(event.target.value)}
-            aria-label="Volume transféré"
+            aria-label={t("Volume transféré")}
           />
         </Field>
-        <Field label="Unité">
+        <Field label={t("Unité")}>
           <Select
             value={sizeUnit}
             onChange={setSizeUnit}
-            aria-label="Unité de volume"
+            aria-label={t("Unité de volume")}
             options={sizeOptions}
           />
         </Field>
-        <Field label="Durée (secondes)">
+        <Field label={t("Durée (secondes)")}>
           <TextInput
             value={duration.raw}
             inputMode="decimal"
             onChange={(event) => duration.setRaw(event.target.value)}
-            aria-label="Durée en secondes"
+            aria-label={t("Durée en secondes")}
           />
         </Field>
       </Fieldset>
@@ -100,7 +101,7 @@ export function BandwidthTool(_props: ToolComponentProps) {
       <InputError
         message={
           size.invalid || duration.invalid
-            ? "Le volume et la durée doivent être des nombres."
+            ? t("Le volume et la durée doivent être des nombres.")
             : outcome?.error
         }
       />
@@ -109,33 +110,32 @@ export function BandwidthTool(_props: ToolComponentProps) {
         <>
           <ResultBlock
             value={pretty(outcome.result.bestBitRate.value)}
-            unit={outcome.result.bestBitRate.label}
-            formula={`${pretty(outcome.result.bits)} bits ÷ ${pretty(outcome.result.seconds)} s`}
+            unit={tx(outcome.result.bestBitRate.label)}
+            formula={t("{bits} bits ÷ {seconds} s", { bits: pretty(outcome.result.bits), seconds: pretty(outcome.result.seconds) })}
             secondary={[
               {
-                label: "En octets par seconde",
+                label: t("En octets par seconde"),
                 value: `${pretty(outcome.result.bestByteRate.value)} ${outcome.result.bestByteRate.label}`,
               },
-              { label: "En bits par seconde", value: pretty(outcome.result.bitsPerSecond) },
+              { label: t("En bits par seconde"), value: pretty(outcome.result.bitsPerSecond) },
             ]}
           />
           <div className="flex flex-col gap-3 lg:flex-row">
             <div className="min-w-0 flex-1">
               <ValueTable
-                caption="En bits par seconde"
+                caption={t("En bits par seconde")}
                 rows={rateRows(outcome.result.views, "bit")}
               />
             </div>
             <div className="min-w-0 flex-1">
               <ValueTable
-                caption="En octets par seconde"
+                caption={t("En octets par seconde")}
                 rows={rateRows(outcome.result.views, "byte")}
               />
             </div>
           </div>
           <p className="ft-meta">
-            Débit <strong>moyen</strong> sur toute la durée : il inclut les creux, les reprises et
-            l'établissement de la connexion. Ce n'est pas un débit instantané.
+            <Trans source={"Débit <0>moyen</0> sur toute la durée : il inclut les creux, les reprises et l'établissement de la connexion. Ce n'est pas un débit instantané."} components={[<strong />]} />
           </p>
         </>
       )}
@@ -162,50 +162,50 @@ export function TransferTimeTool(_props: ToolComponentProps) {
     try {
       return { result: transferTime(size.value, sizeUnit, rate.value, rateUnitId) };
     } catch (failure) {
-      return { error: failure instanceof Error ? failure.message : "Calcul impossible." };
+      return { error: failure instanceof Error ? failure.message : t("Calcul impossible.") };
     }
   }, [size.value, sizeUnit, rate.value, rateUnitId]);
 
   return (
     <div className="space-y-4">
-      <Callout tone="info" title="Bits, octets, 1000 et 1024">
+      <Callout tone="info" title={t("Bits, octets, 1000 et 1024")}>
         {BITS_VERSUS_BYTES_NOTE}
       </Callout>
 
       <Fieldset columns={2}>
-        <Field label="Taille à transférer">
+        <Field label={t("Taille à transférer")}>
           <TextInput
             value={size.raw}
             inputMode="decimal"
             autoFocus
             onChange={(event) => size.setRaw(event.target.value)}
-            aria-label="Taille à transférer"
+            aria-label={t("Taille à transférer")}
           />
         </Field>
-        <Field label="Unité">
+        <Field label={t("Unité")}>
           <Select
             value={sizeUnit}
             onChange={setSizeUnit}
-            aria-label="Unité de taille"
+            aria-label={t("Unité de taille")}
             options={sizeOptions}
           />
         </Field>
       </Fieldset>
 
       <Fieldset columns={2}>
-        <Field label="Débit disponible">
+        <Field label={t("Débit disponible")}>
           <TextInput
             value={rate.raw}
             inputMode="decimal"
             onChange={(event) => rate.setRaw(event.target.value)}
-            aria-label="Débit disponible"
+            aria-label={t("Débit disponible")}
           />
         </Field>
-        <Field label="Unité de débit">
+        <Field label={t("Unité de débit")}>
           <Select
             value={rateUnitId}
             onChange={setRateUnitId}
-            aria-label="Unité de débit"
+            aria-label={t("Unité de débit")}
             options={rateOptions}
           />
         </Field>
@@ -214,7 +214,7 @@ export function TransferTimeTool(_props: ToolComponentProps) {
       <InputError
         message={
           size.invalid || rate.invalid
-            ? "La taille et le débit doivent être des nombres."
+            ? t("La taille et le débit doivent être des nombres.")
             : outcome?.error
         }
       />
@@ -223,20 +223,20 @@ export function TransferTimeTool(_props: ToolComponentProps) {
         <>
           <ResultBlock
             value={outcome.result.readable}
-            formula={`${pretty(outcome.result.bits)} bits ÷ ${pretty(outcome.result.bitsPerSecond)} bit/s`}
+            formula={t("{bits} bits ÷ {bitsPerSecond} bit/s", { bits: pretty(outcome.result.bits), bitsPerSecond: pretty(outcome.result.bitsPerSecond) })}
             secondary={[
-              { label: "En secondes", value: pretty(outcome.result.duration.totalSeconds) },
+              { label: t("En secondes"), value: pretty(outcome.result.duration.totalSeconds) },
               {
-                label: "En minutes",
+                label: t("En minutes"),
                 value: pretty(outcome.result.duration.totalSeconds / 60),
               },
               {
-                label: "En heures",
+                label: t("En heures"),
                 value: pretty(outcome.result.duration.totalSeconds / 3600),
               },
             ]}
           />
-          <Callout tone="warning" title="Durée théorique">
+          <Callout tone="warning" title={t("Durée théorique")}>
             {TRANSFER_THEORETICAL_NOTE}
           </Callout>
         </>

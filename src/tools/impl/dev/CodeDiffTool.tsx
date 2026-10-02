@@ -9,6 +9,7 @@ import { diffLines, toUnifiedDiff, type DiffRow } from "@/core/text/diff";
 import { notify } from "@/features/notifications/store";
 import { saveFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Comparaison de deux extraits de code.
@@ -86,33 +87,33 @@ export function CodeDiffTool(_props: ToolComponentProps) {
   const copyUnified = async () => {
     try {
       await navigator.clipboard.writeText(toUnifiedDiff(result));
-      notify.success("Diff copié");
+      notify.success(t("Diff copié"));
     } catch {
-      notify.error("Copie impossible", "Le presse-papiers n'est pas accessible.");
+      notify.error(t("Copie impossible"), t("Le presse-papiers n'est pas accessible."));
     }
   };
 
   const downloadUnified = async () => {
     const bytes = new TextEncoder().encode(toUnifiedDiff(result));
     const saved = await saveFile({ name: "comparaison.diff", bytes, mimeType: "text/plain" });
-    if (saved.saved) notify.success("Fichier enregistré", saved.path);
+    if (saved.saved) notify.success(t("Fichier enregistré"), saved.path);
   };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 lg:flex-row">
         <TextPane
-          label="Version d'origine"
+          label={t("Version d'origine")}
           value={left}
           onChange={setLeft}
-          placeholder="Collez ou déposez le code d'origine…"
+          placeholder={t("Collez ou déposez le code d'origine…")}
           minHeight="16rem"
         />
         <TextPane
-          label="Version modifiée"
+          label={t("Version modifiée")}
           value={right}
           onChange={setRight}
-          placeholder="Collez ou déposez le code modifié…"
+          placeholder={t("Collez ou déposez le code modifié…")}
           minHeight="16rem"
         />
       </div>
@@ -127,56 +128,56 @@ export function CodeDiffTool(_props: ToolComponentProps) {
               setRight(SAMPLE_RIGHT);
             }}
           >
-            <Icon name="Sparkles" size={13} /> Exemple
+            <Icon name="Sparkles" size={13} />{" "}{t("Exemple")}
           </Button>
         </div>
       )}
 
       <Fieldset columns={2}>
-        <Field label="Affichage">
+        <Field label={t("Affichage")}>
           <OptionGroup
-            ariaLabel="Affichage"
+            ariaLabel={t("Affichage")}
             value={view}
             onChange={setView}
             options={[
-              { value: "side", label: "Côte à côte" },
-              { value: "unified", label: "Diff unifié" },
+              { value: "side", label: t("Côte à côte") },
+              { value: "unified", label: t("Diff unifié") },
             ]}
           />
         </Field>
-        <Field label="Filtre">
+        <Field label={t("Filtre")}>
           <OptionGroup
-            ariaLabel="Filtre"
+            ariaLabel={t("Filtre")}
             value={onlyChanges ? "changes" : "all"}
             onChange={(value) => setOnlyChanges(value === "changes")}
             options={[
-              { value: "changes", label: "Différences seules" },
-              { value: "all", label: "Tout le code" },
+              { value: "changes", label: t("Différences seules") },
+              { value: "all", label: t("Tout le code") },
             ]}
           />
         </Field>
-        <Field label="Ignorer" full>
+        <Field label={t("Ignorer")} full>
           <div className="grid gap-1 sm:grid-cols-2">
             <CheckOption
               checked={options.ignoreIndent}
               onChange={(value) => setOptions((current) => ({ ...current, ignoreIndent: value }))}
-              label="L'indentation"
-              hint="Utile après un reformatage automatique."
+              label={t("L'indentation")}
+              hint={t("Utile après un reformatage automatique.")}
             />
             <CheckOption
               checked={options.ignoreTrailing}
               onChange={(value) => setOptions((current) => ({ ...current, ignoreTrailing: value }))}
-              label="Les espaces en fin de ligne"
+              label={t("Les espaces en fin de ligne")}
             />
             <CheckOption
               checked={options.ignoreBlank}
               onChange={(value) => setOptions((current) => ({ ...current, ignoreBlank: value }))}
-              label="Les lignes vides"
+              label={t("Les lignes vides")}
             />
             <CheckOption
               checked={options.ignoreCase}
               onChange={(value) => setOptions((current) => ({ ...current, ignoreCase: value }))}
-              label="La casse"
+              label={t("La casse")}
             />
           </div>
         </Field>
@@ -189,31 +190,29 @@ export function CodeDiffTool(_props: ToolComponentProps) {
         >
           {result.identical ? (
             <span className="flex items-center gap-1.5 text-[var(--ft-ok)]">
-              <Icon name="CircleCheck" size={14} /> Aucune différence
+              <Icon name="CircleCheck" size={14} />{" "}{t("Aucune différence")}
             </span>
           ) : (
             <>
               <span className="text-[var(--ft-ok)]">+{result.stats.added}</span>
               <span className="text-[var(--ft-danger)]">−{result.stats.removed}</span>
               <span className="text-[var(--ft-warn)]">~{result.stats.modified}</span>
-              <span className="text-[var(--ft-text-muted)]">{result.stats.unchanged} inchangées</span>
+              <span className="text-[var(--ft-text-muted)]">{t("{unchanged} inchangées", { unchanged: result.stats.unchanged })}</span>
             </>
           )}
           <div className="flex-1" />
           <Button size="sm" onClick={() => void downloadUnified()} disabled={result.identical}>
-            <Icon name="Download" size={13} /> Télécharger .diff
+            <Icon name="Download" size={13} />{" "}{t("Télécharger .diff")}
           </Button>
           <Button size="sm" variant="primary" onClick={() => void copyUnified()} disabled={result.identical}>
-            <Icon name="Copy" size={13} /> Copier le diff
+            <Icon name="Copy" size={13} />{" "}{t("Copier le diff")}
           </Button>
         </div>
       )}
 
       {result.truncated && (
-        <Callout tone="warning" title="Comparaison simplifiée">
-          Les deux extraits sont très longs : la comparaison est faite ligne à ligne, sans
-          alignement fin. Le résultat reste juste, mais les blocs déplacés apparaîtront comme
-          supprimés puis rajoutés.
+        <Callout tone="warning" title={t("Comparaison simplifiée")}>
+          {t("Les deux extraits sont très longs : la comparaison est faite ligne à ligne, sans alignement fin. Le résultat reste juste, mais les blocs déplacés apparaîtront comme supprimés puis rajoutés.")}
         </Callout>
       )}
 
@@ -274,7 +273,7 @@ function Unified({ rows }: { rows: DiffRow[] }) {
       {lines.map((line, index) => (
         <div key={index} className={clsx("whitespace-pre-wrap break-words", ROW_BACKGROUND[line.op])}>
           {line.sign}
-          {line.text}
+          {tx(line.text)}
         </div>
       ))}
     </pre>

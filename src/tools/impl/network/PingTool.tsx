@@ -16,6 +16,7 @@ import {
 } from "@/core/network/native";
 import { JobCancelledError } from "@/core/jobs/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Ping.
@@ -48,8 +49,8 @@ export function PingTool(_props: ToolComponentProps) {
         await ping(host, { count, timeoutMs: timeout }, { signal: abort.signal }),
       );
     } catch (failure) {
-      if (failure instanceof JobCancelledError) setError("Ping interrompu.");
-      else setError(failure instanceof Error ? failure.message : "Ping impossible.");
+      if (failure instanceof JobCancelledError) setError(t("Ping interrompu."));
+      else setError(failure instanceof Error ? failure.message : t("Ping impossible."));
     } finally {
       setRunning(false);
       setController(undefined);
@@ -61,32 +62,32 @@ export function PingTool(_props: ToolComponentProps) {
       {!available && <Callout tone="warning">{NETWORK_NATIVE_REQUIRED}</Callout>}
 
       <Fieldset columns={3}>
-        <Field label="Hôte ou adresse IP">
+        <Field label={t("Hôte ou adresse IP")}>
           <TextInput
             value={host}
             onChange={(event) => setHost(event.target.value)}
-            aria-label="Hôte ou adresse IP"
+            aria-label={t("Hôte ou adresse IP")}
             placeholder="192.168.1.1"
             autoFocus
           />
         </Field>
-        <Field label="Paquets" hint={`De 1 à ${PING_MAX_COUNT}.`}>
+        <Field label={t("Paquets")} hint={t("De 1 à {PING_MAX_COUNT}.", { PING_MAX_COUNT })}>
           <NumberInput
             value={count}
             min={1}
             max={PING_MAX_COUNT}
             onChange={(event) => setCount(Number(event.target.value))}
-            aria-label="Nombre de paquets"
+            aria-label={t("Nombre de paquets")}
           />
         </Field>
-        <Field label="Délai d'attente (ms)" hint="De 100 à 10 000.">
+        <Field label={t("Délai d'attente (ms)")} hint={t("De 100 à 10 000.")}>
           <NumberInput
             value={timeout}
             min={100}
             max={10000}
             step={100}
             onChange={(event) => setTimeoutMs(Number(event.target.value))}
-            aria-label="Délai d'attente"
+            aria-label={t("Délai d'attente")}
           />
         </Field>
       </Fieldset>
@@ -97,38 +98,38 @@ export function PingTool(_props: ToolComponentProps) {
           onClick={run}
           disabled={!available || running || host.trim().length === 0}
         >
-          <Icon name="Activity" size={14} /> {running ? "Ping en cours…" : "Envoyer les paquets"}
+          <Icon name="Activity" size={14} /> {running ? t("Ping en cours…") : t("Envoyer les paquets")}
         </Button>
         {running && (
           <Button variant="ghost" onClick={() => controller?.abort()}>
-            <Icon name="X" size={14} /> Arrêter
+            <Icon name="X" size={14} />{" "}{t("Arrêter")}
           </Button>
         )}
       </div>
 
-      {running && <ProgressBar label={`Envoi de ${count} paquets vers ${host}…`} />}
+      {running && <ProgressBar label={t("Envoi de {count} paquets vers {host}…", { count, host })} />}
 
-      {error && <Callout tone="error">{error}</Callout>}
+      {error && <Callout tone="error">{tx(error)}</Callout>}
 
       {summary && (
         <>
           <ValueTable
-            caption="Résultat"
+            caption={t("Résultat")}
             rows={[
-              { label: "Résolu vers", value: summary.resolved },
-              { label: "Méthode", value: summary.method },
-              { label: "Paquets envoyés", value: String(summary.sent) },
-              { label: "Reçus", value: String(summary.received), highlight: true },
-              { label: "Perdus", value: `${summary.lost} (${formatLoss(summary.lossPercent)})` },
-              { label: "Minimum", value: formatLatency(summary.minMs) },
-              { label: "Moyenne", value: formatLatency(summary.avgMs), highlight: true },
-              { label: "Maximum", value: formatLatency(summary.maxMs) },
+              { label: t("Résolu vers"), value: summary.resolved },
+              { label: t("Méthode"), value: summary.method },
+              { label: t("Paquets envoyés"), value: String(summary.sent) },
+              { label: t("Reçus"), value: String(summary.received), highlight: true },
+              { label: t("Perdus"), value: `${summary.lost} (${formatLoss(summary.lossPercent)})` },
+              { label: t("Minimum"), value: formatLatency(summary.minMs) },
+              { label: t("Moyenne"), value: formatLatency(summary.avgMs), highlight: true },
+              { label: t("Maximum"), value: formatLatency(summary.maxMs) },
             ]}
           />
 
           <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
             <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-              Paquet par paquet
+              {t("Paquet par paquet")}
             </h3>
             <ul className="divide-y divide-[var(--ft-rule)]">
               {summary.attempts.map((attempt) => (
@@ -140,8 +141,8 @@ export function PingTool(_props: ToolComponentProps) {
                     }`}
                   >
                     {attempt.rttMs === null
-                      ? "aucune réponse avant le délai"
-                      : `réponse de ${attempt.from ?? summary.resolved} en ${formatLatency(attempt.rttMs)}`}
+                      ? t("aucune réponse avant le délai")
+                      : t("réponse de {value} en {value2}", { value: attempt.from ?? summary.resolved, value2: formatLatency(attempt.rttMs) })}
                   </span>
                 </li>
               ))}
@@ -149,9 +150,8 @@ export function PingTool(_props: ToolComponentProps) {
           </section>
 
           {summary.received === 0 && (
-            <Callout tone="warning" title="Aucune réponse">
-              L'absence de réponse ne signifie pas toujours que la machine est éteinte : beaucoup
-              d'hôtes et de pare-feux sont configurés pour ignorer les échos ICMP.
+            <Callout tone="warning" title={t("Aucune réponse")}>
+              {t("L'absence de réponse ne signifie pas toujours que la machine est éteinte : beaucoup d'hôtes et de pare-feux sont configurés pour ignorer les échos ICMP.")}
             </Callout>
           )}
         </>

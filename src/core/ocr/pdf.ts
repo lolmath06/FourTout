@@ -3,6 +3,7 @@ import { pdfToImages } from "@/core/pdf/operations/toImages";
 import { JobCancelledError } from "@/core/jobs/types";
 import { getDefaultEngine } from "./index";
 import type { OcrEngine, OcrLanguage, OcrResult } from "./types";
+import { t } from "@/i18n";
 
 /**
  * OCR d'un PDF scanné.
@@ -46,14 +47,14 @@ export async function recognizePdf(
     if (context?.signal?.aborted) throw new JobCancelledError();
     const base = 0.4 + (index / images.length) * 0.6;
     const span = 0.6 / images.length;
-    context?.report?.({ ratio: base, label: `OCR page ${index + 1} sur ${images.length}` });
+    context?.report?.({ ratio: base, label: t("OCR page {value} sur {count}", { value: index + 1, count: images.length }) });
     const result = await engine.recognize({ name: image.name, bytes: image.bytes }, options.language, {
-      report: (p) => context?.report?.({ ratio: base + (p.ratio ?? 0) * span, label: `OCR page ${index + 1} sur ${images.length}` }),
+      report: (p) => context?.report?.({ ratio: base + (p.ratio ?? 0) * span, label: t("OCR page {value} sur {count}", { value: index + 1, count: images.length }) }),
       signal: context?.signal,
     });
     results.push({ page: index + 1, ...result });
   }
 
-  context?.report?.({ ratio: 1, label: "Terminé" });
+  context?.report?.({ ratio: 1, label: t("Terminé") });
   return results;
 }

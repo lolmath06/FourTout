@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { SelectedFile } from "@/core/files";
+import { tx } from "@/i18n";
 
 /**
  * Lecteur audio réutilisable : contrôles natifs (lecture, pause, timeline,
@@ -38,7 +39,7 @@ export function AudioPreview({
   if (!url) return null;
   return (
     <div className="space-y-1">
-      {label && <p className="text-xs text-[var(--ft-text-muted)]">{label}</p>}
+      {label && <p className="text-xs text-[var(--ft-text-muted)]">{tx(label)}</p>}
       <audio controls src={url} className="w-full" />
     </div>
   );

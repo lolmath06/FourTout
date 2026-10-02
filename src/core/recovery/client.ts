@@ -1,5 +1,6 @@
 import { isTauri } from "@/core/platform";
 import type { EncryptionParamsDto } from "@/core/pdf/encryptionInfo";
+import { t } from "@/i18n";
 
 /**
  * Client de la récupération de mot de passe.
@@ -59,7 +60,7 @@ export async function startRecovery(
 ): Promise<RecoverySession> {
   if (!isTauri()) {
     throw new Error(
-      "La récupération de mot de passe nécessite l'application FourTout installée.",
+      t("La récupération de mot de passe nécessite l'application FourTout installée."),
     );
   }
 

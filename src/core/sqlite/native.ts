@@ -10,6 +10,7 @@
 
 import { isTauri } from "@/core/platform";
 import { toCsv, type CsvDelimiter } from "@/core/text/csv";
+import { formatBinarySize, t } from "@/i18n";
 
 export const SQLITE_NATIVE_REQUIRED =
   "L'explorateur SQLite lit un fichier de base sur votre disque : il nécessite l'application " +
@@ -105,7 +106,7 @@ async function invokeNative<T>(command: string, args: Record<string, unknown>): 
   } catch (error) {
     const message =
       typeof error === "string" ? error : error instanceof Error ? error.message : "";
-    throw new Error(message || "L'explorateur SQLite a échoué.");
+    throw new Error(message || t("L'explorateur SQLite a échoué."));
   }
 }
 
@@ -193,13 +194,5 @@ export function queryToCsv(
 
 /** Taille lisible d'un fichier de base. */
 export function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} o`;
-  const units = ["Kio", "Mio", "Gio", "Tio"];
-  let value = bytes / 1024;
-  let index = 0;
-  while (value >= 1024 && index < units.length - 1) {
-    value /= 1024;
-    index += 1;
-  }
-  return `${value.toFixed(value >= 100 ? 0 : 1).replace(".", ",")} ${units[index]}`;
+  return formatBinarySize(bytes, (value) => (value >= 100 ? 0 : 1));
 }

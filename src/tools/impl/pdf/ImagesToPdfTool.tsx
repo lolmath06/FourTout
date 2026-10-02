@@ -10,6 +10,7 @@ import { imagesToPdf, type ImagePageMode } from "@/core/pdf/operations/imagesToP
 import { toPdfError } from "@/core/pdf/errors";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t } from "@/i18n";
 
 /**
  * Images vers PDF.
@@ -19,11 +20,11 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * résultat — pour rester cohérent avec le reste de la catégorie.
  */
 
-const MODES = [
-  { value: "fit-image" as ImagePageMode, label: "Ajuster à l'image" },
-  { value: "a4-portrait" as ImagePageMode, label: "A4 portrait" },
-  { value: "a4-landscape" as ImagePageMode, label: "A4 paysage" },
-];
+const MODES = localized(() => [
+  { value: "fit-image" as ImagePageMode, label: t("Ajuster à l'image") },
+  { value: "a4-portrait" as ImagePageMode, label: t("A4 portrait") },
+  { value: "a4-landscape" as ImagePageMode, label: t("A4 paysage") },
+]);
 
 export function ImagesToPdfTool({ tool }: ToolComponentProps) {
   const [files, setFiles] = useState<SelectedFile[]>([]);
@@ -59,12 +60,12 @@ export function ImagesToPdfTool({ tool }: ToolComponentProps) {
       });
       return {
         files: [output],
-        summary: `${images.length} image${images.length > 1 ? "s" : ""} converties en un PDF de ${images.length} page${images.length > 1 ? "s" : ""}.`,
+        summary: t("{count} {count, plural, one {image} other {images}} converties en un PDF de {count} {count, plural, one {page} other {pages}}.", { count: images.length }),
       };
     });
     if (result) {
       setOutcome(result);
-      notify.success("PDF prêt", result.summary);
+      notify.success(t("PDF prêt"), result.summary);
     }
   };
 
@@ -76,8 +77,8 @@ export function ImagesToPdfTool({ tool }: ToolComponentProps) {
         constraints={constraintsForTool(tool)}
         files={files}
         onChange={setFiles}
-        label="Déposez vos images ici"
-        hint="PNG, JPEG et WebP. Une image par page, dans l'ordre de la liste."
+        label={t("Déposez vos images ici")}
+        hint={t("PNG, JPEG et WebP. Une image par page, dans l'ordre de la liste.")}
         disabled={job.isRunning}
       />
 
@@ -98,7 +99,7 @@ export function ImagesToPdfTool({ tool }: ToolComponentProps) {
               </span>
               <button
                 type="button"
-                aria-label={`Monter ${file.name}`}
+                aria-label={t("Monter {name}", { name: file.name })}
                 disabled={index === 0}
                 onClick={() => move(index, -1)}
                 className="rounded p-1 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)] disabled:opacity-30"
@@ -107,7 +108,7 @@ export function ImagesToPdfTool({ tool }: ToolComponentProps) {
               </button>
               <button
                 type="button"
-                aria-label={`Descendre ${file.name}`}
+                aria-label={t("Descendre {name}", { name: file.name })}
                 disabled={index === files.length - 1}
                 onClick={() => move(index, 1)}
                 className="rotate-180 rounded p-1 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)] disabled:opacity-30"
@@ -116,7 +117,7 @@ export function ImagesToPdfTool({ tool }: ToolComponentProps) {
               </button>
               <button
                 type="button"
-                aria-label={`Retirer ${file.name}`}
+                aria-label={t("Retirer {name}", { name: file.name })}
                 onClick={() => setFiles((c) => c.filter((f) => f.id !== file.id))}
                 className="rounded p-1 text-[var(--ft-text-faint)] hover:text-[var(--ft-danger)]"
               >
@@ -131,11 +132,11 @@ export function ImagesToPdfTool({ tool }: ToolComponentProps) {
         <>
           <Fieldset columns={1}>
             <Field
-              label="Format des pages"
-              hint="Le ratio de l'image est toujours conservé : aucune déformation."
+              label={t("Format des pages")}
+              hint={t("Le ratio de l'image est toujours conservé : aucune déformation.")}
             >
               <OptionGroup
-                ariaLabel="Format des pages"
+                ariaLabel={t("Format des pages")}
                 value={mode}
                 onChange={setMode}
                 options={MODES}
@@ -146,19 +147,19 @@ export function ImagesToPdfTool({ tool }: ToolComponentProps) {
           <div className="flex items-center justify-end gap-2 border-t border-[var(--ft-border)] pt-4">
             {job.isRunning && (
               <Button size="sm" variant="ghost" onClick={job.cancel}>
-                Annuler
+                {t("Annuler")}
               </Button>
             )}
             <Button variant="primary" onClick={execute} disabled={job.isRunning}>
               {job.isRunning ? (
                 <>
                   <Icon name="Loader" size={15} className="animate-spin" />
-                  {job.progress.label ?? "Conversion…"}
+                  {job.progress.label ?? t("Conversion…")}
                 </>
               ) : (
                 <>
                   <Icon name="Play" size={15} />
-                  Créer le PDF
+                  {t("Créer le PDF")}
                 </>
               )}
             </Button>

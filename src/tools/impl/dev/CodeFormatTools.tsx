@@ -24,12 +24,13 @@ import {
 } from "@/core/code/web";
 import { formatFileSize } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t, tx } from "@/i18n";
 
-const INDENTS: { value: IndentStyle; label: string }[] = [
-  { value: "2", label: "2 espaces" },
-  { value: "4", label: "4 espaces" },
-  { value: "tab", label: "Tabulation" },
-];
+const INDENTS: { value: IndentStyle; label: string }[] = localized(() => [
+  { value: "2", label: t("2 espaces") },
+  { value: "4", label: t("4 espaces") },
+  { value: "tab", label: t("Tabulation") },
+]);
 
 const LANGUAGES: { value: WebLanguage; label: string }[] = (
   Object.keys(LANGUAGE_LABELS) as WebLanguage[]
@@ -57,7 +58,7 @@ export function SqlFormatTool(_props: ToolComponentProps) {
     try {
       output = action === "format" ? formatSql(input, settings) : compactSql(input);
     } catch (failure) {
-      error = failure instanceof Error ? failure.message : "Requête non analysable.";
+      error = failure instanceof Error ? failure.message : t("Requête non analysable.");
     }
   }
 
@@ -65,43 +66,43 @@ export function SqlFormatTool(_props: ToolComponentProps) {
     <TextToolShell
       input={input}
       onInputChange={setInput}
-      inputLabel="Requête SQL"
-      outputLabel={action === "format" ? "Requête formatée" : "Requête sur une ligne"}
+      inputLabel={t("Requête SQL")}
+      outputLabel={action === "format" ? t("Requête formatée") : t("Requête sur une ligne")}
       output={output}
-      error={error}
+      error={tx(error)}
       layout="side-by-side"
       downloadName="requete.sql"
       sample={SQL_SAMPLE}
     >
       <Fieldset columns={2}>
-        <Field label="Sortie">
+        <Field label={t("Sortie")}>
           <OptionGroup
-            ariaLabel="Sortie"
+            ariaLabel={t("Sortie")}
             value={action}
             onChange={setAction}
             options={[
-              { value: "format", label: "Formater" },
-              { value: "compact", label: "Une seule ligne" },
+              { value: "format", label: t("Formater") },
+              { value: "compact", label: t("Une seule ligne") },
             ]}
           />
         </Field>
         <Field
-          label="Dialecte"
-          hint={SQL_DIALECTS.find((d) => d.value === settings.dialect)?.hint}
+          label={t("Dialecte")}
+          hint={tx(SQL_DIALECTS.find((d) => d.value === settings.dialect)?.hint)}
         >
           <Select
             value={settings.dialect}
             onChange={(dialect) => setSettings((current) => ({ ...current, dialect }))}
-            aria-label="Dialecte SQL"
+            aria-label={t("Dialecte SQL")}
             options={SQL_DIALECTS.map((dialect) => ({
               value: dialect.value,
               label: dialect.label,
             }))}
           />
         </Field>
-        <Field label="Mots-clés">
+        <Field label={t("Mots-clés")}>
           <OptionGroup
-            ariaLabel="Casse des mots-clés"
+            ariaLabel={t("Casse des mots-clés")}
             value={settings.keywordCase}
             onChange={(keywordCase: KeywordCase) =>
               setSettings((current) => ({ ...current, keywordCase }))
@@ -110,13 +111,13 @@ export function SqlFormatTool(_props: ToolComponentProps) {
             options={[
               { value: "upper", label: "MAJUSCULES" },
               { value: "lower", label: "minuscules" },
-              { value: "preserve", label: "Inchangés" },
+              { value: "preserve", label: t("Inchangés") },
             ]}
           />
         </Field>
-        <Field label="Indentation">
+        <Field label={t("Indentation")}>
           <OptionGroup
-            ariaLabel="Indentation"
+            ariaLabel={t("Indentation")}
             value={settings.indentation}
             onChange={(indentation) => setSettings((current) => ({ ...current, indentation }))}
             disabled={action === "compact"}
@@ -125,7 +126,7 @@ export function SqlFormatTool(_props: ToolComponentProps) {
         </Field>
       </Fieldset>
 
-      <Callout tone="info" title="Aucune exécution">
+      <Callout tone="info" title={t("Aucune exécution")}>
         {SQL_NOTE}
       </Callout>
     </TextToolShell>
@@ -178,7 +179,7 @@ export function WebBeautifyTool(_props: ToolComponentProps) {
       .catch((failure: unknown) => {
         if (cancelled) return;
         setOutput("");
-        setError(failure instanceof Error ? failure.message : "Formatage impossible.");
+        setError(failure instanceof Error ? failure.message : t("Formatage impossible."));
       })
       .finally(() => {
         if (!cancelled) setBusy(false);
@@ -192,30 +193,30 @@ export function WebBeautifyTool(_props: ToolComponentProps) {
     <TextToolShell
       input={input}
       onInputChange={setInput}
-      inputLabel="Code source"
-      outputLabel={`${LANGUAGE_LABELS[language]} formaté`}
+      inputLabel={t("Code source")}
+      outputLabel={t("{value} formaté", { value: LANGUAGE_LABELS[language] })}
       output={output}
-      error={error}
+      error={tx(error)}
       layout="side-by-side"
       downloadName={`formate.${language === "js" ? "js" : language}`}
       sample={WEB_SAMPLE}
-      summary={busy ? "Formatage en cours…" : undefined}
+      summary={busy ? t("Formatage en cours…") : undefined}
     >
       <Fieldset columns={2}>
-        <Field label="Langage" hint={auto ? "Détecté automatiquement." : undefined}>
+        <Field label={t("Langage")} hint={auto ? t("Détecté automatiquement.") : undefined}>
           <Select
             value={language}
             onChange={(value) => {
               setAuto(false);
               setLanguage(value);
             }}
-            aria-label="Langage"
+            aria-label={t("Langage")}
             options={LANGUAGES}
           />
         </Field>
-        <Field label="Indentation">
+        <Field label={t("Indentation")}>
           <OptionGroup
-            ariaLabel="Indentation"
+            ariaLabel={t("Indentation")}
             value={indentation}
             onChange={setIndentation}
             options={INDENTS}
@@ -251,7 +252,7 @@ export function WebMinifyTool(_props: ToolComponentProps) {
   const run = async () => {
     if (input.trim().length === 0) return;
     if (new TextEncoder().encode(input).length > MAX_SOURCE_BYTES) {
-      setError(`Le code dépasse ${formatFileSize(MAX_SOURCE_BYTES)} : réduisez l'échantillon.`);
+      setError(t("Le code dépasse {size} : réduisez l'échantillon.", { size: formatFileSize(MAX_SOURCE_BYTES) }));
       return;
     }
     setBusy(true);
@@ -267,7 +268,7 @@ export function WebMinifyTool(_props: ToolComponentProps) {
     } catch (failure) {
       setOutput("");
       setStats(undefined);
-      setError(failure instanceof Error ? failure.message : "Minification impossible.");
+      setError(failure instanceof Error ? failure.message : t("Minification impossible."));
     } finally {
       setBusy(false);
     }
@@ -281,41 +282,41 @@ export function WebMinifyTool(_props: ToolComponentProps) {
         setOutput("");
         setStats(undefined);
       }}
-      inputLabel="Code source"
-      outputLabel={`${LANGUAGE_LABELS[language]} minifié`}
+      inputLabel={t("Code source")}
+      outputLabel={t("{value} minifié", { value: LANGUAGE_LABELS[language] })}
       output={output}
-      error={error}
+      error={tx(error)}
       layout="side-by-side"
       downloadName={`minifie.min.${language === "js" ? "js" : language}`}
       sample={WEB_SAMPLE}
       summary={
         stats
-          ? `${formatFileSize(stats.before)} → ${formatFileSize(stats.after)} · ${stats.saved.toFixed(1)} % de gain`
+          ? t("{size} → {size2} · {value} % de gain", { size: formatFileSize(stats.before), size2: formatFileSize(stats.after), value: stats.saved.toFixed(1) })
           : undefined
       }
       actions={
         <Button size="md" variant="primary" onClick={() => void run()} disabled={busy || input.trim().length === 0}>
           <Icon name={busy ? "Loader" : "Play"} size={15} className={busy ? "animate-spin" : undefined} />
-          {busy ? "Minification…" : "Minifier"}
+          {busy ? t("Minification…") : t("Minifier")}
         </Button>
       }
     >
       <Fieldset columns={1}>
-        <Field label="Langage" hint={auto ? "Détecté automatiquement." : undefined}>
+        <Field label={t("Langage")} hint={auto ? t("Détecté automatiquement.") : undefined}>
           <Select
             value={language}
             onChange={(value) => {
               setAuto(false);
               setLanguage(value);
             }}
-            aria-label="Langage"
+            aria-label={t("Langage")}
             options={LANGUAGES}
           />
         </Field>
       </Fieldset>
 
       {language === "html" && (
-        <Callout tone="info" title="Minification HTML conservatrice">
+        <Callout tone="info" title={t("Minification HTML conservatrice")}>
           {HTML_MINIFY_NOTE}
         </Callout>
       )}

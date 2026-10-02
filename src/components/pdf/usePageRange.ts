@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { parsePageRange } from "@/core/pdf/pageRange";
 import { isPdfError } from "@/core/pdf/errors";
+import { t } from "@/i18n";
 
 /**
  * Validation d'une sélection de pages, séparée du composant pour rester
@@ -27,7 +28,7 @@ export function usePageRange(input: string, pageCount: number): PageRangeState {
         input,
         pages: [],
         valid: false,
-        error: isPdfError(error) ? error.message : "Sélection invalide",
+        error: isPdfError(error) ? error.message : t("Sélection invalide"),
       };
     }
   }, [input, pageCount]);

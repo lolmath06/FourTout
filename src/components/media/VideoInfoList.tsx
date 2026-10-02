@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { reorderByInsertion } from "@/components/pdf/pageReorder";
 import { formatTimecode, type MediaInfo } from "@/core/media/types";
 import { describeVideo } from "./describeVideo";
+import { t } from "@/i18n";
 
 /**
  * Carte d'identité d'un fichier vidéo : ce que ffprobe a réellement lu.
@@ -81,7 +82,7 @@ export function VideoInfoList({
             <span className="text-[var(--ft-text-muted)]">{formatFileSize(file.size)}</span>
             <span className="w-full text-[11px] text-[var(--ft-text-faint)] sm:w-auto sm:basis-full">
               {describeVideo(info)}
-              {info?.subtitles.length ? ` · ${info.subtitles.length} piste(s) de sous-titres` : ""}
+              {info?.subtitles.length ? t(" · {count} piste(s) de sous-titres", { count: info.subtitles.length }) : ""}
             </span>
             {!disabled && (onMove || onRemove) && (
               <span className="flex gap-0.5">
@@ -91,7 +92,7 @@ export function VideoInfoList({
                       type="button"
                       onClick={() => onMove(file.id, -1)}
                       className="rounded p-0.5 hover:text-[var(--ft-accent)]"
-                      aria-label={`Monter ${file.name}`}
+                      aria-label={t("Monter {name}", { name: file.name })}
                     >
                       <Icon name="ChevronUp" size={13} />
                     </button>
@@ -99,7 +100,7 @@ export function VideoInfoList({
                       type="button"
                       onClick={() => onMove(file.id, 1)}
                       className="rounded p-0.5 hover:text-[var(--ft-accent)]"
-                      aria-label={`Descendre ${file.name}`}
+                      aria-label={t("Descendre {name}", { name: file.name })}
                     >
                       <Icon name="ChevronDown" size={13} />
                     </button>
@@ -110,7 +111,7 @@ export function VideoInfoList({
                     type="button"
                     onClick={() => onRemove(file.id)}
                     className="rounded p-0.5 hover:text-[var(--ft-danger)]"
-                    aria-label={`Retirer ${file.name}`}
+                    aria-label={t("Retirer {name}", { name: file.name })}
                   >
                     <Icon name="X" size={13} />
                   </button>

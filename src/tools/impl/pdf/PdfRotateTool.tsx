@@ -8,17 +8,18 @@ import { rotatePages } from "@/core/pdf/operations/pages";
 import { parsePageRange } from "@/core/pdf/pageRange";
 import type { RotationAngle } from "@/core/pdf/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t } from "@/i18n";
 
-const ANGLES = [
-  { value: "90" as const, label: "90° à droite" },
+const ANGLES = localized(() => [
+  { value: "90" as const, label: t("90° à droite") },
   { value: "180" as const, label: "180°" },
-  { value: "270" as const, label: "90° à gauche" },
-];
+  { value: "270" as const, label: t("90° à gauche") },
+]);
 
-const SCOPES = [
-  { value: "all" as const, label: "Toutes les pages" },
-  { value: "selection" as const, label: "Pages choisies" },
-];
+const SCOPES = localized(() => [
+  { value: "all" as const, label: t("Toutes les pages") },
+  { value: "selection" as const, label: t("Pages choisies") },
+]);
 
 export function PdfRotateTool({ tool }: ToolComponentProps) {
   const [angle, setAngle] = useState<"90" | "180" | "270">("90");
@@ -28,7 +29,7 @@ export function PdfRotateTool({ tool }: ToolComponentProps) {
   return (
     <PdfToolShell
       tool={tool}
-      actionLabel="Faire pivoter"
+      actionLabel={t("Faire pivoter")}
       actionDisabled={scope === "selection" && input.trim().length === 0}
       run={async ({ documents, context }) => {
         const [document] = documents;
@@ -43,7 +44,7 @@ export function PdfRotateTool({ tool }: ToolComponentProps) {
         );
         return singleResult(
           output,
-          `Rotation de ${angle}° appliquée à ${pages ? `${pages.length} page(s)` : `${pageCount} page(s)`}.`,
+          t("Rotation de {angle}° appliquée à {value}.", { angle, value: pages ? `${pages.length} page(s)` : `${pageCount} page(s)` }),
         );
       }}
     >
@@ -83,16 +84,16 @@ function RotateFields({
 
   return (
     <Fieldset>
-      <Field label="Rotation" hint="La rotation s'ajoute à celle déjà enregistrée dans le document.">
-        <OptionGroup ariaLabel="Angle de rotation" value={angle} onChange={onAngle} options={ANGLES} />
+      <Field label={t("Rotation")} hint={t("La rotation s'ajoute à celle déjà enregistrée dans le document.")}>
+        <OptionGroup ariaLabel={t("Angle de rotation")} value={angle} onChange={onAngle} options={ANGLES} />
       </Field>
-      <Field label="Portée">
-        <OptionGroup ariaLabel="Pages concernées" value={scope} onChange={onScope} options={SCOPES} />
+      <Field label={t("Portée")}>
+        <OptionGroup ariaLabel={t("Pages concernées")} value={scope} onChange={onScope} options={SCOPES} />
       </Field>
       {scope === "selection" && (
         <div className="sm:col-span-full">
           <PageRangeInput
-            label="Pages à faire pivoter"
+            label={t("Pages à faire pivoter")}
             value={input}
             onChange={onInput}
             pageCount={pageCount}

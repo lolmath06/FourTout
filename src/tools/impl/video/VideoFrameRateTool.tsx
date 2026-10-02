@@ -13,6 +13,7 @@ import { formatTimecode } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { fallbackTracker, sizeOutcome } from "./shared";
+import { t } from "@/i18n";
 
 /**
  * Changer la fréquence d'images.
@@ -37,9 +38,9 @@ export function VideoFrameRateTool({ tool }: ToolComponentProps) {
   return (
     <VideoToolShell
       tool={tool}
-      actionLabel="Changer la cadence"
+      actionLabel={t("Changer la cadence")}
       actionDisabled={!target}
-      hint="La durée reste identique ; la bande son n'est pas retouchée."
+      hint={t("La durée reste identique ; la bande son n'est pas retouchée.")}
       run={async ({ files, infos, caps, context }) => {
         const pipeline = frameRatePipeline(
           { caps, info: infos[0], extension: files[0].extension },
@@ -58,14 +59,14 @@ export function VideoFrameRateTool({ tool }: ToolComponentProps) {
               pipeline.container,
             ),
             totalMs: infos[0]?.durationMs,
-            label: "Changement de cadence…",
+            label: t("Changement de cadence…"),
           },
           context,
         );
         return sizeOutcome(
           files[0].size,
           file,
-          `Cadence portée à ${targetValue} i/s (${target}) :`,
+          t("Cadence portée à {targetValue} i/s ({target}) :", { targetValue, target }),
           tracker.warning(),
         );
       }}
@@ -77,16 +78,14 @@ export function VideoFrameRateTool({ tool }: ToolComponentProps) {
           <div className="space-y-3">
             {source !== undefined && (
               <p className="text-xs text-[var(--ft-text-muted)]">
-                Source : {source} i/s
-                {stream?.width ? ` · ${stream.width} × ${stream.height}` : ""}
-                {infos[0].durationMs > 0 ? ` · ${formatTimecode(infos[0].durationMs)}` : ""}
+                {t("Source : {source} i/s{value}{value2}", { source, value: stream?.width ? ` · ${stream.width} × ${stream.height}` : "", value2: infos[0].durationMs > 0 ? ` · ${formatTimecode(infos[0].durationMs)}` : "" })}
               </p>
             )}
 
             <Fieldset columns={1}>
-              <Field label="Cadence cible">
+              <Field label={t("Cadence cible")}>
                 <OptionGroup
-                  ariaLabel="Cadence"
+                  ariaLabel={t("Cadence")}
                   value={custom.trim() === "" ? fraction : ""}
                   onChange={(value) => {
                     setFraction(value);
@@ -99,12 +98,12 @@ export function VideoFrameRateTool({ tool }: ToolComponentProps) {
                 />
               </Field>
               <Field
-                label="Ou une valeur personnalisée"
-                hint="Un nombre (18, 48) ou une fraction exacte (30000/1001)."
+                label={t("Ou une valeur personnalisée")}
+                hint={t("Un nombre (18, 48) ou une fraction exacte (30000/1001).")}
               >
                 <TextInput
                   value={custom}
-                  placeholder="ex. 48"
+                  placeholder={t("ex. 48")}
                   spellCheck={false}
                   onChange={(event) => setCustom(event.target.value)}
                 />
@@ -112,19 +111,15 @@ export function VideoFrameRateTool({ tool }: ToolComponentProps) {
             </Fieldset>
 
             {custom.trim() !== "" && !target && (
-              <Callout tone="error" title="Cadence invalide">
-                Saisissez un nombre entre 1 et 480, ou une fraction du type 30000/1001.
+              <Callout tone="error" title={t("Cadence invalide")}>
+                {t("Saisissez un nombre entre 1 et 480, ou une fraction du type 30000/1001.")}
               </Callout>
             )}
 
             {target && (
-              <Callout tone="info" title="Ce que fait exactement cette conversion">
-                Les images sont dupliquées ou supprimées pour atteindre {targetValue} i/s ; aucune
-                image intermédiaire n'est calculée. La sortie est à cadence constante, même si la
-                source était à cadence variable.
-                {target.includes("/1001") &&
-                  " La cadence est écrite comme la fraction exacte " +
-                    `${target}, et non comme un décimal arrondi qui ferait dériver l'image.`}
+              <Callout tone="info" title={t("Ce que fait exactement cette conversion")}>
+                {t("Les images sont dupliquées ou supprimées pour atteindre {targetValue} i/s ; aucune image intermédiaire n'est calculée. La sortie est à cadence constante, même si la source était à cadence variable.{value}", { targetValue, value: target.includes("/1001") &&
+                  t(" La cadence est écrite comme la fraction exacte {target}, et non comme un décimal arrondi qui ferait dériver l'image.", { target }) })}
               </Callout>
             )}
           </div>

@@ -18,6 +18,7 @@ import { toPdfError } from "@/core/pdf/errors";
 import { notify } from "@/features/notifications/store";
 import type { PdfSource } from "@/core/pdf/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t, tx } from "@/i18n";
 
 interface Box extends TextBox {
   id: string;
@@ -48,7 +49,7 @@ export function PdfAddTextTool({ tool }: ToolComponentProps) {
 
   const addBox = (x: number, y: number) => {
     counter += 1;
-    const box: Box = { id: `b${counter}`, page, x, y, text: "Texte", size: 16, color: { r: 0, g: 0, b: 0 }, bold: false };
+    const box: Box = { id: `b${counter}`, page, x, y, text: t("Texte"), size: 16, color: { r: 0, g: 0, b: 0 }, bold: false };
     setBoxes((b) => [...b, box]);
     setSelected(box.id);
   };
@@ -59,16 +60,16 @@ export function PdfAddTextTool({ tool }: ToolComponentProps) {
     setOutcome(null);
     const result = await job.run(async (context) => {
       const output = await addTextToPdf(usable.source, boxes, { report: context.report, signal: context.signal });
-      return { files: [output], summary: `${boxes.length} zone${boxes.length > 1 ? "s" : ""} de texte ajoutée${boxes.length > 1 ? "s" : ""}.` };
+      return { files: [output], summary: t("{count} {count, plural, one {zone} other {zones}} de texte {count, plural, one {ajoutée} other {ajoutées}}.", { count: boxes.length }) };
     });
-    if (result) { setOutcome(result); notify.success("Fichier prêt", result.summary); }
+    if (result) { setOutcome(result); notify.success(t("Fichier prêt"), result.summary); }
   };
 
   const errorMessage = job.error ? toPdfError(job.error.cause).message : undefined;
 
   return (
     <div className="space-y-4">
-      <FileDropZone constraints={{ ...constraintsForTool(tool), maxFiles: 1 }} files={files} onChange={setFiles} label="Déposez votre PDF" disabled={job.isRunning} />
+      <FileDropZone constraints={{ ...constraintsForTool(tool), maxFiles: 1 }} files={files} onChange={setFiles} label={t("Déposez votre PDF")} disabled={job.isRunning} />
       {loaded.length > 0 && <PdfSourceList documents={loaded} onUnlock={unlock} />}
 
       {usable && (
@@ -87,23 +88,23 @@ export function PdfAddTextTool({ tool }: ToolComponentProps) {
             <Fieldset columns={1}>
               {current ? (
                 <>
-                  <Field label="Texte"><TextInput value={current.text} onChange={(e) => update(current.id, { text: e.target.value })} /></Field>
-                  <Field label={`Taille (${current.size} pt)`}><Slider value={current.size} onChange={(v) => update(current.id, { size: v })} min={6} max={48} /></Field>
-                  <Field label="Couleur"><ColorField value={current.color} onChange={(c) => update(current.id, { color: c })} /></Field>
-                  <Field label="Graisse">
-                    <Button size="sm" variant={current.bold ? "primary" : "secondary"} onClick={() => update(current.id, { bold: !current.bold })}>{current.bold ? "Gras" : "Normal"}</Button>
+                  <Field label={t("Texte")}><TextInput value={current.text} onChange={(e) => update(current.id, { text: e.target.value })} /></Field>
+                  <Field label={t("Taille ({size} pt)", { size: current.size })}><Slider value={current.size} onChange={(v) => update(current.id, { size: v })} min={6} max={48} /></Field>
+                  <Field label={t("Couleur")}><ColorField value={current.color} onChange={(c) => update(current.id, { color: c })} /></Field>
+                  <Field label={t("Graisse")}>
+                    <Button size="sm" variant={current.bold ? "primary" : "secondary"} onClick={() => update(current.id, { bold: !current.bold })}>{current.bold ? t("Gras") : t("Normal")}</Button>
                   </Field>
                   <Button size="sm" variant="ghost" onClick={() => { setBoxes((b) => b.filter((x) => x.id !== current.id)); setSelected(null); }}>
-                    <Icon name="Trash" size={14} /> Supprimer
+                    <Icon name="Trash" size={14} />{" "}{t("Supprimer")}
                   </Button>
                 </>
               ) : (
-                <p className="text-xs text-[var(--ft-text-muted)]">Cliquez sur la page pour ajouter une zone de texte, puis déplacez-la.</p>
+                <p className="text-xs text-[var(--ft-text-muted)]">{t("Cliquez sur la page pour ajouter une zone de texte, puis déplacez-la.")}</p>
               )}
             </Fieldset>
           </div>
 
-          <ApplyBar job={job} onApply={apply} disabled={boxes.length === 0} label="Ajouter le texte" icon="PenLine" />
+          <ApplyBar job={job} onApply={apply} disabled={boxes.length === 0} label={t("Ajouter le texte")} icon="PenLine" />
         </>
       )}
 
@@ -151,9 +152,9 @@ function TextStage({ source, page, boxes, selected, onSelect, onAdd, onMove }: {
     <PreviewFrame maxHeight={560}>
       <div ref={boxRef} className="relative inline-block select-none" onPointerDown={onStageDown}>
         {render.url ? (
-          <img src={render.url} alt={`Page ${page}`} className="block max-h-[540px] max-w-full object-contain" draggable={false} />
+          <img src={render.url} alt={t("Page {page}", { page })} className="block max-h-[540px] max-w-full object-contain" draggable={false} />
         ) : (
-          <div className="flex h-64 items-center justify-center text-sm text-[var(--ft-text-muted)]"><Icon name="Loader" size={16} className="mr-2 animate-spin" /> Rendu…</div>
+          <div className="flex h-64 items-center justify-center text-sm text-[var(--ft-text-muted)]"><Icon name="Loader" size={16} className="mr-2 animate-spin" />{" "}{t("Rendu…")}</div>
         )}
         {boxes.map((b) => (
           <div
@@ -168,7 +169,7 @@ function TextStage({ source, page, boxes, selected, onSelect, onAdd, onMove }: {
             className={`absolute cursor-move whitespace-pre leading-none ${b.id === selected ? "outline outline-1 outline-[var(--ft-accent)]" : ""}`}
             style={{ left: `${b.x * 100}%`, top: `${b.y * 100}%`, color: rgbToHex(b.color), fontWeight: b.bold ? 700 : 400, fontFamily: "Helvetica, Arial, sans-serif", fontSize: fontPx(b.size) }}
           >
-            {b.text}
+            {tx(b.text)}
           </div>
         ))}
       </div>
@@ -180,7 +181,7 @@ export function PageNav({ page, pageCount, onPage }: { page: number; pageCount: 
   return (
     <div className="flex items-center gap-2">
       <Button size="sm" variant="ghost" onClick={() => onPage(Math.max(1, page - 1))} disabled={page <= 1}><Icon name="ChevronLeft" size={15} /></Button>
-      <span className="text-sm tabular-nums">Page {page} / {pageCount}</span>
+      <Trans source={"<0>Page {page} / {pageCount}</0>"} values={{ page, pageCount }} components={[<span className="text-sm tabular-nums" />]} />
       <Button size="sm" variant="ghost" onClick={() => onPage(Math.min(pageCount, page + 1))} disabled={page >= pageCount}><Icon name="ChevronRight" size={15} /></Button>
     </div>
   );
@@ -189,9 +190,9 @@ export function PageNav({ page, pageCount, onPage }: { page: number; pageCount: 
 export function ApplyBar({ job, onApply, disabled, label, icon }: { job: ReturnType<typeof useJob<OperationOutcome>>; onApply: () => void; disabled: boolean; label: string; icon: string }) {
   return (
     <div className="flex items-center justify-end gap-2 border-t border-[var(--ft-border)] pt-4">
-      {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>Annuler</Button>}
+      {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>{t("Annuler")}</Button>}
       <Button size="md" variant="primary" onClick={onApply} disabled={job.isRunning || disabled}>
-        {job.isRunning ? (<><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? "Traitement…"}</>) : (<><Icon name={icon} size={15} />{label}</>)}
+        {job.isRunning ? (<><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? t("Traitement…")}</>) : (<><Icon name={icon} size={15} />{tx(label)}</>)}
       </Button>
     </div>
   );

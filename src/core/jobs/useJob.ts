@@ -5,6 +5,7 @@ import {
   type JobRunner,
   type JobState,
 } from "./types";
+import { t } from "@/i18n";
 
 const IDLE: JobState<never> = { status: "idle", progress: {} };
 
@@ -69,7 +70,7 @@ export function useJob<TResult>() {
         error: cancelled
           ? undefined
           : {
-              message: error instanceof Error ? error.message : "Erreur inattendue",
+              message: error instanceof Error ? error.message : t("Erreur inattendue"),
               cause: error,
             },
       }));

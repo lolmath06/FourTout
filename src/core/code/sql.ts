@@ -1,4 +1,5 @@
 import { format, type FormatOptionsWithLanguage, type SqlLanguage } from "sql-formatter";
+import { localized, t } from "@/i18n";
 
 /**
  * Formatage SQL.
@@ -26,16 +27,16 @@ export interface SqlDialect {
   hint: string;
 }
 
-export const SQL_DIALECTS: SqlDialect[] = [
-  { value: "sql", label: "Standard", hint: "SQL standard, sans extension propriétaire" },
-  { value: "postgresql", label: "PostgreSQL", hint: "types, opérateurs et fonctions PostgreSQL" },
-  { value: "mysql", label: "MySQL", hint: "guillemets obliques, LIMIT … OFFSET" },
-  { value: "sqlite", label: "SQLite", hint: "dialecte embarqué" },
-  { value: "mariadb", label: "MariaDB", hint: "proche de MySQL" },
-  { value: "bigquery", label: "BigQuery", hint: "SQL standard Google" },
-  { value: "transactsql", label: "SQL Server", hint: "Transact-SQL" },
-  { value: "plsql", label: "Oracle", hint: "PL/SQL" },
-];
+export const SQL_DIALECTS: SqlDialect[] = localized(() => [
+  { value: "sql", label: t("Standard"), hint: t("SQL standard, sans extension propriétaire") },
+  { value: "postgresql", label: t("PostgreSQL"), hint: t("types, opérateurs et fonctions PostgreSQL") },
+  { value: "mysql", label: t("MySQL"), hint: t("guillemets obliques, LIMIT … OFFSET") },
+  { value: "sqlite", label: t("SQLite"), hint: t("dialecte embarqué") },
+  { value: "mariadb", label: t("MariaDB"), hint: t("proche de MySQL") },
+  { value: "bigquery", label: t("BigQuery"), hint: t("SQL standard Google") },
+  { value: "transactsql", label: t("SQL Server"), hint: t("Transact-SQL") },
+  { value: "plsql", label: t("Oracle"), hint: "PL/SQL" },
+]);
 
 export type KeywordCase = "upper" | "lower" | "preserve";
 
@@ -55,7 +56,7 @@ export const DEFAULT_SQL_SETTINGS: SqlFormatSettings = {
 };
 
 export function formatSql(source: string, settings: SqlFormatSettings): string {
-  if (source.trim().length === 0) throw new SqlFormatError("Aucune requête à formater.");
+  if (source.trim().length === 0) throw new SqlFormatError(t("Aucune requête à formater."));
   const options: FormatOptionsWithLanguage = {
     language: settings.dialect,
     tabWidth: settings.indentation === "tab" ? 2 : Number(settings.indentation),
@@ -69,15 +70,15 @@ export function formatSql(source: string, settings: SqlFormatSettings): string {
   } catch (error) {
     throw new SqlFormatError(
       error instanceof Error
-        ? `Requête non analysable : ${error.message.split("\n")[0]}`
-        : "Requête non analysable.",
+        ? t("Requête non analysable : {value}", { value: error.message.split("\n")[0] })
+        : t("Requête non analysable."),
     );
   }
 }
 
 /** Compacte une requête sur une seule ligne, utile pour la coller dans du code. */
 export function compactSql(source: string): string {
-  if (source.trim().length === 0) throw new SqlFormatError("Aucune requête à compacter.");
+  if (source.trim().length === 0) throw new SqlFormatError(t("Aucune requête à compacter."));
   return source
     // Les commentaires de fin de ligne disparaissent : sur une seule ligne, ils
     // avaleraient tout ce qui suit.

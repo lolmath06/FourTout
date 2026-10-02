@@ -6,6 +6,7 @@
  * outil par outil.
  */
 
+import { t } from "@/i18n";
 export type JobStatus = "idle" | "running" | "success" | "error" | "cancelled";
 
 export interface JobProgress {
@@ -45,7 +46,7 @@ export type JobRunner<TResult> = (context: JobContext) => Promise<TResult>;
 
 export class JobCancelledError extends Error {
   constructor() {
-    super("Opération annulée");
+    super(t("Opération annulée"));
     this.name = "JobCancelledError";
   }
 }

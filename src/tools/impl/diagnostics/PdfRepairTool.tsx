@@ -14,6 +14,7 @@ import {
 import { formatSize } from "@/core/disks/native";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 const ACTIONS: Record<string, { action: PdfRepairAction; suffix: string }> = {
   "pdf-strip-trailing": { action: "stripTrailing", suffix: "nettoye" },
@@ -42,17 +43,17 @@ export function PdfRepairTool({ tool }: ToolComponentProps) {
       if (action.id === "fix-extension") {
         const output = await fixExtension(report.path);
         return {
-          title: "Copie créée avec la bonne extension",
+          title: t("Copie créée avec la bonne extension"),
           tone: "success",
-          summary: "Copie octet pour octet, sous un nom qui correspond au contenu.",
-          kept: ["Tous les octets, à l'identique"],
+          summary: t("Copie octet pour octet, sous un nom qui correspond au contenu."),
+          kept: [t("Tous les octets, à l'identique")],
           lost: [],
           output,
         };
       }
 
       const recipe = ACTIONS[action.id];
-      if (!recipe) throw new Error("Action inconnue pour un PDF.");
+      if (!recipe) throw new Error(t("Action inconnue pour un PDF."));
 
       const destination = await outputPath(report.path, recipe.suffix, "pdf");
       const result = await pdfRepair(report.path, recipe.action, destination);
@@ -67,49 +68,43 @@ export function PdfRepairTool({ tool }: ToolComponentProps) {
         // Rien n'est présenté comme réparé : le candidat est retiré.
         await discardOutput(destination).catch(() => undefined);
         return {
-          title: "Réparation manquée",
+          title: t("Réparation manquée"),
           tone: "error",
           summary:
-            "Le fichier produit a bien été écrit, puis rouvert par le moteur PDF de FourTout — " +
-            `qui le refuse (${verification.error ?? "raison inconnue"}). La transformation ` +
-            "appliquée ne suffit pas à rendre ce document lisible, et il serait malhonnête de " +
-            "vous laisser un fichier en le présentant comme réparé. Il a donc été supprimé.",
+            t("Le fichier produit a bien été écrit, puis rouvert par le moteur PDF de FourTout — qui le refuse ({value}). La transformation appliquée ne suffit pas à rendre ce document lisible, et il serait malhonnête de vous laisser un fichier en le présentant comme réparé. Il a donc été supprimé.", { value: verification.error ?? "raison inconnue" }),
           kept: [],
-          lost: ["Aucun fichier produit : la structure de ce document reste irrécupérable"],
+          lost: [t("Aucun fichier produit : la structure de ce document reste irrécupérable")],
         };
       }
 
       const pagesMatch = before === 0 || verification.pages === before;
 
       return {
-        title: pagesMatch ? "Document réparé" : "Document réparé, pages en moins",
+        title: pagesMatch ? t("Document réparé") : t("Document réparé, pages en moins"),
         tone: pagesMatch ? "success" : "warning",
         summary:
-          `Le fichier produit a été rouvert par le moteur PDF : il s'ouvre, et compte ` +
+          t("Le fichier produit a été rouvert par le moteur PDF : il s'ouvre, et compte ") +
           `${verification.pages} page${verification.pages > 1 ? "s" : ""}.` +
           (pagesMatch
-            ? " C'est le nombre d'objets page trouvés dans la source : rien n'a été perdu en route."
-            : ` La source portait ${before} objet(s) page : la différence est une perte réelle, ` +
-              `pas un effet d'affichage.`),
+            ? t(" C'est le nombre d'objets page trouvés dans la source : rien n'a été perdu en route.")
+            : t(" La source portait {before} objet(s) page : la différence est une perte réelle, pas un effet d'affichage.", { before })),
         kept: [
           ...result.preserved,
-          `${verification.pages} page(s) lisibles par le moteur PDF`,
+          t("{pages} page(s) lisibles par le moteur PDF", { pages: verification.pages }),
         ],
         lost: [
           ...(result.removedBytes > 0
-            ? [`${formatSize(result.removedBytes)} d'octets retirés (hors document)`]
+            ? [t("{size} d'octets retirés (hors document)", { size: formatSize(result.removedBytes) })]
             : []),
           ...(report.details.pdf?.signed
-            ? ["La signature numérique du document, invalidée par tout déplacement d'octets"]
+            ? [t("La signature numérique du document, invalidée par tout déplacement d'octets")]
             : []),
           ...(pagesMatch ? [] : [`${before - verification.pages} page(s)`]),
         ],
         output: destination,
         extra: report.details.pdf?.signed ? (
-          <Callout tone="warning" title="Document signé numériquement">
-            FourTout ne vérifie pas les signatures et ne prétend pas les préserver. Si ce document
-            tire sa valeur de sa signature, conservez l'original : la copie réparée ne la porte
-            plus valablement.
+          <Callout tone="warning" title={t("Document signé numériquement")}>
+            {t("FourTout ne vérifie pas les signatures et ne prétend pas les préserver. Si ce document tire sa valeur de sa signature, conservez l'original : la copie réparée ne la porte plus valablement.")}
           </Callout>
         ) : undefined,
       };
@@ -119,82 +114,81 @@ export function PdfRepairTool({ tool }: ToolComponentProps) {
 
   return (
     <DiagnosticShell
-      label="Document PDF"
-      hint="Même un PDF que votre lecteur habituel refuse d'ouvrir."
-      filters={[{ name: "Documents PDF", extensions: ["pdf"] }]}
+      label={t("Document PDF")}
+      hint={t("Même un PDF que votre lecteur habituel refuse d'ouvrir.")}
+      filters={[{ name: t("Documents PDF"), extensions: ["pdf"] }]}
       initialPath={handed[0]}
       onAction={run}
       wrongFormat={(report) =>
         report.detected === "pdf"
           ? undefined
-          : `Ce fichier est du ${report.detectedLabel}, pas un PDF. Cet outil ne saurait rien en ` +
-            `dire d'utile — le diagnostic universel, lui, s'applique à n'importe quel fichier.`
+          : t("Ce fichier est du {detectedLabel}, pas un PDF. Cet outil ne saurait rien en dire d'utile — le diagnostic universel, lui, s'applique à n'importe quel fichier.", { detectedLabel: report.detectedLabel })
       }
       structure={(report) => {
         const pdf = report.details.pdf;
         if (!pdf) return null;
         return (
           <StructureTable
-            caption="Structure du document"
+            caption={t("Structure du document")}
             rows={[
-              { label: "Version annoncée", value: pdf.version ? `PDF ${pdf.version}` : "illisible" },
-              { label: "Objets indirects trouvés", value: String(pdf.objects) },
+              { label: t("Version annoncée"), value: pdf.version ? `PDF ${pdf.version}` : "illisible" },
+              { label: t("Objets indirects trouvés"), value: String(pdf.objects) },
               {
-                label: "Objets complets (avec leur « endobj »)",
+                label: t("Objets complets (avec leur « endobj »)"),
                 value: String(pdf.structure.completeObjects),
               },
               {
-                label: "Objets tronqués",
+                label: t("Objets tronqués"),
                 value:
                   pdf.structure.incompleteObjects.length === 0
                     ? "aucun"
                     : pdf.structure.incompleteObjects.join(", "),
               },
               {
-                label: "Pages complètes trouvées",
+                label: t("Pages complètes trouvées"),
                 value: String(pdf.pageObjects),
               },
               {
-                label: "Pages annoncées par /Count",
+                label: t("Pages annoncées par /Count"),
                 value:
                   pdf.structure.declaredCount === null
-                    ? "non annoncé"
+                    ? t("non annoncé")
                     : String(pdf.structure.declaredCount),
               },
               {
-                label: "Références sans destination",
+                label: t("Références sans destination"),
                 value:
                   pdf.structure.danglingReferences.length === 0
                     ? "aucune"
                     : pdf.structure.danglingReferences.join(" ; "),
               },
               {
-                label: "Catalogue du document",
+                label: t("Catalogue du document"),
                 value: pdf.rootObject === null ? "introuvable" : `objet ${pdf.rootObject}`,
               },
               {
-                label: "Pointeur startxref",
+                label: t("Pointeur startxref"),
                 value:
                   pdf.startxrefValue === null
                     ? "absent"
-                    : `octet ${pdf.startxrefValue} — ${pdf.startxrefValid ? "valide" : "ne désigne rien"}`,
+                    : `octet ${pdf.startxrefValue} — ${pdf.startxrefValid ? "valide" : t("ne désigne rien")}`,
               },
               {
-                label: "Table xref classique",
+                label: t("Table xref classique"),
                 value: pdf.xrefOffset === null ? "absente" : `octet ${pdf.xrefOffset}`,
               },
-              { label: "Trailer classique", value: pdf.trailer ? "présent" : "absent" },
+              { label: t("Trailer classique"), value: pdf.trailer ? t("présent") : "absent" },
               {
-                label: "Marque de fin %%EOF",
+                label: t("Marque de fin %%EOF"),
                 value: pdf.eofOffset === null ? "absente" : `octet ${pdf.eofOffset}`,
               },
               {
-                label: "Octets après la fin",
+                label: t("Octets après la fin"),
                 value: pdf.trailingBytes > 0 ? formatSize(pdf.trailingBytes) : "aucun",
               },
-              { label: "Flux d'objets (/ObjStm)", value: pdf.objectStreams ? "oui" : "non" },
-              { label: "Table de références en flux", value: pdf.xrefStreams ? "oui" : "non" },
-              { label: "Signature numérique détectée", value: pdf.signed ? "oui" : "non" },
+              { label: t("Flux d'objets (/ObjStm)"), value: pdf.objectStreams ? "oui" : "non" },
+              { label: t("Table de références en flux"), value: pdf.xrefStreams ? "oui" : "non" },
+              { label: t("Signature numérique détectée"), value: pdf.signed ? "oui" : "non" },
             ]}
           />
         );

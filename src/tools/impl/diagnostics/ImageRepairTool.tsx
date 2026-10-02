@@ -12,6 +12,7 @@ import { formatSize } from "@/core/disks/native";
 import { readBytes } from "@/core/files/native";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t, tx } from "@/i18n";
 
 /**
  * Image endommagée.
@@ -33,12 +34,11 @@ export function ImageRepairTool({ tool }: ToolComponentProps) {
       if (action.id === "fix-extension") {
         const output = await fixExtension(report.path);
         return {
-          title: "Copie créée avec la bonne extension",
+          title: t("Copie créée avec la bonne extension"),
           tone: "success",
           summary:
-            "Le contenu n'a pas été touché : c'est une copie octet pour octet, sous un nom qui " +
-            "dit enfin ce qu'elle contient.",
-          kept: ["Tous les octets de l'image, à l'identique"],
+            t("Le contenu n'a pas été touché : c'est une copie octet pour octet, sous un nom qui dit enfin ce qu'elle contient."),
+          kept: [t("Tous les octets de l'image, à l'identique")],
           lost: [],
           output,
         };
@@ -48,26 +48,21 @@ export function ImageRepairTool({ tool }: ToolComponentProps) {
       const result = await imageRecover(report.path, destination);
 
       return {
-        title: result.lossless ? "Image réécrite sans perte" : "Récupération visuelle",
+        title: result.lossless ? t("Image réécrite sans perte") : t("Récupération visuelle"),
         tone: result.lossless ? "success" : "warning",
         summary: result.lossless
-          ? `Les octets des pixels ont été recopiés tels quels : l'image produite est ` +
-            `rigoureusement identique à l'originale, débarrassée de ce qui ne faisait pas partie ` +
-            `d'elle. ${result.width} × ${result.height} pixels.`
-          : `Les pixels que le décodeur accepte de rendre ont été réencodés en PNG sans perte. ` +
-            `C'est l'image qui est sauvée, pas le fichier d'origine : ${result.width} × ` +
-            `${result.height} pixels. Ce n'est pas une réparation — le fichier produit est un ` +
-            `nouveau fichier, pas l'ancien remis d'aplomb.`,
+          ? t("Les octets des pixels ont été recopiés tels quels : l'image produite est rigoureusement identique à l'originale, débarrassée de ce qui ne faisait pas partie d'elle. {width} × {height} pixels.", { width: result.width, height: result.height })
+          : t("Les pixels que le décodeur accepte de rendre ont été réencodés en PNG sans perte. C'est l'image qui est sauvée, pas le fichier d'origine : {width} × {height} pixels. Ce n'est pas une réparation — le fichier produit est un nouveau fichier, pas l'ancien remis d'aplomb.", { width: result.width, height: result.height }),
         kept: [
           `${result.width} × ${result.height} pixels`,
           ...result.steps,
-          `Sortie PNG sans perte, ${formatSize(result.outputSize)}`,
+          t("Sortie PNG sans perte, {size}", { size: formatSize(result.outputSize) }),
         ],
         lost: result.lossless
-          ? ["Les métadonnées portées par les blocs écartés"]
+          ? [t("Les métadonnées portées par les blocs écartés")]
           : [
-              "Métadonnées, profil de couleur et miniatures d'origine",
-              "Les lignes que le décodeur n'a pas rendues, s'il en manquait",
+              t("Métadonnées, profil de couleur et miniatures d'origine"),
+              t("Les lignes que le décodeur n'a pas rendues, s'il en manquait"),
             ],
         output: destination,
         extra: <BeforeAfter source={report.path} output={destination} />,
@@ -78,16 +73,15 @@ export function ImageRepairTool({ tool }: ToolComponentProps) {
 
   return (
     <DiagnosticShell
-      label="Image PNG ou JPEG"
-      hint="Même une image que votre visionneuse refuse d'afficher."
-      filters={[{ name: "Images", extensions: ["png", "jpg", "jpeg"] }]}
+      label={t("Image PNG ou JPEG")}
+      hint={t("Même une image que votre visionneuse refuse d'afficher.")}
+      filters={[{ name: t("Images"), extensions: ["png", "jpg", "jpeg"] }]}
       initialPath={handed[0]}
       onAction={run}
       wrongFormat={(report) =>
         report.detected === "png" || report.detected === "jpg"
           ? undefined
-          : `Ce fichier est du ${report.detectedLabel}. Cet outil analyse la structure interne du ` +
-            `PNG et du JPEG ; pour le reste, le diagnostic universel s'applique.`
+          : t("Ce fichier est du {detectedLabel}. Cet outil analyse la structure interne du PNG et du JPEG ; pour le reste, le diagnostic universel s'applique.", { detectedLabel: report.detectedLabel })
       }
       structure={(report) => {
         const image = report.details.image;
@@ -95,57 +89,57 @@ export function ImageRepairTool({ tool }: ToolComponentProps) {
         return (
           <>
             <StructureTable
-              caption="Structure de l'image"
+              caption={t("Structure de l'image")}
               rows={[
-                { label: "Format réel", value: report.detectedLabel },
+                { label: t("Format réel"), value: report.detectedLabel },
                 {
-                  label: "Dimensions",
+                  label: t("Dimensions"),
                   value:
                     image.width && image.height ? `${image.width} × ${image.height} pixels` : "illisibles",
                 },
                 {
-                  label: "Le décodeur accepte-t-il le fichier ?",
-                  value: image.decodes ? "oui" : `non — ${image.decodeError ?? "raison inconnue"}`,
+                  label: t("Le décodeur accepte-t-il le fichier ?"),
+                  value: image.decodes ? "oui" : t("non — {value}", { value: image.decodeError ?? "raison inconnue" }),
                 },
                 {
-                  label: "Marque de fin",
-                  value: image.endMarker ? "présente" : "absente",
+                  label: t("Marque de fin"),
+                  value: image.endMarker ? t("présente") : "absente",
                 },
                 {
-                  label: "Octets après l'image",
+                  label: t("Octets après l'image"),
                   value: image.trailingBytes > 0 ? formatSize(image.trailingBytes) : "aucun",
                 },
                 ...(image.format === "png"
                   ? [
-                      { label: "Blocs lus", value: String(image.chunks.length) },
+                      { label: t("Blocs lus"), value: String(image.chunks.length) },
                       {
-                        label: "Blocs essentiels abîmés",
+                        label: t("Blocs essentiels abîmés"),
                         value: String(image.brokenCritical),
                       },
                       {
-                        label: "Blocs auxiliaires abîmés",
+                        label: t("Blocs auxiliaires abîmés"),
                         value: String(image.brokenAncillary),
                       },
                     ]
-                  : [{ label: "Segments lus", value: String(image.segments.length) }]),
+                  : [{ label: t("Segments lus"), value: String(image.segments.length) }]),
               ]}
             />
 
             {image.format === "png" && image.chunks.length > 0 && (
               <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
                 <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-                  Blocs PNG
+                  {t("Blocs PNG")}
                 </h3>
                 <div className="max-h-64 overflow-auto">
                   <table className="ft-table">
                     <thead>
                       <tr>
-                        <th scope="col">Bloc</th>
-                        <th scope="col">Rôle</th>
+                        <th scope="col">{t("Bloc")}</th>
+                        <th scope="col">{t("Rôle")}</th>
                         <th scope="col" className="text-right">
-                          Taille
+                          {t("Taille")}
                         </th>
-                        <th scope="col">Somme de contrôle</th>
+                        <th scope="col">{t("Somme de contrôle")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -176,13 +170,12 @@ export function ImageRepairTool({ tool }: ToolComponentProps) {
             {image.format === "jpg" && image.segments.length > 0 && (
               <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
                 <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-                  Segments JPEG
+                  {t("Segments JPEG")}
                 </h3>
                 <ul className="ft-meta max-h-64 divide-y divide-[var(--ft-rule)] overflow-auto">
                   {image.segments.map((segment) => (
                     <li key={`${segment.offset}-${segment.marker}`} className="px-3 py-1">
-                      <span className="ft-value">{segment.label}</span> · octet {segment.offset}
-                      {segment.length > 0 && ` · ${segment.length} octets`}
+                      <Trans source={"<0>{label}</0> · octet {offset}{value}"} values={{ label: segment.label, offset: segment.offset, value: segment.length > 0 && ` · ${segment.length} octets` }} components={[<span className="ft-value" />]} />
                     </li>
                   ))}
                 </ul>
@@ -226,7 +219,7 @@ function BeforeAfter({ source, output }: { source: string; output: string }) {
       if (cancelled) return;
       setUrls({ before, after });
       if (!before) {
-        setNote("L'aperçu de la source n'a pas pu être construit : le fichier reste illisible.");
+        setNote(t("L'aperçu de la source n'a pas pu être construit : le fichier reste illisible."));
       }
     })();
 
@@ -240,23 +233,23 @@ function BeforeAfter({ source, output }: { source: string; output: string }) {
     <div className="space-y-2">
       <div className="grid gap-3 sm:grid-cols-2">
         <figure className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-2">
-          <figcaption className="ft-section mb-1">Source</figcaption>
+          <figcaption className="ft-section mb-1">{t("Source")}</figcaption>
           {urls.before ? (
-            <img src={urls.before} alt="Fichier d'origine" className="max-h-64 w-full object-contain" />
+            <img src={urls.before} alt={t("Fichier d'origine")} className="max-h-64 w-full object-contain" />
           ) : (
-            <p className="ft-meta">Non affichable.</p>
+            <p className="ft-meta">{t("Non affichable.")}</p>
           )}
         </figure>
         <figure className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-2">
-          <figcaption className="ft-section mb-1">Résultat</figcaption>
+          <figcaption className="ft-section mb-1">{t("Résultat")}</figcaption>
           {urls.after ? (
-            <img src={urls.after} alt="Image récupérée" className="max-h-64 w-full object-contain" />
+            <img src={urls.after} alt={t("Image récupérée")} className="max-h-64 w-full object-contain" />
           ) : (
-            <p className="ft-meta">Non affichable.</p>
+            <p className="ft-meta">{t("Non affichable.")}</p>
           )}
         </figure>
       </div>
-      {note && <Callout tone="info">{note}</Callout>}
+      {note && <Callout tone="info">{tx(note)}</Callout>}
     </div>
   );
 }

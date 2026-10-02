@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { processImages } from "@/core/image/pipeline";
 import { computeDimensions, resize } from "@/core/image/operations";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 type Mode = "percentage" | "dimensions";
 
@@ -27,9 +28,9 @@ export function ImageResizeTool({ tool }: ToolComponentProps) {
   return (
     <ImageToolShell
       tool={tool}
-      actionLabel="Redimensionner"
+      actionLabel={t("Redimensionner")}
       actionDisabled={disabled}
-      hint="En pourcentage, le lot s'adapte à chaque image."
+      hint={t("En pourcentage, le lot s'adapte à chaque image.")}
       run={async ({ files, context }) => {
         const suffix = mode === "percentage" ? `${percent}pct` : "redimensionnee";
         const outputs = await processImages(
@@ -48,56 +49,56 @@ export function ImageResizeTool({ tool }: ToolComponentProps) {
           files: outputs,
           summary:
             mode === "percentage"
-              ? `${outputs.length} image${outputs.length > 1 ? "s" : ""} à ${percent} %.`
-              : `${outputs.length} image${outputs.length > 1 ? "s" : ""} redimensionnée${outputs.length > 1 ? "s" : ""}.`,
+              ? t("{count} {count, plural, one {image} other {images}} à {percent} %.", { count: outputs.length, percent })
+              : t("{count} {count, plural, one {image} other {images}} {count, plural, one {redimensionnée} other {redimensionnées}}.", { count: outputs.length }),
           zipName: "images-redimensionnees.zip",
         };
       }}
     >
       {() => (
         <Fieldset>
-          <Field label="Méthode" full>
+          <Field label={t("Méthode")} full>
             <OptionGroup
-              ariaLabel="Méthode"
+              ariaLabel={t("Méthode")}
               value={mode}
               onChange={setMode}
               options={[
-                { value: "percentage", label: "Pourcentage" },
-                { value: "dimensions", label: "Dimensions" },
+                { value: "percentage", label: t("Pourcentage") },
+                { value: "dimensions", label: t("Dimensions") },
               ]}
             />
           </Field>
 
           {mode === "percentage" ? (
-            <Field label="Échelle" full>
+            <Field label={t("Échelle")} full>
               <Slider value={percent} onChange={setPercent} min={10} max={200} suffix=" %" />
             </Field>
           ) : (
             <>
-              <Field label="Largeur (px)" hint="0 = calcul automatique">
+              <Field label={t("Largeur (px)")} hint={t("0 = calcul automatique")}>
                 <NumberInput
                   value={width || ""}
                   min={0}
                   onChange={(e) => setWidth(Number(e.target.value))}
                 />
               </Field>
-              <Field label="Hauteur (px)" hint="0 = calcul automatique">
+              <Field label={t("Hauteur (px)")} hint={t("0 = calcul automatique")}>
                 <NumberInput
                   value={height || ""}
                   min={0}
                   onChange={(e) => setHeight(Number(e.target.value))}
                 />
               </Field>
-              <Field label="Proportions" full>
+              <Field label={t("Proportions")} full>
                 <Button
                   size="sm"
                   variant={keepRatio ? "primary" : "secondary"}
                   onClick={() => setKeepRatio((v) => !v)}
                 >
-                  {keepRatio ? "Conserver les proportions" : "Déformation libre"}
+                  {keepRatio ? t("Conserver les proportions") : t("Déformation libre")}
                 </Button>
               </Field>
-              <Field label="Formats courants" full>
+              <Field label={t("Formats courants")} full>
                 <div className="flex flex-wrap gap-1.5">
                   {PRESETS.map((preset) => (
                     <Button
@@ -109,7 +110,7 @@ export function ImageResizeTool({ tool }: ToolComponentProps) {
                         setKeepRatio(false);
                       }}
                     >
-                      {preset.label}
+                      {tx(preset.label)}
                     </Button>
                   ))}
                 </div>

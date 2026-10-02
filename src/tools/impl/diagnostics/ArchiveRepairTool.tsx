@@ -15,14 +15,15 @@ import {
 import { formatSize } from "@/core/disks/native";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t } from "@/i18n";
 
-const STATE_LABELS: Record<ZipEntryState, string> = {
-  recoverable: "Récupérable",
-  checksumMismatch: "Somme de contrôle fausse",
+const STATE_LABELS: Record<ZipEntryState, string> = localized(() => ({
+  recoverable: t("Récupérable"),
+  checksumMismatch: t("Somme de contrôle fausse"),
   lost: "Perdue",
-  encrypted: "Chiffrée",
-  rejected: "Chemin refusé",
-};
+  encrypted: t("Chiffrée"),
+  rejected: t("Chemin refusé"),
+}));
 
 const STATE_CLASS: Record<ZipEntryState, string> = {
   recoverable: "text-[var(--ft-success)]",
@@ -60,10 +61,10 @@ export function ArchiveRepairTool({ tool }: ToolComponentProps) {
       if (action.id === "fix-extension") {
         const output = await fixExtension(report.path);
         return {
-          title: "Copie créée avec la bonne extension",
+          title: t("Copie créée avec la bonne extension"),
           tone: "success",
-          summary: "Copie octet pour octet, sous un nom qui correspond au contenu.",
-          kept: ["Tous les octets, à l'identique"],
+          summary: t("Copie octet pour octet, sous un nom qui correspond au contenu."),
+          kept: [t("Tous les octets, à l'identique")],
           lost: [],
           output,
         };
@@ -73,14 +74,12 @@ export function ArchiveRepairTool({ tool }: ToolComponentProps) {
         const destination = await outputPath(report.path, "nettoye", "zip");
         const removed = await zipStripTrailing(report.path, destination);
         return {
-          title: "Archive réparée",
+          title: t("Archive réparée"),
           tone: "success",
           summary:
-            `${removed} octets parasites retirés. Le mot « réparée » est employé au sens ` +
-            `strict : aucune entrée n'a été relue ni réécrite, seule la fin du fichier a été ` +
-            `tronquée après la structure de fin d'archive.`,
-          kept: ["Toutes les entrées, à l'octet près"],
-          lost: [`${removed} octets situés après la fin de l'archive`],
+            t("{removed} octets parasites retirés. Le mot « réparée » est employé au sens strict : aucune entrée n'a été relue ni réécrite, seule la fin du fichier a été tronquée après la structure de fin d'archive.", { removed }),
+          kept: [t("Toutes les entrées, à l'octet près")],
+          lost: [t("{removed} octets situés après la fin de l'archive", { removed })],
           output: destination,
         };
       }
@@ -107,19 +106,16 @@ export function ArchiveRepairTool({ tool }: ToolComponentProps) {
       }
 
       return {
-        title: result.lost === 0 ? "Toutes les entrées récupérées" : "Récupération partielle",
+        title: result.lost === 0 ? t("Toutes les entrées récupérées") : t("Récupération partielle"),
         tone: result.lost === 0 ? "success" : "warning",
         summary:
           result.lost === 0
-            ? `${result.recovered} entrées sur ${total} ont été retrouvées, décompressées et ` +
-              `vérifiées par leur somme de contrôle. L'archive d'origine n'a pas été touchée.`
-            : `${result.recovered} entrées sur ${total} ont pu être récupérées. ` +
-              `${result.lost} ne l'ont pas été : leurs données ne sont pas présentes dans le ` +
-              `fichier, et FourTout ne les invente pas.`,
+            ? t("{recovered} entrées sur {total} ont été retrouvées, décompressées et vérifiées par leur somme de contrôle. L'archive d'origine n'a pas été touchée.", { recovered: result.recovered, total })
+            : t("{recovered} entrées sur {total} ont pu être récupérées. {lost} ne l'ont pas été : leurs données ne sont pas présentes dans le fichier, et FourTout ne les invente pas.", { recovered: result.recovered, total, lost: result.lost }),
         kept: [
-          `${result.recovered} entrées, ${formatSize(result.recoveredBytes)} de contenu vérifié`,
+          t("{recovered} entrées, {size} de contenu vérifié", { recovered: result.recovered, size: formatSize(result.recoveredBytes) }),
         ],
-        lost: [...reasons.entries()].map(([reason, count]) => `${count} entrée(s) — ${reason}`),
+        lost: [...reasons.entries()].map(([reason, count]) => t("{count} entrée(s) — {reason}", { count, reason })),
         output: result.output,
       };
     },
@@ -128,16 +124,15 @@ export function ArchiveRepairTool({ tool }: ToolComponentProps) {
 
   return (
     <DiagnosticShell
-      label="Archive ZIP"
-      hint="Même une archive que les autres logiciels refusent d'ouvrir."
-      filters={[{ name: "Archives ZIP", extensions: ["zip"] }]}
+      label={t("Archive ZIP")}
+      hint={t("Même une archive que les autres logiciels refusent d'ouvrir.")}
+      filters={[{ name: t("Archives ZIP"), extensions: ["zip"] }]}
       initialPath={handed[0]}
       onAction={run}
       wrongFormat={(report) =>
         report.detected === "zip"
           ? undefined
-          : `Ce fichier est du ${report.detectedLabel}, pas une archive ZIP. Cet outil ne saurait ` +
-            `rien en dire d'utile — le diagnostic universel, lui, s'applique à n'importe quel fichier.`
+          : t("Ce fichier est du {detectedLabel}, pas une archive ZIP. Cet outil ne saurait rien en dire d'utile — le diagnostic universel, lui, s'applique à n'importe quel fichier.", { detectedLabel: report.detectedLabel })
       }
       structure={(report) => {
         const zip = report.details.zip;
@@ -152,44 +147,44 @@ export function ArchiveRepairTool({ tool }: ToolComponentProps) {
         return (
           <>
             <StructureTable
-              caption="Structure de l'archive"
+              caption={t("Structure de l'archive")}
               rows={[
                 {
-                  label: "Fin de répertoire central",
+                  label: t("Fin de répertoire central"),
                   value: zip.eocdOffset === null ? "absente" : `octet ${zip.eocdOffset}`,
                 },
                 {
-                  label: "Entrées annoncées",
+                  label: t("Entrées annoncées"),
                   value: zip.declaredEntries === null ? "—" : String(zip.declaredEntries),
                 },
-                { label: "Entrées lues dans le répertoire central", value: String(zip.centralEntries) },
-                { label: "En-têtes d'entrée retrouvés par balayage", value: String(zip.localHeaders) },
+                { label: t("Entrées lues dans le répertoire central"), value: String(zip.centralEntries) },
+                { label: t("En-têtes d'entrée retrouvés par balayage"), value: String(zip.localHeaders) },
                 {
-                  label: "Octets parasites en fin de fichier",
+                  label: t("Octets parasites en fin de fichier"),
                   value: zip.trailingBytes > 0 ? formatSize(zip.trailingBytes) : "aucun",
                 },
-                { label: "Archive protégée par mot de passe", value: zip.encrypted ? "oui" : "non" },
-                { label: "Format ZIP64", value: zip.zip64 ? "oui" : "non" },
+                { label: t("Archive protégée par mot de passe"), value: zip.encrypted ? "oui" : "non" },
+                { label: t("Format ZIP64"), value: zip.zip64 ? "oui" : "non" },
               ]}
             />
 
             {entries.length > 0 && (
               <section className="space-y-2">
                 <Fieldset columns={1}>
-                  <Field label="Entrées affichées">
+                  <Field label={t("Entrées affichées")}>
                     <OptionGroup
-                      ariaLabel="Filtre des entrées"
+                      ariaLabel={t("Filtre des entrées")}
                       value={filter}
                       onChange={setFilter}
                       options={[
-                        { value: "all", label: `Toutes (${entries.length})` },
+                        { value: "all", label: t("Toutes ({count})", { count: entries.length }) },
                         {
                           value: "healthy",
-                          label: `Saines (${entries.filter((e) => e.state === "recoverable").length})`,
+                          label: t("Saines ({count})", { count: entries.filter((e) => e.state === "recoverable").length }),
                         },
                         {
                           value: "damaged",
-                          label: `Endommagées (${entries.filter((e) => e.state !== "recoverable").length})`,
+                          label: t("Endommagées ({count})", { count: entries.filter((e) => e.state !== "recoverable").length }),
                         },
                       ]}
                     />
@@ -207,7 +202,7 @@ export function ArchiveRepairTool({ tool }: ToolComponentProps) {
 
 function EntryTable({ entries }: { entries: ZipScannedEntry[] }) {
   if (entries.length === 0) {
-    return <p className="ft-meta">Aucune entrée dans cette catégorie.</p>;
+    return <p className="ft-meta">{t("Aucune entrée dans cette catégorie.")}</p>;
   }
   return (
     <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
@@ -215,12 +210,12 @@ function EntryTable({ entries }: { entries: ZipScannedEntry[] }) {
         <table className="ft-table">
           <thead>
             <tr>
-              <th scope="col">Entrée</th>
-              <th scope="col">État</th>
+              <th scope="col">{t("Entrée")}</th>
+              <th scope="col">{t("État")}</th>
               <th scope="col" className="text-right">
-                Taille
+                {t("Taille")}
               </th>
-              <th scope="col">Somme de contrôle</th>
+              <th scope="col">{t("Somme de contrôle")}</th>
             </tr>
           </thead>
           <tbody>
@@ -230,7 +225,7 @@ function EntryTable({ entries }: { entries: ZipScannedEntry[] }) {
                   {entry.name}
                 </th>
                 <td className={clsx("ft-value", STATE_CLASS[entry.state])} title={entry.reason ?? undefined}>
-                  {entry.isDir ? "Dossier" : STATE_LABELS[entry.state]}
+                  {entry.isDir ? t("Dossier") : STATE_LABELS[entry.state]}
                 </td>
                 <td className="ft-value text-right tabular-nums">
                   {entry.isDir ? "—" : formatSize(entry.uncompressedSize)}
@@ -239,7 +234,7 @@ function EntryTable({ entries }: { entries: ZipScannedEntry[] }) {
                   {entry.isDir
                     ? "—"
                     : entry.actualCrc === null
-                      ? `annoncée ${entry.declaredCrc.toString(16).padStart(8, "0").toUpperCase()}`
+                      ? t("annoncée {value}", { value: entry.declaredCrc.toString(16).padStart(8, "0").toUpperCase() })
                       : entry.actualCrc === entry.declaredCrc
                         ? "concorde"
                         : `${entry.declaredCrc.toString(16).padStart(8, "0").toUpperCase()} ≠ ${entry.actualCrc

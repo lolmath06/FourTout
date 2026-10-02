@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import type { DiffRow, WordPart } from "@/core/text/diff";
+import { t, tx } from "@/i18n";
 
 /**
  * Affichage d'une comparaison.
@@ -27,7 +28,7 @@ export function DiffWords({
   text?: string;
   tone: "add" | "remove";
 }) {
-  if (!parts) return <>{text}</>;
+  if (!parts) return <>{tx(text)}</>;
   const highlight =
     tone === "add"
       ? "bg-[color-mix(in_oklch,var(--ft-ok)_28%,transparent)]"
@@ -36,7 +37,7 @@ export function DiffWords({
     <>
       {parts.map((part, index) => (
         <span key={index} className={part.changed ? `rounded-sm ${highlight}` : undefined}>
-          {part.text}
+          {tx(part.text)}
         </span>
       ))}
     </>
@@ -84,7 +85,7 @@ export function DiffUnified({ rows }: { rows: DiffRow[] }) {
       {lines.map((line, index) => (
         <div key={index} className={clsx("whitespace-pre-wrap break-words", DIFF_ROW_BACKGROUND[line.op])}>
           {line.sign}
-          {line.text}
+          {tx(line.text)}
         </div>
       ))}
     </pre>
@@ -107,13 +108,13 @@ export function DiffStatsBar({
       className="flex flex-wrap items-center gap-3 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-sm"
     >
       {identical ? (
-        <span className="flex items-center gap-1.5 text-[var(--ft-ok)]">Les deux documents sont identiques</span>
+        <span className="flex items-center gap-1.5 text-[var(--ft-ok)]">{t("Les deux documents sont identiques")}</span>
       ) : (
         <>
           <span className="tabular-nums text-[var(--ft-ok)]">+{stats.added} ajoutée(s)</span>
-          <span className="tabular-nums text-[var(--ft-danger)]">−{stats.removed} supprimée(s)</span>
-          <span className="tabular-nums text-[var(--ft-warn)]">~{stats.modified} modifiée(s)</span>
-          <span className="tabular-nums text-[var(--ft-text-muted)]">{stats.unchanged} inchangée(s)</span>
+          <span className="tabular-nums text-[var(--ft-danger)]">{t("−{removed} supprimée(s)", { removed: stats.removed })}</span>
+          <span className="tabular-nums text-[var(--ft-warn)]">{t("~{modified} modifiée(s)", { modified: stats.modified })}</span>
+          <span className="tabular-nums text-[var(--ft-text-muted)]">{t("{unchanged} inchangée(s)", { unchanged: stats.unchanged })}</span>
         </>
       )}
       <div className="flex-1" />

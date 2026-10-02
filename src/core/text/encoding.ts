@@ -1,5 +1,6 @@
 import { convertLineEndings, detectLineEndings, type Eol, type LineEndingReport } from "./lines";
 import { TextError } from "./errors";
+import { localized, t } from "@/i18n";
 
 /**
  * Détection et conversion d'encodage de fichiers texte.
@@ -33,14 +34,14 @@ export type TextEncodingId =
   | "windows-1252"
   | "iso-8859-1";
 
-export const ENCODING_LABELS: Record<TextEncodingId, string> = {
+export const ENCODING_LABELS: Record<TextEncodingId, string> = localized(() => ({
   "utf-8": "UTF-8",
-  "utf-8-bom": "UTF-8 avec BOM",
+  "utf-8-bom": t("UTF-8 avec BOM"),
   "utf-16le": "UTF-16 LE",
   "utf-16be": "UTF-16 BE",
   "windows-1252": "Windows-1252",
   "iso-8859-1": "ISO-8859-1 (Latin-1)",
-};
+}));
 
 /** Encodages proposés en entrée comme en sortie. */
 export const ENCODINGS: TextEncodingId[] = [
@@ -315,18 +316,18 @@ export function detectEncoding(bytes: Uint8Array): EncodingDetection {
   };
 
   if (byteLength === 0) {
-    return finish("utf-8", 1, false, "Le fichier est vide : tout encodage convient.");
+    return finish("utf-8", 1, false, t("Le fichier est vide : tout encodage convient."));
   }
 
   const bom = detectBom(bytes);
   if (bom === "utf-8") {
-    return finish("utf-8-bom", 1, true, "Le fichier commence par un BOM UTF-8 (EF BB BF).");
+    return finish("utf-8-bom", 1, true, t("Le fichier commence par un BOM UTF-8 (EF BB BF)."));
   }
   if (bom === "utf-16le") {
-    return finish("utf-16le", 1, true, "Le fichier commence par un BOM UTF-16 petit-boutien (FF FE).");
+    return finish("utf-16le", 1, true, t("Le fichier commence par un BOM UTF-16 petit-boutien (FF FE)."));
   }
   if (bom === "utf-16be") {
-    return finish("utf-16be", 1, true, "Le fichier commence par un BOM UTF-16 grand-boutien (FE FF).");
+    return finish("utf-16be", 1, true, t("Le fichier commence par un BOM UTF-16 grand-boutien (FE FF)."));
   }
 
   const body = bytes.subarray(BOM_LENGTH[bom]);
@@ -341,7 +342,7 @@ export function detectEncoding(bytes: Uint8Array): EncodingDetection {
         "utf-16le",
         0.85,
         false,
-        "Un octet sur deux est nul, en position impaire : motif caractéristique de l'UTF-16 petit-boutien sans BOM.",
+        t("Un octet sur deux est nul, en position impaire : motif caractéristique de l'UTF-16 petit-boutien sans BOM."),
         [{ encoding: "utf-16be", confidence: 0.1 }],
       );
     }
@@ -350,7 +351,7 @@ export function detectEncoding(bytes: Uint8Array): EncodingDetection {
         "utf-16be",
         0.85,
         false,
-        "Un octet sur deux est nul, en position paire : motif caractéristique de l'UTF-16 grand-boutien sans BOM.",
+        t("Un octet sur deux est nul, en position paire : motif caractéristique de l'UTF-16 grand-boutien sans BOM."),
         [{ encoding: "utf-16le", confidence: 0.1 }],
       );
     }
@@ -359,7 +360,7 @@ export function detectEncoding(bytes: Uint8Array): EncodingDetection {
       "utf-8",
       0.1,
       false,
-      "Le fichier contient des octets nuls dispersés : il ne ressemble pas à un fichier texte.",
+      t("Le fichier contient des octets nuls dispersés : il ne ressemble pas à un fichier texte."),
       [],
       true,
     );
@@ -372,7 +373,7 @@ export function detectEncoding(bytes: Uint8Array): EncodingDetection {
       "utf-8",
       0.1,
       false,
-      "Le fichier contient une forte proportion d'octets de contrôle : il ne ressemble pas à un fichier texte.",
+      t("Le fichier contient une forte proportion d'octets de contrôle : il ne ressemble pas à un fichier texte."),
       [],
       true,
     );
@@ -384,7 +385,7 @@ export function detectEncoding(bytes: Uint8Array): EncodingDetection {
       "utf-8",
       0.95,
       false,
-      `Le fichier contient ${utf8.multiByte} séquence(s) UTF-8 multi-octets, toutes valides.`,
+      t("Le fichier contient {multiByte} séquence(s) UTF-8 multi-octets, toutes valides.", { multiByte: utf8.multiByte }),
       [],
     );
   }
@@ -394,7 +395,7 @@ export function detectEncoding(bytes: Uint8Array): EncodingDetection {
       "utf-8",
       0.6,
       false,
-      "Le fichier ne contient que des caractères ASCII : UTF-8, Windows-1252 et Latin-1 donneraient le même texte.",
+      t("Le fichier ne contient que des caractères ASCII : UTF-8, Windows-1252 et Latin-1 donneraient le même texte."),
       [
         { encoding: "windows-1252", confidence: 0.6 },
         { encoding: "iso-8859-1", confidence: 0.6 },
@@ -412,7 +413,7 @@ export function detectEncoding(bytes: Uint8Array): EncodingDetection {
       "windows-1252",
       0.75,
       false,
-      `Le fichier n'est pas de l'UTF-8 valide et emploie ${cp1252Only} octet(s) de la plage 0x80–0x9F, où Latin-1 ne place que des codes de contrôle.`,
+      t("Le fichier n'est pas de l'UTF-8 valide et emploie {cp1252Only} octet(s) de la plage 0x80–0x9F, où Latin-1 ne place que des codes de contrôle.", { cp1252Only }),
       [{ encoding: "iso-8859-1", confidence: 0.25 }],
     );
   }
@@ -420,7 +421,7 @@ export function detectEncoding(bytes: Uint8Array): EncodingDetection {
     "windows-1252",
     0.55,
     false,
-    "Le fichier n'est pas de l'UTF-8 valide. Aucun octet de la plage 0x80–0x9F : Windows-1252 et Latin-1 produisent ici exactement le même texte.",
+    t("Le fichier n'est pas de l'UTF-8 valide. Aucun octet de la plage 0x80–0x9F : Windows-1252 et Latin-1 produisent ici exactement le même texte."),
     [{ encoding: "iso-8859-1", confidence: 0.55 }],
   );
 }
@@ -571,7 +572,7 @@ export function convertEncoding(
   if (options.from === "auto" && detection.binary) {
     throw new TextError(
       "encoding-unreadable",
-      "Ce fichier contient des octets nuls dispersés : ce n'est pas un fichier texte.",
+      t("Ce fichier contient des octets nuls dispersés : ce n'est pas un fichier texte."),
     );
   }
 
@@ -587,11 +588,11 @@ export function convertEncoding(
   if (probe.unrepresentable.length > 0 && !options.replaceUnrepresentable) {
     const preview = probe.unrepresentable
       .slice(0, 5)
-      .map((item) => `« ${item.character} » (U+${item.codePoint.toString(16).toUpperCase().padStart(4, "0")}, ligne ${item.line})`)
+      .map((item) => t("« {character} » (U+{value}, ligne {line})", { character: item.character, value: item.codePoint.toString(16).toUpperCase().padStart(4, "0"), line: item.line }))
       .join(", ");
     throw new TextError(
       "encoding-unrepresentable",
-      `${probe.unrepresentable.length} caractère(s) ne peuvent pas être écrits en ${ENCODING_LABELS[options.to]} : ${preview}.`,
+      t("{count} caractère(s) ne peuvent pas être écrits en {value} : {preview}.", { count: probe.unrepresentable.length, value: ENCODING_LABELS[options.to], preview }),
     );
   }
 

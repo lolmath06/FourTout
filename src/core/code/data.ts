@@ -9,6 +9,7 @@
  * est une faille, pas une fonctionnalité.
  */
 
+import { t } from "@/i18n";
 export class DataError extends Error {
   constructor(
     message: string,
@@ -72,10 +73,10 @@ function findJsonError(source: string): { index: number; message: string } {
         i += 2;
         continue;
       }
-      if (char === "\n") fail("Chaîne non terminée avant la fin de la ligne.");
+      if (char === "\n") fail(t("Chaîne non terminée avant la fin de la ligne."));
       i += 1;
     }
-    fail("Chaîne non terminée avant la fin du document.");
+    fail(t("Chaîne non terminée avant la fin du document."));
   };
 
   const parseNumber = () => {
@@ -91,19 +92,19 @@ function findJsonError(source: string): { index: number; message: string } {
       if (source[i] === "+" || source[i] === "-") i += 1;
       while (i < source.length && /[0-9]/.test(source[i])) i += 1;
     }
-    if (i === start) fail("Nombre attendu.");
+    if (i === start) fail(t("Nombre attendu."));
   };
 
   const parseValue = () => {
     skipSpace();
-    if (i >= source.length) fail("Document interrompu : une valeur était attendue.");
+    if (i >= source.length) fail(t("Document interrompu : une valeur était attendue."));
     const char = source[i];
     if (char === '"') return parseString();
     if (char === "{") return parseObject();
     if (char === "[") return parseArray();
     if (char === "-" || /[0-9]/.test(char)) return parseNumber();
     if (literal("true") || literal("false") || literal("null")) return;
-    fail(`Valeur attendue, trouvé « ${char} ».`);
+    fail(t("Valeur attendue, trouvé « {char} ».", { char }));
   };
 
   const parseObject = () => {
@@ -115,10 +116,10 @@ function findJsonError(source: string): { index: number; message: string } {
     }
     for (;;) {
       skipSpace();
-      if (source[i] !== '"') fail("Nom de propriété attendu, entre guillemets doubles.");
+      if (source[i] !== '"') fail(t("Nom de propriété attendu, entre guillemets doubles."));
       parseString();
       skipSpace();
-      if (source[i] !== ":") fail("Deux-points attendus après le nom de la propriété.");
+      if (source[i] !== ":") fail(t("Deux-points attendus après le nom de la propriété."));
       i += 1;
       parseValue();
       skipSpace();
@@ -127,14 +128,14 @@ function findJsonError(source: string): { index: number; message: string } {
         skipSpace();
         // Une virgule finale est refusée par la norme JSON, et c'est l'erreur
         // la plus fréquente : elle mérite un message explicite.
-        if (source[i] === "}") fail("Virgule en trop avant l'accolade fermante.");
+        if (source[i] === "}") fail(t("Virgule en trop avant l'accolade fermante."));
         continue;
       }
       if (source[i] === "}") {
         i += 1;
         return;
       }
-      fail("Virgule ou accolade fermante attendue.");
+      fail(t("Virgule ou accolade fermante attendue."));
     }
   };
 
@@ -151,21 +152,21 @@ function findJsonError(source: string): { index: number; message: string } {
       if (source[i] === ",") {
         i += 1;
         skipSpace();
-        if (source[i] === "]") fail("Virgule en trop avant le crochet fermant.");
+        if (source[i] === "]") fail(t("Virgule en trop avant le crochet fermant."));
         continue;
       }
       if (source[i] === "]") {
         i += 1;
         return;
       }
-      fail("Virgule ou crochet fermant attendu.");
+      fail(t("Virgule ou crochet fermant attendu."));
     }
   };
 
   try {
     parseValue();
     skipSpace();
-    if (i < source.length) fail("Contenu en trop après la fin du document.");
+    if (i < source.length) fail(t("Contenu en trop après la fin du document."));
   } catch (failure) {
     const located = failure as { index?: number; message?: string };
     if (typeof located.index === "number" && typeof located.message === "string") {
@@ -175,7 +176,7 @@ function findJsonError(source: string): { index: number; message: string } {
     throw failure;
   }
   // Le scanner n'a rien trouvé : on rend la fin du document, faute de mieux.
-  return { index: source.length, message: "JSON invalide." };
+  return { index: source.length, message: t("JSON invalide.") };
 }
 
 function locateJsonError(source: string): DataError {
@@ -187,7 +188,7 @@ function locateJsonError(source: string): DataError {
 }
 
 export function parseJson(source: string): unknown {
-  if (source.trim().length === 0) throw new DataError("Le document est vide.");
+  if (source.trim().length === 0) throw new DataError(t("Le document est vide."));
   try {
     return JSON.parse(source);
   } catch {
@@ -268,15 +269,12 @@ export function assertNoExternalEntities(source: string): void {
   if (!doctype) return;
   if (ENTITY_PATTERN.test(doctype[0])) {
     throw new DataError(
-      "Ce document déclare des entités XML. FourTout les refuse : une entité peut " +
-        "désigner un fichier local ou une adresse réseau (attaque XXE). Retirez la " +
-        "déclaration <!DOCTYPE> pour formater le document.",
+      t("Ce document déclare des entités XML. FourTout les refuse : une entité peut désigner un fichier local ou une adresse réseau (attaque XXE). Retirez la déclaration <!DOCTYPE> pour formater le document."),
     );
   }
   if (/SYSTEM|PUBLIC/i.test(doctype[0])) {
     throw new DataError(
-      "Ce document référence une DTD externe. FourTout ne va jamais la chercher : " +
-        "retirez la déclaration <!DOCTYPE> pour formater le document.",
+      t("Ce document référence une DTD externe. FourTout ne va jamais la chercher : retirez la déclaration <!DOCTYPE> pour formater le document."),
     );
   }
 }
@@ -308,35 +306,35 @@ function tokenizeXml(source: string): XmlNode[] {
 
     if (source.startsWith("<!--", next)) {
       const end = source.indexOf("-->", next);
-      if (end === -1) throw new DataError("Commentaire non refermé.");
+      if (end === -1) throw new DataError(t("Commentaire non refermé."));
       nodes.push({ kind: "comment", text: source.slice(next, end + 3) });
       index = end + 3;
       continue;
     }
     if (source.startsWith("<![CDATA[", next)) {
       const end = source.indexOf("]]>", next);
-      if (end === -1) throw new DataError("Section CDATA non refermée.");
+      if (end === -1) throw new DataError(t("Section CDATA non refermée."));
       nodes.push({ kind: "cdata", text: source.slice(next, end + 3) });
       index = end + 3;
       continue;
     }
     if (source.startsWith("<!", next)) {
       const end = source.indexOf(">", next);
-      if (end === -1) throw new DataError("Déclaration non refermée.");
+      if (end === -1) throw new DataError(t("Déclaration non refermée."));
       nodes.push({ kind: "doctype", text: source.slice(next, end + 1) });
       index = end + 1;
       continue;
     }
     if (source.startsWith("<?", next)) {
       const end = source.indexOf("?>", next);
-      if (end === -1) throw new DataError("Instruction de traitement non refermée.");
+      if (end === -1) throw new DataError(t("Instruction de traitement non refermée."));
       nodes.push({ kind: "instruction", text: source.slice(next, end + 2) });
       index = end + 2;
       continue;
     }
 
     const end = findTagEnd(source, next);
-    if (end === -1) throw new DataError("Balise non refermée.");
+    if (end === -1) throw new DataError(t("Balise non refermée."));
     const raw = source.slice(next, end + 1);
     nodes.push({
       kind: "element",
@@ -383,9 +381,9 @@ export function validateXml(source: string): void {
     const name = tagName(node.text);
     if (node.closing) {
       const open = stack.pop();
-      if (!open) throw new DataError(`Balise fermante isolée : </${name}>`);
+      if (!open) throw new DataError(t("Balise fermante isolée : </{name}>", { name }));
       if (open.name !== name) {
-        throw new DataError(`Balise mal imbriquée : </${name}> ferme <${open.name}>.`);
+        throw new DataError(t("Balise mal imbriquée : </{name}> ferme <{name2}>.", { name, name2: open.name }));
       }
       if (stack.length === 0) roots += 1;
       continue;
@@ -397,10 +395,10 @@ export function validateXml(source: string): void {
     stack.push({ name });
   }
   if (stack.length > 0) {
-    throw new DataError(`Balise non fermée : <${stack[stack.length - 1].name}>`);
+    throw new DataError(t("Balise non fermée : <{name}>", { name: stack[stack.length - 1].name }));
   }
-  if (roots === 0) throw new DataError("Aucun élément racine : le document n'est pas du XML.");
-  if (roots > 1) throw new DataError(`Le document a ${roots} racines ; le XML n'en accepte qu'une.`);
+  if (roots === 0) throw new DataError(t("Aucun élément racine : le document n'est pas du XML."));
+  if (roots > 1) throw new DataError(t("Le document a {roots} racines ; le XML n'en accepte qu'une.", { roots }));
 }
 
 function tagName(raw: string): string {

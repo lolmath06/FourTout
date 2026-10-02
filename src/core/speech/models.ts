@@ -1,4 +1,5 @@
 import { isTauri } from "@/core/platform";
+import { formatDecimalSize, t } from "@/i18n";
 
 /**
  * Gestionnaire des moteurs et modèles de parole.
@@ -54,7 +55,7 @@ export async function listAssets(): Promise<SpeechAsset[]> {
  * donc lire que ce que FourTout a installé.
  */
 export async function readAssetFile(id: string, relative: string): Promise<Uint8Array> {
-  if (!isTauri()) throw new Error("Les modèles ne sont disponibles que dans l'application installée.");
+  if (!isTauri()) throw new Error(t("Les modèles ne sont disponibles que dans l'application installée."));
   const { invoke } = await import("@tauri-apps/api/core");
   const bytes = await invoke<number[]>("models_read_file", { id, relative });
   return new Uint8Array(bytes);
@@ -77,7 +78,7 @@ export interface InstallOptions {
  * place. Une annulation ou une erreur ne laisse aucun fichier partiel installé.
  */
 export async function installAsset(id: string, options: InstallOptions = {}): Promise<void> {
-  if (!isTauri()) throw new Error("L'installation nécessite l'application FourTout.");
+  if (!isTauri()) throw new Error(t("L'installation nécessite l'application FourTout."));
   const { invoke } = await import("@tauri-apps/api/core");
   const { listen } = await import("@tauri-apps/api/event");
 
@@ -113,10 +114,8 @@ export async function removeAsset(id: string): Promise<void> {
 
 /** Taille lisible d'un téléchargement. */
 export function formatSize(bytes: number): string {
-  if (bytes >= 1_000_000_000) return `${(bytes / 1_000_000_000).toFixed(1)} Go`;
-  if (bytes >= 1_000_000) return `${Math.round(bytes / 1_000_000)} Mo`;
-  if (bytes >= 1000) return `${Math.round(bytes / 1000)} ko`;
-  return `${bytes} o`;
+  // Une décimale au-delà du giga-octet, des entiers en dessous.
+  return formatDecimalSize(bytes, (value) => (bytes >= 1_000_000_000 && value < 1000 ? 1 : 0));
 }
 
 /** Les éléments manquants parmi ceux requis, dans l'ordre du catalogue. */

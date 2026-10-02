@@ -7,20 +7,21 @@ import { usePageRange } from "@/components/pdf/usePageRange";
 import { addWatermark, type WatermarkOptions } from "@/core/pdf/operations/annotate";
 import { parsePageRange } from "@/core/pdf/pageRange";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t } from "@/i18n";
 
 type Placement = WatermarkOptions["placement"];
 
-const PLACEMENTS = [
-  { value: "diagonal" as Placement, label: "Diagonale" },
-  { value: "center" as Placement, label: "Centre" },
-  { value: "top" as Placement, label: "Haut" },
-  { value: "bottom" as Placement, label: "Bas" },
-];
+const PLACEMENTS = localized(() => [
+  { value: "diagonal" as Placement, label: t("Diagonale") },
+  { value: "center" as Placement, label: t("Centre") },
+  { value: "top" as Placement, label: t("Haut") },
+  { value: "bottom" as Placement, label: t("Bas") },
+]);
 
-const SCOPES = [
-  { value: "all" as const, label: "Toutes les pages" },
-  { value: "selection" as const, label: "Pages choisies" },
-];
+const SCOPES = localized(() => [
+  { value: "all" as const, label: t("Toutes les pages") },
+  { value: "selection" as const, label: t("Pages choisies") },
+]);
 
 export function PdfWatermarkTool({ tool }: ToolComponentProps) {
   const [text, setText] = useState("CONFIDENTIEL");
@@ -33,7 +34,7 @@ export function PdfWatermarkTool({ tool }: ToolComponentProps) {
   return (
     <PdfToolShell
       tool={tool}
-      actionLabel="Appliquer le filigrane"
+      actionLabel={t("Appliquer le filigrane")}
       actionDisabled={text.trim().length === 0 || (scope === "selection" && input.trim().length === 0)}
       run={async ({ documents, context }) => {
         const [document] = documents;
@@ -47,7 +48,7 @@ export function PdfWatermarkTool({ tool }: ToolComponentProps) {
         );
         return singleResult(
           output,
-          `Filigrane « ${text} » ajouté sur ${pages ? pages.length : pageCount} page(s).`,
+          t("Filigrane « {text} » ajouté sur {value} page(s).", { text, value: pages ? pages.length : pageCount }),
         );
       }}
     >
@@ -94,43 +95,43 @@ function WatermarkFields(props: {
 
   return (
     <Fieldset>
-      <Field label="Texte du filigrane" full>
+      <Field label={t("Texte du filigrane")} full>
         <TextInput
           value={props.text}
           onChange={(event) => props.onText(event.target.value)}
           placeholder="CONFIDENTIEL"
-          aria-label="Texte du filigrane"
+          aria-label={t("Texte du filigrane")}
         />
       </Field>
 
-      <Field label="Position">
+      <Field label={t("Position")}>
         <OptionGroup
-          ariaLabel="Position du filigrane"
+          ariaLabel={t("Position du filigrane")}
           value={props.placement}
           onChange={props.onPlacement}
           options={PLACEMENTS}
         />
       </Field>
-      <Field label="Portée">
+      <Field label={t("Portée")}>
         <OptionGroup
-          ariaLabel="Pages concernées"
+          ariaLabel={t("Pages concernées")}
           value={props.scope}
           onChange={props.onScope}
           options={SCOPES}
         />
       </Field>
 
-      <Field label="Taille du texte">
+      <Field label={t("Taille du texte")}>
         <Slider value={props.fontSize} onChange={props.onFontSize} min={10} max={120} suffix=" pt" />
       </Field>
-      <Field label="Opacité" hint="Un filigrane trop opaque gêne la lecture du document.">
+      <Field label={t("Opacité")} hint={t("Un filigrane trop opaque gêne la lecture du document.")}>
         <Slider value={props.opacity} onChange={props.onOpacity} min={5} max={100} suffix=" %" />
       </Field>
 
       {props.scope === "selection" && (
         <div className="sm:col-span-full">
           <PageRangeInput
-            label="Pages à marquer"
+            label={t("Pages à marquer")}
             value={props.input}
             onChange={props.onInput}
             pageCount={props.pageCount}

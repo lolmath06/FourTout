@@ -9,6 +9,7 @@ import { AUDIO_FORMATS, type AudioFormat } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { sameFormatOf } from "./format";
+import { t, tx } from "@/i18n";
 
 /**
  * Convertir les canaux d'un fichier audio.
@@ -29,7 +30,7 @@ export function AudioChannelsTool({ tool }: ToolComponentProps) {
   return (
     <MediaToolShell
       tool={tool}
-      actionLabel="Convertir les canaux"
+      actionLabel={t("Convertir les canaux")}
       actionDisabled={target === "keep" && format === "same"}
       run={async ({ files, infos, context }) => {
         const outputFormat = format === "same" ? sameFormatOf(files[0]) : format;
@@ -39,7 +40,7 @@ export function AudioChannelsTool({ tool }: ToolComponentProps) {
             operation: setChannels(target, outputFormat),
             outputName: outputName(files[0].name, target === "keep" ? "" : target, outputFormat),
             totalMs: infos[0]?.durationMs,
-            label: "Conversion des canaux…",
+            label: t("Conversion des canaux…"),
           },
           context,
         );
@@ -48,8 +49,8 @@ export function AudioChannelsTool({ tool }: ToolComponentProps) {
           files: [file],
           summary:
             wanted === undefined
-              ? `Canaux conservés, converti en ${outputFormat.toUpperCase()}.`
-              : `Sortie sur ${wanted} canal${wanted > 1 ? "aux" : ""} (${outputFormat.toUpperCase()}).`,
+              ? t("Canaux conservés, converti en {value}.", { value: outputFormat.toUpperCase() })
+              : t("Sortie sur {wanted} {wanted, plural, one {canal} other {canaux}} ({value}).", { wanted, value: outputFormat.toUpperCase() }),
         };
       }}
     >
@@ -61,44 +62,41 @@ export function AudioChannelsTool({ tool }: ToolComponentProps) {
           <div className="space-y-3">
             {channels !== undefined && (
               <p className="text-xs text-[var(--ft-text-muted)]">
-                Source : {describeChannels(channels, undefined)}
-                {layout?.sampleRate ? ` · ${layout.sampleRate} Hz` : ""}
+                {t("Source : {value}{value2}", { value: describeChannels(channels, undefined), value2: layout?.sampleRate ? ` · ${layout.sampleRate} Hz` : "" })}
               </p>
             )}
 
             {channels !== undefined && channels > 2 && target === "keep" && (
-              <Callout tone="info" title={`${channels} canaux détectés`}>
-                Ce fichier est multicanal. FourTout ne le réduit pas de lui-même : choisissez
-                explicitement mono ou stéréo si vous voulez un mixage.
+              <Callout tone="info" title={t("{channels} canaux détectés", { channels })}>
+                {t("Ce fichier est multicanal. FourTout ne le réduit pas de lui-même : choisissez explicitement mono ou stéréo si vous voulez un mixage.")}
               </Callout>
             )}
 
             {channels === 1 && target === "stereo" && (
-              <Callout tone="info" title="Duplication, pas spatialisation">
-                La source est mono : les deux voies produites porteront exactement le même signal.
-                Aucune information stéréo ne peut être inventée.
+              <Callout tone="info" title={t("Duplication, pas spatialisation")}>
+                {t("La source est mono : les deux voies produites porteront exactement le même signal. Aucune information stéréo ne peut être inventée.")}
               </Callout>
             )}
 
             <Fieldset columns={1}>
               <Field
-                label="Canaux de sortie"
-                hint={CHANNEL_TARGETS.find((entry) => entry.value === target)?.hint}
+                label={t("Canaux de sortie")}
+                hint={tx(CHANNEL_TARGETS.find((entry) => entry.value === target)?.hint)}
               >
                 <OptionGroup
-                  ariaLabel="Canaux"
+                  ariaLabel={t("Canaux")}
                   value={target}
                   onChange={(value) => setTarget(value as ChannelTarget)}
                   options={CHANNEL_TARGETS.map((entry) => ({ value: entry.value, label: entry.label }))}
                 />
               </Field>
-              <Field label="Format de sortie">
+              <Field label={t("Format de sortie")}>
                 <OptionGroup
-                  ariaLabel="Format"
+                  ariaLabel={t("Format")}
                   value={format}
                   onChange={(value) => setFormat(value as AudioFormat | "same")}
                   options={[
-                    { value: "same", label: "Identique" },
+                    { value: "same", label: t("Identique") },
                     ...AUDIO_FORMATS.map((entry) => ({ value: entry, label: entry.toUpperCase() })),
                   ]}
                 />

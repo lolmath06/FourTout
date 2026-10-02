@@ -12,6 +12,7 @@
  *     notification. Ce module ne fait qu'appeler et rendre des valeurs.
  */
 
+import { formatNumber, localized, t } from "@/i18n";
 const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
 const UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const DIGITS = "0123456789";
@@ -53,8 +54,7 @@ function randomValues(count: number): Uint32Array {
   const cryptoApi = globalThis.crypto;
   if (!cryptoApi?.getRandomValues) {
     throw new PasswordError(
-      "Aucun générateur aléatoire cryptographique n'est disponible : FourTout refuse de " +
-        "produire un mot de passe qui serait prévisible.",
+      t("Aucun générateur aléatoire cryptographique n'est disponible : FourTout refuse de produire un mot de passe qui serait prévisible."),
     );
   }
   const buffer = new Uint32Array(count);
@@ -104,7 +104,7 @@ export function entropyBits(alphabetSize: number, length: number): number {
 export function generatePassword(options: GeneratorOptions): string {
   const alphabet = alphabetFor(options);
   if (alphabet.length === 0) {
-    throw new PasswordError("Aucun type de caractère sélectionné.");
+    throw new PasswordError(t("Aucun type de caractère sélectionné."));
   }
   const length = Math.min(MAX_LENGTH, Math.max(MIN_LENGTH, Math.floor(options.length)));
 
@@ -222,25 +222,25 @@ export function crackTime(entropy: number): string {
 }
 
 export function humanDuration(seconds: number): string {
-  if (!Number.isFinite(seconds)) return "au-delà de toute échelle";
-  if (seconds < 1) return "moins d'une seconde";
+  if (!Number.isFinite(seconds)) return t("au-delà de toute échelle");
+  if (seconds < 1) return t("moins d'une seconde");
   const units: [number, string, string][] = [
     [60, "seconde", "secondes"],
     [60, "minute", "minutes"],
     [24, "heure", "heures"],
     [365.25, "jour", "jours"],
     [1000, "an", "ans"],
-    [1000, "millénaire", "millénaires"],
+    [1000, t("millénaire"), t("millénaires")],
   ];
   let value = seconds;
   for (const [step, singular, plural] of units) {
     if (value < step) {
       const rounded = Math.round(value);
-      return `${rounded.toLocaleString("fr-FR")} ${rounded > 1 ? plural : singular}`;
+      return `${formatNumber(rounded)} ${rounded > 1 ? plural : singular}`;
     }
     value /= step;
   }
-  return `${Math.round(value).toLocaleString("fr-FR")} millions de millénaires`;
+  return t("{value} millions de millénaires", { value: formatNumber(Math.round(value)) });
 }
 
 /* ------------------------------------------------------------------------ */
@@ -262,13 +262,13 @@ export interface StrengthResult {
   length: number;
 }
 
-const SCORE_LABELS: Record<number, string> = {
-  0: "Très faible",
+const SCORE_LABELS: Record<number, string> = localized(() => ({
+  0: t("Très faible"),
   1: "Faible",
   2: "Moyen",
   3: "Robuste",
-  4: "Très robuste",
-};
+  4: t("Très robuste"),
+}));
 
 let zxcvbnReady: Promise<(password: string) => unknown> | undefined;
 
@@ -303,15 +303,15 @@ interface ZxcvbnLike {
   sequence?: { pattern?: string; token?: string; dictionaryName?: string }[];
 }
 
-const PATTERN_LABELS: Record<string, string> = {
-  dictionary: "mot d'un dictionnaire",
-  spatial: "suite de touches du clavier",
-  repeat: "répétition",
-  sequence: "suite de caractères",
+const PATTERN_LABELS: Record<string, string> = localized(() => ({
+  dictionary: t("mot d'un dictionnaire"),
+  spatial: t("suite de touches du clavier"),
+  repeat: t("répétition"),
+  sequence: t("suite de caractères"),
   regex: "motif reconnaissable",
   date: "date",
-  bruteforce: "caractères sans motif",
-};
+  bruteforce: t("caractères sans motif"),
+}));
 
 /**
  * Évalue un mot de passe **entièrement en local**.
@@ -322,7 +322,7 @@ const PATTERN_LABELS: Record<string, string> = {
  */
 export async function evaluatePassword(password: string): Promise<StrengthResult> {
   if (password.length === 0) {
-    throw new PasswordError("Aucun mot de passe à évaluer.");
+    throw new PasswordError(t("Aucun mot de passe à évaluer."));
   }
   const zxcvbn = await loadZxcvbn();
   const result = zxcvbn(password) as ZxcvbnLike;
@@ -330,7 +330,7 @@ export async function evaluatePassword(password: string): Promise<StrengthResult
   const warnings: string[] = [];
   if (result.feedback.warning) warnings.push(result.feedback.warning);
   if (password.length < 12) {
-    warnings.push("Moins de 12 caractères : c'est court pour un mot de passe important.");
+    warnings.push(t("Moins de 12 caractères : c'est court pour un mot de passe important."));
   }
 
   const patterns = (result.sequence ?? [])

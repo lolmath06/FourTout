@@ -141,7 +141,7 @@ Détails et limites : [NETWORK.md](../features/NETWORK.md).
 
 | Donnée | Contenu | Emplacement |
 | --- | --- | --- |
-| Préférences | Thème, taille de l'interface, densité, animations | Stockage local de la WebView |
+| Préférences | Thème, langue, taille de l'interface, densité, animations | Stockage local de la WebView |
 | Favoris | Identifiants d'outils | idem |
 | Récemment utilisés | Identifiants d'outils et horodatages | idem |
 | Taux de change | Dernier relevé BCE et sa date | idem |

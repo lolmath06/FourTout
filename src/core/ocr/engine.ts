@@ -10,6 +10,7 @@ import type {
   OcrWord,
   RecognizeRequest,
 } from "./types";
+import { t } from "@/i18n";
 
 /**
  * Moteur OCR reposant sur tesseract.js.
@@ -173,7 +174,7 @@ export class TesseractEngine implements OcrEngine {
       cacheMethod: "none",
       logger: (message: { status?: string; progress?: number }) => {
         if (message.status === "recognizing text") {
-          handle.active?.report?.({ ratio: message.progress, label: "Reconnaissance du texte…" });
+          handle.active?.report?.({ ratio: message.progress, label: t("Reconnaissance du texte…") });
         }
       },
       // Sans ce gestionnaire, tesseract.js fait **en plus** un `throw` global à
@@ -292,7 +293,7 @@ export class TesseractEngine implements OcrEngine {
           if (isFatalEngineFault(retryError)) await this.discard(language);
           throw new ImageError(
             "ocr-unavailable",
-            "Le moteur de reconnaissance s'est interrompu sur cette image, y compris après redémarrage.",
+            t("Le moteur de reconnaissance s'est interrompu sur cette image, y compris après redémarrage."),
             { cause: retryError },
           );
         }

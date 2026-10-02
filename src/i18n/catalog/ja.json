@@ -1,0 +1,3737 @@
+{
+  "categories": {
+    "pdf": {
+      "name": "PDF",
+      "description": "PDF の結合・分割・圧縮・変換・保護。",
+      "keywords": [
+        "pdf",
+        "文書",
+        "ドキュメント",
+        "acrobat"
+      ]
+    },
+    "images": {
+      "name": "画像",
+      "description": "画像の変換・圧縮・リサイズ・クリーンアップ。",
+      "keywords": [
+        "画像",
+        "写真",
+        "イメージ",
+        "png",
+        "jpg",
+        "jpeg",
+        "webp"
+      ]
+    },
+    "audio": {
+      "name": "オーディオ",
+      "description": "音声の変換・カット・正規化・文字起こし・合成。",
+      "keywords": [
+        "音声",
+        "オーディオ",
+        "音楽",
+        "サウンド",
+        "mp3",
+        "声"
+      ]
+    },
+    "video": {
+      "name": "動画",
+      "description": "動画の変換・圧縮・カット・字幕付け。",
+      "keywords": [
+        "動画",
+        "ビデオ",
+        "映像",
+        "mp4",
+        "クリップ"
+      ]
+    },
+    "text": {
+      "name": "テキストと文書",
+      "description": "テキストの分析・整形・比較・変換。",
+      "keywords": [
+        "テキスト",
+        "文書",
+        "文章",
+        "markdown",
+        "単語"
+      ]
+    },
+    "files": {
+      "name": "ファイルとアーカイブ",
+      "description": "ファイルの圧縮・展開・比較・名前変更・整理。",
+      "keywords": [
+        "ファイル",
+        "アーカイブ",
+        "zip",
+        "フォルダー"
+      ]
+    },
+    "converters": {
+      "name": "変換ツール",
+      "description": "ファイルの種類を問わず、ある形式から別の形式へ。",
+      "keywords": [
+        "変換",
+        "コンバーター",
+        "形式",
+        "フォーマット",
+        "convert"
+      ]
+    },
+    "developer": {
+      "name": "開発者向け",
+      "description": "技術的な形式の整形・エンコード・生成・検査。",
+      "keywords": [
+        "dev",
+        "開発者",
+        "開発",
+        "json",
+        "コード",
+        "プログラミング"
+      ]
+    },
+    "calculators": {
+      "name": "計算ツール",
+      "description": "単位、パーセント、日付、時間、日常の計算。",
+      "keywords": [
+        "計算",
+        "計算機",
+        "電卓",
+        "単位",
+        "換算",
+        "数学"
+      ]
+    },
+    "network": {
+      "name": "ネットワーク",
+      "description": "接続を診断し、ポートを調べ、家のネットワークに何がつながっているか確認。",
+      "keywords": [
+        "ネットワーク",
+        "lan",
+        "ip",
+        "ping",
+        "ポート",
+        "接続",
+        "wifi"
+      ]
+    },
+    "diagnostics": {
+      "name": "診断と復旧",
+      "description": "壊れたファイルのどこが壊れているかを把握し、救えるものを救います。",
+      "keywords": [
+        "診断",
+        "破損",
+        "壊れた",
+        "修復",
+        "復旧",
+        "ディスク",
+        "パーティション",
+        "smart"
+      ]
+    },
+    "security": {
+      "name": "セキュリティとプライバシー",
+      "description": "パスワード、暗号化、ハッシュ、データ消去。",
+      "keywords": [
+        "セキュリティ",
+        "プライバシー",
+        "暗号化",
+        "パスワード",
+        "ハッシュ"
+      ]
+    }
+  },
+  "tools": {
+    "pdf-merge": {
+      "name": "PDF を結合",
+      "description": "複数の PDF を好きな順番で 1 つの文書にまとめます。",
+      "keywords": [
+        "結合",
+        "まとめる",
+        "統合",
+        "マージ",
+        "複数の pdf",
+        "1 つの pdf",
+        "2 つの pdf を結合"
+      ],
+      "aliases": [
+        "merge pdf",
+        "combine pdf",
+        "pdf 結合"
+      ]
+    },
+    "pdf-split": {
+      "name": "PDF を分割",
+      "description": "ページ範囲ごとに PDF を複数のファイルに分けます。",
+      "keywords": [
+        "分割",
+        "分ける",
+        "切り分け",
+        "2 つに分ける"
+      ],
+      "aliases": [
+        "split pdf",
+        "pdf 分割"
+      ]
+    },
+    "pdf-extract-pages": {
+      "name": "ページを抽出",
+      "description": "選んだページから新しい PDF を作成します。",
+      "keywords": [
+        "抽出",
+        "選択",
+        "ページを取り出す",
+        "一部のページを残す"
+      ],
+      "aliases": [
+        "extract pages",
+        "pdf ページ抽出"
+      ]
+    },
+    "pdf-remove-pages": {
+      "name": "ページを削除",
+      "description": "PDF から特定のページを完全に削除します。",
+      "keywords": [
+        "削除",
+        "取り除く",
+        "ページ削除",
+        "1 ページ削除",
+        "最後のページを削除"
+      ],
+      "aliases": [
+        "delete pages",
+        "remove pages pdf"
+      ]
+    },
+    "pdf-reorder-pages": {
+      "name": "ページを並べ替え",
+      "description": "ドラッグ＆ドロップでページの順番を変えます。",
+      "keywords": [
+        "並べ替え",
+        "順番",
+        "ページの並び替え",
+        "ページを移動",
+        "逆順"
+      ],
+      "aliases": [
+        "reorder pages",
+        "organize pdf"
+      ]
+    },
+    "pdf-rotate": {
+      "name": "ページを回転",
+      "description": "すべてまたは一部のページを 90・180・270 度回転します。",
+      "keywords": [
+        "回転",
+        "向きを変える",
+        "まっすぐにする",
+        "上下逆のページ",
+        "向き"
+      ],
+      "aliases": [
+        "rotate pdf",
+        "pdf 回転"
+      ]
+    },
+    "pdf-compress": {
+      "name": "PDF を圧縮",
+      "description": "読みやすさを保ちながら PDF のサイズを小さくします。",
+      "keywords": [
+        "圧縮",
+        "小さく",
+        "軽く",
+        "サイズ削減",
+        "容量を減らす",
+        "最適化",
+        "重すぎる",
+        "大きいファイル",
+        "mb を減らす"
+      ],
+      "aliases": [
+        "compress pdf",
+        "reduce pdf size",
+        "pdf 圧縮",
+        "pdf 軽量化"
+      ]
+    },
+    "images-to-pdf": {
+      "name": "画像を PDF に",
+      "description": "複数の画像をページ付きの PDF 文書に変換します。",
+      "keywords": [
+        "画像を pdf に",
+        "写真を pdf に",
+        "jpg を pdf に",
+        "png を pdf に",
+        "スキャナー"
+      ],
+      "aliases": [
+        "image to pdf",
+        "jpg to pdf",
+        "png to pdf"
+      ]
+    },
+    "pdf-to-images": {
+      "name": "PDF を画像に",
+      "description": "PDF の各ページを指定した解像度で PNG または JPEG として書き出します。",
+      "keywords": [
+        "pdf を画像に",
+        "pdf を png に",
+        "pdf を jpg に",
+        "pdf を jpeg に",
+        "ページを書き出す",
+        "pdf 画像変換"
+      ],
+      "aliases": [
+        "pdf to image",
+        "pdf to jpg",
+        "pdf to png"
+      ]
+    },
+    "document-to-pdf": {
+      "name": "文書を PDF に",
+      "description": "テキスト、Markdown、HTML ファイルを PDF に変換します。",
+      "keywords": [
+        "テキストを pdf に",
+        "markdown を pdf に",
+        "html を pdf に",
+        "txt を pdf に",
+        "docx を pdf に"
+      ],
+      "aliases": [
+        "text to pdf",
+        "markdown to pdf",
+        "html to pdf"
+      ]
+    },
+    "pdf-add-text": {
+      "name": "テキストを追加",
+      "description": "PDF にテキストを書き込み、フォームの記入や注釈に使えます。",
+      "keywords": [
+        "書き込み",
+        "注釈",
+        "記入",
+        "フォーム",
+        "コメント",
+        "pdf にテキスト"
+      ],
+      "aliases": [
+        "add text to pdf",
+        "pdf 記入"
+      ]
+    },
+    "pdf-add-image": {
+      "name": "画像や署名を追加",
+      "description": "画像、スタンプ、署名を好きな位置に挿入します。",
+      "keywords": [
+        "署名",
+        "サイン",
+        "スタンプ",
+        "印鑑",
+        "ロゴ",
+        "画像を貼る"
+      ],
+      "aliases": [
+        "sign pdf",
+        "add signature",
+        "pdf 署名"
+      ]
+    },
+    "pdf-watermark": {
+      "name": "透かしを追加",
+      "description": "すべてまたは一部のページにテキストの透かしを入れます。",
+      "keywords": [
+        "透かし",
+        "ウォーターマーク",
+        "watermark",
+        "社外秘",
+        "マーク",
+        "下書き"
+      ],
+      "aliases": [
+        "watermark pdf"
+      ]
+    },
+    "pdf-page-numbers": {
+      "name": "ページ番号を付ける",
+      "description": "ヘッダーまたはフッターに、カスタマイズ可能なページ番号を追加します。",
+      "keywords": [
+        "ページ番号",
+        "ノンブル",
+        "番号付け",
+        "ページ付け"
+      ],
+      "aliases": [
+        "page numbers",
+        "pdf ページ番号"
+      ]
+    },
+    "pdf-protect": {
+      "name": "パスワードで保護",
+      "description": "PDF を暗号化し、パスワードがないと開けないようにします。",
+      "keywords": [
+        "保護",
+        "パスワード",
+        "暗号化",
+        "ロック",
+        "pdf にパスワード",
+        "機密 pdf"
+      ],
+      "aliases": [
+        "protect pdf",
+        "encrypt pdf",
+        "password pdf"
+      ]
+    },
+    "pdf-unlock": {
+      "name": "PDF のロックを解除",
+      "description": "パスワードがわかっている PDF の保護を解除します。",
+      "keywords": [
+        "ロック解除",
+        "パスワード解除",
+        "保護を外す",
+        "復号"
+      ],
+      "aliases": [
+        "unlock pdf",
+        "remove pdf password",
+        "decrypt pdf"
+      ],
+      "note": "FourTout は保護を破りません。パスワードを知っている必要があります。パスワードを忘れた場合は「PDF のパスワードを回復」をご覧ください。"
+    },
+    "pdf-recover-password": {
+      "name": "PDF のパスワードを回復",
+      "description": "パスワードを忘れた PDF を再び開くために、可能性の高いパスワードを試します。",
+      "keywords": [
+        "パスワードを忘れた",
+        "パスワード回復",
+        "復旧",
+        "ロックされた pdf",
+        "パスワード紛失",
+        "保護された pdf を開く",
+        "辞書"
+      ],
+      "aliases": [
+        "recover pdf password",
+        "forgot pdf password",
+        "pdf password recovery"
+      ],
+      "note": "開く権限のある文書に対し、辞書とルールでローカルに回復を試みます。総当たりではないため、リストにないパスワードは見つかりません。"
+    },
+    "pdf-metadata": {
+      "name": "PDF のメタデータ",
+      "description": "PDF のタイトル、作成者、件名、キーワードを読み取り・編集します。",
+      "keywords": [
+        "メタデータ",
+        "プロパティ",
+        "作成者",
+        "タイトル",
+        "文書情報"
+      ],
+      "aliases": [
+        "pdf metadata",
+        "edit pdf properties"
+      ]
+    },
+    "pdf-extract-images": {
+      "name": "PDF から画像を抽出",
+      "description": "PDF に埋め込まれた画像をすべて取り出します。",
+      "keywords": [
+        "画像を抽出",
+        "写真を取り出す",
+        "画像を保存"
+      ],
+      "aliases": [
+        "extract images from pdf"
+      ]
+    },
+    "pdf-extract-text": {
+      "name": "PDF からテキストを抽出",
+      "description": "PDF の選択可能なテキストをページごとに取り出します。",
+      "keywords": [
+        "テキスト抽出",
+        "テキストをコピー",
+        "pdf をテキストに",
+        "内容を取り出す"
+      ],
+      "aliases": [
+        "pdf to text",
+        "extract text"
+      ]
+    },
+    "pdf-edit-text": {
+      "name": "PDF のテキストを編集",
+      "description": "ページ上で直接テキストを修正：単語をダブルクリックして置き換えます。",
+      "keywords": [
+        "pdf テキスト編集",
+        "pdf 文字修正",
+        "pdf 内のテキストを直す",
+        "テキスト置換",
+        "pdf 編集",
+        "誤字修正",
+        "日付を変更",
+        "金額を変更"
+      ],
+      "aliases": [
+        "edit pdf text",
+        "modify pdf text",
+        "change text pdf",
+        "edit text in pdf"
+      ],
+      "note": "置き換えによる見た目の編集：元のテキストを採取した背景色で覆い、描き直します。無地の背景上の横書きテキスト（文書、請求書、レポート）に最適です。背景が均一でない部分や回転したテキストは表示のみで、変更されません。"
+    },
+    "ocr-document": {
+      "name": "スキャン PDF の OCR",
+      "description": "スキャンした PDF のテキストを、フランス語または英語でページごとに認識します。",
+      "keywords": [
+        "ocr",
+        "文字認識",
+        "スキャン",
+        "スキャンした",
+        "写真をテキストに",
+        "スキャンを読む",
+        "選択できない pdf",
+        "画像をテキストに"
+      ],
+      "aliases": [
+        "ocr",
+        "optical character recognition",
+        "image to text",
+        "scan to text"
+      ],
+      "note": "ローカル OCR エンジン（tesseract.js）を内蔵：データはネットワークに一切送信されません。画像 1 枚の場合は「画像からテキストを抽出」をご覧ください。"
+    },
+    "pdf-compare": {
+      "name": "2 つの PDF を比較",
+      "description": "文書の 2 つの版の違いを強調表示します。",
+      "keywords": [
+        "比較",
+        "違い",
+        "差分",
+        "diff",
+        "2 つの版",
+        "変更点"
+      ],
+      "aliases": [
+        "compare pdf",
+        "pdf diff"
+      ]
+    },
+    "pdf-redact": {
+      "name": "PDF を墨消し",
+      "description": "機密部分を完全に隠します：内容は覆うだけでなく削除されます。",
+      "keywords": [
+        "墨消し",
+        "黒塗り",
+        "隠す",
+        "匿名化",
+        "検閲",
+        "機密データ"
+      ],
+      "aliases": [
+        "redact pdf",
+        "墨消し"
+      ]
+    },
+    "pdf-searchable": {
+      "name": "スキャン PDF を検索可能な PDF に",
+      "description": "スキャンした PDF のテキストを認識し、見えないレイヤーとして追加します。Ctrl+F・選択・コピーが使え、見た目は変わりません。",
+      "keywords": [
+        "検索可能な pdf",
+        "ocr pdf",
+        "pdf スキャン",
+        "スキャンした pdf",
+        "pdf を検索可能に",
+        "pdf 文字認識",
+        "テキストレイヤー",
+        "選択できない pdf"
+      ],
+      "aliases": [
+        "searchable pdf",
+        "ocr pdf",
+        "make pdf searchable",
+        "scanned pdf"
+      ],
+      "note": "認識は完全にローカルで行われます。元のページはラスタライズも再圧縮もされず、見えないテキストレイヤーが追加されるだけです。結果の品質はスキャンの品質に左右されます。"
+    },
+    "pdf-extract-tables": {
+      "name": "PDF から表を抽出",
+      "description": "テキストの位置から行と列を再構成し、CSV または XLSX ブックに書き出します。",
+      "keywords": [
+        "pdf 表抽出",
+        "pdf の表",
+        "pdf を excel に",
+        "pdf を csv に",
+        "表を取り出す",
+        "pdf xlsx",
+        "スプレッドシート",
+        "列",
+        "行"
+      ],
+      "aliases": [
+        "pdf to excel",
+        "extract tables",
+        "pdf table to csv",
+        "pdf to csv"
+      ],
+      "note": "PDF には表は含まれておらず、位置指定されたテキストがあるだけです。FourTout はその位置から行と列を再構成します。結合セルや複数行のテキストを含む複雑な表は、書き出し前に修正が必要な場合があります。"
+    },
+    "scans-to-pdf": {
+      "name": "スキャンや写真を PDF に",
+      "description": "スキャンまたは撮影したページを、クリーンアップと並べ替えを行って 1 つの PDF にまとめます。",
+      "keywords": [
+        "スキャンを pdf に",
+        "写真を pdf に",
+        "スキャンをまとめる",
+        "ページを綴じる",
+        "書類写真 pdf",
+        "整えてまとめる"
+      ],
+      "aliases": [
+        "scans to pdf",
+        "photos to pdf",
+        "scan to pdf"
+      ],
+      "note": "クリーンアップはすべてのページに同じ設定で適用されます。結合には「画像を PDF に」のエンジンを使います。"
+    },
+    "image-convert": {
+      "name": "画像を変換",
+      "description": "PNG、JPG、WebP の間で形式を変換します。GIF、BMP、TIFF、SVG も読み込めます。",
+      "keywords": [
+        "変換",
+        "形式を変更",
+        "png を jpg に",
+        "jpg を png に",
+        "png を webp に",
+        "jpg を webp に",
+        "webp を png に",
+        "webp を jpg に",
+        "webp",
+        "svg を png に",
+        "gif を png に",
+        "bmp",
+        "tiff",
+        "heic",
+        "avif"
+      ],
+      "aliases": [
+        "convert image",
+        "png to jpg",
+        "jpg to png",
+        "jpg to webp",
+        "webp to png",
+        "image converter"
+      ]
+    },
+    "image-compress": {
+      "name": "画像を圧縮",
+      "description": "画質の低下を抑えながら画像のサイズを小さくします。",
+      "keywords": [
+        "圧縮",
+        "写真を圧縮",
+        "軽くする",
+        "サイズ削減",
+        "最適化",
+        "写真が重い",
+        "kb を減らす"
+      ],
+      "aliases": [
+        "compress image",
+        "optimize image",
+        "reduce image size"
+      ]
+    },
+    "image-resize": {
+      "name": "画像をリサイズ",
+      "description": "縦横比を保つかどうかを選び、ピクセルまたはパーセントでサイズを変更します。",
+      "keywords": [
+        "リサイズ",
+        "サイズ変更",
+        "写真のサイズ",
+        "拡大",
+        "縮小",
+        "ピクセル",
+        "幅",
+        "高さ",
+        "1920",
+        "1080"
+      ],
+      "aliases": [
+        "resize image",
+        "scale image"
+      ]
+    },
+    "image-crop": {
+      "name": "画像を切り抜き",
+      "description": "自由に、または比率（1:1、4:3、16:9、3:2）を指定して画像を切り抜きます。",
+      "keywords": [
+        "切り抜き",
+        "トリミング",
+        "写真を切り抜く",
+        "クロップ",
+        "比率",
+        "正方形",
+        "crop"
+      ],
+      "aliases": [
+        "crop image"
+      ]
+    },
+    "image-rotate": {
+      "name": "回転と反転",
+      "description": "90 度単位で回転したり鏡像反転したりでき、すぐにプレビューできます。",
+      "keywords": [
+        "回転",
+        "向きを変える",
+        "まっすぐにする",
+        "傾いた写真",
+        "反転",
+        "ミラー",
+        "90 度"
+      ],
+      "aliases": [
+        "rotate image",
+        "rotate and flip"
+      ]
+    },
+    "image-flip": {
+      "name": "左右・上下反転",
+      "description": "画像を鏡に映したように反転します。",
+      "keywords": [
+        "反転",
+        "ミラー",
+        "左右反転",
+        "上下反転",
+        "flip"
+      ],
+      "aliases": [
+        "flip image",
+        "mirror image"
+      ]
+    },
+    "image-grayscale": {
+      "name": "白黒",
+      "description": "グレースケール、またはしきい値を調整できる白黒に変換します。",
+      "keywords": [
+        "白黒",
+        "モノクロ",
+        "グレースケール",
+        "grayscale",
+        "しきい値",
+        "彩度を下げる"
+      ],
+      "aliases": [
+        "grayscale",
+        "black and white"
+      ]
+    },
+    "image-adjust": {
+      "name": "画像を調整",
+      "description": "明るさ、コントラスト、彩度、ガンマをリアルタイムのプレビューで調整します。",
+      "keywords": [
+        "調整",
+        "明るさ",
+        "コントラスト",
+        "彩度",
+        "ガンマ",
+        "明るくする",
+        "暗くする",
+        "補正"
+      ],
+      "aliases": [
+        "adjust image",
+        "brightness contrast"
+      ]
+    },
+    "image-blur": {
+      "name": "ぼかし・モザイク",
+      "description": "画像全体または描いた範囲にぼかしやモザイクをかけて情報を隠します。",
+      "keywords": [
+        "ぼかし",
+        "ブラー",
+        "モザイク",
+        "ピクセル化",
+        "隠す",
+        "検閲"
+      ],
+      "aliases": [
+        "blur image",
+        "pixelate"
+      ]
+    },
+    "image-remove-transparency": {
+      "name": "透明部分を除去",
+      "description": "透明な PNG や WebP を単色の背景（白・黒・任意の色）に合成します。",
+      "keywords": [
+        "透明を除去",
+        "平坦化",
+        "白背景",
+        "単色背景",
+        "アルファを除去",
+        "不透明"
+      ],
+      "aliases": [
+        "remove transparency",
+        "flatten image"
+      ]
+    },
+    "image-remove-background": {
+      "name": "背景を削除",
+      "description": "写真の被写体を自動で切り抜き、背景を透明にします。",
+      "keywords": [
+        "背景削除",
+        "背景を消す",
+        "透明背景",
+        "写真を切り抜く",
+        "切り抜き",
+        "被写体を分離",
+        "プロフィール写真",
+        "透過 png"
+      ],
+      "aliases": [
+        "remove background",
+        "background remover",
+        "cutout"
+      ],
+      "note": "切り抜きモデルは「設定 → モデル」から一度インストールすれば、あとはオフラインで動作します。画像がサーバーに送られることはありません。くっきりと分離した主要な被写体を認識しますが、被写体がはっきりしない場面や非常に細かい部分では誤ることがあります。"
+    },
+    "image-color-transparent": {
+      "name": "特定の色を透明に",
+      "description": "単色（背景など）を消して透明にします。",
+      "keywords": [
+        "透明にする",
+        "切り抜き",
+        "背景を消す",
+        "透明色",
+        "透明背景",
+        "クロマキー"
+      ],
+      "aliases": [
+        "color to transparent",
+        "remove background color"
+      ]
+    },
+    "image-ocr": {
+      "name": "画像からテキストを抽出（OCR）",
+      "description": "画像内のテキストをフランス語または英語で、100% ローカルに認識します。",
+      "keywords": [
+        "ocr",
+        "テキスト抽出",
+        "写真から文字",
+        "画像をテキストに",
+        "文字を読む",
+        "文字認識",
+        "デジタル化",
+        "画像の文字"
+      ],
+      "aliases": [
+        "ocr",
+        "image to text",
+        "extract text"
+      ]
+    },
+    "image-add-text": {
+      "name": "画像に文字を入れる",
+      "description": "キャプション、ミーム、注釈などのテキストを画像に書き込み、手で配置します。",
+      "keywords": [
+        "画像に文字",
+        "キャプション",
+        "ミーム",
+        "書き込み",
+        "写真に注釈"
+      ],
+      "aliases": [
+        "add text to image",
+        "meme generator"
+      ]
+    },
+    "image-metadata-read": {
+      "name": "画像のメタデータを表示",
+      "description": "EXIF、GPS、カメラ、撮影日時を表示します。",
+      "keywords": [
+        "exif",
+        "メタデータ",
+        "gps",
+        "撮影場所",
+        "カメラ",
+        "撮影日"
+      ],
+      "aliases": [
+        "exif viewer",
+        "image metadata"
+      ]
+    },
+    "image-metadata-strip": {
+      "name": "画像のメタデータを削除",
+      "description": "写真を共有する前に EXIF と GPS のデータを消去します。",
+      "keywords": [
+        "exif 削除",
+        "exif を消す",
+        "メタデータ削除",
+        "写真を匿名化",
+        "gps を削除",
+        "共有前",
+        "プライバシー"
+      ],
+      "aliases": [
+        "strip exif",
+        "remove metadata",
+        "anonymize image"
+      ]
+    },
+    "image-batch-convert": {
+      "name": "画像の一括変換",
+      "description": "フォルダー内のすべての画像に同じ変換を適用します。",
+      "keywords": [
+        "一括",
+        "まとめて",
+        "複数の画像",
+        "画像フォルダー",
+        "バッチ",
+        "すべての写真"
+      ],
+      "aliases": [
+        "batch convert",
+        "bulk image convert"
+      ]
+    },
+    "image-watermark": {
+      "name": "画像に透かし",
+      "description": "ロゴやテキストの透かしを 1 枚ずつまたは一括で追加します。",
+      "keywords": [
+        "透かし",
+        "ウォーターマーク",
+        "watermark",
+        "ロゴ",
+        "署名",
+        "写真を守る"
+      ],
+      "aliases": [
+        "watermark image"
+      ]
+    },
+    "image-favicon": {
+      "name": "ファビコンを生成",
+      "description": "画像から複数サイズのファビコンと .ico ファイルを作成します。",
+      "keywords": [
+        "ファビコン",
+        "favicon",
+        "サイトアイコン",
+        "ico",
+        "ブラウザーのタブ",
+        "サイトのロゴ"
+      ],
+      "aliases": [
+        "favicon generator",
+        "ico"
+      ]
+    },
+    "image-icon-sizes": {
+      "name": "複数サイズを生成",
+      "description": "必要なアイコンやサムネイルのサイズを一度にすべて書き出します。",
+      "keywords": [
+        "サイズ",
+        "アイコン",
+        "アプリアイコン",
+        "サムネイル",
+        "thumbnails",
+        "すべての解像度"
+      ],
+      "aliases": [
+        "icon generator",
+        "app icon sizes"
+      ]
+    },
+    "color-picker": {
+      "name": "色を分析・変換",
+      "description": "画像の主要な色、ピクセル単位のスポイト、HEX / RGB / HSL / HSV 表記、テキストと背景の WCAG コントラスト。",
+      "keywords": [
+        "パレット",
+        "主要な色",
+        "色",
+        "カラー",
+        "hex",
+        "rgb",
+        "hsl",
+        "hsv",
+        "色を抽出",
+        "色見本",
+        "スポイト",
+        "rgb を hex に",
+        "hex を rgb に",
+        "色を変換",
+        "カラーコード",
+        "wcag コントラスト",
+        "コントラスト",
+        "アクセシビリティ",
+        "コントラスト比",
+        "読みやすさ"
+      ],
+      "aliases": [
+        "color picker",
+        "hex to rgb",
+        "color converter",
+        "eyedropper",
+        "wcag contrast",
+        "contrast checker"
+      ]
+    },
+    "document-perspective": {
+      "name": "書類の遠近を補正",
+      "description": "斜めから撮った紙の写真をまっすぐに：四隅を指定すると、FourTout が正面から見た長方形に変換します。",
+      "keywords": [
+        "遠近補正",
+        "台形補正",
+        "書類をまっすぐに",
+        "書類の写真",
+        "斜めの紙",
+        "傾いた写真",
+        "四隅",
+        "スマホでスキャン",
+        "歪み補正"
+      ],
+      "aliases": [
+        "perspective correction",
+        "dewarp",
+        "document scanner",
+        "deskew photo"
+      ],
+      "note": "四隅は手で指定するため、自動検出が誤る場面でも常に正確です。四隅から推定する縦横比は近似値です。正確に仕上げるには A4 またはレターを指定してください。"
+    },
+    "scan-clean": {
+      "name": "スキャンをきれいに",
+      "description": "少し傾いた書類をまっすぐにし、コントラストを上げ、灰色や黄ばんだ背景を白くし、グレースケールや白黒に変換します。",
+      "keywords": [
+        "スキャンをきれいに",
+        "スキャン文書の補正",
+        "スキャンをまっすぐに",
+        "傾き補正",
+        "deskew",
+        "傾いたスキャン",
+        "灰色の背景",
+        "黄ばんだ紙",
+        "書類のコントラスト",
+        "読みにくいスキャン"
+      ],
+      "aliases": [
+        "clean scan",
+        "deskew",
+        "enhance scan",
+        "document cleanup"
+      ],
+      "note": "各設定は任意で、前後比較のプレビューで確認できます。白くする処理は暗いピクセルには触れないため、細い文字も濃さを保ちます。"
+    },
+    "image-compare": {
+      "name": "2 つの画像を比較",
+      "description": "2 つの画像の違いを、並べて・重ねて・差分で表示し、異なるピクセル数、PSNR、SSIM で測定します。",
+      "keywords": [
+        "画像比較",
+        "2 つの画像を比較",
+        "画像の差分",
+        "image diff",
+        "ピクセル差分",
+        "psnr",
+        "ssim",
+        "2 枚の写真の違い",
+        "ビフォーアフター",
+        "圧縮品質",
+        "重ね合わせ",
+        "間違い探し"
+      ],
+      "aliases": [
+        "compare images",
+        "image diff",
+        "pixel diff",
+        "psnr",
+        "ssim",
+        "image comparison"
+      ],
+      "note": "サイズの異なる 2 つの画像を同意なしにリサイズすることはありません。リサンプリングすると、ファイルにない違いが生じてしまうためです。"
+    },
+    "image-contact-sheet": {
+      "name": "コンタクトシートを作成",
+      "description": "複数の画像をファイル名付きで 1 枚のシートにグリッド配置します。",
+      "keywords": [
+        "コンタクトシート",
+        "contact sheet",
+        "画像グリッド",
+        "モザイク",
+        "サムネイル",
+        "画像をまとめる",
+        "写真のモンタージュ",
+        "画像カタログ",
+        "1 ページに複数画像"
+      ],
+      "aliases": [
+        "contact sheet",
+        "photo grid",
+        "thumbnail sheet"
+      ]
+    },
+    "audio-record": {
+      "name": "マイクで録音",
+      "description": "マイクの音を録音し、ローカルに保存します。",
+      "keywords": [
+        "録音",
+        "マイク",
+        "ボイスレコーダー",
+        "声を録音",
+        "ボイスメモ"
+      ],
+      "aliases": [
+        "record audio",
+        "voice recorder"
+      ]
+    },
+    "audio-trim": {
+      "name": "音声をカット",
+      "description": "音声ファイルの必要な部分だけを残します。",
+      "keywords": [
+        "カット",
+        "切り取り",
+        "トリミング",
+        "抜粋",
+        "短くする",
+        "一部を残す"
+      ],
+      "aliases": [
+        "trim audio",
+        "cut audio",
+        "split audio"
+      ]
+    },
+    "audio-merge": {
+      "name": "音声を結合",
+      "description": "複数のトラックを順番につなげて 1 つのファイルにします。",
+      "keywords": [
+        "結合",
+        "つなげる",
+        "連結",
+        "まとめる",
+        "トラックを結合"
+      ],
+      "aliases": [
+        "merge audio",
+        "join audio",
+        "concat audio"
+      ]
+    },
+    "audio-convert": {
+      "name": "音声を変換",
+      "description": "MP3、WAV、FLAC、OGG、M4A、OPUS の間で形式を変換します。",
+      "keywords": [
+        "変換",
+        "形式を変更",
+        "wav を mp3 に",
+        "mp3 を wav に",
+        "flac",
+        "ogg",
+        "m4a",
+        "opus",
+        "aac"
+      ],
+      "aliases": [
+        "convert audio",
+        "wav to mp3",
+        "audio converter"
+      ]
+    },
+    "audio-compress": {
+      "name": "音声を圧縮",
+      "description": "ビットレートを調整して音声ファイルのサイズを小さくします。",
+      "keywords": [
+        "圧縮",
+        "サイズ削減",
+        "軽くする",
+        "ビットレート",
+        "bitrate",
+        "重すぎる"
+      ],
+      "aliases": [
+        "compress audio",
+        "reduce audio size"
+      ]
+    },
+    "audio-volume": {
+      "name": "音量を調整",
+      "description": "音声ファイル全体の音量を上げたり下げたりします。",
+      "keywords": [
+        "音量",
+        "大きく",
+        "小さく",
+        "増幅",
+        "音を下げる",
+        "小さすぎる"
+      ],
+      "aliases": [
+        "change volume",
+        "amplify audio"
+      ]
+    },
+    "audio-normalize": {
+      "name": "音声を正規化",
+      "description": "複数のファイルの音の大きさ（ラウドネス）をそろえます。",
+      "keywords": [
+        "正規化",
+        "ノーマライズ",
+        "ラウドネス",
+        "音量をそろえる",
+        "lufs"
+      ],
+      "aliases": [
+        "normalize audio",
+        "loudness"
+      ]
+    },
+    "audio-speed": {
+      "name": "速度を変更",
+      "description": "音程補正の有無を選んで、音声を速くしたり遅くしたりします。",
+      "keywords": [
+        "速度",
+        "速くする",
+        "遅くする",
+        "テンポ",
+        "ピッチ",
+        "倍速"
+      ],
+      "aliases": [
+        "audio speed",
+        "speed up audio",
+        "slow down audio"
+      ]
+    },
+    "audio-remove-silence": {
+      "name": "無音を削除",
+      "description": "録音の無音部分を自動で検出してカットします。",
+      "keywords": [
+        "無音",
+        "間",
+        "ポーズをカット",
+        "録音を整える",
+        "ポッドキャスト"
+      ],
+      "aliases": [
+        "remove silence",
+        "trim silence"
+      ]
+    },
+    "video-extract-audio": {
+      "name": "動画から音声を抽出",
+      "description": "動画の音声トラックを好きな形式で取り出します。",
+      "keywords": [
+        "音声抽出",
+        "サウンドトラック",
+        "動画を mp3 に",
+        "mp4 を mp3 に",
+        "音声を取り出す",
+        "動画の音"
+      ],
+      "aliases": [
+        "extract audio",
+        "video to mp3",
+        "mp4 to mp3"
+      ]
+    },
+    "audio-transcribe": {
+      "name": "音声の文字起こし",
+      "description": "音声や動画ファイルの発話をローカルでテキストに変換します。",
+      "keywords": [
+        "文字起こし",
+        "書き起こし",
+        "音声をテキストに",
+        "音声認識",
+        "会議",
+        "インタビュー",
+        "口述",
+        "字幕",
+        "mp3 を文字起こし",
+        "動画を文字起こし"
+      ],
+      "aliases": [
+        "transcribe",
+        "speech to text",
+        "audio to text",
+        "stt"
+      ],
+      "note": "お使いのコンピューターで動作する音声認識モデルで、必要に応じてインストールされます。"
+    },
+    "audio-generate-srt": {
+      "name": "SRT 字幕を生成",
+      "description": "音声や動画から、タイムスタンプ付きの字幕ファイルを作成します。",
+      "keywords": [
+        "srt",
+        "字幕",
+        "vtt",
+        "タイムスタンプ",
+        "キャプション",
+        "字幕を作る"
+      ],
+      "aliases": [
+        "generate subtitles",
+        "srt generator"
+      ]
+    },
+    "text-to-speech": {
+      "name": "テキスト読み上げ",
+      "description": "オンラインサービスを使わずにテキストを読み上げ、音声ファイルとして保存します。",
+      "keywords": [
+        "音声合成",
+        "tts",
+        "読み上げ",
+        "テキストを音声に",
+        "合成音声",
+        "テキストを聞く",
+        "テキストから mp3"
+      ],
+      "aliases": [
+        "text to speech",
+        "tts",
+        "音声合成"
+      ]
+    },
+    "pdf-to-audio": {
+      "name": "PDF を音声に",
+      "description": "ローカルの音声合成で PDF をオーディオブックにします。",
+      "keywords": [
+        "pdf を音声に",
+        "オーディオブック",
+        "pdf を聞く",
+        "pdf を読み上げ",
+        "講義を聞く"
+      ],
+      "aliases": [
+        "pdf to audio",
+        "pdf to speech",
+        "audiobook"
+      ]
+    },
+    "text-file-to-audio": {
+      "name": "テキストファイルを音声に",
+      "description": "TXT や Markdown ファイルを読み上げ音声ファイルに変換します。",
+      "keywords": [
+        "txt を音声に",
+        "オーディオブック",
+        "ナレーション",
+        "テキストを聞く",
+        "テキストから mp3"
+      ],
+      "aliases": [
+        "txt to audio",
+        "text file to audio"
+      ]
+    },
+    "audio-channels": {
+      "name": "音声チャンネルを変換",
+      "description": "ファイルをモノラルまたはステレオに変換するか、そのままにします。マルチチャンネルのファイルを勝手にダウンミックスすることはありません。",
+      "keywords": [
+        "モノラル ステレオ",
+        "チャンネル",
+        "モノラル",
+        "ステレオ",
+        "モノラルに変換",
+        "ステレオに変換",
+        "ダウンミックス",
+        "チャンネルを混ぜる",
+        "5.1 をステレオに"
+      ],
+      "aliases": [
+        "audio channels",
+        "mono to stereo",
+        "stereo to mono",
+        "downmix"
+      ],
+      "note": "モノラルからステレオにすると、チャンネルが複製されて左右に同じ信号が入ります。立体感を作り出すことはしません。"
+    },
+    "audio-metadata": {
+      "name": "音声のタグを編集",
+      "description": "タイトル、アーティスト、アルバム、年、ジャンル、トラック番号、コメントを読み取り・修正します。音声は再エンコードしません。",
+      "keywords": [
+        "音声メタデータ",
+        "タグ",
+        "mp3 タグ",
+        "id3",
+        "タイトル アーティスト アルバム",
+        "タイトルを修正",
+        "年 ジャンル トラック",
+        "mp3 の情報を編集"
+      ],
+      "aliases": [
+        "audio metadata",
+        "id3 tags",
+        "edit tags",
+        "music tags"
+      ],
+      "note": "書き込み時は音声ストリームをそのままコピー（-c copy）するため、音はビット単位で同一です。"
+    },
+    "media-info": {
+      "name": "メディアを調べる",
+      "description": "音声・動画ファイルが示すすべての情報：コンテナー、コーデック、解像度、フレームレート、ビットレート、チャンネル、タグ。",
+      "keywords": [
+        "動画メタデータ",
+        "音声メタデータ",
+        "メディア情報",
+        "コーデック",
+        "ビットレート",
+        "動画の解像度",
+        "フレームレート",
+        "fps",
+        "チャンネル",
+        "サンプリングレート",
+        "動画を調べる",
+        "ffprobe"
+      ],
+      "aliases": [
+        "media info",
+        "media metadata",
+        "video metadata",
+        "ffprobe",
+        "mediainfo"
+      ]
+    },
+    "video-convert": {
+      "name": "動画を変換",
+      "description": "MP4、MKV、WebM、MOV の間で形式を変換します。",
+      "keywords": [
+        "変換",
+        "形式を変更",
+        "mkv を mp4 に",
+        "avi を mp4 に",
+        "webm",
+        "mov"
+      ],
+      "aliases": [
+        "convert video",
+        "mkv to mp4",
+        "video converter"
+      ],
+      "note": "インストール済みのエンジンに実際に含まれるコーデックだけを提示します。"
+    },
+    "video-compress": {
+      "name": "動画を圧縮",
+      "description": "目標画質を選んで動画のサイズを大幅に減らします。",
+      "keywords": [
+        "圧縮",
+        "サイズ削減",
+        "軽くする",
+        "重すぎる",
+        "メールで送る",
+        "mb を減らす",
+        "最適化"
+      ],
+      "aliases": [
+        "compress video",
+        "reduce video size"
+      ]
+    },
+    "video-resolution": {
+      "name": "解像度を変更",
+      "description": "動画を 1080p、720p、480p、または任意のサイズに変換します。",
+      "keywords": [
+        "解像度",
+        "1080p",
+        "720p",
+        "480p",
+        "4k",
+        "リサイズ",
+        "画質"
+      ],
+      "aliases": [
+        "resize video",
+        "change resolution",
+        "downscale video"
+      ]
+    },
+    "video-trim": {
+      "name": "動画をカット",
+      "description": "可能な場合は再エンコードせずに、必要な部分だけを残します。",
+      "keywords": [
+        "カット",
+        "切り取り",
+        "トリミング",
+        "抜粋",
+        "短くする",
+        "冒頭を削除",
+        "末尾を削除",
+        "クリップ"
+      ],
+      "aliases": [
+        "trim video",
+        "cut video"
+      ]
+    },
+    "video-merge": {
+      "name": "動画を結合",
+      "description": "複数の動画を順番につなげて 1 つのファイルにします。",
+      "keywords": [
+        "結合",
+        "つなげる",
+        "連結",
+        "まとめる",
+        "クリップを結合"
+      ],
+      "aliases": [
+        "merge video",
+        "concat video",
+        "join video"
+      ]
+    },
+    "video-crop": {
+      "name": "動画を切り抜き",
+      "description": "残す範囲を固定の縦横比で目で見て選びます。",
+      "keywords": [
+        "切り抜き",
+        "クロップ",
+        "トリミング",
+        "フレーミング",
+        "縦型",
+        "9:16",
+        "正方形",
+        "黒帯を削除"
+      ],
+      "aliases": [
+        "crop video",
+        "vertical video",
+        "reframe"
+      ]
+    },
+    "video-to-gif": {
+      "name": "動画を GIF に",
+      "description": "動画の一部を最適化されたアニメーション GIF にします。",
+      "keywords": [
+        "gif",
+        "動画を gif に",
+        "アニメーション",
+        "ループ",
+        "mp4 を gif に"
+      ],
+      "aliases": [
+        "video to gif",
+        "mp4 to gif",
+        "gif maker"
+      ]
+    },
+    "gif-to-video": {
+      "name": "GIF を動画に",
+      "description": "アニメーション GIF を、ずっと軽い MP4 や WebM に変換します。",
+      "keywords": [
+        "gif を動画に",
+        "gif を mp4 に",
+        "gif を変換",
+        "アニメーションを動画に",
+        "gif が重い"
+      ],
+      "aliases": [
+        "gif to video",
+        "gif to mp4",
+        "gif to webm"
+      ]
+    },
+    "video-extract-frame": {
+      "name": "動画から静止画を抽出",
+      "description": "特定のフレームを切り出すか、一定間隔で静止画を作ります。",
+      "keywords": [
+        "キャプチャー",
+        "フレーム",
+        "静止画",
+        "動画から画像",
+        "スクリーンショット",
+        "サムネイル"
+      ],
+      "aliases": [
+        "extract frame",
+        "video screenshot",
+        "video to image"
+      ]
+    },
+    "video-speed": {
+      "name": "動画の速度を変更",
+      "description": "音声も含めて、早送りやスローモーションを作ります。",
+      "keywords": [
+        "速度",
+        "早送り",
+        "スローモーション",
+        "タイムラプス",
+        "slow motion",
+        "倍速"
+      ],
+      "aliases": [
+        "video speed",
+        "timelapse",
+        "slow motion"
+      ]
+    },
+    "video-rotate": {
+      "name": "動画を回転",
+      "description": "向きを間違えて撮った動画を直したり、鏡像反転したりします。",
+      "keywords": [
+        "回転",
+        "向きを変える",
+        "上下逆",
+        "縦向きで撮影",
+        "まっすぐにする",
+        "反転",
+        "ミラー"
+      ],
+      "aliases": [
+        "rotate video",
+        "flip video",
+        "mirror video"
+      ]
+    },
+    "video-remove-audio": {
+      "name": "動画の音声を削除",
+      "description": "映像を再エンコードせずに、無音の動画を作ります。",
+      "keywords": [
+        "音声を削除",
+        "ミュート",
+        "無音",
+        "音楽を消す",
+        "消音"
+      ],
+      "aliases": [
+        "remove audio",
+        "mute video"
+      ]
+    },
+    "video-replace-audio": {
+      "name": "音声トラックを差し替え",
+      "description": "動画の音声トラックを置き換えるか、別のトラックを追加します。",
+      "keywords": [
+        "音声を差し替え",
+        "音楽を追加",
+        "吹き替え",
+        "サウンドトラック",
+        "ナレーション",
+        "2 本目の音声トラック"
+      ],
+      "aliases": [
+        "replace audio",
+        "add audio track",
+        "dub video"
+      ],
+      "note": "動画と音声ファイルを一緒にドロップしてください。"
+    },
+    "video-volume": {
+      "name": "動画の音量を調整",
+      "description": "映像はそのままに、動画の音量を上げたり下げたりします。",
+      "keywords": [
+        "音量",
+        "音が小さい",
+        "音が大きい",
+        "音量を上げる",
+        "音量を下げる",
+        "増幅",
+        "音量を正規化"
+      ],
+      "aliases": [
+        "video volume",
+        "boost audio",
+        "louder video"
+      ]
+    },
+    "video-add-subtitles": {
+      "name": "字幕トラックを追加",
+      "description": "SRT または VTT ファイルを動画に付け、プレーヤーでオンにできるようにします。",
+      "keywords": [
+        "字幕",
+        "srt",
+        "vtt",
+        "字幕トラック",
+        "ソフトサブ",
+        "添付"
+      ],
+      "aliases": [
+        "add subtitles",
+        "soft subtitles",
+        "mux srt"
+      ],
+      "note": "動画と字幕ファイルを一緒にドロップしてください。"
+    },
+    "video-burn-subtitles": {
+      "name": "字幕を焼き込む",
+      "description": "字幕を映像に焼き込み、どのプレーヤーでも表示されるようにします。",
+      "keywords": [
+        "焼き込み",
+        "ハードサブ",
+        "字幕を焼き付け",
+        "映像に字幕",
+        "焼き込み srt",
+        "常に表示される字幕"
+      ],
+      "aliases": [
+        "burn subtitles",
+        "hardcode srt",
+        "hardsub"
+      ],
+      "note": "動画と字幕ファイルを一緒にドロップしてください。"
+    },
+    "video-extract-subtitles": {
+      "name": "動画から字幕を抽出",
+      "description": "既存の字幕トラックを SRT または VTT に書き出します。",
+      "keywords": [
+        "字幕抽出",
+        "字幕を取り出す",
+        "srt を書き出す",
+        "字幕トラック",
+        "mkv の字幕"
+      ],
+      "aliases": [
+        "extract subtitles",
+        "rip subtitles",
+        "demux srt"
+      ],
+      "note": "書き出せるのはテキスト形式のトラックだけです。画像形式のトラック（PGS、DVD）は画像です。"
+    },
+    "video-generate-subtitles": {
+      "name": "動画の字幕を生成",
+      "description": "動画の発話を自動で文字起こしし、書き出しまたは焼き込みを行います。",
+      "keywords": [
+        "字幕を生成",
+        "動画の文字起こし",
+        "自動字幕",
+        "自動 srt",
+        "音声認識"
+      ],
+      "aliases": [
+        "auto subtitles",
+        "generate subtitles"
+      ],
+      "note": "インストール済みのローカル文字起こしモデルを使います（ネットワークには何も送信しません）。"
+    },
+    "video-batch": {
+      "name": "動画の一括処理",
+      "description": "複数の動画を変換・圧縮・リサイズ・回転したり、音声を抽出したりします。",
+      "keywords": [
+        "一括",
+        "まとめて",
+        "すべての動画",
+        "フォルダー",
+        "バッチ"
+      ],
+      "aliases": [
+        "batch video",
+        "bulk video"
+      ]
+    },
+    "video-frame-rate": {
+      "name": "フレームレートを変更",
+      "description": "フレームの複製と間引きで、動画を 24・25・30・60 fps または任意のレートに変換します。",
+      "keywords": [
+        "動画 fps",
+        "fps 変更",
+        "フレームレート",
+        "毎秒フレーム数",
+        "24 fps",
+        "25 fps",
+        "30 fps",
+        "60 fps",
+        "29.97",
+        "23.976",
+        "ntsc",
+        "pal"
+      ],
+      "aliases": [
+        "frame rate",
+        "change fps",
+        "fps converter",
+        "framerate"
+      ],
+      "note": "中間フレームは計算せず、フレームを複製または間引くだけです。出力は固定フレームレートになります。"
+    },
+    "text-statistics": {
+      "name": "文字数・単語数カウンター",
+      "description": "単語、文字、文、段落、推定読了時間。",
+      "keywords": [
+        "数える",
+        "文字数",
+        "単語数",
+        "文",
+        "読了時間",
+        "テキストの長さ",
+        "統計"
+      ],
+      "aliases": [
+        "word count",
+        "character count",
+        "reading time",
+        "文字数カウント"
+      ]
+    },
+    "text-case": {
+      "name": "大文字・小文字を変換",
+      "description": "大文字、小文字、単語の先頭を大文字、camelCase、snake_case、kebab-case。",
+      "keywords": [
+        "大文字",
+        "小文字",
+        "大文字小文字",
+        "すべて大文字",
+        "camelcase",
+        "snake case",
+        "kebab case",
+        "title case"
+      ],
+      "aliases": [
+        "uppercase",
+        "lowercase",
+        "change case",
+        "text case"
+      ]
+    },
+    "text-clean": {
+      "name": "テキストを整形",
+      "description": "余分なスペース、空行、タブ、見えない文字を取り除きます。",
+      "keywords": [
+        "整形",
+        "クリーンアップ",
+        "スペース",
+        "空行",
+        "タブ",
+        "trim",
+        "改行を削除",
+        "書式",
+        "コピーしたテキスト"
+      ],
+      "aliases": [
+        "clean text",
+        "trim whitespace",
+        "remove empty lines"
+      ]
+    },
+    "text-find-replace": {
+      "name": "検索と置換",
+      "description": "正規表現の有無を選んで、テキストを一括置換します。",
+      "keywords": [
+        "置換",
+        "検索",
+        "置き換え",
+        "regex",
+        "検索と置換"
+      ],
+      "aliases": [
+        "find and replace",
+        "search replace"
+      ]
+    },
+    "text-compare": {
+      "name": "2 つのテキストを比較",
+      "description": "追加・削除・変更された箇所を行ごとに確認します。",
+      "keywords": [
+        "比較",
+        "違い",
+        "差分",
+        "diff",
+        "2 つの版",
+        "変更点"
+      ],
+      "aliases": [
+        "diff",
+        "compare text",
+        "text diff"
+      ]
+    },
+    "text-deduplicate": {
+      "name": "重複を削除",
+      "description": "各行を 1 回だけ残します。大文字と小文字を区別しない設定も可能です。",
+      "keywords": [
+        "重複",
+        "重複削除",
+        "重複行",
+        "一意",
+        "繰り返しを削除"
+      ],
+      "aliases": [
+        "remove duplicates",
+        "dedupe lines",
+        "unique lines"
+      ]
+    },
+    "text-sort-lines": {
+      "name": "行を並べ替え",
+      "description": "行をアルファベット順、数値順、またはランダムに並べ替えます。",
+      "keywords": [
+        "並べ替え",
+        "ソート",
+        "五十音順",
+        "アルファベット順",
+        "リスト",
+        "ランダム"
+      ],
+      "aliases": [
+        "sort lines",
+        "sort list"
+      ]
+    },
+    "markdown-convert": {
+      "name": "Markdown ↔ HTML / テキスト",
+      "description": "Markdown を HTML やプレーンテキストに、またその逆に変換します。",
+      "keywords": [
+        "markdown",
+        "md",
+        "html",
+        "markdown 変換",
+        "プレーンテキスト",
+        "レンダリング"
+      ],
+      "aliases": [
+        "markdown to html",
+        "html to markdown",
+        "md converter"
+      ]
+    },
+    "text-extract-urls": {
+      "name": "URL を抽出",
+      "description": "テキストに含まれる Web アドレスをすべて取り出します。",
+      "keywords": [
+        "url",
+        "リンク",
+        "web アドレス",
+        "リンクを抽出",
+        "http"
+      ],
+      "aliases": [
+        "extract urls",
+        "link extractor"
+      ]
+    },
+    "text-extract-emails": {
+      "name": "メールアドレスを抽出",
+      "description": "テキストに含まれるメールアドレスをすべて取り出します。",
+      "keywords": [
+        "メール",
+        "メールアドレス",
+        "アドレス抽出",
+        "連絡先"
+      ],
+      "aliases": [
+        "extract emails",
+        "email extractor"
+      ]
+    },
+    "text-extract-numbers": {
+      "name": "数値を抽出",
+      "description": "テキストからすべての数値を取り出し、合計を計算します。",
+      "keywords": [
+        "数値",
+        "数字",
+        "金額を抽出",
+        "合計",
+        "値"
+      ],
+      "aliases": [
+        "extract numbers",
+        "number extractor"
+      ]
+    },
+    "lorem-ipsum": {
+      "name": "Lorem Ipsum",
+      "description": "ダミーテキスト（単語、文、段落）を生成します。",
+      "keywords": [
+        "lorem",
+        "ダミーテキスト",
+        "仮の文章",
+        "プレースホルダー",
+        "モックアップ"
+      ],
+      "aliases": [
+        "lorem ipsum",
+        "dummy text",
+        "placeholder text"
+      ]
+    },
+    "text-unicode-normalize": {
+      "name": "Unicode を正規化",
+      "description": "システム間で文字の表記（濁点・アクセントなど）をそろえます（NFC、NFD、NFKC、NFKD）。",
+      "keywords": [
+        "unicode",
+        "正規化",
+        "濁点",
+        "半角 全角",
+        "nfc",
+        "nfd",
+        "nfkc",
+        "nfkd",
+        "おかしな文字",
+        "mac windows"
+      ],
+      "aliases": [
+        "unicode normalization",
+        "normalize unicode",
+        "nfc nfd"
+      ]
+    },
+    "text-line-endings": {
+      "name": "改行コードを変換",
+      "description": "事前に検出したうえで、CRLF（Windows）と LF（Unix）を相互に変換します。",
+      "keywords": [
+        "crlf",
+        "lf",
+        "改行コード",
+        "改行",
+        "復帰",
+        "windows unix",
+        "^M",
+        "dos2unix",
+        "unix2dos"
+      ],
+      "aliases": [
+        "line endings",
+        "crlf to lf",
+        "dos2unix",
+        "unix2dos"
+      ]
+    },
+    "docx-extract": {
+      "name": "Word（DOCX）をテキスト・Markdown・HTML に",
+      "description": "Word 文書の内容（見出し、段落、リスト、表）を取り出します。",
+      "keywords": [
+        "docx",
+        "word",
+        "ワード文書",
+        "word からテキスト",
+        "docx をテキストに",
+        "docx を html に",
+        "docx を markdown に",
+        "docx を読む"
+      ],
+      "aliases": [
+        "docx to text",
+        "word to text",
+        "docx to html",
+        "docx to markdown"
+      ],
+      "note": "複雑なレイアウト（段組み、画像、スタイル）は再現されません。FourTout は内容とその構造を取り出します。"
+    },
+    "docx-to-pdf": {
+      "name": "Word（DOCX）を PDF に",
+      "description": "Word 文書を PDF に変換します：見出し、段落、リスト、簡単な表。",
+      "keywords": [
+        "docx を pdf に",
+        "word を pdf に",
+        "word を変換",
+        "文書を pdf に"
+      ],
+      "aliases": [
+        "docx to pdf",
+        "word to pdf"
+      ],
+      "note": "FourTout は内容と構造（見出し、段落、太字、斜体、リスト、簡単な表）を引き継ぎますが、Word のレイアウトは引き継ぎません。段組み、テキストボックス、ヘッダーとフッター、特殊なフォント、画像は異なったり欠けたりすることがあります。ピクセル単位で忠実な結果が必要な場合は、Word または LibreOffice から PDF に書き出してください。"
+    },
+    "document-compare": {
+      "name": "2 つの文書を比較",
+      "description": "PDF、Word、テキスト、Markdown、HTML の 2 つの文書を、形式が違っていても行単位・単語単位で比較します。",
+      "keywords": [
+        "文書比較",
+        "2 つの文書を比較",
+        "pdf と word を比較",
+        "2 つの文書の違い",
+        "文書の差分",
+        "2 つの版",
+        "何が変わったか",
+        "契約書を比較"
+      ],
+      "aliases": [
+        "compare documents",
+        "document diff",
+        "compare pdf docx"
+      ],
+      "note": "比較の対象はレイアウトではなくテキストです。形式が異なる文書同士でも、内容の変更点がわかります。スキャンした PDF は、先に「スキャン PDF を検索可能な PDF に」を通してください。"
+    },
+    "text-encoding-detect": {
+      "name": "テキストの文字コードを判定",
+      "description": "ファイルの文字コード、BOM、改行コードを、実際の確からしさとともに判定します。",
+      "keywords": [
+        "文字コード",
+        "エンコーディング判定",
+        "どの文字コード",
+        "文字化け",
+        "おかしな文字",
+        "mojibake",
+        "utf8 か shift_jis",
+        "bom",
+        "改行コード",
+        "読めないファイル",
+        "charset"
+      ],
+      "aliases": [
+        "detect encoding",
+        "charset detection",
+        "what encoding",
+        "bom"
+      ],
+      "note": "BOM 以外に文字コードを宣言するファイルはありません。判定はあくまで推定であり、FourTout は誤解を招く断定ではなく実際の確からしさを表示します。"
+    },
+    "text-encoding-convert": {
+      "name": "テキストの文字コードを変換",
+      "description": "UTF-8、BOM 付き UTF-8、UTF-16 LE/BE、Windows-1252、Latin-1 の間で、知らないうちに文字を失うことなく変換します。",
+      "keywords": [
+        "文字コード変換",
+        "utf16 utf8",
+        "latin1 utf8",
+        "windows 1252 utf8",
+        "エンコーディング変更",
+        "文字化けを直す",
+        "ansi を utf8 に",
+        "iso 8859 1",
+        "bom",
+        "トランスコード"
+      ],
+      "aliases": [
+        "convert encoding",
+        "utf16 to utf8",
+        "latin1 to utf8",
+        "transcode"
+      ],
+      "note": "変換先の文字コードで書けない文字がある場合、変換は拒否され、該当する文字が一覧表示されます。置き換えは明示的に指示した場合にのみ行われます。"
+    },
+    "subtitle-edit": {
+      "name": "字幕を編集",
+      "description": "SRT と WebVTT の相互変換、タイムスタンプのずらし、2 ファイルの結合、検査と修復。",
+      "keywords": [
+        "字幕",
+        "srt",
+        "vtt",
+        "webvtt",
+        "srt を vtt に",
+        "vtt を srt に",
+        "字幕をずらす",
+        "字幕の同期",
+        "字幕が遅れる",
+        "字幕を結合",
+        "srt を修復",
+        "重なり"
+      ],
+      "aliases": [
+        "subtitles",
+        "srt to vtt",
+        "vtt to srt",
+        "shift subtitles",
+        "merge subtitles",
+        "fix srt"
+      ],
+      "note": "機械的に安全なもの（順序、番号、改行）は修正します。重なりは指摘しますが、勝手に短くすることはありません。"
+    },
+    "archive-create": {
+      "name": "アーカイブを作成",
+      "description": "ファイルやフォルダーを、フォルダー構造を保ったまま ZIP、7z、TAR、TAR.GZ、TAR.XZ に圧縮します。",
+      "keywords": [
+        "zip",
+        "圧縮",
+        "アーカイブ",
+        "7z",
+        "tar",
+        "tar.gz",
+        "zip にまとめる",
+        "ファイルをまとめる"
+      ],
+      "aliases": [
+        "create zip",
+        "compress files",
+        "make archive"
+      ],
+      "note": "ここで作る 7z は暗号化されません。パスワード付きのアーカイブには「パスワード付きアーカイブ」を使ってください。その AES-256 ZIP は 7-Zip、WinRAR、Keka、Windows エクスプローラーで開けます。"
+    },
+    "archive-extract": {
+      "name": "アーカイブを展開",
+      "description": "ZIP、7z、TAR、TAR.GZ、TAR.XZ を、選んだフォルダーに展開します。",
+      "keywords": [
+        "展開",
+        "解凍",
+        "zip を開く",
+        "unzip",
+        "取り出す"
+      ],
+      "aliases": [
+        "unzip",
+        "extract archive",
+        "decompress"
+      ],
+      "note": "選んだフォルダーの外にファイルが書き込まれることはありません。上位に遡るパス（「../」）、絶対パス、シンボリックリンクは拒否され、一覧表示されます。RAR 形式には対応していません。"
+    },
+    "archive-encrypted": {
+      "name": "パスワード付きアーカイブ",
+      "description": "パスワードで暗号化したアーカイブを作成または開きます。",
+      "keywords": [
+        "パスワード付きアーカイブ",
+        "パスワード付き zip",
+        "暗号化 7z",
+        "ファイルを保護",
+        "安全なアーカイブ"
+      ],
+      "aliases": [
+        "encrypted zip",
+        "password protected archive"
+      ],
+      "note": "WinZip AES-256 暗号化：7-Zip、WinRAR、PeaZip、Keka、Windows エクスプローラーで開けます。数秒で破られる旧式の「ZipCrypto」は使いません。ただしファイル名はパスワードなしでも読めます — これは ZIP 形式の制約です。"
+    },
+    "file-hash": {
+      "name": "ハッシュを計算",
+      "description": "サイズを問わず、1 つ以上のファイルの SHA-256、SHA-512、SHA-1、MD5 を求めます。",
+      "keywords": [
+        "ハッシュ",
+        "フィンガープリント",
+        "md5",
+        "sha256",
+        "sha1",
+        "チェックサム",
+        "checksum"
+      ],
+      "aliases": [
+        "file hash",
+        "checksum",
+        "md5",
+        "sha256"
+      ]
+    },
+    "file-verify-hash": {
+      "name": "ハッシュを検証",
+      "description": "ファイルのハッシュを配布元が公開している値と比べます。",
+      "keywords": [
+        "検証",
+        "整合性",
+        "チェックサム",
+        "ファイルが壊れていないか",
+        "ハッシュを比較",
+        "真正性"
+      ],
+      "aliases": [
+        "verify checksum",
+        "check integrity",
+        "hash compare"
+      ]
+    },
+    "file-find-duplicates": {
+      "name": "重複ファイルを検索",
+      "description": "名前ではなく内容でフォルダー内の重複を検出します。",
+      "keywords": [
+        "重複",
+        "同一ファイル",
+        "空き容量を増やす",
+        "整理",
+        "重複した写真"
+      ],
+      "aliases": [
+        "find duplicates",
+        "duplicate finder"
+      ]
+    },
+    "file-compare": {
+      "name": "2 つのファイルを比較",
+      "description": "2 つのファイルが同一かどうかをバイト単位または行単位で確認します。",
+      "keywords": [
+        "比較",
+        "同一",
+        "違い",
+        "バイナリ",
+        "ファイルの差分"
+      ],
+      "aliases": [
+        "compare files",
+        "file diff"
+      ]
+    },
+    "file-bulk-rename": {
+      "name": "一括リネーム",
+      "description": "パターン、連番、正規表現で何百ものファイル名を変更します。",
+      "keywords": [
+        "名前変更",
+        "リネーム",
+        "一括",
+        "一括リネーム",
+        "連番を付ける",
+        "接頭辞",
+        "接尾辞",
+        "すべてのファイル"
+      ],
+      "aliases": [
+        "bulk rename",
+        "batch rename"
+      ]
+    },
+    "file-clean-names": {
+      "name": "ファイル名を整える",
+      "description": "ファイル名からアクセント、スペース、問題のある文字を取り除きます。",
+      "keywords": [
+        "アクセント",
+        "名前のスペース",
+        "特殊文字",
+        "slug",
+        "正規化"
+      ],
+      "aliases": [
+        "clean filenames",
+        "sanitize filenames"
+      ]
+    },
+    "file-organize": {
+      "name": "フォルダーを整理",
+      "description": "拡張子、日付、種類ごとにファイルを自動で振り分けます。",
+      "keywords": [
+        "整理",
+        "片付け",
+        "分類",
+        "拡張子別",
+        "日付別",
+        "ダウンロードフォルダーを整理"
+      ],
+      "aliases": [
+        "organize folder",
+        "sort files"
+      ]
+    },
+    "folder-size": {
+      "name": "フォルダーの容量を分析",
+      "description": "何が容量を占めているかを確認：最大のファイル、最大のサブフォルダー、種類別の内訳。",
+      "keywords": [
+        "サイズ",
+        "ディスク容量",
+        "容量を食っているもの",
+        "大きいファイル",
+        "ディスクがいっぱい",
+        "分析"
+      ],
+      "aliases": [
+        "folder size",
+        "disk usage",
+        "disk analyzer",
+        "space analyzer"
+      ],
+      "note": "読み取るのはファイルシステムのメタデータだけで、ファイルの内容は開きません。読み取れないフォルダーは 0 として数えずに報告し、シンボリックリンクはたどりません（リンク先が二重に数えられるため）。"
+    },
+    "file-secure-delete": {
+      "name": "完全削除",
+      "description": "ファイルの内容を上書きしてから削除し、ソフトウェアによる復元を極めて困難にします。",
+      "keywords": [
+        "完全削除",
+        "安全な削除",
+        "復元不可",
+        "shred",
+        "ファイルを破棄",
+        "本当に削除"
+      ],
+      "aliases": [
+        "secure delete",
+        "shred",
+        "wipe file"
+      ],
+      "note": "物理的な破壊ではなく、強化したソフトウェア消去です。SSD、メモリーカード、Btrfs/ZFS/APFS 上や、スナップショット・バックアップがある場合は、過去のコピーがすべて消えることをどのソフトウェアも保証できません。"
+    },
+    "file-split": {
+      "name": "大きなファイルを分割",
+      "description": "大きなファイルを、検証用マニフェスト付きの番号付きパーツに分けます。",
+      "keywords": [
+        "分割",
+        "切り分け",
+        "split",
+        "パーツ",
+        "ファイルが大きすぎる",
+        "usb メモリー",
+        "fat32",
+        "大きなファイルを送る",
+        "part001"
+      ],
+      "aliases": [
+        "split file",
+        "file splitter"
+      ]
+    },
+    "file-join": {
+      "name": "ファイルを結合",
+      "description": ".part001 などのパーツから、ハッシュを検証しながら元のファイルを復元します。",
+      "keywords": [
+        "結合",
+        "つなぎ直す",
+        "join",
+        "パーツを結合",
+        "part001",
+        "ファイルを復元"
+      ],
+      "aliases": [
+        "join files",
+        "merge parts",
+        "reassemble"
+      ]
+    },
+    "folder-tree": {
+      "name": "フォルダーツリーを生成",
+      "description": "README に貼り付けられる、フォルダーのテキストツリーを作ります。",
+      "keywords": [
+        "ツリー",
+        "構造",
+        "tree",
+        "フォルダー構成",
+        "階層",
+        "readme",
+        "フォルダー一覧"
+      ],
+      "aliases": [
+        "folder tree",
+        "directory tree"
+      ]
+    },
+    "file-info": {
+      "name": "ファイルを調べる",
+      "description": "シグネチャから判定した実際の種類、拡張子との整合、文字コード、日付、ハッシュ、先頭バイト。",
+      "keywords": [
+        "情報",
+        "プロパティ",
+        "詳細",
+        "ファイルの種類",
+        "調べる",
+        "何の形式",
+        "mime",
+        "作成日",
+        "このファイルは何",
+        "magic bytes",
+        "シグネチャ",
+        "紛らわしい拡張子",
+        "本当の形式",
+        "文字コード"
+      ],
+      "aliases": [
+        "file info",
+        "file properties",
+        "file details",
+        "inspect file",
+        "magic bytes"
+      ],
+      "note": "表示される種類は拡張子ではなく先頭のバイトから判定します。PNG を含む「.jpg」は PNG として示されます。自動でリネームはしません — 修正はあなたが指示する操作です。"
+    },
+    "folder-compare": {
+      "name": "2 つのフォルダーを比較",
+      "description": "2 つのフォルダーツリーで、同一のもの、変更されたもの、片方にだけあるものを確認します。",
+      "keywords": [
+        "フォルダー比較",
+        "フォルダーの差分",
+        "2 つのフォルダーの違い",
+        "何が変わったか",
+        "フォルダーの 2 つの版",
+        "ビフォーアフター",
+        "コピーを確認",
+        "バックアップは最新か"
+      ],
+      "aliases": [
+        "compare folders",
+        "folder diff",
+        "directory compare",
+        "diff directories"
+      ],
+      "note": "高速モードは何も読まずに種類とサイズを比べ、同じサイズのファイルは「おそらく同一」とします。内容で一致を確認するのは確実モードだけで、それも同じサイズのファイルだけを読みます。サイズが違えばそれで結論が出るからです。"
+    },
+    "folder-sync": {
+      "name": "フォルダーを同期",
+      "description": "書き込み前の詳細なプランを示したうえで、コピー元からコピー先を更新します。",
+      "keywords": [
+        "同期",
+        "ミラー",
+        "フォルダーをコピー",
+        "フォルダーを更新",
+        "外付けディスクにバックアップ",
+        "usb メモリー",
+        "複製",
+        "mirror",
+        "rsync"
+      ],
+      "aliases": [
+        "sync folders",
+        "mirror folder",
+        "folder sync",
+        "one-way sync"
+      ],
+      "note": "一方向の同期：コピー元が基準で、コピー先がそれに従います。プランを確認するまで何も書き込みません。ミラーモードは、コピー元にもう存在しないものをコピー先から削除するため、別途確認を求めます。"
+    },
+    "file-search": {
+      "name": "ファイル内を検索",
+      "description": "名前、種類、サイズ、日付、または含まれるテキストでファイルを探します。",
+      "keywords": [
+        "検索",
+        "ファイル内検索",
+        "ファイルを探す",
+        "grep",
+        "書類を探す",
+        "このファイルはどこ",
+        "単語を検索",
+        "内容検索",
+        "日付で",
+        "サイズで"
+      ],
+      "aliases": [
+        "search files",
+        "find files",
+        "grep",
+        "search in files"
+      ],
+      "note": "必要なときだけ検索：FourTout はバックグラウンドで何もインデックスせず、検索のあいだに何も保持しません。内容検索は本当にテキストに見えるものだけを開き、バイナリをテキストとして解釈することはありません。"
+    },
+    "file-preview": {
+      "name": "ファイルをプレビュー",
+      "description": "テキスト、画像、PDF、音声、動画、アーカイブ、生のバイトなど、どんなファイルも専用アプリなしで開きます。",
+      "keywords": [
+        "プレビュー",
+        "表示",
+        "アプリなしで開く",
+        "中身を見る",
+        "quick look",
+        "ファイルを見る",
+        "ファイルを読む"
+      ],
+      "aliases": [
+        "preview file",
+        "quick look",
+        "file viewer"
+      ],
+      "note": "プレビューの方式は拡張子ではなく実際の内容で決まります。大きなテキストファイルは一部だけを読み込み、その旨を表示します。"
+    },
+    "file-hex-edit": {
+      "name": "16 進エディター",
+      "description": "ファイル全体を読み込まずに、ウィンドウ単位でバイトを読み取り・修正します。",
+      "keywords": [
+        "16 進",
+        "hex editor",
+        "バイナリエディター",
+        "バイト",
+        "バイナリ",
+        "バイトを変更",
+        "オフセット",
+        "ascii",
+        "ダンプ"
+      ],
+      "aliases": [
+        "hex editor",
+        "hex edit",
+        "binary editor"
+      ],
+      "note": "あえて機能を絞ったエディターです。バイナリテンプレートもスクリプトもなく、バイトの挿入や削除もできません。ファイルサイズを変えないその場の修正だけです。既定では結果を新しいファイルに保存します。"
+    },
+    "folder-backup": {
+      "name": "フォルダーをバックアップ",
+      "description": "ハッシュのマニフェスト付きでフォルダーをコピーし、あとで検証・復元できるようにします。",
+      "keywords": [
+        "バックアップ",
+        "コピー",
+        "保存",
+        "書類をアーカイブ",
+        "再インストール前",
+        "外付けディスク",
+        "ファイルを守る"
+      ],
+      "aliases": [
+        "backup folder",
+        "create backup"
+      ],
+      "note": "透明な形式：フォルダー構成をそのまま再現した「donnees」フォルダーと、読みやすい「manifeste.json」。独自のコンテナーは使わないため、FourTout がなくてもファイルにアクセスできます。世代管理型のバックアップではなく、毎回日付入りの完全なコピーです。"
+    },
+    "folder-restore": {
+      "name": "バックアップを復元",
+      "description": "FourTout のバックアップを検証し、選んでいないものを上書きせずに元に戻します。",
+      "keywords": [
+        "復元",
+        "バックアップを戻す",
+        "ファイルを戻す",
+        "restore",
+        "元に戻す",
+        "バックアップを検証"
+      ],
+      "aliases": [
+        "restore backup",
+        "verify backup"
+      ],
+      "note": "書き込みの前に整合性を検証します。バックアップ内の破損したファイルは名前を示し、黙って復元することはありません。復元でコピー先のものを削除することはありません。"
+    },
+    "checksum-manifest": {
+      "name": "ハッシュマニフェストを作成",
+      "description": "フォルダー内の全ファイルのハッシュを記した .sha256 ファイルを作ります。",
+      "keywords": [
+        "マニフェスト",
+        "チェックサム",
+        "sha256sum",
+        "ハッシュ一覧",
+        "書き込み前",
+        "送信前",
+        "整合性チェック",
+        "sfv"
+      ],
+      "aliases": [
+        "checksum manifest",
+        "create checksums",
+        "sha256sum"
+      ],
+      "note": "出力形式は sha256sum と同じで、どのコンピューターでもシステムのツールで検証できます。古いハッシュの検証用に MD5 と SHA-1 も選べますが、セキュリティ用途には不適と表示されます。"
+    },
+    "checksum-verify": {
+      "name": "ハッシュマニフェストを検証",
+      "description": "フォルダーをチェックサムファイルと照合し、ファイルごとに無傷・変更・欠落・読み取り不可を示します。",
+      "keywords": [
+        "チェックサム検証",
+        "マニフェストを確認",
+        "sha256sum -c",
+        "ファイルは変わったか",
+        "フォルダーの整合性",
+        "ビット腐敗"
+      ],
+      "aliases": [
+        "verify checksums",
+        "check manifest",
+        "sha256sum -c"
+      ],
+      "note": "マニフェストは命令ではなくデータです。検証対象フォルダーの外に出るエントリー（「../」、絶対パス）は拒否して一覧表示し、決してたどりません。"
+    },
+    "hmac": {
+      "name": "HMAC を計算",
+      "description": "テキストやファイルに秘密鍵で HMAC-SHA-256 または SHA-512 の署名を付けます。",
+      "keywords": [
+        "hmac",
+        "署名",
+        "秘密鍵",
+        "webhook",
+        "api",
+        "認証",
+        "リクエストに署名",
+        "メッセージ認証コード"
+      ],
+      "aliases": [
+        "hmac",
+        "message authentication code"
+      ],
+      "note": "鍵は保存も記録もされず、最近使用にも追加されません。計算に使ったら消えます。ツールを離れるとすぐに画面からも消去されます。"
+    },
+    "file-compress": {
+      "name": "ファイルを圧縮（GZ、XZ）",
+      "description": "1 つのファイルを、アーカイブにせずに .gz または .xz に圧縮します。",
+      "keywords": [
+        "gzip",
+        "gz",
+        "xz",
+        "ファイルを圧縮",
+        "lzma",
+        "ファイルを小さく",
+        "圧縮",
+        "大きなログ"
+      ],
+      "aliases": [
+        "gzip",
+        "xz compress",
+        "compress file"
+      ],
+      "note": "「.gz」と「.xz」には 1 つのファイルしか入らず、フォルダー名や構成は含まれません。複数のファイルを構成ごと圧縮するには、「アーカイブを作成」で TAR.GZ または TAR.XZ を使ってください。"
+    },
+    "file-decompress": {
+      "name": "ファイルを展開（GZ、XZ）",
+      "description": ".gz や .xz から元のファイルを取り出します。",
+      "keywords": [
+        "gunzip",
+        "unxz",
+        ".gz を開く",
+        ".xz を開く",
+        "gz を展開",
+        "gz を解凍",
+        "xz を解凍"
+      ],
+      "aliases": [
+        "gunzip",
+        "unxz",
+        "decompress file"
+      ],
+      "note": "「.tar.gz」にはフォルダー構成が含まれます。それを復元できる「アーカイブを展開」を使ってください。ここでは .tar.gz から .tar が得られるだけです。"
+    },
+    "archive-inspect": {
+      "name": "アーカイブを調べる",
+      "description": "展開せずにアーカイブの中身を一覧表示：パス、サイズ、圧縮率、疑わしいエントリー。",
+      "keywords": [
+        "zip の中身を見る",
+        "アーカイブの一覧",
+        "展開せずに",
+        "中に何があるか",
+        "zip を調べる",
+        "7z の中身",
+        "アーカイブを閲覧"
+      ],
+      "aliases": [
+        "inspect archive",
+        "list archive",
+        "browse archive"
+      ],
+      "note": "何も展開しません。読むのはアーカイブの目次だけです。展開先フォルダーの外に出るパスのエントリーは、展開を考える前から指摘されます。"
+    },
+    "archive-test": {
+      "name": "アーカイブをテスト",
+      "description": "ディスクに何も書き込まずに完全に展開し、アーカイブが無傷かどうかを確認します。",
+      "keywords": [
+        "アーカイブテスト",
+        "壊れたアーカイブ",
+        "破損した zip",
+        "zip を確認",
+        "不完全なダウンロード",
+        "アーカイブの整合性",
+        "crc"
+      ],
+      "aliases": [
+        "test archive",
+        "verify archive",
+        "check archive"
+      ],
+      "note": "内容を実際に展開し、チェックサムを検証します。一覧表示だけではヘッダーしか読まないため何も証明できません。何も書き込まず、バイトは数えて捨てます。"
+    },
+    "universal-converter": {
+      "name": "万能コンバーター",
+      "description": "ファイルをドロップすると、FourTout が対応する形式への変換候補を示します。",
+      "keywords": [
+        "変換",
+        "コンバーター",
+        "形式を変更",
+        "どんなファイルでも",
+        "どの形式",
+        "convert"
+      ],
+      "aliases": [
+        "universal converter",
+        "convert anything",
+        "file converter"
+      ],
+      "note": "提示される変換は、レジストリーのツールが宣言する入力と出力から導かれます。別の表を管理する必要はなく、ツールのない変換が表示されることもありません。"
+    },
+    "json-tools": {
+      "name": "JSON — 整形と検証",
+      "description": "JSON をインデント・最小化し、正確なエラーメッセージ付きで検証します。",
+      "keywords": [
+        "json",
+        "整形",
+        "インデント",
+        "検証",
+        "prettify",
+        "最小化",
+        "パース"
+      ],
+      "aliases": [
+        "json formatter",
+        "json validator",
+        "json beautifier",
+        "prettify json"
+      ]
+    },
+    "xml-format": {
+      "name": "XML — 整形",
+      "description": "XML 文書をインデントして検証します。",
+      "keywords": [
+        "xml",
+        "整形",
+        "インデント",
+        "検証",
+        "タグ"
+      ],
+      "aliases": [
+        "xml formatter",
+        "xml beautifier"
+      ]
+    },
+    "yaml-format": {
+      "name": "YAML — 整形と変換",
+      "description": "YAML を整形し、JSON との相互変換を行います。",
+      "keywords": [
+        "yaml",
+        "yml",
+        "整形",
+        "yaml を json に",
+        "json を yaml に",
+        "設定ファイル"
+      ],
+      "aliases": [
+        "yaml formatter",
+        "yaml to json",
+        "json to yaml"
+      ]
+    },
+    "sql-format": {
+      "name": "SQL — 整形",
+      "description": "詰まった SQL や自動生成された SQL を読みやすくします。",
+      "keywords": [
+        "sql",
+        "クエリ",
+        "整形",
+        "インデント",
+        "読みやすく",
+        "query"
+      ],
+      "aliases": [
+        "sql formatter",
+        "sql beautifier"
+      ]
+    },
+    "base64": {
+      "name": "Base64 — エンコードとデコード",
+      "description": "テキストを Base64 に、またその逆に変換します（base64url にも対応）。",
+      "keywords": [
+        "base64",
+        "エンコード",
+        "デコード",
+        "b64",
+        "符号化",
+        "data uri"
+      ],
+      "aliases": [
+        "base64 encode",
+        "base64 decode",
+        "b64"
+      ]
+    },
+    "url-encode": {
+      "name": "URL — エンコードとデコード",
+      "description": "URL とそのパラメーターをエンコード・デコードします（パーセントエンコーディング）。",
+      "keywords": [
+        "url",
+        "エンコード",
+        "デコード",
+        "パーセントエンコーディング",
+        "クエリ文字列",
+        "特殊文字"
+      ],
+      "aliases": [
+        "url encode",
+        "url decode",
+        "uri encode"
+      ]
+    },
+    "jwt-decode": {
+      "name": "JWT — デコード",
+      "description": "JWT トークンのヘッダーとペイロードを、どこにも送らずに読み取ります。",
+      "keywords": [
+        "jwt",
+        "トークン",
+        "デコード",
+        "bearer",
+        "ペイロード",
+        "クレーム"
+      ],
+      "aliases": [
+        "jwt decoder",
+        "decode token"
+      ],
+      "note": "トークンはローカルでデコードされ、コンピューターの外に出ることはありません。"
+    },
+    "uuid-generate": {
+      "name": "UUID を生成",
+      "description": "一意の v4 または v7 識別子を 1 つずつ、またはまとめて作成します。",
+      "keywords": [
+        "uuid",
+        "guid",
+        "一意の識別子",
+        "id を生成",
+        "v4",
+        "v7"
+      ],
+      "aliases": [
+        "uuid generator",
+        "guid generator"
+      ]
+    },
+    "regex-tester": {
+      "name": "正規表現テスター",
+      "description": "正規表現をリアルタイムで試し、一致とグループを確認します。",
+      "keywords": [
+        "regex",
+        "正規表現",
+        "テスト",
+        "一致",
+        "パターン",
+        "match"
+      ],
+      "aliases": [
+        "regex tester",
+        "regexp",
+        "regex101"
+      ]
+    },
+    "timestamp-convert": {
+      "name": "Unix タイムスタンプ",
+      "description": "タイムゾーンを考慮して、タイムスタンプと読みやすい日時を相互に変換します。",
+      "keywords": [
+        "タイムスタンプ",
+        "timestamp",
+        "unix",
+        "epoch",
+        "秒単位の日時",
+        "ミリ秒",
+        "日時を変換"
+      ],
+      "aliases": [
+        "unix timestamp",
+        "epoch converter"
+      ]
+    },
+    "hash-text": {
+      "name": "テキストのハッシュを生成",
+      "description": "文字列の MD5、SHA-1、SHA-256、SHA-512 を計算します。",
+      "keywords": [
+        "ハッシュ",
+        "md5",
+        "sha256",
+        "フィンガープリント",
+        "テキストをハッシュ化",
+        "ダイジェスト"
+      ],
+      "aliases": [
+        "hash generator",
+        "md5 text",
+        "sha256 text"
+      ]
+    },
+    "qr-generate": {
+      "name": "QR コードを生成",
+      "description": "URL、テキスト、連絡先、Wi-Fi ネットワークの QR コードを作成します。",
+      "keywords": [
+        "qr コード",
+        "qrcode",
+        "バーコード",
+        "qr を作る",
+        "wifi",
+        "vcard"
+      ],
+      "aliases": [
+        "qr code generator",
+        "make qr code"
+      ]
+    },
+    "qr-read": {
+      "name": "QR コードを読み取る",
+      "description": "画像やスクリーンショットから QR コードを読み取ります。",
+      "keywords": [
+        "qr を読む",
+        "スキャン",
+        "qr コードを読み取り",
+        "画像から qr"
+      ],
+      "aliases": [
+        "qr code reader",
+        "scan qr code",
+        "decode qr"
+      ]
+    },
+    "number-base-convert": {
+      "name": "16 進・10 進・2 進を変換",
+      "description": "2 進、8 進、10 進、16 進の間で変換します。",
+      "keywords": [
+        "16 進数",
+        "2 進数",
+        "10 進数",
+        "8 進数",
+        "基数 16",
+        "基数 2",
+        "数値を変換",
+        "hex"
+      ],
+      "aliases": [
+        "hex to decimal",
+        "binary converter",
+        "base converter"
+      ]
+    },
+    "code-diff": {
+      "name": "コードの差分",
+      "description": "2 つのコードブロックを比較し、追加と削除を強調表示します。",
+      "keywords": [
+        "差分",
+        "diff",
+        "コードを比較",
+        "違い",
+        "マージ",
+        "バージョン"
+      ],
+      "aliases": [
+        "code diff",
+        "compare code"
+      ]
+    },
+    "web-minify": {
+      "name": "HTML・CSS・JS を最小化",
+      "description": "空白とコメントを除いてコードのサイズを減らします。",
+      "keywords": [
+        "最小化",
+        "minify",
+        "コードを圧縮",
+        "小さくする",
+        "uglify",
+        "本番"
+      ],
+      "aliases": [
+        "minify",
+        "minify css",
+        "minify js",
+        "minify html"
+      ]
+    },
+    "web-beautify": {
+      "name": "HTML・CSS・JS を整形",
+      "description": "最小化された、または崩れたコードをインデントし直して読みやすくします。",
+      "keywords": [
+        "整形",
+        "インデント",
+        "beautify",
+        "prettify",
+        "読めないコード",
+        "再インデント"
+      ],
+      "aliases": [
+        "beautify",
+        "format code",
+        "prettify html"
+      ]
+    },
+    "cron-helper": {
+      "name": "cron アシスタント",
+      "description": "cron 式を組み立て、わかりやすい言葉で説明します。",
+      "keywords": [
+        "cron",
+        "crontab",
+        "スケジュール",
+        "定期実行",
+        "cron 式",
+        "schedule"
+      ],
+      "aliases": [
+        "cron generator",
+        "crontab helper",
+        "cron expression"
+      ]
+    },
+    "toml-format": {
+      "name": "TOML — 整形と検証",
+      "description": "TOML ファイルを検証し、標準的な形に書き直します。",
+      "keywords": [
+        "toml",
+        "整形",
+        "検証",
+        "設定ファイル",
+        "cargo",
+        "pyproject",
+        "インデント",
+        "構文エラー"
+      ],
+      "aliases": [
+        "toml formatter",
+        "toml validator",
+        "toml linter",
+        "format toml"
+      ],
+      "note": "再整形はデータから文書を組み立て直すため、コメントと元の記述順は失われます。検証だけなら何も変更しません。"
+    },
+    "base32": {
+      "name": "Base32 — エンコードとデコード",
+      "description": "RFC 4648 に従ってテキストを Base32 に、またその逆に変換します。",
+      "keywords": [
+        "base32",
+        "エンコード",
+        "デコード",
+        "rfc 4648",
+        "totp",
+        "符号化",
+        "パディング",
+        "アルファベット"
+      ],
+      "aliases": [
+        "base32 encode",
+        "base32 decode",
+        "b32"
+      ]
+    },
+    "sqlite-explorer": {
+      "name": "SQLite データベース — 閲覧",
+      "description": "SQLite データベースを読み取り専用で開きます：スキーマ、データ、クエリ、CSV 書き出し。",
+      "keywords": [
+        "sqlite",
+        "データベース",
+        "db",
+        "閲覧",
+        "スキーマ",
+        "テーブル",
+        "クエリ",
+        "select",
+        "sql",
+        "読み取り専用"
+      ],
+      "aliases": [
+        "sqlite browser",
+        "sqlite explorer",
+        "db browser",
+        "open sqlite"
+      ],
+      "note": "厳密に読み取り専用のエクスプローラーです。データベースは読み取り専用で開かれ、どのクエリも変更できません。"
+    },
+    "unit-length": {
+      "name": "単位換算 — 長さ",
+      "description": "メートル、キロメートル、マイル、フィート、インチ、海里。",
+      "keywords": [
+        "換算",
+        "変換",
+        "単位",
+        "長さ",
+        "距離",
+        "メートル",
+        "km",
+        "マイル",
+        "インチ",
+        "フィート",
+        "センチ"
+      ],
+      "aliases": [
+        "length converter",
+        "cm to inches",
+        "km to miles"
+      ]
+    },
+    "unit-weight": {
+      "name": "単位換算 — 重さ・質量",
+      "description": "グラム、キログラム、トン、ポンド、オンス。",
+      "keywords": [
+        "換算",
+        "変換",
+        "単位",
+        "重さ",
+        "質量",
+        "キロ",
+        "グラム",
+        "ポンド",
+        "オンス",
+        "トン",
+        "lbs"
+      ],
+      "aliases": [
+        "weight converter",
+        "kg to lbs",
+        "pounds to kg"
+      ]
+    },
+    "unit-temperature": {
+      "name": "単位換算 — 温度",
+      "description": "摂氏、華氏、ケルビン。",
+      "keywords": [
+        "換算",
+        "変換",
+        "単位",
+        "温度",
+        "摂氏",
+        "華氏",
+        "ケルビン",
+        "度",
+        "°c",
+        "°f"
+      ],
+      "aliases": [
+        "temperature converter",
+        "celsius to fahrenheit"
+      ]
+    },
+    "unit-volume": {
+      "name": "単位換算 — 体積",
+      "description": "リットル、ミリリットル、ガロン、パイント、カップ、スプーン。",
+      "keywords": [
+        "換算",
+        "変換",
+        "単位",
+        "体積",
+        "容量",
+        "リットル",
+        "ml",
+        "ガロン",
+        "パイント",
+        "カップ",
+        "大さじ",
+        "レシピ"
+      ],
+      "aliases": [
+        "volume converter",
+        "cups to ml",
+        "gallons to liters"
+      ]
+    },
+    "unit-area": {
+      "name": "単位換算 — 面積",
+      "description": "平方メートル、ヘクタール、エーカー、平方フィート。",
+      "keywords": [
+        "換算",
+        "変換",
+        "単位",
+        "面積",
+        "m2",
+        "平方メートル",
+        "ヘクタール",
+        "エーカー",
+        "坪",
+        "土地"
+      ],
+      "aliases": [
+        "area converter",
+        "sqft to m2"
+      ]
+    },
+    "unit-speed": {
+      "name": "単位換算 — 速度",
+      "description": "km/h、m/s、mph、ノット。",
+      "keywords": [
+        "換算",
+        "変換",
+        "単位",
+        "速度",
+        "km/h",
+        "時速",
+        "mph",
+        "m/s",
+        "ノット"
+      ],
+      "aliases": [
+        "speed converter",
+        "kmh to mph"
+      ]
+    },
+    "unit-pressure": {
+      "name": "単位換算 — 圧力",
+      "description": "パスカル、バール、PSI、気圧、mmHg。",
+      "keywords": [
+        "換算",
+        "変換",
+        "単位",
+        "圧力",
+        "バール",
+        "psi",
+        "パスカル",
+        "気圧",
+        "タイヤ"
+      ],
+      "aliases": [
+        "pressure converter",
+        "bar to psi"
+      ]
+    },
+    "unit-energy": {
+      "name": "単位換算 — エネルギー",
+      "description": "ジュール、カロリー、kWh、BTU。",
+      "keywords": [
+        "換算",
+        "変換",
+        "単位",
+        "エネルギー",
+        "ジュール",
+        "カロリー",
+        "kwh",
+        "btu",
+        "kcal"
+      ],
+      "aliases": [
+        "energy converter",
+        "kwh to joules"
+      ]
+    },
+    "unit-power": {
+      "name": "単位換算 — 仕事率",
+      "description": "ワット、キロワット、馬力。",
+      "keywords": [
+        "換算",
+        "変換",
+        "単位",
+        "仕事率",
+        "出力",
+        "ワット",
+        "kw",
+        "キロワット",
+        "馬力",
+        "hp"
+      ],
+      "aliases": [
+        "power converter",
+        "watts to hp",
+        "kw to hp"
+      ]
+    },
+    "unit-data": {
+      "name": "単位換算 — データ量",
+      "description": "バイト、KB、MB、GB、TB と、その 2 進の単位（KiB、MiB）。",
+      "keywords": [
+        "換算",
+        "変換",
+        "単位",
+        "バイト",
+        "mb",
+        "gb",
+        "tb",
+        "メガバイト",
+        "ギガバイト",
+        "ビット",
+        "kib",
+        "mib"
+      ],
+      "aliases": [
+        "data converter",
+        "mb to gb",
+        "bytes converter"
+      ]
+    },
+    "calc-percentage": {
+      "name": "パーセント計算",
+      "description": "数値の何パーセント、増減率、割引、消費税、全体に占める割合。",
+      "keywords": [
+        "パーセント",
+        "%",
+        "割引",
+        "値引き",
+        "消費税",
+        "増加",
+        "増減",
+        "セール計算",
+        "値上げ",
+        "値下げ"
+      ],
+      "aliases": [
+        "percentage calculator",
+        "percent change",
+        "discount calculator"
+      ]
+    },
+    "calc-proportion": {
+      "name": "比例計算",
+      "description": "比例式を解きます：A が B なら、C はいくつ？",
+      "keywords": [
+        "比例",
+        "比",
+        "たすき掛け",
+        "割合",
+        "縮尺"
+      ],
+      "aliases": [
+        "rule of three",
+        "cross multiplication",
+        "proportion calculator"
+      ]
+    },
+    "calc-date-difference": {
+      "name": "日付の計算",
+      "description": "2 つの日付の間の日数を求め、期間を足したり引いたりします。",
+      "keywords": [
+        "日付",
+        "何日間",
+        "日数",
+        "日数を足す",
+        "営業日",
+        "期日",
+        "期限"
+      ],
+      "aliases": [
+        "date calculator",
+        "days between dates",
+        "date difference"
+      ]
+    },
+    "calc-duration": {
+      "name": "時間の計算",
+      "description": "時・分・秒を足したり引いたりします。",
+      "keywords": [
+        "時間",
+        "時",
+        "分",
+        "時間を足す",
+        "勤務時間",
+        "hh:mm"
+      ],
+      "aliases": [
+        "duration calculator",
+        "time calculator",
+        "add hours"
+      ]
+    },
+    "calc-age": {
+      "name": "年齢を計算",
+      "description": "生年月日から、年・月・日単位の正確な年齢を求めます。",
+      "keywords": [
+        "年齢",
+        "生年月日",
+        "何歳",
+        "誕生日",
+        "年"
+      ],
+      "aliases": [
+        "age calculator",
+        "how old"
+      ]
+    },
+    "calc-scientific": {
+      "name": "関数電卓",
+      "description": "高度な計算：累乗、平方根、三角関数、対数。",
+      "keywords": [
+        "電卓",
+        "関数電卓",
+        "平方根",
+        "累乗",
+        "三角関数",
+        "対数",
+        "sin",
+        "cos",
+        "計算"
+      ],
+      "aliases": [
+        "scientific calculator",
+        "calculator"
+      ]
+    },
+    "calc-currency": {
+      "name": "通貨換算",
+      "description": "最新のレートで金額を通貨間で換算します。",
+      "keywords": [
+        "通貨",
+        "円",
+        "ユーロ",
+        "ドル",
+        "為替",
+        "レート",
+        "お金",
+        "円に換算"
+      ],
+      "aliases": [
+        "currency converter",
+        "eur to usd",
+        "exchange rate"
+      ],
+      "note": "インターネットが必要な唯一の FourTout ツールで、使うのは当日のレートの取得だけです。オフラインのときは最後に取得したレートを使います。"
+    },
+    "calc-timezone": {
+      "name": "タイムゾーンを変換",
+      "description": "夏時間も考慮して、現地時刻を別の地域の時刻に変換します。",
+      "keywords": [
+        "タイムゾーン",
+        "時差",
+        "timezone",
+        "時刻",
+        "utc",
+        "gmt",
+        "東京 パリの時刻",
+        "ニューヨークの時刻",
+        "夏時間",
+        "dst"
+      ],
+      "aliases": [
+        "timezone converter",
+        "time zone",
+        "convert time",
+        "world clock"
+      ],
+      "note": "時差は、指定した日付についてシステムのタイムゾーンデータベースから取得します。時刻の切り替えも反映され、あいまいな時刻や存在しない時刻は指摘されます。"
+    },
+    "calc-bandwidth": {
+      "name": "帯域幅を計算",
+      "description": "転送したデータ量と時間から平均速度を求めます。",
+      "keywords": [
+        "帯域幅",
+        "通信速度",
+        "速度",
+        "bandwidth",
+        "mbps",
+        "毎秒 mb",
+        "ビット",
+        "バイト",
+        "回線"
+      ],
+      "aliases": [
+        "bandwidth calculator",
+        "throughput",
+        "data rate"
+      ]
+    },
+    "calc-transfer-time": {
+      "name": "転送時間を計算",
+      "description": "サイズと速度から転送にかかる時間を見積もります。",
+      "keywords": [
+        "転送時間",
+        "所要時間",
+        "ダウンロード",
+        "アップロード",
+        "転送",
+        "どのくらいかかる",
+        "速度",
+        "サイズ",
+        "eta"
+      ],
+      "aliases": [
+        "transfer time",
+        "download time",
+        "upload time"
+      ],
+      "note": "理論値の計算です：サイズ ÷ 速度。プロトコルのオーバーヘッド、遅延、混雑は考慮しないため、実際の転送は常にこれより長くかかります。"
+    },
+    "calc-interest": {
+      "name": "利息を計算",
+      "description": "単利または複利の計算。定期的な積み立ても指定できます。",
+      "keywords": [
+        "利息",
+        "複利",
+        "単利",
+        "利回り",
+        "貯蓄",
+        "投資",
+        "金利",
+        "運用",
+        "預金"
+      ],
+      "aliases": [
+        "compound interest",
+        "simple interest",
+        "savings calculator"
+      ],
+      "note": "数学的なツールであり、金融アドバイスではありません。税金、インフレ、手数料は考慮しません。"
+    },
+    "network-ping": {
+      "name": "Ping",
+      "description": "ホストが応答するかどうかと、その応答時間を測定します。",
+      "keywords": [
+        "ping",
+        "ピング",
+        "遅延",
+        "レイテンシー",
+        "icmp",
+        "応答",
+        "到達可能",
+        "パケットロス",
+        "応答時間",
+        "診断"
+      ],
+      "aliases": [
+        "ping",
+        "icmp echo",
+        "latency test"
+      ],
+      "note": "実際の ICMP パケットを送ります（既定では 4 回）。システムが ICMP ソケットを拒否した場合は、別のものを測る代わりにその旨を伝えます。"
+    },
+    "network-ports": {
+      "name": "ポートを確認",
+      "description": "ホストのどの TCP ポートが接続を受け付けるかを確認します。",
+      "keywords": [
+        "ポート",
+        "tcp",
+        "ポート確認",
+        "開いているポート",
+        "閉じているポート",
+        "接続",
+        "ファイアウォール",
+        "サービス",
+        "待ち受け"
+      ],
+      "aliases": [
+        "port check",
+        "port test",
+        "tcp connect",
+        "is port open"
+      ],
+      "note": "1 台のホストに対し、1 回あたり最大 256 ポートを、通常の TCP 接続で確認します。スキャナーではありません：隠密性も、サービス検出も、脆弱性探索もありません。"
+    },
+    "network-lan": {
+      "name": "ローカルネットワークの機器を検出",
+      "description": "サブネット上で応答する機器を一覧表示します。",
+      "keywords": [
+        "ローカルネットワーク",
+        "lan",
+        "機器",
+        "デバイス",
+        "ローカルネットワークをスキャン",
+        "検出",
+        "プリンター",
+        "ip アドレス",
+        "mac"
+      ],
+      "aliases": [
+        "lan discovery",
+        "network scan",
+        "find devices",
+        "arp table"
+      ],
+      "note": "直接接続しているサブネットの 256 アドレスまでに限定されます。送信前に正確な範囲を表示し、確認なしには何も送りません。"
+    },
+    "file-diagnose": {
+      "name": "ファイルを診断",
+      "description": "ファイルが本当は何なのか、何が欠けているのかを把握します。",
+      "keywords": [
+        "ファイル診断",
+        "壊れたファイル",
+        "破損ファイル",
+        "読めないファイル",
+        "ファイルの種類",
+        "拡張子",
+        "途中で切れた",
+        "シグネチャ",
+        "分析"
+      ],
+      "aliases": [
+        "file diagnosis",
+        "corrupt file",
+        "file check",
+        "inspect file"
+      ],
+      "note": "元のファイルが変更されることはありません。FourTout は ZIP、PDF、PNG、JPEG の内部構造を分析し、それ以外の形式についてはそのことを率直に伝えます。"
+    },
+    "archive-repair": {
+      "name": "破損した ZIP アーカイブ",
+      "description": "読めないアーカイブを診断し、まだ残っている中身を救出します。",
+      "keywords": [
+        "zip 修復",
+        "壊れた zip",
+        "破損した zip",
+        "破損アーカイブ",
+        "アーカイブを復旧",
+        "読めないアーカイブ",
+        "セントラルディレクトリ",
+        "とにかく展開"
+      ],
+      "aliases": [
+        "repair zip",
+        "recover zip",
+        "broken archive",
+        "zip repair"
+      ],
+      "note": "セントラルディレクトリがなくても、ローカルヘッダーを走査して復旧します。データが途中で切れているエントリーは失われたものと報告し、再構成はしません。元のアーカイブには手を加えません。"
+    },
+    "pdf-repair": {
+      "name": "破損した PDF",
+      "description": "読めない PDF を診断し、証明できる場合に修復します。",
+      "keywords": [
+        "pdf 修復",
+        "壊れた pdf",
+        "破損した pdf",
+        "読めない pdf",
+        "pdf xref",
+        "startxref",
+        "途中で切れた pdf",
+        "pdf を再構築"
+      ],
+      "aliases": [
+        "repair pdf",
+        "fix pdf",
+        "broken pdf",
+        "pdf recovery"
+      ],
+      "note": "作成した各ファイルは PDF エンジンで開き直してページ数を数えます。エンジンが受け付けない場合は修復失敗として、そのファイルを削除します。書き直すとデジタル署名はすべて無効になります。"
+    },
+    "image-repair": {
+      "name": "破損した画像",
+      "description": "破損した PNG や JPEG を診断し、読み取れるピクセルを救出します。",
+      "keywords": [
+        "画像を復旧",
+        "壊れた画像",
+        "破損した jpeg",
+        "破損した png",
+        "壊れた写真",
+        "読めない画像",
+        "途中で切れた画像",
+        "png crc"
+      ],
+      "aliases": [
+        "repair image",
+        "recover photo",
+        "broken jpeg",
+        "png repair"
+      ],
+      "note": "誤ったチェックサムを計算し直すことはなく、途中で切れた画像の欠けた行をでっち上げることもありません。見た目の復旧ではデコードしたピクセルを再エンコードするため、救えるのは画像であってファイルではありません。"
+    },
+    "disk-inspect": {
+      "name": "ディスクとパーティションを調べる",
+      "description": "システムのディスク、パーティション、ボリューム、健康状態の指標を表示します。",
+      "keywords": [
+        "ディスク",
+        "ドライブ",
+        "パーティション",
+        "ファイルシステム",
+        "ディスク容量",
+        "ボリューム",
+        "smart",
+        "ディスクの健康状態",
+        "ssd",
+        "nvme",
+        "usb",
+        "マウント"
+      ],
+      "aliases": [
+        "disk info",
+        "partitions",
+        "smart health",
+        "drive inspector",
+        "storage"
+      ],
+      "note": "例外なく読み取り専用です。FourTout はディスクのパーティション分割、フォーマット、マウント、クローン、消去はできません。詳細な健康状態の指標は、FourTout に同梱されていない `smartctl` に依存します。"
+    },
+    "password-generate": {
+      "name": "パスワードを生成",
+      "description": "強力なパスワードや覚えやすいパスフレーズを作ります。",
+      "keywords": [
+        "パスワード",
+        "生成",
+        "ランダム",
+        "安全",
+        "パスフレーズ",
+        "強いパスワード",
+        "パスワードを作る"
+      ],
+      "aliases": [
+        "password generator",
+        "generate password",
+        "passphrase"
+      ]
+    },
+    "password-strength": {
+      "name": "パスワードの強度を確認",
+      "description": "パスワードを破るのにかかる時間をオフラインで見積もります。",
+      "keywords": [
+        "強度",
+        "強いパスワード",
+        "セキュリティ",
+        "このパスワードは安全",
+        "エントロピー",
+        "パスワードを確認"
+      ],
+      "aliases": [
+        "password strength",
+        "password checker"
+      ],
+      "note": "分析は完全にローカルで行われ、入力したパスワードが送信されることはありません。"
+    },
+    "file-encrypt": {
+      "name": "ファイルを暗号化",
+      "description": "最新の暗号方式でファイルをパスワード保護します。",
+      "keywords": [
+        "暗号化",
+        "保護",
+        "パスワード",
+        "aes",
+        "機密",
+        "ファイルを守る"
+      ],
+      "aliases": [
+        "encrypt file",
+        "file encryption",
+        "aes encrypt"
+      ]
+    },
+    "file-decrypt": {
+      "name": "ファイルを復号",
+      "description": "FourTout で暗号化したファイルの内容を取り戻します。",
+      "keywords": [
+        "復号",
+        "暗号化されたファイルを開く",
+        "元に戻す"
+      ],
+      "aliases": [
+        "decrypt file",
+        "file decryption"
+      ]
+    },
+    "metadata-strip-any": {
+      "name": "ファイルのメタデータを削除",
+      "description": "文書を共有する前に、作成者、日付、機器、位置情報を消去します。",
+      "keywords": [
+        "メタデータ",
+        "匿名化",
+        "共有前",
+        "プライバシー",
+        "作成者を削除",
+        "痕跡",
+        "文書をきれいに"
+      ],
+      "aliases": [
+        "strip metadata",
+        "remove metadata",
+        "anonymize file"
+      ]
+    }
+  }
+}

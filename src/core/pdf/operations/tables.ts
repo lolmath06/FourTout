@@ -5,6 +5,7 @@ import { outputName } from "../filenames";
 import { toCsvBytes, type CsvDelimiter } from "@/core/text/csv";
 import { createXlsx } from "@/core/files/xlsx";
 import type { OperationContext, OutputFile, PdfSource } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Extraction des tableaux d'un PDF.
@@ -286,7 +287,7 @@ export async function extractTables(
 
     for (const [index, pageNumber] of targets.entries()) {
       throwIfCancelled(context);
-      report(context, index / targets.length, `Page ${pageNumber} sur ${targets.length}`);
+      report(context, index / targets.length, t("Page {pageNumber} sur {count}", { pageNumber, count: targets.length }));
 
       const page = await document.getPage(pageNumber);
       const content = await page.getTextContent();
@@ -303,12 +304,12 @@ export async function extractTables(
     await document.loadingTask?.destroy();
   }
 
-  report(context, 1, "Terminé");
+  report(context, 1, t("Terminé"));
 
   if (tables.length === 0) {
     throw new PdfError(
       "table-not-found",
-      "Aucun alignement en colonnes n'a été reconnu. Un tableau enregistré comme image demande d'abord un PDF recherchable.",
+      t("Aucun alignement en colonnes n'a été reconnu. Un tableau enregistré comme image demande d'abord un PDF recherchable."),
     );
   }
 
@@ -350,7 +351,7 @@ export function tablesToXlsxFile(
     name: outputName(sourceName, "tableaux", "xlsx"),
     bytes: createXlsx(
       tables.map((table) => ({
-        name: `Page ${table.page} (${table.index})`,
+        name: t("Page {page} ({index})", { page: table.page, index: table.index }),
         rows: table.rows,
       })),
     ),

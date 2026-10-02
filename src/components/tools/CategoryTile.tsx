@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { categoryDescription, categoryName } from "@/core/tools/localized";
 import { categoryRoute, type CategoryDefinition } from "@/core/tools/types";
 import { Icon } from "@/components/ui/Icon";
+
 
 /**
  * Tuile de catégorie.
@@ -31,11 +33,11 @@ export function CategoryTile({
         <span className="shrink-0 text-[var(--ft-cat)]">
           <Icon name={category.icon} size={15} />
         </span>
-        <span className="ft-title min-w-0 flex-1 truncate">{category.name}</span>
+        <span className="ft-title min-w-0 flex-1 truncate">{categoryName(category)}</span>
         <span className="ft-num shrink-0 text-[11.5px] text-[var(--ft-text-faint)]">{count}</span>
       </div>
       <p className="mt-auto line-clamp-2 text-[11.5px] leading-4 text-[var(--ft-text-muted)]">
-        {category.description}
+        {categoryDescription(category)}
       </p>
     </Link>
   );

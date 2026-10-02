@@ -15,6 +15,7 @@
  *    vaudrait 0 °F.
  */
 
+import { localizeNumberString, localized, numberSeparators, t } from "@/i18n";
 export type DimensionId =
   | "length"
   | "mass"
@@ -71,17 +72,17 @@ const CALORIE_J = 4.184;
 /** BTU (International Table), la définition la plus courante. */
 const BTU_J = 1055.05585262;
 
-export const DIMENSIONS: Dimension[] = [
+export const DIMENSIONS: Dimension[] = localized(() => [
   {
     id: "length",
-    name: "Longueurs",
+    name: t("Longueurs"),
     base: "m",
     defaults: ["km", "mi"],
     units: [
-      { id: "mm", symbol: "mm", name: "millimètre", factor: 0.001 },
-      { id: "cm", symbol: "cm", name: "centimètre", factor: 0.01 },
-      { id: "m", symbol: "m", name: "mètre", factor: 1 },
-      { id: "km", symbol: "km", name: "kilomètre", factor: 1000 },
+      { id: "mm", symbol: "mm", name: t("millimètre"), factor: 0.001 },
+      { id: "cm", symbol: "cm", name: t("centimètre"), factor: 0.01 },
+      { id: "m", symbol: "m", name: t("mètre"), factor: 1 },
+      { id: "km", symbol: "km", name: t("kilomètre"), factor: 1000 },
       { id: "in", symbol: "in", name: "pouce", factor: INCH_M },
       { id: "ft", symbol: "ft", name: "pied", factor: FOOT_M },
       { id: "yd", symbol: "yd", name: "yard", factor: YARD_M },
@@ -89,15 +90,15 @@ export const DIMENSIONS: Dimension[] = [
       {
         id: "nmi",
         symbol: "nmi",
-        name: "mille marin",
+        name: t("mille marin"),
         factor: NAUTICAL_MILE_M,
-        note: "1 852 m exactement",
+        note: t("1 852 m exactement"),
       },
     ],
   },
   {
     id: "mass",
-    name: "Poids et masses",
+    name: t("Poids et masses"),
     base: "kg",
     defaults: ["kg", "lb"],
     units: [
@@ -105,28 +106,28 @@ export const DIMENSIONS: Dimension[] = [
       { id: "g", symbol: "g", name: "gramme", factor: 0.001 },
       { id: "kg", symbol: "kg", name: "kilogramme", factor: 1 },
       { id: "t", symbol: "t", name: "tonne", factor: 1000 },
-      { id: "oz", symbol: "oz", name: "once", factor: OUNCE_KG, note: "once avoirdupois" },
+      { id: "oz", symbol: "oz", name: "once", factor: OUNCE_KG, note: t("once avoirdupois") },
       { id: "lb", symbol: "lb", name: "livre", factor: POUND_KG },
       { id: "st", symbol: "st", name: "stone", factor: POUND_KG * 14 },
     ],
   },
   {
     id: "temperature",
-    name: "Températures",
+    name: t("Températures"),
     base: "K",
     defaults: ["C", "F"],
     units: [
       {
         id: "C",
         symbol: "°C",
-        name: "degré Celsius",
+        name: t("degré Celsius"),
         toBase: (v) => v + 273.15,
         fromBase: (v) => v - 273.15,
       },
       {
         id: "F",
         symbol: "°F",
-        name: "degré Fahrenheit",
+        name: t("degré Fahrenheit"),
         toBase: (v) => ((v - 32) * 5) / 9 + 273.15,
         fromBase: (v) => ((v - 273.15) * 9) / 5 + 32,
       },
@@ -135,24 +136,24 @@ export const DIMENSIONS: Dimension[] = [
   },
   {
     id: "volume",
-    name: "Volumes",
+    name: t("Volumes"),
     base: "L",
     defaults: ["L", "gal"],
     units: [
       { id: "mL", symbol: "mL", name: "millilitre", factor: 0.001 },
       { id: "cL", symbol: "cL", name: "centilitre", factor: 0.01 },
       { id: "L", symbol: "L", name: "litre", factor: 1 },
-      { id: "m3", symbol: "m³", name: "mètre cube", factor: 1000 },
-      { id: "tsp", symbol: "tsp", name: "cuillère à café (US)", factor: GALLON_US_L / 768 },
-      { id: "tbsp", symbol: "tbsp", name: "cuillère à soupe (US)", factor: GALLON_US_L / 256 },
-      { id: "floz", symbol: "fl oz", name: "once liquide (US)", factor: GALLON_US_L / 128 },
-      { id: "cup", symbol: "cup", name: "tasse (US)", factor: GALLON_US_L / 16 },
-      { id: "pt", symbol: "pt", name: "pinte (US)", factor: GALLON_US_L / 8 },
-      { id: "gal", symbol: "gal", name: "gallon (US)", factor: GALLON_US_L, note: "231 in³" },
+      { id: "m3", symbol: "m³", name: t("mètre cube"), factor: 1000 },
+      { id: "tsp", symbol: "tsp", name: t("cuillère à café (US)"), factor: GALLON_US_L / 768 },
+      { id: "tbsp", symbol: "tbsp", name: t("cuillère à soupe (US)"), factor: GALLON_US_L / 256 },
+      { id: "floz", symbol: "fl oz", name: t("once liquide (US)"), factor: GALLON_US_L / 128 },
+      { id: "cup", symbol: "cup", name: t("tasse (US)"), factor: GALLON_US_L / 16 },
+      { id: "pt", symbol: "pt", name: t("pinte (US)"), factor: GALLON_US_L / 8 },
+      { id: "gal", symbol: "gal", name: t("gallon (US)"), factor: GALLON_US_L, note: t("231 in³") },
       {
         id: "galimp",
         symbol: "gal imp",
-        name: "gallon (impérial)",
+        name: t("gallon (impérial)"),
         factor: GALLON_IMP_L,
         note: "4,546 09 L",
       },
@@ -160,35 +161,35 @@ export const DIMENSIONS: Dimension[] = [
   },
   {
     id: "area",
-    name: "Surfaces",
+    name: t("Surfaces"),
     base: "m2",
     defaults: ["m2", "ft2"],
     units: [
-      { id: "mm2", symbol: "mm²", name: "millimètre carré", factor: 1e-6 },
-      { id: "cm2", symbol: "cm²", name: "centimètre carré", factor: 1e-4 },
-      { id: "m2", symbol: "m²", name: "mètre carré", factor: 1 },
+      { id: "mm2", symbol: "mm²", name: t("millimètre carré"), factor: 1e-6 },
+      { id: "cm2", symbol: "cm²", name: t("centimètre carré"), factor: 1e-4 },
+      { id: "m2", symbol: "m²", name: t("mètre carré"), factor: 1 },
       { id: "ha", symbol: "ha", name: "hectare", factor: 10_000 },
-      { id: "km2", symbol: "km²", name: "kilomètre carré", factor: 1e6 },
-      { id: "in2", symbol: "in²", name: "pouce carré", factor: INCH_M ** 2 },
-      { id: "ft2", symbol: "ft²", name: "pied carré", factor: FOOT_M ** 2 },
-      { id: "ac", symbol: "ac", name: "acre", factor: FOOT_M ** 2 * 43_560, note: "43 560 ft²" },
+      { id: "km2", symbol: "km²", name: t("kilomètre carré"), factor: 1e6 },
+      { id: "in2", symbol: "in²", name: t("pouce carré"), factor: INCH_M ** 2 },
+      { id: "ft2", symbol: "ft²", name: t("pied carré"), factor: FOOT_M ** 2 },
+      { id: "ac", symbol: "ac", name: "acre", factor: FOOT_M ** 2 * 43_560, note: t("43 560 ft²") },
     ],
   },
   {
     id: "speed",
-    name: "Vitesses",
+    name: t("Vitesses"),
     base: "m/s",
     defaults: ["kmh", "mph"],
     units: [
-      { id: "m/s", symbol: "m/s", name: "mètre par seconde", factor: 1 },
-      { id: "kmh", symbol: "km/h", name: "kilomètre par heure", factor: 1000 / 3600 },
-      { id: "mph", symbol: "mph", name: "mile par heure", factor: MILE_M / 3600 },
-      { id: "kn", symbol: "kn", name: "nœud", factor: NAUTICAL_MILE_M / 3600 },
+      { id: "m/s", symbol: "m/s", name: t("mètre par seconde"), factor: 1 },
+      { id: "kmh", symbol: "km/h", name: t("kilomètre par heure"), factor: 1000 / 3600 },
+      { id: "mph", symbol: "mph", name: t("mile par heure"), factor: MILE_M / 3600 },
+      { id: "kn", symbol: "kn", name: t("nœud"), factor: NAUTICAL_MILE_M / 3600 },
     ],
   },
   {
     id: "pressure",
-    name: "Pressions",
+    name: t("Pressions"),
     base: "Pa",
     defaults: ["bar", "psi"],
     units: [
@@ -196,14 +197,14 @@ export const DIMENSIONS: Dimension[] = [
       { id: "hPa", symbol: "hPa", name: "hectopascal", factor: 100 },
       { id: "kPa", symbol: "kPa", name: "kilopascal", factor: 1000 },
       { id: "bar", symbol: "bar", name: "bar", factor: 100_000 },
-      { id: "atm", symbol: "atm", name: "atmosphère", factor: 101_325, note: "101 325 Pa" },
-      { id: "psi", symbol: "psi", name: "livre par pouce carré", factor: (POUND_KG * 9.80665) / INCH_M ** 2 },
-      { id: "mmHg", symbol: "mmHg", name: "millimètre de mercure", factor: 133.322_387_415 },
+      { id: "atm", symbol: "atm", name: t("atmosphère"), factor: 101_325, note: t("101 325 Pa") },
+      { id: "psi", symbol: "psi", name: t("livre par pouce carré"), factor: (POUND_KG * 9.80665) / INCH_M ** 2 },
+      { id: "mmHg", symbol: "mmHg", name: t("millimètre de mercure"), factor: 133.322_387_415 },
     ],
   },
   {
     id: "energy",
-    name: "Énergie",
+    name: t("Énergie"),
     base: "J",
     defaults: ["kWh", "kJ"],
     units: [
@@ -211,57 +212,58 @@ export const DIMENSIONS: Dimension[] = [
       { id: "kJ", symbol: "kJ", name: "kilojoule", factor: 1000 },
       { id: "Wh", symbol: "Wh", name: "wattheure", factor: 3600 },
       { id: "kWh", symbol: "kWh", name: "kilowattheure", factor: 3_600_000 },
-      { id: "cal", symbol: "cal", name: "calorie", factor: CALORIE_J, note: "calorie thermochimique" },
+      { id: "cal", symbol: "cal", name: "calorie", factor: CALORIE_J, note: t("calorie thermochimique") },
       { id: "kcal", symbol: "kcal", name: "kilocalorie", factor: CALORIE_J * 1000 },
-      { id: "BTU", symbol: "BTU", name: "British thermal unit", factor: BTU_J, note: "BTU (IT)" },
+      { id: "BTU", symbol: "BTU", name: t("British thermal unit"), factor: BTU_J, note: "BTU (IT)" },
     ],
   },
   {
     id: "power",
-    name: "Puissance",
+    name: t("Puissance"),
     base: "W",
     defaults: ["kW", "hp"],
     units: [
       { id: "W", symbol: "W", name: "watt", factor: 1 },
       { id: "kW", symbol: "kW", name: "kilowatt", factor: 1000 },
-      { id: "MW", symbol: "MW", name: "mégawatt", factor: 1e6 },
+      { id: "MW", symbol: "MW", name: t("mégawatt"), factor: 1e6 },
       {
         id: "hp",
         symbol: "hp",
-        name: "horsepower (mécanique)",
+        name: t("horsepower (mécanique)"),
         factor: 745.6998715822702,
-        note: "550 ft·lbf/s",
+        note: t("550 ft·lbf/s"),
       },
       {
         id: "ch",
         symbol: "ch",
-        name: "cheval-vapeur (métrique)",
+        name: t("cheval-vapeur (métrique)"),
         factor: 735.498_75,
-        note: "75 kgf·m/s — le « ch » des cartes grises",
+        note: t("75 kgf·m/s — le « ch » des cartes grises"),
       },
     ],
   },
   {
     id: "data",
-    name: "Données informatiques",
+    name: t("Données informatiques"),
     base: "B",
     defaults: ["GB", "GiB"],
     units: [
       { id: "bit", symbol: "bit", name: "bit", factor: 1 / 8 },
       { id: "B", symbol: "o", name: "octet", factor: 1 },
-      { id: "kB", symbol: "ko", name: "kilooctet", factor: 1e3, note: "1 000 octets" },
-      { id: "MB", symbol: "Mo", name: "mégaoctet", factor: 1e6 },
+      { id: "kB", symbol: "ko", name: "kilooctet", factor: 1e3, note: t("1 000 octets") },
+      { id: "MB", symbol: "Mo", name: t("mégaoctet"), factor: 1e6 },
       { id: "GB", symbol: "Go", name: "gigaoctet", factor: 1e9 },
-      { id: "TB", symbol: "To", name: "téraoctet", factor: 1e12 },
-      { id: "KiB", symbol: "Kio", name: "kibioctet", factor: 1024, note: "1 024 octets" },
-      { id: "MiB", symbol: "Mio", name: "mébioctet", factor: 1024 ** 2 },
+      { id: "TB", symbol: "To", name: t("téraoctet"), factor: 1e12 },
+      { id: "KiB", symbol: "Kio", name: "kibioctet", factor: 1024, note: t("1 024 octets") },
+      { id: "MiB", symbol: "Mio", name: t("mébioctet"), factor: 1024 ** 2 },
       { id: "GiB", symbol: "Gio", name: "gibioctet", factor: 1024 ** 3 },
-      { id: "TiB", symbol: "Tio", name: "tébioctet", factor: 1024 ** 4 },
+      { id: "TiB", symbol: "Tio", name: t("tébioctet"), factor: 1024 ** 4 },
     ],
   },
-];
+]);
 
-const BY_ID = new Map(DIMENSIONS.map((dimension) => [dimension.id, dimension]));
+// Recherche dans la liste localisée : le libellé suit la langue affichée.
+const BY_ID = { get: (id: string) => DIMENSIONS.find((dimension) => dimension.id === id) };
 
 export function dimension(id: DimensionId): Dimension {
   const found = BY_ID.get(id);
@@ -271,7 +273,7 @@ export function dimension(id: DimensionId): Dimension {
 
 export function unit(dimensionId: DimensionId, unitId: string): UnitDefinition {
   const found = dimension(dimensionId).units.find((u) => u.id === unitId);
-  if (!found) throw new Error(`Unité inconnue : ${dimensionId}/${unitId}`);
+  if (!found) throw new Error(t("Unité inconnue : {dimensionId}/{unitId}", { dimensionId, unitId }));
   return found;
 }
 
@@ -315,13 +317,14 @@ function trimZeros(text: string): string {
   return text.replace(/\.?0+$/, "");
 }
 
-/** Sépare les milliers pour la lecture : « 1 234 567,89 ». */
+/**
+ * Sépare les milliers pour la lecture, à la manière de la langue affichée :
+ * « 1 234 567,89 » en français, « 1,234,567.89 » en anglais.
+ */
 export function formatWithGrouping(value: number, significantDigits = 10): string {
   const plain = formatNumber(value, significantDigits);
   if (plain.includes("e") || plain === "—") return plain;
-  const [integer, fraction] = plain.split(".");
-  const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f");
-  return fraction ? `${grouped},${fraction}` : grouped;
+  return localizeNumberString(plain);
 }
 
 /**
@@ -331,11 +334,22 @@ export function formatWithGrouping(value: number, significantDigits = 10): strin
  * ces formes ferait passer l'outil pour cassé.
  */
 export function parseNumber(input: string): number | undefined {
-  const cleaned = input
-    .trim()
-    .replace(/[\s\u00a0\u202f]/g, "")
-    .replace(",", ".");
+  let cleaned = input.trim().replace(/[\s\u00a0\u202f']/g, "");
   if (cleaned.length === 0) return undefined;
+  const hasComma = cleaned.includes(",");
+  const hasDot = cleaned.includes(".");
+  if (hasComma && hasDot) {
+    // « 1 234,56 » collé en « 1.234,56 », ou « 1,234.56 » : le dernier
+    // séparateur est la virgule décimale, l'autre groupe les milliers.
+    const decimal = cleaned.lastIndexOf(",") > cleaned.lastIndexOf(".") ? "," : ".";
+    cleaned = cleaned.split(decimal === "," ? "." : ",").join("").replace(",", ".");
+  } else if (hasComma) {
+    // Une virgule seule est décimale (« 1,5 »), sauf dans une langue à point
+    // décimal quand elle groupe visiblement des milliers (« 1,234,567 »).
+    const grouping =
+      numberSeparators().decimal === "." && /^-?\d{1,3}(,\d{3})+$/.test(cleaned);
+    cleaned = grouping ? cleaned.replace(/,/g, "") : cleaned.replace(",", ".");
+  }
   const value = Number(cleaned);
   return Number.isFinite(value) ? value : undefined;
 }

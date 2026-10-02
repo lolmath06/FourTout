@@ -5,13 +5,14 @@
  * une exception qui casse l'écran.
  */
 
+import { localized, t } from "@/i18n";
 export type UrlMode = "component" | "uri" | "query";
 
-export const URL_MODE_LABELS: Record<UrlMode, string> = {
+export const URL_MODE_LABELS: Record<UrlMode, string> = localized(() => ({
   component: "Valeur (encodeURIComponent)",
-  uri: "URL complète (encodeURI)",
-  query: "Paramètre de formulaire (+ pour l'espace)",
-};
+  uri: t("URL complète (encodeURI)"),
+  query: t("Paramètre de formulaire (+ pour l'espace)"),
+}));
 
 export interface UrlResult {
   text: string;
@@ -37,14 +38,14 @@ export function decodeUrlText(input: string, mode: UrlMode): UrlResult {
     return {
       text: "",
       error: bad
-        ? `Séquence d'échappement invalide : « ${bad[0]} ». Un « % » doit être suivi de deux chiffres hexadécimaux.`
-        : "Texte impossible à décoder : séquence d'échappement invalide.",
+        ? t("Séquence d'échappement invalide : « {value} ». Un « % » doit être suivi de deux chiffres hexadécimaux.", { value: bad[0] })
+        : t("Texte impossible à décoder : séquence d'échappement invalide."),
     };
   }
 }
 
 function describe(error: unknown): string {
-  return error instanceof Error ? error.message : "Encodage impossible.";
+  return error instanceof Error ? error.message : t("Encodage impossible.");
 }
 
 export interface UrlParts {

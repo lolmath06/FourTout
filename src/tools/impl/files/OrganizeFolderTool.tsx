@@ -18,6 +18,7 @@ import {
 import { revealFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Rangement d'un dossier par type de fichier.
@@ -41,8 +42,8 @@ export function OrganizeFolderTool(_props: ToolComponentProps) {
 
   if (!isFilesEngineAvailable()) {
     return (
-      <Callout tone="info" title="Application installée requise">
-        {NATIVE_REQUIRED}
+      <Callout tone="info" title={t("Application installée requise")}>
+        {tx(NATIVE_REQUIRED)}
       </Callout>
     );
   }
@@ -72,8 +73,8 @@ export function OrganizeFolderTool(_props: ToolComponentProps) {
       setSummary(result);
       setPlan(undefined);
       notify.success(
-        "Dossier rangé",
-        `${result.moved} fichier${result.moved > 1 ? "s" : ""} déplacé${result.moved > 1 ? "s" : ""}`,
+        t("Dossier rangé"),
+        t("{moved} {moved, plural, one {fichier} other {fichiers}} {moved, plural, one {déplacé} other {déplacés}}", { moved: result.moved }),
       );
     }
   };
@@ -95,22 +96,22 @@ export function OrganizeFolderTool(_props: ToolComponentProps) {
           setPlan(undefined);
           setSummary(undefined);
         }}
-        label="Choisissez le dossier à ranger"
-        hint="Rien n'est déplacé avant votre validation."
+        label={t("Choisissez le dossier à ranger")}
+        hint={t("Rien n'est déplacé avant votre validation.")}
         disabled={running}
       />
 
       {root && (
-        <Fieldset columns={1} title="Analyse">
-          <Field label="Portée">
+        <Fieldset columns={1} title={t("Analyse")}>
+          <Field label={t("Portée")}>
             <CheckOption
               checked={recursive}
               onChange={(value) => {
                 setRecursive(value);
                 setPlan(undefined);
               }}
-              label="Descendre dans les sous-dossiers"
-              hint="Désactivé par défaut : ranger récursivement un dossier déjà organisé le désorganiserait."
+              label={t("Descendre dans les sous-dossiers")}
+              hint={t("Désactivé par défaut : ranger récursivement un dossier déjà organisé le désorganiserait.")}
             />
           </Field>
         </Fieldset>
@@ -120,33 +121,32 @@ export function OrganizeFolderTool(_props: ToolComponentProps) {
         <div className="flex flex-wrap items-center justify-end gap-2 border-t border-[var(--ft-rule)] pt-3">
           {running && (
             <Button size="sm" variant="ghost" onClick={planJob.isRunning ? planJob.cancel : applyJob.cancel}>
-              Annuler
+              {t("Annuler")}
             </Button>
           )}
           <Button size="md" variant="primary" onClick={() => void analyse()} disabled={running}>
-            <Icon name="Search" size={15} /> Analyser le dossier
+            <Icon name="Search" size={15} />{" "}{t("Analyser le dossier")}
           </Button>
         </div>
       )}
 
       {planJob.isRunning && (
-        <ProgressBar ratio={planJob.progress.ratio} label={planJob.progress.label} />
+        <ProgressBar ratio={planJob.progress.ratio} label={tx(planJob.progress.label)} />
       )}
       {applyJob.isRunning && (
-        <ProgressBar ratio={applyJob.progress.ratio} label={applyJob.progress.label} />
+        <ProgressBar ratio={applyJob.progress.ratio} label={tx(applyJob.progress.label)} />
       )}
 
       {error && (
-        <Callout tone="error" title="L'opération a échoué">
-          {error}
+        <Callout tone="error" title={t("L'opération a échoué")}>
+          {tx(error)}
         </Callout>
       )}
 
       {plan && plan.moves.length === 0 && (
-        <Callout tone="neutral" title="Rien à ranger">
-          Aucun fichier à déplacer à la racine de ce dossier.
-          {plan.skipped.length > 0 &&
-            ` ${plan.skipped.length} élément${plan.skipped.length > 1 ? "s ont" : " a"} été laissé${plan.skipped.length > 1 ? "s" : ""} en place.`}
+        <Callout tone="neutral" title={t("Rien à ranger")}>
+          {t("Aucun fichier à déplacer à la racine de ce dossier.{value}", { value: plan.skipped.length > 0 &&
+            t(" {count} élément{count, plural, one { a} other {s ont}} été {count, plural, one {laissé} other {laissés}} en place.", { count: plan.skipped.length }) })}
         </Callout>
       )}
 
@@ -154,7 +154,7 @@ export function OrganizeFolderTool(_props: ToolComponentProps) {
         <>
           <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
             <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-              Plan proposé — {plan.moves.length} fichier{plan.moves.length > 1 ? "s" : ""}
+              {t("Plan proposé — {count} {count, plural, one {fichier} other {fichiers}}", { count: plan.moves.length })}
             </h3>
             <table className="ft-table">
               <tbody>
@@ -167,8 +167,7 @@ export function OrganizeFolderTool(_props: ToolComponentProps) {
                       </span>
                     </th>
                     <td className="ft-value text-right">
-                      {category.files} fichier{category.files > 1 ? "s" : ""} ·{" "}
-                      {formatFileSize(category.bytes)}
+                      {t("{files} {files, plural, one {fichier} other {fichiers}} · {size}", { files: category.files, size: formatFileSize(category.bytes) })}
                     </td>
                   </tr>
                 ))}
@@ -178,7 +177,7 @@ export function OrganizeFolderTool(_props: ToolComponentProps) {
 
           <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
             <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-              Détail des déplacements
+              {t("Détail des déplacements")}
             </h3>
             <ul className="max-h-72 divide-y divide-[var(--ft-rule)] overflow-y-auto">
               {plan.moves.map((move) => (
@@ -197,7 +196,7 @@ export function OrganizeFolderTool(_props: ToolComponentProps) {
           {plan.skipped.length > 0 && (
             <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
               <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-                Laissés en place — {plan.skipped.length}
+                {t("Laissés en place — {count}", { count: plan.skipped.length })}
               </h3>
               <ul className="max-h-40 divide-y divide-[var(--ft-rule)] overflow-y-auto">
                 {plan.skipped.map((entry) => (
@@ -211,12 +210,10 @@ export function OrganizeFolderTool(_props: ToolComponentProps) {
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ft-rule)] pt-3">
             <p className="ft-meta">
-              Aucun fichier n'a encore bougé. En cas de nom déjà pris, le fichier est renommé
-              « nom (2).ext » — rien n'est jamais écrasé.
+              {t("Aucun fichier n'a encore bougé. En cas de nom déjà pris, le fichier est renommé « nom (2).ext » — rien n'est jamais écrasé.")}
             </p>
             <Button size="md" variant="primary" onClick={() => void apply()} disabled={running}>
-              <Icon name="FolderTree" size={15} /> Organiser {plan.moves.length} fichier
-              {plan.moves.length > 1 ? "s" : ""}
+              <Icon name="FolderTree" size={15} />{" "}{t("Organiser {count} {count, plural, one {fichier} other {fichiers}}", { count: plan.moves.length })}
             </Button>
           </div>
         </>
@@ -230,10 +227,8 @@ export function OrganizeFolderTool(_props: ToolComponentProps) {
           <div className="flex items-start gap-2 border-b border-[var(--ft-rule)] px-3 py-2">
             <Icon name="CircleCheck" size={15} className="mt-px shrink-0 text-[var(--ft-ok)]" />
             <p className="text-[13px] font-medium leading-5">
-              {summary.moved} fichier{summary.moved > 1 ? "s" : ""} déplacé
-              {summary.moved > 1 ? "s" : ""}
-              {summary.renamed > 0 &&
-                `, dont ${summary.renamed} renommé${summary.renamed > 1 ? "s" : ""} pour éviter un écrasement`}
+              {t("{moved} {moved, plural, one {fichier} other {fichiers}} {moved, plural, one {déplacé} other {déplacés}}{value}", { moved: summary.moved, value: summary.renamed > 0 &&
+                t(", dont {renamed} {renamed, plural, one {renommé} other {renommés}} pour éviter un écrasement", { renamed: summary.renamed }) })}
             </p>
           </div>
           {summary.failed.length > 0 && (
@@ -247,7 +242,7 @@ export function OrganizeFolderTool(_props: ToolComponentProps) {
           )}
           <div className="border-t border-[var(--ft-rule)] px-3 py-2">
             <Button size="sm" variant="ghost" onClick={() => revealFile(root)}>
-              <Icon name="FolderTree" size={13} /> Ouvrir le dossier
+              <Icon name="FolderTree" size={13} />{" "}{t("Ouvrir le dossier")}
             </Button>
           </div>
         </div>

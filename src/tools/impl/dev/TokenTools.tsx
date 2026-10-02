@@ -37,6 +37,7 @@ import { isJwtVerifyAvailable, nativeSignatureChecker } from "@/core/code/jwtNat
 import { notify } from "@/features/notifications/store";
 import { saveFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t, tx } from "@/i18n";
 
 /* ==================================================================== */
 /* JWT                                                                   */
@@ -59,37 +60,37 @@ export function JwtDecodeTool(_props: ToolComponentProps) {
     } catch (failure) {
       return {
         value: undefined,
-        error: failure instanceof Error ? failure.message : "Token illisible.",
+        error: failure instanceof Error ? failure.message : t("Token illisible."),
       };
     }
   }, [token]);
 
   return (
     <div className="space-y-4">
-      <Callout tone="warning" title="Décodé n'est pas vérifié">
+      <Callout tone="warning" title={t("Décodé n'est pas vérifié")}>
         {JWT_SIGNATURE_NOTE}
       </Callout>
 
       <TextPane
-        label="Token JWT"
+        label={t("Token JWT")}
         value={token}
         onChange={setToken}
-        placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.…"
+        placeholder={t("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.…")}
         minHeight="7rem"
       />
 
-      <InputError message={decoded?.error} />
+      <InputError message={tx(decoded?.error)} />
 
       {decoded?.value && (
         <>
           {decoded.value.warnings.map((warning) => (
             <Callout key={warning} tone="warning">
-              {warning}
+              {tx(warning)}
             </Callout>
           ))}
 
           <ValueTable
-            caption="En-tête"
+            caption={t("En-tête")}
             rows={Object.entries(decoded.value.header).map(([key, value]) => ({
               label: key,
               value: String(value),
@@ -99,7 +100,7 @@ export function JwtDecodeTool(_props: ToolComponentProps) {
 
           <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
             <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-              Claims de la charge utile
+              {t("Claims de la charge utile")}
             </h3>
             <ul className="divide-y divide-[var(--ft-rule)]">
               {decoded.value.claims.map((claim) => (
@@ -115,7 +116,7 @@ export function JwtDecodeTool(_props: ToolComponentProps) {
                     </span>
                   </div>
                   <p className="ft-meta">
-                    {claim.description}
+                    {tx(claim.description)}
                     {claim.readable && ` · ${claim.readable}`}
                   </p>
                 </li>
@@ -125,14 +126,14 @@ export function JwtDecodeTool(_props: ToolComponentProps) {
 
           <div className="flex flex-col gap-3 lg:flex-row">
             <TextPane
-              label="En-tête (JSON)"
+              label={t("En-tête (JSON)")}
               value={formatJson(JSON.stringify(decoded.value.header))}
               readOnly
               droppable={false}
               minHeight="8rem"
             />
             <TextPane
-              label="Charge utile (JSON)"
+              label={t("Charge utile (JSON)")}
               value={formatJson(JSON.stringify(decoded.value.payload))}
               readOnly
               droppable={false}
@@ -141,10 +142,10 @@ export function JwtDecodeTool(_props: ToolComponentProps) {
           </div>
 
           <ValueTable
-            caption="Signature"
+            caption={t("Signature")}
             rows={[
-              { label: "Algorithme annoncé", value: decoded.value.algorithm },
-              { label: "Signature (base64url)", value: decoded.value.signature },
+              { label: t("Algorithme annoncé"), value: decoded.value.algorithm },
+              { label: t("Signature (base64url)"), value: decoded.value.signature },
             ]}
           />
 
@@ -211,7 +212,7 @@ function JwtVerificationPanel({
       setResult(await verifyJwt(token, { algorithm, key }, nativeSignatureChecker));
     } catch (failure) {
       setResult(undefined);
-      setError(failure instanceof Error ? failure.message : "Vérification impossible.");
+      setError(failure instanceof Error ? failure.message : t("Vérification impossible."));
     } finally {
       setBusy(false);
     }
@@ -219,17 +220,17 @@ function JwtVerificationPanel({
 
   return (
     <section className="space-y-3 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-3">
-      <h3 className="ft-section">Vérifier la signature</h3>
+      <h3 className="ft-section">{t("Vérifier la signature")}</h3>
 
       <Fieldset columns={1}>
         <Field
-          label="Algorithme attendu"
-          hint="C'est votre choix qui sert au calcul. Si l'en-tête du token annonce autre chose, la vérification est refusée."
+          label={t("Algorithme attendu")}
+          hint={t("C'est votre choix qui sert au calcul. Si l'en-tête du token annonce autre chose, la vérification est refusée.")}
         >
           <Select
             value={algorithm}
             onChange={setAlgorithm}
-            aria-label="Algorithme attendu"
+            aria-label={t("Algorithme attendu")}
             options={SUPPORTED_JWT_ALGORITHMS.map((value) => ({
               value,
               label: JWT_ALGORITHM_LABELS[value],
@@ -243,14 +244,14 @@ function JwtVerificationPanel({
           <PasswordField
             value={secret}
             onChange={setSecret}
-            label="Secret partagé"
-            hint="Masqué par défaut, jamais enregistré ni ajouté aux récents."
+            label={t("Secret partagé")}
+            hint={t("Masqué par défaut, jamais enregistré ni ajouté aux récents.")}
           />
         </Fieldset>
       ) : (
         <>
           <TextPane
-            label="Clé publique (PEM)"
+            label={t("Clé publique (PEM)")}
             value={publicKey}
             onChange={setPublicKey}
             placeholder={"-----BEGIN PUBLIC KEY-----\n…\n-----END PUBLIC KEY-----"}
@@ -258,16 +259,14 @@ function JwtVerificationPanel({
             droppable={false}
           />
           <p className="ft-meta">
-            La clé <strong>publique</strong> suffit : vérifier une signature ne demande jamais la
-            clé privée, et aucun outil ne devrait vous la réclamer.
+            <Trans source={"La clé <0>publique</0> suffit : vérifier une signature ne demande jamais la clé privée, et aucun outil ne devrait vous la réclamer."} components={[<strong />]} />
           </p>
         </>
       )}
 
       {!available && (
         <Callout tone="info">
-          La vérification utilise le moteur cryptographique de FourTout et nécessite
-          l'application installée. Le décodage ci-dessus, lui, fonctionne partout.
+          {t("La vérification utilise le moteur cryptographique de FourTout et nécessite l'application installée. Le décodage ci-dessus, lui, fonctionne partout.")}
         </Callout>
       )}
 
@@ -276,10 +275,10 @@ function JwtVerificationPanel({
         onClick={run}
         disabled={!available || busy || token.trim().length === 0 || key.length === 0}
       >
-        <Icon name="ShieldCheck" size={14} /> {busy ? "Vérification…" : "Vérifier"}
+        <Icon name="ShieldCheck" size={14} /> {busy ? t("Vérification…") : t("Vérifier")}
       </Button>
 
-      {error && <Callout tone="error">{error}</Callout>}
+      {error && <Callout tone="error">{tx(error)}</Callout>}
 
       {result && (
         <div className="space-y-2">
@@ -289,36 +288,32 @@ function JwtVerificationPanel({
             </Callout>
           ) : result.signature === "valid" ? (
             <Callout tone="success" title="SIGNATURE VALIDE">
-              Le calcul a été refait avec la clé fournie et il concorde : ce token a bien été
-              produit par le détenteur de cette clé, et son contenu n'a pas été modifié depuis.
+              {t("Le calcul a été refait avec la clé fournie et il concorde : ce token a bien été produit par le détenteur de cette clé, et son contenu n'a pas été modifié depuis.")}
             </Callout>
           ) : (
             <Callout tone="error" title="SIGNATURE INVALIDE">
-              Le calcul ne concorde pas : soit la clé n'est pas la bonne, soit le token a été
-              modifié après signature.
+              {t("Le calcul ne concorde pas : soit la clé n'est pas la bonne, soit le token a été modifié après signature.")}
             </Callout>
           )}
 
           {result.signature === "valid" && result.claims.expired && (
             <Callout tone="warning" title="EXPIRÉ">
-              La signature est authentique, mais la date d'expiration est dépassée. Ce sont deux
-              choses différentes : le token est vrai, et inutilisable.
+              {t("La signature est authentique, mais la date d'expiration est dépassée. Ce sont deux choses différentes : le token est vrai, et inutilisable.")}
             </Callout>
           )}
 
           {result.signature === "valid" && result.claims.notYetValid && (
             <Callout tone="warning" title="PAS ENCORE VALIDE">
-              La signature est authentique, mais le claim <code>nbf</code> place le début de
-              validité dans le futur.
+              <Trans source={"La signature est authentique, mais le claim <0>nbf</0> place le début de validité dans le futur."} components={[<code />]} />
             </Callout>
           )}
 
           <ValueTable
-            caption="Ce qui a été vérifié"
+            caption={t("Ce qui a été vérifié")}
             rows={[
-              { label: "Algorithme annoncé par le token", value: result.headerAlgorithm },
-              { label: "Algorithme utilisé pour vérifier", value: result.expectedAlgorithm },
-              { label: "Verdict", value: verdictSentence(result), highlight: true },
+              { label: t("Algorithme annoncé par le token"), value: result.headerAlgorithm },
+              { label: t("Algorithme utilisé pour vérifier"), value: result.expectedAlgorithm },
+              { label: t("Verdict"), value: verdictSentence(result), highlight: true },
             ]}
           />
         </div>
@@ -349,70 +344,67 @@ export function UuidTool(_props: ToolComponentProps) {
 
   const download = async () => {
     const saved = await saveFile({
-      name: `uuid-${version}.txt`,
+      name: t("uuid-{version}.txt", { version }),
       bytes: new TextEncoder().encode(`${text}\n`),
       mimeType: "text/plain",
     });
-    if (saved.saved) notify.success("Liste enregistrée", saved.path);
+    if (saved.saved) notify.success(t("Liste enregistrée"), saved.path);
   };
 
   return (
     <div className="space-y-4">
       <Fieldset columns={3}>
         <Field
-          label="Version"
+          label={t("Version")}
           hint={
             version === "v4"
-              ? "122 bits d'aléa : aucune information n'y est encodée."
-              : "Horodatage en tête : les identifiants se trient chronologiquement."
+              ? t("122 bits d'aléa : aucune information n'y est encodée.")
+              : t("Horodatage en tête : les identifiants se trient chronologiquement.")
           }
         >
           <OptionGroup
-            ariaLabel="Version"
+            ariaLabel={t("Version")}
             value={version}
             onChange={setVersion}
             options={[
-              { value: "v4", label: "v4 (aléatoire)" },
-              { value: "v7", label: "v7 (horodaté)" },
+              { value: "v4", label: t("v4 (aléatoire)") },
+              { value: "v7", label: t("v7 (horodaté)") },
             ]}
           />
         </Field>
-        <Field label="Quantité" hint={`1 à ${MAX_UUID_COUNT}`}>
+        <Field label={t("Quantité")} hint={`1 à ${MAX_UUID_COUNT}`}>
           <NumberInput
             value={count}
             min={1}
             max={MAX_UUID_COUNT}
             onChange={(event) => setCount(Number(event.target.value))}
-            aria-label="Quantité"
+            aria-label={t("Quantité")}
           />
         </Field>
-        <Field label="Mise en forme">
+        <Field label={t("Mise en forme")}>
           <div className="space-y-1">
-            <CheckOption checked={uppercase} onChange={setUppercase} label="Majuscules" />
-            <CheckOption checked={braces} onChange={setBraces} label="Entre accolades" />
+            <CheckOption checked={uppercase} onChange={setUppercase} label={t("Majuscules")} />
+            <CheckOption checked={braces} onChange={setBraces} label={t("Entre accolades")} />
           </div>
         </Field>
       </Fieldset>
 
       <div className="flex flex-wrap items-center gap-2">
         <Button size="md" variant="primary" onClick={regenerate}>
-          <Icon name="RefreshCw" size={15} /> Générer
+          <Icon name="RefreshCw" size={15} />{" "}{t("Générer")}
         </Button>
-        <CopyButton value={text} label="Tout copier" />
+        <CopyButton value={text} label={t("Tout copier")} />
         <Button size="sm" onClick={() => void download()} disabled={list.length === 0}>
-          <Icon name="Download" size={13} /> Enregistrer en .txt
+          <Icon name="Download" size={13} />{" "}{t("Enregistrer en .txt")}
         </Button>
         <div className="flex-1" />
         <span className="ft-meta ft-num">{list.length} identifiants</span>
       </div>
 
-      <TextPane label="Identifiants" value={text} readOnly droppable={false} minHeight="14rem" />
+      <TextPane label={t("Identifiants")} value={text} readOnly droppable={false} minHeight="14rem" />
 
-      <Callout tone="info" title="Source d'aléa">
-        Les identifiants viennent du générateur cryptographique du système
-        (<span className="ft-value">crypto.getRandomValues</span>). FourTout refuse de produire un
-        identifiant si ce générateur est indisponible, plutôt que de retomber sur un tirage
-        prévisible.
+      <Callout tone="info" title={t("Source d'aléa")}>
+        <Trans source={"Les identifiants viennent du générateur cryptographique du système (<0>crypto.getRandomValues</0>). FourTout refuse de produire un identifiant si ce générateur est indisponible, plutôt que de retomber sur un tirage prévisible."} components={[<span className="ft-value" />]} />
       </Callout>
     </div>
   );
@@ -445,7 +437,7 @@ export function TimestampTool(_props: ToolComponentProps) {
           } catch (failure) {
             return {
               value: undefined,
-              error: failure instanceof Error ? failure.message : "Date impossible.",
+              error: failure instanceof Error ? failure.message : t("Date impossible."),
             };
           }
         })()
@@ -457,37 +449,37 @@ export function TimestampTool(_props: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <Fieldset columns={2}>
-        <Field label="Sens">
+        <Field label={t("Sens")}>
           <OptionGroup
-            ariaLabel="Sens de conversion"
+            ariaLabel={t("Sens de conversion")}
             value={direction}
             onChange={setDirection}
             options={[
-              { value: "to-date", label: "Timestamp → date" },
-              { value: "to-timestamp", label: "Date → timestamp" },
+              { value: "to-date", label: t("Timestamp → date") },
+              { value: "to-timestamp", label: t("Date → timestamp") },
             ]}
           />
         </Field>
         {direction === "to-date" ? (
-          <Field label="Unité" hint={`Détectée : ${guessTimestampUnit(numeric) === "s" ? "secondes" : "millisecondes"}`}>
+          <Field label={t("Unité")} hint={t("Détectée : {value}", { value: guessTimestampUnit(numeric) === "s" ? "secondes" : "millisecondes" })}>
             <OptionGroup
-              ariaLabel="Unité"
+              ariaLabel={t("Unité")}
               value={unit}
               onChange={setUnit}
               options={[
-                { value: "s", label: "Secondes" },
-                { value: "ms", label: "Millisecondes" },
+                { value: "s", label: t("Secondes") },
+                { value: "ms", label: t("Millisecondes") },
               ]}
             />
           </Field>
         ) : (
-          <Field label="Date et heure locales">
+          <Field label={t("Date et heure locales")}>
             <TextInput
               type="datetime-local"
               step={1}
               value={dateInput}
               onChange={(event) => setDateInput(event.target.value)}
-              aria-label="Date et heure"
+              aria-label={t("Date et heure")}
             />
           </Field>
         )}
@@ -495,7 +487,7 @@ export function TimestampTool(_props: ToolComponentProps) {
 
       {direction === "to-date" && (
         <Fieldset columns={1}>
-          <Field label="Timestamp">
+          <Field label={t("Timestamp")}>
             <TextInput
               value={raw}
               inputMode="numeric"
@@ -505,7 +497,7 @@ export function TimestampTool(_props: ToolComponentProps) {
                 const next = Number(event.target.value.trim());
                 if (Number.isFinite(next) && next !== 0) setUnit(guessTimestampUnit(next));
               }}
-              aria-label="Timestamp"
+              aria-label={t("Timestamp")}
               data-testid="timestamp-input"
               className="font-mono"
             />
@@ -530,7 +522,7 @@ export function TimestampTool(_props: ToolComponentProps) {
             }
           }}
         >
-          <Icon name="Clock3" size={13} /> Maintenant
+          <Icon name="Clock3" size={13} />{" "}{t("Maintenant")}
         </Button>
       </div>
 
@@ -538,10 +530,10 @@ export function TimestampTool(_props: ToolComponentProps) {
         message={
           direction === "to-date"
             ? raw.trim().length > 0 && !Number.isFinite(numeric)
-              ? "Le timestamp doit être un nombre."
+              ? t("Le timestamp doit être un nombre.")
               : view?.error
             : dateInput.length > 0 && !dateValid
-              ? "Date invalide."
+              ? t("Date invalide.")
               : undefined
         }
       />
@@ -550,12 +542,12 @@ export function TimestampTool(_props: ToolComponentProps) {
         <>
           <ResultBlock value={view.value.local} formula={view.value.relative} />
           <ValueTable
-            caption="Autres formats"
+            caption={t("Autres formats")}
             rows={[
               { label: "ISO 8601 (UTC)", value: view.value.iso },
               { label: "UTC", value: view.value.utc },
-              { label: "Secondes", value: String(Math.floor(view.value.date.getTime() / 1000)) },
-              { label: "Millisecondes", value: String(view.value.date.getTime()) },
+              { label: t("Secondes"), value: String(Math.floor(view.value.date.getTime() / 1000)) },
+              { label: t("Millisecondes"), value: String(view.value.date.getTime()) },
             ]}
           />
         </>
@@ -568,7 +560,7 @@ export function TimestampTool(_props: ToolComponentProps) {
             unit="secondes"
             formula={parsedDate.toISOString()}
             secondary={[
-              { label: "Millisecondes", value: String(parsedDate.getTime()) },
+              { label: t("Millisecondes"), value: String(parsedDate.getTime()) },
               { label: "UTC", value: parsedDate.toUTCString() },
             ]}
           />
@@ -582,12 +574,12 @@ export function TimestampTool(_props: ToolComponentProps) {
 /* Bases numériques                                                      */
 /* ==================================================================== */
 
-const COMMON_BASES = [
-  { value: "2", label: "Binaire (2)" },
-  { value: "8", label: "Octal (8)" },
-  { value: "10", label: "Décimal (10)" },
-  { value: "16", label: "Hexadécimal (16)" },
-];
+const COMMON_BASES = localized(() => [
+  { value: "2", label: t("Binaire (2)") },
+  { value: "8", label: t("Octal (8)") },
+  { value: "10", label: t("Décimal (10)") },
+  { value: "16", label: t("Hexadécimal (16)") },
+]);
 
 /**
  * Conversion entre bases numériques, **en `BigInt`**.
@@ -610,7 +602,7 @@ export function NumberBaseTool(_props: ToolComponentProps) {
     } catch (failure) {
       return {
         value: undefined,
-        error: failure instanceof Error ? failure.message : "Conversion impossible.",
+        error: failure instanceof Error ? failure.message : t("Conversion impossible."),
       };
     }
   }, [raw, activeBase]);
@@ -620,64 +612,64 @@ export function NumberBaseTool(_props: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <Fieldset columns={3}>
-        <Field label="Nombre" hint="Les préfixes 0x, 0b et les _ sont acceptés.">
+        <Field label={t("Nombre")} hint={t("Les préfixes 0x, 0b et les _ sont acceptés.")}>
           <TextInput
             value={raw}
             autoFocus
             spellCheck={false}
             onChange={(event) => setRaw(event.target.value)}
-            aria-label="Nombre à convertir"
+            aria-label={t("Nombre à convertir")}
             data-testid="base-input"
             className="font-mono"
           />
         </Field>
-        <Field label="Base de départ">
+        <Field label={t("Base de départ")}>
           <Select
             value={base}
             onChange={(value) => {
               setBase(value);
               setUseCustom(false);
             }}
-            aria-label="Base de départ"
+            aria-label={t("Base de départ")}
             options={COMMON_BASES}
             disabled={useCustom}
           />
         </Field>
-        <Field label={`Base personnalisée (${MIN_BASE} à ${MAX_BASE})`}>
+        <Field label={t("Base personnalisée ({MIN_BASE} à {MAX_BASE})", { MIN_BASE, MAX_BASE })}>
           <div className="flex items-center gap-2">
-            <CheckOption checked={useCustom} onChange={setUseCustom} label="Utiliser" />
+            <CheckOption checked={useCustom} onChange={setUseCustom} label={t("Utiliser")} />
             <NumberInput
               value={customBase}
               min={MIN_BASE}
               max={MAX_BASE}
               disabled={!useCustom}
               onChange={(event) => setCustomBase(Number(event.target.value))}
-              aria-label="Base personnalisée"
+              aria-label={t("Base personnalisée")}
             />
           </div>
         </Field>
       </Fieldset>
 
-      <InputError message={parsed?.error} />
+      <InputError message={tx(parsed?.error)} />
 
       {views && parsed?.value !== undefined && (
         <>
           <ResultBlock
             value={views.decimal}
-            unit="décimal"
+            unit={t("décimal")}
             formula={`${raw} en base ${activeBase} · ${views.bits} bit${views.bits > 1 ? "s" : ""}`}
           />
           <ValueTable
-            caption="Toutes les bases"
+            caption={t("Toutes les bases")}
             rows={[
-              { label: "Binaire (2)", value: groupDigits(views.binary, 4) },
-              { label: "Octal (8)", value: views.octal },
-              { label: "Décimal (10)", value: views.decimal },
-              { label: "Hexadécimal (16)", value: views.hexadecimal },
+              { label: t("Binaire (2)"), value: groupDigits(views.binary, 4) },
+              { label: t("Octal (8)"), value: views.octal },
+              { label: t("Décimal (10)"), value: views.decimal },
+              { label: t("Hexadécimal (16)"), value: views.hexadecimal },
               ...(useCustom && ![2, 8, 10, 16].includes(activeBase)
                 ? [
                     {
-                      label: `Base ${activeBase}`,
+                      label: t("Base {activeBase}", { activeBase }),
                       value: formatInBase(parsed.value, activeBase),
                       highlight: true,
                     },
@@ -685,10 +677,8 @@ export function NumberBaseTool(_props: ToolComponentProps) {
                 : []),
             ]}
           />
-          <Callout tone="info" title="Précision exacte">
-            Les conversions passent par des entiers de précision arbitraire : un nombre comme
-            <span className="ft-value"> 9007199254740993123456789 </span>
-            fait l'aller-retour sans perdre un seul chiffre.
+          <Callout tone="info" title={t("Précision exacte")}>
+            <Trans source={"Les conversions passent par des entiers de précision arbitraire : un nombre comme<0> 9007199254740993123456789 </0>fait l'aller-retour sans perdre un seul chiffre."} components={[<span className="ft-value" />]} />
           </Callout>
         </>
       )}

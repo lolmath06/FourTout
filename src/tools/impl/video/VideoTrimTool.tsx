@@ -11,6 +11,7 @@ import { formatTimecode, parseTimecode } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { fallbackTracker } from "./shared";
+import { Trans, t } from "@/i18n";
 
 /**
  * Découpage d'un extrait.
@@ -34,12 +35,12 @@ export function VideoTrimTool({ tool }: ToolComponentProps) {
   return (
     <VideoToolShell
       tool={tool}
-      actionLabel="Découper"
+      actionLabel={t("Découper")}
       actionDisabled={invalid}
       showFileList={false}
       run={async ({ files, infos, caps, context }) => {
         if (startMs === undefined || endMs === undefined || endMs <= startMs) {
-          throw new Error("L'instant de fin doit être postérieur à l'instant de début.");
+          throw new Error(t("L'instant de fin doit être postérieur à l'instant de début."));
         }
         const pipeline = trimPipeline(
           { caps, info: infos[0], extension: files[0].extension },
@@ -54,16 +55,16 @@ export function VideoTrimTool({ tool }: ToolComponentProps) {
             onFallback: tracker.onFallback,
             outputName: outputName(files[0].name, "extrait", pipeline.container),
             totalMs: endMs - startMs,
-            label: "Découpage…",
+            label: t("Découpage…"),
           },
           context,
         );
         return {
           files: [file],
-          summary: `Extrait de ${formatTimecode(startMs)} à ${formatTimecode(endMs)} (${formatTimecode(endMs - startMs)}).`,
+          summary: t("Extrait de {value} à {value2} ({value3}).", { value: formatTimecode(startMs), value2: formatTimecode(endMs), value3: formatTimecode(endMs - startMs) }),
           warning:
             mode === "fast"
-              ? "Mode rapide : le début réel peut être décalé de quelques dixièmes de seconde, jusqu'à l'image-clé précédente."
+              ? t("Mode rapide : le début réel peut être décalé de quelques dixièmes de seconde, jusqu'à l'image-clé précédente.")
               : tracker.warning(),
         };
       }}
@@ -129,50 +130,47 @@ function TrimSettings({
       <VideoPreview file={file} videoRef={videoRef} onTime={setCurrent} />
 
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        <span className="font-mono tabular-nums text-[var(--ft-text-muted)]">
-          Position : {formatTimecode(current)}
-          {durationMs > 0 && ` / ${formatTimecode(durationMs)}`}
-        </span>
+        <Trans source={"<0>Position : {value}{value2}</0>"} values={{ value: formatTimecode(current), value2: durationMs > 0 && ` / ${formatTimecode(durationMs)}` }} components={[<span className="font-mono tabular-nums text-[var(--ft-text-muted)]" />]} />
         <Button size="sm" onClick={() => setStart(formatTimecode(current))}>
-          <Icon name="CornerDownLeft" size={13} /> Définir le début ici
+          <Icon name="CornerDownLeft" size={13} />{" "}{t("Définir le début ici")}
         </Button>
         <Button size="sm" onClick={() => setEnd(formatTimecode(current))}>
-          <Icon name="CornerDownLeft" size={13} /> Définir la fin ici
+          <Icon name="CornerDownLeft" size={13} />{" "}{t("Définir la fin ici")}
         </Button>
       </div>
 
       <Fieldset columns={3}>
-        <Field label="Début (hh:mm:ss.mmm)">
+        <Field label={t("Début (hh:mm:ss.mmm)")}>
           <span className="flex gap-1">
             <TextInput value={start} onChange={(event) => setStart(event.target.value)} className="font-mono" />
-            <Button size="sm" variant="ghost" onClick={() => seek(parseTimecode(start) ?? 0)} aria-label="Aller au début">
+            <Button size="sm" variant="ghost" onClick={() => seek(parseTimecode(start) ?? 0)} aria-label={t("Aller au début")}>
               <Icon name="Play" size={13} />
             </Button>
           </span>
         </Field>
-        <Field label="Fin (hh:mm:ss.mmm)">
+        <Field label={t("Fin (hh:mm:ss.mmm)")}>
           <span className="flex gap-1">
             <TextInput value={end} onChange={(event) => setEnd(event.target.value)} className="font-mono" />
-            <Button size="sm" variant="ghost" onClick={() => seek(parseTimecode(end) ?? 0)} aria-label="Aller à la fin">
+            <Button size="sm" variant="ghost" onClick={() => seek(parseTimecode(end) ?? 0)} aria-label={t("Aller à la fin")}>
               <Icon name="Play" size={13} />
             </Button>
           </span>
         </Field>
         <Field
-          label="Mode"
+          label={t("Mode")}
           hint={
             mode === "fast"
-              ? "Rapide : aucun réencodage, la coupe se cale sur l'image-clé précédente."
-              : "Précis : réencodage, la coupe tombe exactement à l'instant demandé."
+              ? t("Rapide : aucun réencodage, la coupe se cale sur l'image-clé précédente.")
+              : t("Précis : réencodage, la coupe tombe exactement à l'instant demandé.")
           }
         >
           <OptionGroup
-            ariaLabel="Mode de découpage"
+            ariaLabel={t("Mode de découpage")}
             value={mode}
             onChange={setMode}
             options={[
-              { value: "fast", label: "Rapide" },
-              { value: "precise", label: "Précis" },
+              { value: "fast", label: t("Rapide") },
+              { value: "precise", label: t("Précis") },
             ]}
           />
         </Field>
@@ -180,7 +178,7 @@ function TrimSettings({
 
       {invalid && (
         <p className="text-xs text-[var(--ft-danger)]">
-          Indiquez un début et une fin valides (hh:mm:ss.mmm), la fin après le début.
+          {t("Indiquez un début et une fin valides (hh:mm:ss.mmm), la fin après le début.")}
         </p>
       )}
     </div>

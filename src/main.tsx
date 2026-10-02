@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { installPolyfills } from "./core/platform/polyfills";
 import { App } from "./app/App";
 import { applyTheme, useSettings } from "./features/settings/store";
+import { initLanguage } from "./features/settings/language";
 import { setRasterBackend } from "./core/pdf/raster/types";
 import { browserRasterBackend } from "./core/pdf/raster/browser";
 import { configurePdfJs } from "./core/pdf/pdfjs";
@@ -27,8 +28,12 @@ configurePdfJs({ workerSrc: pdfWorkerUrl });
 // interne (SPA), elle, ne déclenche pas cet événement et laisse le job vivre.
 installRecoveryShutdownGuard();
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+// La langue est appliquée avant le premier rendu : ses traductions sont
+// embarquées, leur chargement ne prend que le temps de les lire.
+void initLanguage().finally(() => {
+  ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  );
+});

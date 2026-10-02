@@ -1,4 +1,5 @@
 /** Transformations de casse : logique pure, réutilisable et testable. */
+import { localized, t } from "@/i18n";
 export type CaseKey = "upper" | "lower" | "title" | "sentence" | "camel" | "snake" | "kebab";
 
 const WORD_SPLIT = /[\s_\-.]+|(?<=[a-z0-9])(?=[A-Z])/;
@@ -7,18 +8,18 @@ function words(input: string): string[] {
   return input.split(WORD_SPLIT).filter(Boolean);
 }
 
-export const CASE_TRANSFORMS: Record<CaseKey, { label: string; apply: (input: string) => string }> = {
+export const CASE_TRANSFORMS: Record<CaseKey, { label: string; apply: (input: string) => string }> = localized(() => ({
   upper: { label: "MAJUSCULES", apply: (s) => s.toLocaleUpperCase("fr") },
   lower: { label: "minuscules", apply: (s) => s.toLocaleLowerCase("fr") },
   title: {
-    label: "Première Lettre",
+    label: t("Première Lettre"),
     apply: (s) =>
       s.replace(/\p{L}[\p{L}\p{M}']*/gu, (word) =>
         word.charAt(0).toLocaleUpperCase("fr") + word.slice(1).toLocaleLowerCase("fr"),
       ),
   },
   sentence: {
-    label: "Début de phrase",
+    label: t("Début de phrase"),
     apply: (s) =>
       s
         .toLocaleLowerCase("fr")
@@ -45,4 +46,4 @@ export const CASE_TRANSFORMS: Record<CaseKey, { label: string; apply: (input: st
     label: "kebab-case",
     apply: (s) => words(s).map((w) => w.toLocaleLowerCase("fr")).join("-"),
   },
-};
+}));

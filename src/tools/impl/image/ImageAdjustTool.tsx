@@ -9,6 +9,7 @@ import { processImages } from "@/core/image/pipeline";
 import { adjust, type AdjustOptions } from "@/core/image/operations";
 import type { SelectedFile } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 const NEUTRAL: Required<AdjustOptions> = { brightness: 0, contrast: 0, saturation: 0, gamma: 1 };
 
@@ -22,7 +23,7 @@ export function ImageAdjustTool({ tool }: ToolComponentProps) {
     <ImageToolShell
       tool={tool}
       selection="single"
-      actionLabel="Appliquer les réglages"
+      actionLabel={t("Appliquer les réglages")}
       actionDisabled={untouched}
       run={async ({ files, context }) => {
         const outputs = await processImages(
@@ -31,27 +32,27 @@ export function ImageAdjustTool({ tool }: ToolComponentProps) {
           { format: "same", suffix: "ajustee" },
           context,
         );
-        return { files: outputs, summary: "Réglages appliqués." };
+        return { files: outputs, summary: t("Réglages appliqués.") };
       }}
     >
       {(files) => (
         <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
           <AdjustPreview file={files[0]} options={options} />
           <Fieldset columns={1}>
-            <Field label={`Luminosité (${options.brightness > 0 ? "+" : ""}${options.brightness})`}>
+            <Field label={t("Luminosité ({value}{brightness})", { value: options.brightness > 0 ? "+" : "", brightness: options.brightness })}>
               <Slider value={options.brightness} onChange={set("brightness")} min={-100} max={100} />
             </Field>
-            <Field label={`Contraste (${options.contrast > 0 ? "+" : ""}${options.contrast})`}>
+            <Field label={t("Contraste ({value}{contrast})", { value: options.contrast > 0 ? "+" : "", contrast: options.contrast })}>
               <Slider value={options.contrast} onChange={set("contrast")} min={-100} max={100} />
             </Field>
-            <Field label={`Saturation (${options.saturation > 0 ? "+" : ""}${options.saturation})`}>
+            <Field label={t("Saturation ({value}{saturation})", { value: options.saturation > 0 ? "+" : "", saturation: options.saturation })}>
               <Slider value={options.saturation} onChange={set("saturation")} min={-100} max={100} />
             </Field>
-            <Field label={`Gamma (${options.gamma.toFixed(2)})`}>
+            <Field label={t("Gamma ({value})", { value: options.gamma.toFixed(2) })}>
               <Slider value={options.gamma} onChange={set("gamma")} min={0.2} max={2.5} step={0.05} />
             </Field>
             <Button size="sm" variant="ghost" onClick={() => setOptions(NEUTRAL)} disabled={untouched}>
-              Réinitialiser
+              {t("Réinitialiser")}
             </Button>
           </Fieldset>
         </div>
@@ -69,7 +70,7 @@ function AdjustPreview({ file, options }: { file: SelectedFile; options: AdjustO
   );
   return (
     <PreviewFrame maxHeight={440}>
-      {url && <img src={url} alt="Aperçu" className="max-h-[420px] max-w-full object-contain" draggable={false} />}
+      {url && <img src={url} alt={t("Aperçu")} className="max-h-[420px] max-w-full object-contain" draggable={false} />}
     </PreviewFrame>
   );
 }

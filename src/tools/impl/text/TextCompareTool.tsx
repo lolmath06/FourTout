@@ -9,6 +9,7 @@ import { notify } from "@/features/notifications/store";
 import { presetString, useHandoff } from "@/features/handoff/store";
 import { saveFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 /**
  * Comparaison de deux textes.
@@ -35,45 +36,45 @@ export function TextCompareTool(_props: ToolComponentProps) {
   const copyUnified = async () => {
     try {
       await navigator.clipboard.writeText(toUnifiedDiff(result));
-      notify.success("Diff copié");
+      notify.success(t("Diff copié"));
     } catch {
-      notify.error("Copie impossible");
+      notify.error(t("Copie impossible"));
     }
   };
 
   const downloadUnified = async () => {
     const bytes = new TextEncoder().encode(toUnifiedDiff(result));
     const saved = await saveFile({ name: "comparaison.diff", bytes, mimeType: "text/plain" });
-    if (saved.saved) notify.success("Fichier enregistré", saved.path);
+    if (saved.saved) notify.success(t("Fichier enregistré"), saved.path);
   };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 lg:flex-row">
-        <TextPane label="Texte de gauche (avant)" value={left} onChange={setLeft} placeholder="Collez ou déposez le premier texte…" />
-        <TextPane label="Texte de droite (après)" value={right} onChange={setRight} placeholder="Collez ou déposez le second texte…" />
+        <TextPane label={t("Texte de gauche (avant)")} value={left} onChange={setLeft} placeholder={t("Collez ou déposez le premier texte…")} />
+        <TextPane label={t("Texte de droite (après)")} value={right} onChange={setRight} placeholder={t("Collez ou déposez le second texte…")} />
       </div>
 
       <Fieldset columns={2}>
-        <Field label="Affichage">
+        <Field label={t("Affichage")}>
           <OptionGroup
-            ariaLabel="Affichage"
+            ariaLabel={t("Affichage")}
             value={view}
             onChange={setView}
             options={[
-              { value: "side", label: "Côte à côte" },
-              { value: "unified", label: "Diff unifié" },
+              { value: "side", label: t("Côte à côte") },
+              { value: "unified", label: t("Diff unifié") },
             ]}
           />
         </Field>
-        <Field label="Filtre">
+        <Field label={t("Filtre")}>
           <OptionGroup
-            ariaLabel="Filtre"
+            ariaLabel={t("Filtre")}
             value={onlyChanges ? "changes" : "all"}
             onChange={(value) => setOnlyChanges(value === "changes")}
             options={[
-              { value: "all", label: "Tout le texte" },
-              { value: "changes", label: "Différences seules" },
+              { value: "all", label: t("Tout le texte") },
+              { value: "changes", label: t("Différences seules") },
             ]}
           />
         </Field>
@@ -86,24 +87,24 @@ export function TextCompareTool(_props: ToolComponentProps) {
         >
           {result.identical ? (
             <span className="flex items-center gap-1.5 text-[var(--ft-ok)]">
-              <Icon name="CircleCheck" size={15} /> Les deux textes sont identiques
+              <Icon name="CircleCheck" size={15} />{" "}{t("Les deux textes sont identiques")}
             </span>
           ) : (
             <>
               <span className="tabular-nums text-[var(--ft-ok)]">+{result.stats.added} ajoutée(s)</span>
-              <span className="tabular-nums text-[var(--ft-danger)]">−{result.stats.removed} supprimée(s)</span>
-              <span className="tabular-nums text-[var(--ft-warn)]">~{result.stats.modified} modifiée(s)</span>
+              <span className="tabular-nums text-[var(--ft-danger)]">{t("−{removed} supprimée(s)", { removed: result.stats.removed })}</span>
+              <span className="tabular-nums text-[var(--ft-warn)]">{t("~{modified} modifiée(s)", { modified: result.stats.modified })}</span>
               <span className="tabular-nums text-[var(--ft-text-muted)]">
-                {result.stats.unchanged} inchangée(s)
+                {t("{unchanged} inchangée(s)", { unchanged: result.stats.unchanged })}
               </span>
             </>
           )}
           <div className="flex-1" />
           <Button size="sm" onClick={downloadUnified} disabled={result.identical}>
-            <Icon name="Download" size={14} /> Télécharger le diff
+            <Icon name="Download" size={14} />{" "}{t("Télécharger le diff")}
           </Button>
           <Button size="sm" variant="primary" onClick={copyUnified} disabled={result.identical}>
-            <Icon name="Copy" size={14} /> Copier le diff
+            <Icon name="Copy" size={14} />{" "}{t("Copier le diff")}
           </Button>
         </div>
       )}
@@ -111,7 +112,7 @@ export function TextCompareTool(_props: ToolComponentProps) {
       {result.truncated && (
         <p className="flex items-start gap-2 rounded-md border border-[var(--ft-border)] px-3 py-2 text-xs text-[var(--ft-warn)]">
           <Icon name="TriangleAlert" size={14} className="mt-px shrink-0" />
-          Textes très longs : la comparaison est faite ligne à ligne, sans alignement fin.
+          {t("Textes très longs : la comparaison est faite ligne à ligne, sans alignement fin.")}
         </p>
       )}
 

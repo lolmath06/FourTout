@@ -21,6 +21,7 @@ import { HANDOFF_TARGETS } from "@/features/handoff/targets";
 import { OpenToolButton } from "@/features/handoff/openTool";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, formatNumber, localized, t, tx } from "@/i18n";
 
 /**
  * Inspection et test d'intégrité d'une archive.
@@ -44,13 +45,13 @@ const VERDICT_TONE: Record<ArchiveVerdict, CalloutTone> = {
   unsupported: "neutral",
 };
 
-const VERDICT_TITLE: Record<ArchiveVerdict, string> = {
-  valid: "Archive valide",
-  corrupt: "Archive corrompue",
-  incomplete: "Archive incomplète",
-  encrypted: "Archive protégée par mot de passe",
-  unsupported: "Format non pris en charge",
-};
+const VERDICT_TITLE: Record<ArchiveVerdict, string> = localized(() => ({
+  valid: t("Archive valide"),
+  corrupt: t("Archive corrompue"),
+  incomplete: t("Archive incomplète"),
+  encrypted: t("Archive protégée par mot de passe"),
+  unsupported: t("Format non pris en charge"),
+}));
 
 const STREAM_EXTENSIONS = /\.(gz|xz)$/i;
 const TARBALL = /\.(tar\.gz|tgz|tar\.xz|txz)$/i;
@@ -133,7 +134,7 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
           checked: 1,
           bytes: produced,
           failures: [],
-          detail: `Le flux se décompresse entièrement (${formatFileSize(produced)}) et sa somme de contrôle est correcte.`,
+          detail: t("Le flux se décompresse entièrement ({size}) et sa somme de contrôle est correcte.", { size: formatFileSize(produced) }),
         };
       });
       return;
@@ -146,15 +147,15 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <OptionGroup
-        ariaLabel="Inspecter ou tester"
+        ariaLabel={t("Inspecter ou tester")}
         value={mode}
         onChange={(next) => {
           setMode(next);
           reset();
         }}
         options={[
-          { value: "inspect", label: "Inspecter", hint: "Lit la table des matières. Rien n'est décompressé." },
-          { value: "test", label: "Tester", hint: "Décompresse tout et vérifie les sommes de contrôle. Rien n'est écrit." },
+          { value: "inspect", label: t("Inspecter"), hint: t("Lit la table des matières. Rien n'est décompressé.") },
+          { value: "test", label: t("Tester"), hint: t("Décompresse tout et vérifie les sommes de contrôle. Rien n'est écrit.") },
         ]}
       />
 
@@ -165,21 +166,19 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
           setPaths(next);
           reset();
         }}
-        label="Archive à examiner"
-        hint="ZIP, 7z, TAR, TAR.GZ, TAR.XZ, GZ, XZ"
+        label={t("Archive à examiner")}
+        hint={t("ZIP, 7z, TAR, TAR.GZ, TAR.XZ, GZ, XZ")}
         filters={[
           {
-            name: "Archives",
+            name: t("Archives"),
             extensions: ["zip", "7z", "tar", "gz", "tgz", "xz", "txz"],
           },
         ]}
       />
 
       {path && mode === "inspect" && isBareStream && (
-        <Callout tone="info" title="Ce format n'a pas de table des matières">
-          Un « .{name.endsWith(".xz") ? "xz" : "gz"} » ne contient qu'un flux d'octets, sans liste
-          d'entrées : il n'y a rien à inspecter. Le mode « Tester » sait en revanche vérifier qu'il
-          se décompresse entièrement.
+        <Callout tone="info" title={t("Ce format n'a pas de table des matières")}>
+          {t("Un « .{value} » ne contient qu'un flux d'octets, sans liste d'entrées : il n'y a rien à inspecter. Le mode « Tester » sait en revanche vérifier qu'il se décompresse entièrement.", { value: name.endsWith(".xz") ? "xz" : "gz" })}
         </Callout>
       )}
 
@@ -190,12 +189,12 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
         champ secret serait une question sans objet.
       */}
       {path && mode === "test" && supportsPassword && probe?.encrypted && (
-        <Fieldset columns={1} title="Archive protégée par mot de passe">
+        <Fieldset columns={1} title={t("Archive protégée par mot de passe")}>
           <PasswordField
             value={password}
             onChange={setPassword}
-            label="Mot de passe"
-            hint="L'en-tête de cette archive annonce des entrées chiffrées : sans le mot de passe, leur contenu ne peut pas être vérifié."
+            label={t("Mot de passe")}
+            hint={t("L'en-tête de cette archive annonce des entrées chiffrées : sans le mot de passe, leur contenu ne peut pas être vérifié.")}
           />
         </Fieldset>
       )}
@@ -203,12 +202,12 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
       {path && mode === "test" && supportsPassword && probe && !probe.encrypted && (
         <>
           {askPassword ? (
-            <Fieldset columns={1} title="Archive protégée par mot de passe">
+            <Fieldset columns={1} title={t("Archive protégée par mot de passe")}>
               <PasswordField
                 value={password}
                 onChange={setPassword}
-                label="Mot de passe"
-                hint="L'en-tête n'annonce aucune entrée chiffrée ; ce champ n'est là que si vous savez le contraire."
+                label={t("Mot de passe")}
+                hint={t("L'en-tête n'annonce aucune entrée chiffrée ; ce champ n'est là que si vous savez le contraire.")}
               />
             </Fieldset>
           ) : (
@@ -217,7 +216,7 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
               onClick={() => setAskPassword(true)}
               className="text-xs text-[var(--ft-text-muted)] underline-offset-2 hover:underline"
             >
-              Cette archive est protégée par un mot de passe ?
+              {t("Cette archive est protégée par un mot de passe ?")}
             </button>
           )}
         </>
@@ -225,7 +224,7 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
 
       {path && !(mode === "inspect" && isBareStream) && (
         <RunBar
-          label={mode === "inspect" ? "Inspecter l'archive" : "Tester l'intégrité"}
+          label={mode === "inspect" ? t("Inspecter l'archive") : t("Tester l'intégrité")}
           icon={mode === "inspect" ? "FileSearch2" : "PackageCheck"}
           running={listing.job.isRunning || integrity.job.isRunning}
           progress={mode === "inspect" ? listing.job.progress : integrity.job.progress}
@@ -238,7 +237,7 @@ export function ArchiveInspectTool({ tool }: ToolComponentProps) {
 
       {(listing.result || integrity.result) && path && (
         <div className="flex flex-wrap items-center gap-2" data-testid="archive-handoffs">
-          <span className="ft-label">Continuer avec</span>
+          <Trans source={"<0>Continuer avec</0>"} components={[<span className="ft-label" />]} />
           {!isBareStream && (
             <OpenToolButton
               toolId={HANDOFF_TARGETS.archiveExtract}
@@ -269,41 +268,36 @@ function Listing({ listing }: { listing: ArchiveListing }) {
       <StatGrid
         columns={5}
         stats={[
-          { label: "Entrées", value: listing.entries.length },
-          { label: "Fichiers", value: listing.files },
-          { label: "Décompressé", value: formatFileSize(listing.totalSize) },
-          { label: "Sur le disque", value: formatFileSize(listing.archiveSize) },
+          { label: t("Entrées"), value: listing.entries.length },
+          { label: t("Fichiers"), value: listing.files },
+          { label: t("Décompressé"), value: formatFileSize(listing.totalSize) },
+          { label: t("Sur le disque"), value: formatFileSize(listing.archiveSize) },
           {
-            label: "Taux",
+            label: t("Taux"),
             value: listing.totalSize > 0 ? `${(ratio * 100).toFixed(1)} %` : "—",
           },
         ]}
       />
 
       {listing.encrypted && (
-        <Callout tone="warning" title="Archive protégée par mot de passe">
-          Les noms et les tailles restent lisibles — c'est une limite du format ZIP — mais le
-          contenu ne peut être ni extrait ni vérifié sans le mot de passe.
+        <Callout tone="warning" title={t("Archive protégée par mot de passe")}>
+          {t("Les noms et les tailles restent lisibles — c'est une limite du format ZIP — mais le contenu ne peut être ni extrait ni vérifié sans le mot de passe.")}
         </Callout>
       )}
 
       {listing.suspicious && (
-        <Callout tone="warning" title="Taux de compression anormal">
-          Cette archive annonce {formatFileSize(listing.totalSize)} décompressés pour{" "}
-          {formatFileSize(listing.archiveSize)} sur le disque. Un tel rapport est le profil d'une
-          « bombe de décompression » : vérifiez d'où vient ce fichier avant de l'extraire.
+        <Callout tone="warning" title={t("Taux de compression anormal")}>
+          {t("Cette archive annonce {size} décompressés pour {size2} sur le disque. Un tel rapport est le profil d'une « bombe de décompression » : vérifiez d'où vient ce fichier avant de l'extraire.", { size: formatFileSize(listing.totalSize), size2: formatFileSize(listing.archiveSize) })}
         </Callout>
       )}
 
       {rejected.length > 0 && (
-        <Callout tone="error" title={`${rejected.length} entrée(s) dangereuse(s)`}>
-          Ces entrées désignent des emplacements hors du dossier d'extraction. FourTout refusera de
-          les écrire — mais leur seule présence indique une archive fabriquée pour piéger l'outil
-          qui l'ouvre.
+        <Callout tone="error" title={t("{count} entrée(s) dangereuse(s)", { count: rejected.length })}>
+          {t("Ces entrées désignent des emplacements hors du dossier d'extraction. FourTout refusera de les écrire — mais leur seule présence indique une archive fabriquée pour piéger l'outil qui l'ouvre.")}
         </Callout>
       )}
 
-      <Panel title="Contenu" count={listing.entries.length} testId="archive-entries">
+      <Panel title={t("Contenu")} count={listing.entries.length} testId="archive-entries">
         <ul className="max-h-[32rem] divide-y divide-[var(--ft-rule)] overflow-y-auto text-xs">
           {listing.entries.slice(0, 1000).map((entry) => (
             <li
@@ -346,7 +340,7 @@ function Listing({ listing }: { listing: ArchiveListing }) {
           ))}
           {listing.entries.length > 1000 && (
             <li className="px-3 py-1 text-[var(--ft-text-faint)]">
-              … et {(listing.entries.length - 1000).toLocaleString("fr-FR")} de plus
+              {t("… et {value} de plus", { value: formatNumber((listing.entries.length - 1000)) })}
             </li>
           )}
         </ul>
@@ -361,27 +355,27 @@ function Integrity({ report }: { report: ArchiveIntegrityReport }) {
       <StatGrid
         columns={4}
         stats={[
-          { label: "Format", value: report.format },
+          { label: t("Format"), value: report.format },
           {
-            label: "Verdict",
+            label: t("Verdict"),
             value: VERDICT_TITLE[report.verdict],
             tone: report.verdict === "valid" ? "ok" : report.verdict === "encrypted" ? "warn" : "danger",
           },
-          { label: "Entrées vérifiées", value: report.checked },
-          { label: "Octets décompressés", value: formatFileSize(report.bytes) },
+          { label: t("Entrées vérifiées"), value: report.checked },
+          { label: t("Octets décompressés"), value: formatFileSize(report.bytes) },
         ]}
       />
 
-      <Callout tone={VERDICT_TONE[report.verdict]} title={VERDICT_TITLE[report.verdict]}>
-        {report.detail}
+      <Callout tone={VERDICT_TONE[report.verdict]} title={tx(VERDICT_TITLE[report.verdict])}>
+        {tx(report.detail)}
       </Callout>
 
       {report.failures.length > 0 && (
-        <Panel title="Détail des anomalies" count={report.failures.length}>
+        <Panel title={t("Détail des anomalies")} count={report.failures.length}>
           <ul className="max-h-72 divide-y divide-[var(--ft-rule)] overflow-y-auto text-xs">
             {report.failures.slice(0, 200).map((failure, index) => (
               <li key={`${index}-${failure}`} className="px-3 py-1 font-mono">
-                {failure}
+                {tx(failure)}
               </li>
             ))}
           </ul>

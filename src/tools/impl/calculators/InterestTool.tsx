@@ -13,6 +13,7 @@ import {
 } from "@/core/calc/interest";
 import { parseNumber } from "@/core/units";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t } from "@/i18n";
 
 function useNumber(initial: string) {
   const [raw, setRaw] = useState(initial);
@@ -20,10 +21,10 @@ function useNumber(initial: string) {
   return { raw, setRaw, value, invalid: raw.trim().length > 0 && value === undefined };
 }
 
-const frequencies = Object.entries(FREQUENCY_LABELS).map(([value, label]) => ({
+const frequencies = localized(() => Object.entries(FREQUENCY_LABELS).map(([value, label]) => ({
   value: value as CompoundFrequency,
   label,
-}));
+})));
 
 /**
  * Intérêts simples et composés.
@@ -58,7 +59,7 @@ export function InterestTool(_props: ToolComponentProps) {
         }),
       };
     } catch (failure) {
-      return { error: failure instanceof Error ? failure.message : "Calcul impossible." };
+      return { error: failure instanceof Error ? failure.message : t("Calcul impossible.") };
     }
   }, [mode, principal.value, rate.value, years.value, frequency, contribution.value]);
 
@@ -67,72 +68,72 @@ export function InterestTool(_props: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <Fieldset columns={1}>
-        <Field label="Type d'intérêt">
+        <Field label={t("Type d'intérêt")}>
           <OptionGroup
-            ariaLabel="Type d'intérêt"
+            ariaLabel={t("Type d'intérêt")}
             value={mode}
             onChange={setMode}
             options={[
-              { value: "simple", label: "Simple — sur le capital initial" },
-              { value: "compound", label: "Composé — les intérêts produisent des intérêts" },
+              { value: "simple", label: t("Simple — sur le capital initial") },
+              { value: "compound", label: t("Composé — les intérêts produisent des intérêts") },
             ]}
           />
         </Field>
       </Fieldset>
 
       <Fieldset columns={3}>
-        <Field label="Capital initial (€)">
+        <Field label={t("Capital initial (€)")}>
           <TextInput
             value={principal.raw}
             inputMode="decimal"
             autoFocus
             onChange={(event) => principal.setRaw(event.target.value)}
-            aria-label="Capital initial"
+            aria-label={t("Capital initial")}
           />
         </Field>
-        <Field label="Taux annuel (%)">
+        <Field label={t("Taux annuel (%)")}>
           <TextInput
             value={rate.raw}
             inputMode="decimal"
             onChange={(event) => rate.setRaw(event.target.value)}
-            aria-label="Taux annuel"
+            aria-label={t("Taux annuel")}
           />
         </Field>
-        <Field label="Durée (années)">
+        <Field label={t("Durée (années)")}>
           <TextInput
             value={years.raw}
             inputMode="decimal"
             onChange={(event) => years.setRaw(event.target.value)}
-            aria-label="Durée en années"
+            aria-label={t("Durée en années")}
           />
         </Field>
       </Fieldset>
 
       <Fieldset columns={2}>
         <Field
-          label="Capitalisation"
+          label={t("Capitalisation")}
           hint={
             mode === "simple"
-              ? "Sans effet en intérêt simple : les intérêts ne sont jamais réinvestis."
-              : "Plus elle est fréquente, plus le taux effectif dépasse le taux affiché."
+              ? t("Sans effet en intérêt simple : les intérêts ne sont jamais réinvestis.")
+              : t("Plus elle est fréquente, plus le taux effectif dépasse le taux affiché.")
           }
         >
           <Select
             value={frequency}
             onChange={setFrequency}
-            aria-label="Fréquence de capitalisation"
+            aria-label={t("Fréquence de capitalisation")}
             options={frequencies}
           />
         </Field>
         <Field
-          label="Versement régulier (€)"
-          hint="Effectué à la fin de chaque période de capitalisation. Laissez 0 s'il n'y en a pas."
+          label={t("Versement régulier (€)")}
+          hint={t("Effectué à la fin de chaque période de capitalisation. Laissez 0 s'il n'y en a pas.")}
         >
           <TextInput
             value={contribution.raw}
             inputMode="decimal"
             onChange={(event) => contribution.setRaw(event.target.value)}
-            aria-label="Versement régulier"
+            aria-label={t("Versement régulier")}
           />
         </Field>
       </Fieldset>
@@ -140,7 +141,7 @@ export function InterestTool(_props: ToolComponentProps) {
       <InputError
         message={
           principal.invalid || rate.invalid || years.invalid || contribution.invalid
-            ? "Tous les champs doivent contenir un nombre."
+            ? t("Tous les champs doivent contenir un nombre.")
             : outcome?.error
         }
       />
@@ -151,36 +152,36 @@ export function InterestTool(_props: ToolComponentProps) {
             value={formatMoney(result.total)}
             formula={result.formula}
             secondary={[
-              { label: "Capital initial", value: formatMoney(result.principal) },
-              { label: "Versements cumulés", value: formatMoney(result.contributions) },
-              { label: "Total investi", value: formatMoney(result.invested) },
-              { label: "Intérêts produits", value: formatMoney(result.interest) },
+              { label: t("Capital initial"), value: formatMoney(result.principal) },
+              { label: t("Versements cumulés"), value: formatMoney(result.contributions) },
+              { label: t("Total investi"), value: formatMoney(result.invested) },
+              { label: t("Intérêts produits"), value: formatMoney(result.interest) },
               {
-                label: "Taux annuel effectif",
+                label: t("Taux annuel effectif"),
                 value: formatRate(result.effectiveAnnualRatePercent),
               },
-              { label: "Périodes de capitalisation", value: String(result.periods) },
+              { label: t("Périodes de capitalisation"), value: String(result.periods) },
             ]}
           />
 
           {result.schedule.length > 1 && (
             <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
               <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-                Année par année
+                {t("Année par année")}
               </h3>
               <div className="max-h-80 overflow-auto">
                 <table className="ft-table">
                   <thead>
                     <tr>
-                      <th scope="col">Année</th>
+                      <th scope="col">{t("Année")}</th>
                       <th scope="col" className="text-right">
-                        Investi
+                        {t("Investi")}
                       </th>
                       <th scope="col" className="text-right">
-                        Intérêts
+                        {t("Intérêts")}
                       </th>
                       <th scope="col" className="text-right">
-                        Capital
+                        {t("Capital")}
                       </th>
                     </tr>
                   </thead>
@@ -203,7 +204,7 @@ export function InterestTool(_props: ToolComponentProps) {
             </section>
           )}
 
-          <Callout tone="neutral" title="Outil mathématique">
+          <Callout tone="neutral" title={t("Outil mathématique")}>
             {INTEREST_DISCLAIMER}
           </Callout>
         </>

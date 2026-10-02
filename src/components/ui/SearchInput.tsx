@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
 import { Icon } from "./Icon";
+import { t, tx } from "@/i18n";
 
 interface SearchInputProps {
   value: string;
@@ -25,7 +26,7 @@ interface SearchInputProps {
 export function SearchInput({
   value,
   onChange,
-  placeholder = "Rechercher un outil…",
+  placeholder = t("Rechercher un outil…"),
   autoFocus = false,
   className,
   size = "sm",
@@ -59,7 +60,7 @@ export function SearchInput({
         ref={ref}
         type="search"
         value={value}
-        placeholder={placeholder}
+        placeholder={tx(placeholder)}
         aria-label={rest["aria-label"] ?? placeholder}
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={(event) => {
@@ -76,7 +77,7 @@ export function SearchInput({
       {value ? (
         <button
           type="button"
-          aria-label="Effacer la recherche"
+          aria-label={t("Effacer la recherche")}
           onClick={() => onChange("")}
           className="shrink-0 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)]"
         >
@@ -85,7 +86,7 @@ export function SearchInput({
       ) : (
         hint && (
           <span className="ft-value shrink-0 rounded-[var(--radius-sm)] border border-[var(--ft-border)] px-1 text-[10px] leading-4 text-[var(--ft-text-faint)]">
-            {hint}
+            {tx(hint)}
           </span>
         )
       )}

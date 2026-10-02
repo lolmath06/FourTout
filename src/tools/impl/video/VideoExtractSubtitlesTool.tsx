@@ -6,6 +6,7 @@ import { runMedia } from "@/core/media/client";
 import { extractSubtitlePipeline } from "@/core/media/video/pipelines";
 import { baseName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 /**
  * Extraction des pistes de sous-titres **déjà présentes** dans un fichier.
@@ -22,8 +23,8 @@ export function VideoExtractSubtitlesTool({ tool }: ToolComponentProps) {
   return (
     <VideoToolShell
       tool={tool}
-      actionLabel="Extraire les sous-titres"
-      hint="Les pistes détectées dans le fichier sont listées ci-dessous."
+      actionLabel={t("Extraire les sous-titres")}
+      hint={t("Les pistes détectées dans le fichier sont listées ci-dessous.")}
       run={async ({ files, infos, caps, context }) => {
         const { operation, track } = extractSubtitlePipeline(
           { caps, info: infos[0], extension: files[0].extension },
@@ -35,13 +36,13 @@ export function VideoExtractSubtitlesTool({ tool }: ToolComponentProps) {
             operation,
             outputName: `${baseName(files[0].name)}${track.language ? `-${track.language}` : ""}.${format}`,
             totalMs: infos[0]?.durationMs,
-            label: "Extraction…",
+            label: t("Extraction…"),
           },
           context,
         );
         return {
           files: [file],
-          summary: `Piste ${track.order + 1}${track.language ? ` (${track.language})` : ""} exportée en ${format.toUpperCase()}.`,
+          summary: t("Piste {value}{value2} exportée en {value3}.", { value: track.order + 1, value2: track.language ? ` (${track.language})` : "", value3: format.toUpperCase() }),
         };
       }}
     >
@@ -51,8 +52,7 @@ export function VideoExtractSubtitlesTool({ tool }: ToolComponentProps) {
           return (
             <p className="flex items-start gap-2 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-xs text-[var(--ft-text-muted)]">
               <Icon name="Info" size={14} className="mt-px shrink-0" />
-              Aucune piste de sous-titres dans ce fichier. Pour en créer une, utilisez « Générer les
-              sous-titres d'une vidéo ».
+              {t("Aucune piste de sous-titres dans ce fichier. Pour en créer une, utilisez « Générer les sous-titres d'une vidéo ».")}
             </p>
           );
         }
@@ -69,18 +69,18 @@ export function VideoExtractSubtitlesTool({ tool }: ToolComponentProps) {
                     label:
                       `${track.order + 1}. ${track.language ?? "langue inconnue"}` +
                       `${track.title ? ` — ${track.title}` : ""} (${track.codecName ?? "?"})` +
-                      `${track.textBased ? "" : " — image, non extractible"}`,
+                      `${track.textBased ? "" : t(" — image, non extractible")}`,
                   }))}
                 />
               </Field>
-              <Field label="Format d'export">
+              <Field label={t("Format d'export")}>
                 <OptionGroup
-                  ariaLabel="Format d'export"
+                  ariaLabel={t("Format d'export")}
                   value={format}
                   onChange={setFormat}
                   options={[
                     { value: "srt", label: "SRT" },
-                    { value: "vtt", label: "WebVTT" },
+                    { value: "vtt", label: t("WebVTT") },
                   ]}
                 />
               </Field>
@@ -88,8 +88,7 @@ export function VideoExtractSubtitlesTool({ tool }: ToolComponentProps) {
             {textual.length < tracks.length && (
               <p className="flex items-start gap-1.5 text-xs text-[var(--ft-warn)]">
                 <Icon name="TriangleAlert" size={13} className="mt-px shrink-0" />
-                {tracks.length - textual.length} piste(s) sont au format image (PGS, DVD…) : elles ne
-                contiennent pas de texte et ne peuvent pas être exportées en SRT.
+                {t("{value} piste(s) sont au format image (PGS, DVD…) : elles ne contiennent pas de texte et ne peuvent pas être exportées en SRT.", { value: tracks.length - textual.length })}
               </p>
             )}
           </div>

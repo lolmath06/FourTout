@@ -14,6 +14,7 @@ import { toPdfError } from "@/core/pdf/errors";
 import { notify } from "@/features/notifications/store";
 import type { PdfSource } from "@/core/pdf/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t } from "@/i18n";
 
 export function PdfRedactTool({ tool }: ToolComponentProps) {
   const [files, setFiles] = useState<SelectedFile[]>([]);
@@ -43,11 +44,11 @@ export function PdfRedactTool({ tool }: ToolComponentProps) {
       .map(([p, r]) => ({ page: Number(p), rects: r }));
     const result = await job.run(async (context) => {
       const output = await redactPdf(usable.source, redactions, { dpi: 200 }, { report: context.report, signal: context.signal });
-      return { files: [output], summary: `${totalRects} zone${totalRects > 1 ? "s" : ""} caviardée${totalRects > 1 ? "s" : ""} définitivement.` };
+      return { files: [output], summary: t("{totalRects} {totalRects, plural, one {zone} other {zones}} {totalRects, plural, one {caviardée} other {caviardées}} définitivement.", { totalRects }) };
     });
     if (result) {
       setOutcome(result);
-      notify.success("Fichier prêt", result.summary);
+      notify.success(t("Fichier prêt"), result.summary);
     }
   };
 
@@ -59,7 +60,7 @@ export function PdfRedactTool({ tool }: ToolComponentProps) {
         constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
         files={files}
         onChange={setFiles}
-        label="Déposez le PDF à caviarder"
+        label={t("Déposez le PDF à caviarder")}
         disabled={job.isRunning}
       />
       {loaded.length > 0 && <PdfSourceList documents={loaded} onUnlock={unlock} />}
@@ -68,7 +69,7 @@ export function PdfRedactTool({ tool }: ToolComponentProps) {
         <>
           <p className="flex items-start gap-2 rounded-md border border-[var(--ft-warn)] bg-[color-mix(in_oklch,var(--ft-warn)_8%,transparent)] px-3 py-2 text-xs text-[var(--ft-warn)]">
             <Icon name="TriangleAlert" size={15} className="mt-px shrink-0" />
-            Le caviardage est irréversible : sur les pages masquées, le contenu est rendu en image et le texte d'origine n'est plus récupérable.
+            {t("Le caviardage est irréversible : sur les pages masquées, le contenu est rendu en image et le texte d'origine n'est plus récupérable.")}
           </p>
 
           <div className="flex items-center justify-between gap-2">
@@ -76,7 +77,7 @@ export function PdfRedactTool({ tool }: ToolComponentProps) {
               <Button size="sm" variant="ghost" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1}>
                 <Icon name="ChevronLeft" size={15} />
               </Button>
-              <span className="text-sm tabular-nums">Page {page} / {pageCount}</span>
+              <Trans source={"<0>Page {page} / {pageCount}</0>"} values={{ page, pageCount }} components={[<span className="text-sm tabular-nums" />]} />
               <Button size="sm" variant="ghost" onClick={() => setPage((p) => Math.min(pageCount, p + 1))} disabled={page >= pageCount}>
                 <Icon name="ChevronRight" size={15} />
               </Button>
@@ -87,7 +88,7 @@ export function PdfRedactTool({ tool }: ToolComponentProps) {
               onClick={() => setRects((r) => ({ ...r, [page]: [] }))}
               disabled={!rects[page]?.length}
             >
-              <Icon name="Trash" size={14} /> Effacer la page
+              <Icon name="Trash" size={14} />{" "}{t("Effacer la page")}
             </Button>
           </div>
 
@@ -100,14 +101,14 @@ export function PdfRedactTool({ tool }: ToolComponentProps) {
           />
 
           <div className="flex items-center justify-between gap-3 border-t border-[var(--ft-border)] pt-4">
-            <span className="text-xs text-[var(--ft-text-muted)]">{totalRects} zone{totalRects > 1 ? "s" : ""} au total</span>
+            <Trans source={"<0>{totalRects} {totalRects, plural, one {zone} other {zones}} au total</0>"} values={{ totalRects }} components={[<span className="text-xs text-[var(--ft-text-muted)]" />]} />
             <div className="flex items-center gap-2">
-              {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>Annuler</Button>}
+              {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>{t("Annuler")}</Button>}
               <Button size="md" variant="primary" onClick={apply} disabled={job.isRunning || totalRects === 0}>
                 {job.isRunning ? (
-                  <><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? "Caviardage…"}</>
+                  <><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? t("Caviardage…")}</>
                 ) : (
-                  <><Icon name="SquareSlash" size={15} />Caviarder définitivement</>
+                  <><Icon name="SquareSlash" size={15} />{t("Caviarder définitivement")}</>
                 )}
               </Button>
             </div>
@@ -178,17 +179,17 @@ function RedactStage({
     <PreviewFrame maxHeight={560}>
       <div ref={boxRef} className="relative inline-block select-none" onPointerDown={start}>
         {render.url ? (
-          <img src={render.url} alt={`Page ${page}`} className="block max-h-[540px] max-w-full object-contain" draggable={false} />
+          <img src={render.url} alt={t("Page {page}", { page })} className="block max-h-[540px] max-w-full object-contain" draggable={false} />
         ) : (
           <div className="flex h-64 items-center justify-center text-sm text-[var(--ft-text-muted)]">
-            <Icon name="Loader" size={16} className="mr-2 animate-spin" /> Rendu de la page…
+            <Icon name="Loader" size={16} className="mr-2 animate-spin" />{" "}{t("Rendu de la page…")}
           </div>
         )}
         {rects.map((rect, index) => (
           <div
             key={index}
             onClick={(e) => { e.stopPropagation(); onRemove(index); }}
-            title="Cliquer pour retirer"
+            title={t("Cliquer pour retirer")}
             className="absolute cursor-pointer bg-black"
             style={{ left: `${rect.x * 100}%`, top: `${rect.y * 100}%`, width: `${rect.width * 100}%`, height: `${rect.height * 100}%` }}
           />

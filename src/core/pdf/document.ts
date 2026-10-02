@@ -1,6 +1,7 @@
 import { PDFDocument, PDFDict, PDFName } from "@cantoo/pdf-lib";
 import { PdfError, toPdfError } from "./errors";
 import type { OperationContext, OutputFile, PdfInfo, PdfSource } from "./types";
+import { t } from "@/i18n";
 
 /**
  * Primitives de chargement et d'enregistrement, partagées par toutes les
@@ -52,7 +53,7 @@ export async function loadPdf(
 ): Promise<PDFDocument> {
   const { ignoreEncryption = false, updateMetadata = false } = options;
 
-  if (source.bytes.length === 0) throw new PdfError("corrupted", "Le fichier est vide.");
+  if (source.bytes.length === 0) throw new PdfError("corrupted", t("Le fichier est vide."));
   if (!looksLikePdf(source.bytes)) throw new PdfError("not-a-pdf");
 
   try {
@@ -92,7 +93,7 @@ export function pageCountOrNull(document: PDFDocument): number {
  * protégé, avant de proposer quoi que ce soit.
  */
 export async function inspectPdf(source: PdfSource): Promise<PdfInfo> {
-  if (source.bytes.length === 0) throw new PdfError("corrupted", "Le fichier est vide.");
+  if (source.bytes.length === 0) throw new PdfError("corrupted", t("Le fichier est vide."));
   if (!looksLikePdf(source.bytes)) throw new PdfError("not-a-pdf");
 
   let document: PDFDocument;

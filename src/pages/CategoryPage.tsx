@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { categoryDescription, categoryName } from "@/core/tools/localized";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { getCategory, isCategoryId } from "@/core/tools/categories";
 import { toolRegistry } from "@/core/tools/registry";
@@ -8,6 +9,7 @@ import { SearchInput } from "@/components/ui/SearchInput";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
 import { ToolList } from "@/components/tools/ToolRow";
+import { t } from "@/i18n";
 
 export function CategoryPage() {
   const { categoryId } = useParams();
@@ -43,13 +45,13 @@ export function CategoryPage() {
           className="ft-meta mb-1 inline-flex items-center gap-1 transition-colors hover:text-[var(--ft-text)]"
         >
           <Icon name="ArrowLeft" size={12} />
-          Toutes les catégories
+          {t("Toutes les catégories")}
         </Link>
 
         <PageHeader
           icon={category.icon}
-          title={category.name}
-          description={category.description}
+          title={categoryName(category)}
+          description={categoryDescription(category)}
         />
       </div>
 
@@ -57,7 +59,7 @@ export function CategoryPage() {
         <SearchInput
           value={query}
           onChange={(value) => update({ q: value })}
-          placeholder={`Rechercher dans ${category.name}…`}
+          placeholder={t("Rechercher dans {name}…", { name: categoryName(category) })}
           className="min-w-64 flex-1"
         />
       </div>
@@ -71,8 +73,8 @@ export function CategoryPage() {
       ) : (
         <EmptyState
           icon="Search"
-          title="Aucun outil ne correspond"
-          description="Modifiez votre recherche : FourTout n'invente pas de résultat."
+          title={t("Aucun outil ne correspond")}
+          description={t("Modifiez votre recherche : FourTout n'invente pas de résultat.")}
         />
       )}
     </Page>

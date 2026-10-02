@@ -41,6 +41,7 @@ import { extractAudio } from "../operations/audio";
 import { audioBitrateKbps, audioEncodeArgs, videoEncodeArgs, type QualityLevel } from "./presets";
 import { cropRectFor, sizeForHeight, type NormalizedRect } from "./dimensions";
 import { AUDIO_MIME, type AudioFormat } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Pipelines des outils vidéo.
@@ -127,8 +128,7 @@ export interface EncodeIntent {
 /** Erreur unique et explicite quand aucun encodeur ne fonctionne ici. */
 function noEncoder(container: VideoContainerId): Error {
   return new Error(
-    `Aucun encodeur vidéo utilisable pour le format ${container.toUpperCase()} sur cette machine. ` +
-      "Le moteur média installé n'en propose aucun qui démarre réellement ici.",
+    t("Aucun encodeur vidéo utilisable pour le format {value} sur cette machine. Le moteur média installé n'en propose aucun qui démarre réellement ici.", { value: container.toUpperCase() }),
   );
 }
 
@@ -277,7 +277,7 @@ export function cropPipeline(
 ): VideoPipeline & { rect: ReturnType<typeof cropRectFor> } {
   const width = source.info?.width ?? 0;
   const height = source.info?.height ?? 0;
-  if (!width || !height) throw new Error("Ce fichier ne contient pas de piste vidéo lisible.");
+  if (!width || !height) throw new Error(t("Ce fichier ne contient pas de piste vidéo lisible."));
   const rect = cropRectFor({ width, height }, options.rect);
   const container = options.container ?? defaultContainer(source.extension, source.caps);
   const audioArgs = passthroughAudioArgs(source, container);
@@ -390,7 +390,7 @@ export function mergePipeline(
 
 /** « Supprimer le son d'une vidéo » : l'image est recopiée telle quelle. */
 export function removeAudioPipeline(source: PipelineSource): VideoPipeline {
-  if (!source.info?.hasAudio) throw new Error("Cette vidéo ne contient aucune piste audio.");
+  if (!source.info?.hasAudio) throw new Error(t("Cette vidéo ne contient aucune piste audio."));
   const container = containerOfExtension(source.extension) ?? defaultContainer(source.extension, source.caps);
   return copyPipeline(removeAudio(container), container);
 }
@@ -434,7 +434,7 @@ export function addAudioTrackPipeline(
 /** « Régler le volume d'une vidéo » : image recopiée, audio réencodé. */
 export function volumePipeline(source: PipelineSource, percent: number): VideoPipeline {
   if (!source.info?.hasAudio && percent > 0) {
-    throw new Error("Cette vidéo ne contient aucune piste audio à régler.");
+    throw new Error(t("Cette vidéo ne contient aucune piste audio à régler."));
   }
   const container = containerOfExtension(source.extension) ?? defaultContainer(source.extension, source.caps);
   const codec = audioCodecsFor(container, source.caps)[0];
@@ -480,12 +480,12 @@ export function softSubtitlePipeline(
   const container = options.container ?? subtitleContainerFor(source.extension, source.caps);
   if (!container) {
     throw new Error(
-      "Le moteur installé ne sait écrire aucune piste de sous-titres. Utilisez plutôt « Incruster des sous-titres ».",
+      t("Le moteur installé ne sait écrire aucune piste de sous-titres. Utilisez plutôt « Incruster des sous-titres »."),
     );
   }
   if (!supported.includes(container)) {
     throw new Error(
-      `Le moteur installé ne sait pas écrire de sous-titres dans un ${container.toUpperCase()} ` +
+      t("Le moteur installé ne sait pas écrire de sous-titres dans un {value} ", { value: container.toUpperCase() }) +
         `(encodeur ${SUBTITLE_ENCODER[container]} absent).`,
     );
   }
@@ -498,11 +498,11 @@ export function extractSubtitlePipeline(
   options: { order: number; format: "srt" | "vtt" },
 ): { operation: MediaExecutable; alternatives: MediaExecutable[]; track: NonNullable<MediaInfo["subtitles"]>[number] } {
   const tracks = source.info?.subtitles ?? [];
-  if (tracks.length === 0) throw new Error("Ce fichier ne contient aucune piste de sous-titres.");
+  if (tracks.length === 0) throw new Error(t("Ce fichier ne contient aucune piste de sous-titres."));
   const track = tracks.find((entry) => entry.order === options.order) ?? tracks[0];
   if (!track.textBased) {
     throw new Error(
-      `La piste sélectionnée est au format image (${track.codecName ?? "inconnu"}) : elle ne peut pas être convertie en texte.`,
+      t("La piste sélectionnée est au format image ({value}) : elle ne peut pas être convertie en texte.", { value: track.codecName ?? "inconnu" }),
     );
   }
   return { operation: extractSubtitleTrack(track.order, options.format), alternatives: [], track };
@@ -570,6 +570,6 @@ export function batchPipeline(
 function audioEncoderFor(container: VideoContainerId, caps: MediaCapabilities): string {
   const codec = audioCodecsFor(container, caps)[0];
   const encoder = codec ? caps.audio[codec] : undefined;
-  if (!encoder) throw new Error("Aucun encodeur audio n'est disponible dans le moteur installé.");
+  if (!encoder) throw new Error(t("Aucun encodeur audio n'est disponible dans le moteur installé."));
   return encoder;
 }

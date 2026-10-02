@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
 import { revealFile } from "@/core/output/save";
+import { formatNumber, t, tx } from "@/i18n";
 
 /**
  * Briques de restitution partagées par les outils Fichiers.
@@ -42,9 +43,9 @@ export function StatGrid({ stats, columns = 4 }: { stats: Stat[]; columns?: 3 | 
             className="text-lg font-semibold leading-6 tabular-nums"
             style={{ color: TONE_COLOR[stat.tone ?? "neutral"] }}
           >
-            {typeof stat.value === "number" ? stat.value.toLocaleString("fr-FR") : stat.value}
+            {typeof stat.value === "number" ? formatNumber(stat.value) : stat.value}
           </p>
-          <p className="text-[11px] text-[var(--ft-text-muted)]">{stat.label}</p>
+          <p className="text-[11px] text-[var(--ft-text-muted)]">{tx(stat.label)}</p>
         </div>
       ))}
     </div>
@@ -86,9 +87,9 @@ export function Panel({
       data-testid={testId}
     >
       <header className="flex items-center gap-2 border-b border-[var(--ft-rule)] bg-[var(--ft-surface)] px-3 py-1.5">
-        <h3 className="ft-section">{title}</h3>
+        <h3 className="ft-section">{tx(title)}</h3>
         {count !== undefined && (
-          <span className="ft-meta tabular-nums">{count.toLocaleString("fr-FR")}</span>
+          <span className="ft-meta tabular-nums">{formatNumber(count)}</span>
         )}
         <div className="flex-1" />
         {actions}
@@ -119,7 +120,7 @@ export function PathList({
             <Button
               size="sm"
               variant="ghost"
-              aria-label={`Ouvrir l'emplacement de ${path}`}
+              aria-label={t("Ouvrir l'emplacement de {path}", { path })}
               onClick={() => revealFile(path)}
             >
               <Icon name="FolderTree" size={13} />
@@ -129,7 +130,7 @@ export function PathList({
       ))}
       {paths.length > max && (
         <li className="px-3 py-1 text-[var(--ft-text-faint)]">
-          … et {(paths.length - max).toLocaleString("fr-FR")} de plus
+          {t("… et {value} de plus", { value: formatNumber((paths.length - max)) })}
         </li>
       )}
     </ul>
@@ -143,7 +144,7 @@ export function Warnings({ title, items }: { title: string; items: string[] }) {
     <div className="rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-xs text-[var(--ft-warn)]">
       <p className="flex items-center gap-1.5 font-medium">
         <Icon name="TriangleAlert" size={13} />
-        {title} ({items.length})
+        {tx(title)} ({items.length})
       </p>
       <ul className="mt-1 max-h-32 overflow-y-auto">
         {items.slice(0, 50).map((item) => (

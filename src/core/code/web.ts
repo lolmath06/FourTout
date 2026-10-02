@@ -13,6 +13,7 @@
  * code qu'on lui donne n'est pas un outil, c'est une faille.
  */
 
+import { t } from "@/i18n";
 export type WebLanguage = "html" | "css" | "js" | "json";
 
 export class WebFormatError extends Error {
@@ -94,7 +95,7 @@ export async function formatWeb(
   language: WebLanguage,
   options: FormatOptions = {},
 ): Promise<string> {
-  if (source.trim().length === 0) throw new WebFormatError("Rien à formater.");
+  if (source.trim().length === 0) throw new WebFormatError(t("Rien à formater."));
   const [prettier, html, postcss, babel, estree] = await Promise.all([
     import("prettier/standalone"),
     import("prettier/plugins/html"),
@@ -152,7 +153,7 @@ async function minifyJs(source: string): Promise<string> {
     format: { comments: false },
   });
   if (typeof result.code !== "string") {
-    throw new WebFormatError("Le moteur n'a produit aucun résultat.");
+    throw new WebFormatError(t("Le moteur n'a produit aucun résultat."));
   }
   return result.code;
 }
@@ -295,7 +296,7 @@ function findTagEnd(source: string, start: number): number {
 }
 
 export async function minifyWeb(source: string, language: WebLanguage): Promise<MinifyResult> {
-  if (source.trim().length === 0) throw new WebFormatError("Rien à minifier.");
+  if (source.trim().length === 0) throw new WebFormatError(t("Rien à minifier."));
   try {
     switch (language) {
       case "js":
@@ -314,7 +315,7 @@ export async function minifyWeb(source: string, language: WebLanguage): Promise<
 }
 
 function cleanEngineMessage(error: unknown, language: WebLanguage): string {
-  if (!(error instanceof Error)) return `Ce document n'a pas pu être traité comme du ${LANGUAGE_LABELS[language]}.`;
+  if (!(error instanceof Error)) return t("Ce document n'a pas pu être traité comme du {value}.", { value: LANGUAGE_LABELS[language] });
   const first = error.message.split("\n")[0];
   return `${LANGUAGE_LABELS[language]} : ${first}`;
 }

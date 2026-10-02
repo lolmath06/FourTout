@@ -6,11 +6,12 @@ import { parseSplitGroups } from "@/core/pdf/pageRange";
 import { isPdfError } from "@/core/pdf/errors";
 import { Icon } from "@/components/ui/Icon";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t, tx } from "@/i18n";
 
-const MODES = [
-  { value: "each-page" as SplitMode, label: "Une page par fichier" },
-  { value: "groups" as SplitMode, label: "Par plages" },
-];
+const MODES = localized(() => [
+  { value: "each-page" as SplitMode, label: t("Une page par fichier") },
+  { value: "groups" as SplitMode, label: t("Par plages") },
+]);
 
 export function PdfSplitTool({ tool }: ToolComponentProps) {
   const [mode, setMode] = useState<SplitMode>("each-page");
@@ -19,7 +20,7 @@ export function PdfSplitTool({ tool }: ToolComponentProps) {
   return (
     <PdfToolShell
       tool={tool}
-      actionLabel="Découper"
+      actionLabel={t("Découper")}
       actionDisabled={mode === "groups" && ranges.trim().length === 0}
       run={async ({ documents, context }) => {
         const [document] = documents;
@@ -33,7 +34,7 @@ export function PdfSplitTool({ tool }: ToolComponentProps) {
         );
         return {
           files,
-          summary: `${files.length} document${files.length > 1 ? "s" : ""} produit${files.length > 1 ? "s" : ""} à partir de ${pageCount} pages.`,
+          summary: t("{count} {count, plural, one {document} other {documents}} {count, plural, one {produit} other {produits}} à partir de {pageCount} pages.", { count: files.length, pageCount }),
           zipName: "pdf-decoupe.zip",
         };
       }}
@@ -42,9 +43,9 @@ export function PdfSplitTool({ tool }: ToolComponentProps) {
         const pageCount = documents[0]?.info?.pageCount ?? 0;
         return (
           <Fieldset columns={1}>
-            <Field label="Mode de découpage">
+            <Field label={t("Mode de découpage")}>
               <OptionGroup
-                ariaLabel="Mode de découpage"
+                ariaLabel={t("Mode de découpage")}
                 value={mode}
                 onChange={setMode}
                 options={MODES}
@@ -54,7 +55,7 @@ export function PdfSplitTool({ tool }: ToolComponentProps) {
             {mode === "each-page" ? (
               <p className="flex items-start gap-1.5 text-xs text-[var(--ft-text-muted)]">
                 <Icon name="Info" size={13} className="mt-0.5 shrink-0" />
-                {pageCount} fichier{pageCount > 1 ? "s" : ""} seront produits, un par page.
+                {t("{pageCount} {pageCount, plural, one {fichier} other {fichiers}} seront produits, un par page.", { pageCount })}
               </p>
             ) : (
               <RangesField value={ranges} onChange={setRanges} pageCount={pageCount} />
@@ -80,28 +81,27 @@ function RangesField({
     try {
       return { groups: parseSplitGroups(value, pageCount) };
     } catch (error) {
-      return { error: isPdfError(error) ? error.message : "Plages invalides" };
+      return { error: isPdfError(error) ? error.message : t("Plages invalides") };
     }
   }, [value, pageCount]);
 
   return (
     <Field
-      label="Plages de pages"
-      hint="Une plage par fichier, séparées par des virgules. Exemple : 1-3, 4-5, 6 produit trois documents."
+      label={t("Plages de pages")}
+      hint={t("Une plage par fichier, séparées par des virgules. Exemple : 1-3, 4-5, 6 produit trois documents.")}
     >
       <TextInput
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder="1-3, 4-5, 6"
         className="font-mono"
-        aria-label="Plages de pages"
+        aria-label={t("Plages de pages")}
       />
       {preview?.error ? (
-        <span className="text-xs text-[var(--ft-danger)]">{preview.error}</span>
+        <span className="text-xs text-[var(--ft-danger)]">{tx(preview.error)}</span>
       ) : preview?.groups ? (
         <span className="text-xs text-[var(--ft-text-faint)]">
-          {preview.groups.length} fichier{preview.groups.length > 1 ? "s" : ""} :{" "}
-          {preview.groups.map((group) => `${group.length} p.`).join(" · ")}
+          {t("{count} {count, plural, one {fichier} other {fichiers}} : {value}", { count: preview.groups.length, value: preview.groups.map((group) => `${group.length} p.`).join(" · ") })}
         </span>
       ) : null}
     </Field>

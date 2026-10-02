@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { SelectedFile } from "@/core/files";
 import { useFileUrl } from "./useFileUrl";
+import { t, tx } from "@/i18n";
 
 /**
  * Lecteur vidéo local réutilisable.
@@ -39,7 +40,7 @@ export function VideoPreview({
         className="flex items-center justify-center rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] text-xs text-[var(--ft-text-muted)]"
         style={{ height: maxHeight }}
       >
-        Préparation de l'aperçu…
+        {t("Préparation de l'aperçu…")}
       </div>
     );
   }
@@ -85,7 +86,7 @@ export function OutputVideoPreview({
   if (!url) return null;
   return (
     <div className="space-y-1">
-      {label && <p className="text-xs text-[var(--ft-text-muted)]">{label}</p>}
+      {label && <p className="text-xs text-[var(--ft-text-muted)]">{tx(label)}</p>}
       <video src={url} controls preload="metadata" className="max-h-80 w-full rounded-md bg-black" />
     </div>
   );

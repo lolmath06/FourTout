@@ -1,5 +1,6 @@
 import cronstrue from "cronstrue/i18n";
 import { CronExpressionParser } from "cron-parser";
+import { localized, t } from "@/i18n";
 
 /**
  * Assistant cron.
@@ -38,39 +39,37 @@ export interface CronExplanation {
   warnings: string[];
 }
 
-const FIELD_LABELS: { key: CronField["key"]; label: string; range: string }[] = [
-  { key: "minute", label: "Minute", range: "0–59" },
-  { key: "hour", label: "Heure", range: "0–23" },
-  { key: "dayOfMonth", label: "Jour du mois", range: "1–31" },
-  { key: "month", label: "Mois", range: "1–12 ou JAN–DEC" },
-  { key: "dayOfWeek", label: "Jour de la semaine", range: "0–7 ou SUN–SAT (0 et 7 = dimanche)" },
-];
+const FIELD_LABELS: { key: CronField["key"]; label: string; range: string }[] = localized(() => [
+  { key: "minute", label: t("Minute"), range: "0–59" },
+  { key: "hour", label: t("Heure"), range: "0–23" },
+  { key: "dayOfMonth", label: t("Jour du mois"), range: "1–31" },
+  { key: "month", label: t("Mois"), range: t("1–12 ou JAN–DEC") },
+  { key: "dayOfWeek", label: t("Jour de la semaine"), range: t("0–7 ou SUN–SAT (0 et 7 = dimanche)") },
+]);
 
-export const CRON_PRESETS: { label: string; expression: string }[] = [
-  { label: "Toutes les minutes", expression: "* * * * *" },
-  { label: "Tous les quarts d'heure", expression: "*/15 * * * *" },
-  { label: "Toutes les heures", expression: "0 * * * *" },
-  { label: "Chaque jour à 9 h", expression: "0 9 * * *" },
-  { label: "Jours ouvrés à 9 h", expression: "0 9 * * 1-5" },
-  { label: "Chaque lundi à 8 h 30", expression: "30 8 * * 1" },
-  { label: "Le 1er de chaque mois à minuit", expression: "0 0 1 * *" },
-  { label: "Chaque dimanche à 3 h", expression: "0 3 * * 0" },
-];
+export const CRON_PRESETS: { label: string; expression: string }[] = localized(() => [
+  { label: t("Toutes les minutes"), expression: "* * * * *" },
+  { label: t("Tous les quarts d'heure"), expression: "*/15 * * * *" },
+  { label: t("Toutes les heures"), expression: "0 * * * *" },
+  { label: t("Chaque jour à 9 h"), expression: "0 9 * * *" },
+  { label: t("Jours ouvrés à 9 h"), expression: "0 9 * * 1-5" },
+  { label: t("Chaque lundi à 8 h 30"), expression: "30 8 * * 1" },
+  { label: t("Le 1er de chaque mois à minuit"), expression: "0 0 1 * *" },
+  { label: t("Chaque dimanche à 3 h"), expression: "0 3 * * 0" },
+]);
 
 /** Découpe l'expression et refuse tout ce qui n'a pas exactement cinq champs. */
 export function splitCron(expression: string): string[] {
   const parts = expression.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) throw new CronError("L'expression est vide.");
+  if (parts.length === 0) throw new CronError(t("L'expression est vide."));
   if (parts.length === 6 || parts.length === 7) {
     throw new CronError(
-      `Cette expression compte ${parts.length} champs : c'est la syntaxe Quartz (secondes et ` +
-        "année). FourTout lit le cron Unix à cinq champs — retirez le champ des secondes.",
+      t("Cette expression compte {count} champs : c'est la syntaxe Quartz (secondes et année). FourTout lit le cron Unix à cinq champs — retirez le champ des secondes.", { count: parts.length }),
     );
   }
   if (parts.length !== 5) {
     throw new CronError(
-      `Une expression cron compte cinq champs (minute, heure, jour du mois, mois, jour de la ` +
-        `semaine) ; celle-ci en a ${parts.length}.`,
+      t("Une expression cron compte cinq champs (minute, heure, jour du mois, mois, jour de la semaine) ; celle-ci en a {count}.", { count: parts.length }),
     );
   }
   return parts;
@@ -95,7 +94,7 @@ export function explainCron(
     description = cronstrue.toString(normalized, { locale: "fr", use24HourTimeFormat: true });
   } catch (error) {
     throw new CronError(
-      error instanceof Error ? error.message : "Cette expression cron n'est pas valide.",
+      error instanceof Error ? error.message : t("Cette expression cron n'est pas valide."),
     );
   }
 
@@ -106,7 +105,7 @@ export function explainCron(
     for (let i = 0; i < occurrenceCount; i += 1) occurrences.push(iterator.next().toDate());
   } catch (error) {
     warnings.push(
-      "Les prochaines occurrences n'ont pas pu être calculées : " +
+      t("Les prochaines occurrences n'ont pas pu être calculées : ") +
         (error instanceof Error ? error.message : "expression trop inhabituelle."),
     );
   }
@@ -115,8 +114,7 @@ export function explainCron(
   // cron déclenche si **l'un ou l'autre** correspond, pas les deux.
   if (parts[2] !== "*" && parts[4] !== "*") {
     warnings.push(
-      "Le jour du mois et le jour de la semaine sont tous deux restreints : cron déclenche " +
-        "alors dès que l'un OU l'autre correspond, pas seulement quand les deux correspondent.",
+      t("Le jour du mois et le jour de la semaine sont tous deux restreints : cron déclenche alors dès que l'un OU l'autre correspond, pas seulement quand les deux correspondent."),
     );
   }
 

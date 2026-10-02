@@ -1,4 +1,5 @@
 import { cueDuration, cueSpan, type SubtitleCue, type SubtitleIssue } from "./types";
+import { localized, t } from "@/i18n";
 
 /**
  * Décalage, fusion et normalisation des sous-titres.
@@ -57,18 +58,18 @@ export function shiftCues(cues: readonly SubtitleCue[], offsetMs: number): Shift
 
 export type MergeOrder = "chronological" | "sequential";
 
-export const MERGE_ORDERS: { value: MergeOrder; label: string; hint: string }[] = [
+export const MERGE_ORDERS: { value: MergeOrder; label: string; hint: string }[] = localized(() => [
   {
     value: "chronological",
-    label: "Trier chronologiquement",
-    hint: "Une seule ligne de temps : les répliques des deux fichiers sont entremêlées selon leur horodatage.",
+    label: t("Trier chronologiquement"),
+    hint: t("Une seule ligne de temps : les répliques des deux fichiers sont entremêlées selon leur horodatage."),
   },
   {
     value: "sequential",
-    label: "A puis B, sans trier",
-    hint: "Conserve l'ordre d'origine de chaque fichier, A d'abord. Utile quand les horodatages se recouvrent volontairement.",
+    label: t("A puis B, sans trier"),
+    hint: t("Conserve l'ordre d'origine de chaque fichier, A d'abord. Utile quand les horodatages se recouvrent volontairement."),
   },
-];
+]);
 
 /**
  * Réunit deux séries de répliques en une seule.
@@ -216,16 +217,16 @@ export function normalizeCues(
     remaining.push({
       kind: "overlap",
       message:
-        `${after.overlaps} chevauchement${after.overlaps > 1 ? "s" : ""} : une réplique commence avant la fin de la précédente. ` +
-        "Rien n'a été raccourci — décider laquelle doit céder demande de connaître le contenu.",
+        t("{overlaps} {overlaps, plural, one {chevauchement} other {chevauchements}} : une réplique commence avant la fin de la précédente. ", { overlaps: after.overlaps }) +
+        t("Rien n'a été raccourci — décider laquelle doit céder demande de connaître le contenu."),
     });
   }
   if (after.endBeforeStart > 0) {
     remaining.push({
       kind: "end-before-start",
       message:
-        `${after.endBeforeStart} réplique${after.endBeforeStart > 1 ? "s ont" : " a"} une fin antérieure à son début : ` +
-        "le lecteur ne l'affichera pas. Corrigez l'horodatage, ou demandez leur suppression.",
+        t("{endBeforeStart} réplique{endBeforeStart, plural, one { a} other {s ont}} une fin antérieure à son début : ", { endBeforeStart: after.endBeforeStart }) +
+        t("le lecteur ne l'affichera pas. Corrigez l'horodatage, ou demandez leur suppression."),
     });
   }
 

@@ -7,6 +7,7 @@ import { transformPipeline } from "@/core/media/video/pipelines";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { fallbackTracker, sizeOutcome } from "./shared";
+import { t } from "@/i18n";
 
 /**
  * Rotation et miroir, sur le modèle de la catégorie Images : un choix unique,
@@ -19,8 +20,8 @@ export function VideoRotateTool({ tool }: ToolComponentProps) {
   return (
     <VideoToolShell
       tool={tool}
-      actionLabel="Appliquer"
-      hint="Corrige une vidéo filmée dans le mauvais sens, ou produit un effet miroir."
+      actionLabel={t("Appliquer")}
+      hint={t("Corrige une vidéo filmée dans le mauvais sens, ou produit un effet miroir.")}
       run={async ({ files, infos, caps, context }) => {
         const pipeline = transformPipeline(
           { caps, info: infos[0], extension: files[0].extension },
@@ -36,7 +37,7 @@ export function VideoRotateTool({ tool }: ToolComponentProps) {
             onFallback: tracker.onFallback,
             outputName: outputName(files[0].name, "pivotee", pipeline.container),
             totalMs: infos[0]?.durationMs,
-            label: "Rotation…",
+            label: t("Rotation…"),
           },
           context,
         );
@@ -50,9 +51,9 @@ export function VideoRotateTool({ tool }: ToolComponentProps) {
         return (
           <div className="space-y-2">
             <Fieldset columns={1}>
-              <Field label="Transformation">
+              <Field label={t("Transformation")}>
                 <OptionGroup
-                  ariaLabel="Transformation"
+                  ariaLabel={t("Transformation")}
                   value={transform}
                   onChange={setTransform}
                   options={VIDEO_TRANSFORMS.map((entry) => ({ value: entry.value, label: entry.label }))}

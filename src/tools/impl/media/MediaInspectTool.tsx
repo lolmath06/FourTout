@@ -16,6 +16,7 @@ import { formatTimecode } from "@/core/media/types";
 import { HANDOFF_TARGETS } from "@/features/handoff/targets";
 import { OpenToolButton } from "@/features/handoff/openTool";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { formatNumber, t, tx } from "@/i18n";
 
 /**
  * Fiche d'identité d'un fichier audio ou vidéo.
@@ -64,9 +65,8 @@ export function MediaInspectTool({ tool }: ToolComponentProps) {
 
   if (available === false) {
     return (
-      <Callout tone="info" title="Traitement local requis">
-        L'inspection s'appuie sur ffprobe et nécessite l'application FourTout installée. Elle n'est
-        pas disponible dans l'aperçu navigateur.
+      <Callout tone="info" title={t("Traitement local requis")}>
+        {t("L'inspection s'appuie sur ffprobe et nécessite l'application FourTout installée. Elle n'est pas disponible dans l'aperçu navigateur.")}
       </Callout>
     );
   }
@@ -77,18 +77,18 @@ export function MediaInspectTool({ tool }: ToolComponentProps) {
         constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
         files={files}
         onChange={setFiles}
-        label="Déposez un fichier audio ou vidéo"
+        label={t("Déposez un fichier audio ou vidéo")}
       />
 
       {loading && (
         <p className="flex items-center gap-2 text-xs text-[var(--ft-text-muted)]">
-          <Icon name="Loader" size={14} className="animate-spin" /> Lecture des métadonnées…
+          <Icon name="Loader" size={14} className="animate-spin" />{" "}{t("Lecture des métadonnées…")}
         </p>
       )}
 
       {error && (
-        <Callout tone="error" title="Fichier illisible">
-          {error}
+        <Callout tone="error" title={t("Fichier illisible")}>
+          {tx(error)}
         </Callout>
       )}
 
@@ -116,7 +116,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="rounded-[var(--radius-card)] border border-[var(--ft-border)] p-3">
       <h3 className="mb-1 text-[10px] uppercase tracking-wide text-[var(--ft-text-faint)]">
-        {title}
+        {tx(title)}
       </h3>
       <div className="divide-y divide-[var(--ft-border)]">{children}</div>
     </section>
@@ -129,19 +129,19 @@ function Details({ details, file }: { details: MediaDetails; file: SelectedFile 
   return (
     <div className="space-y-3">
       <div className="grid gap-3 md:grid-cols-2">
-        <Section title="Fichier">
-          <Row label="Nom" value={file.name} />
-          <Row label="Conteneur" value={details.formatLongName ?? details.formatName} />
-          <Row label="Durée" value={details.durationMs > 0 ? formatTimecode(details.durationMs) : undefined} />
+        <Section title={t("Fichier")}>
+          <Row label={t("Nom")} value={file.name} />
+          <Row label={t("Conteneur")} value={details.formatLongName ?? details.formatName} />
+          <Row label={t("Durée")} value={details.durationMs > 0 ? formatTimecode(details.durationMs) : undefined} />
           <Row
-            label="Taille"
+            label={t("Taille")}
             value={details.sizeBytes ? formatFileSize(details.sizeBytes) : formatFileSize(file.size)}
           />
           <Row
-            label="Débit global"
+            label={t("Débit global")}
             value={details.bitRate ? formatBitRate(details.bitRate) : undefined}
           />
-          <Row label="Encodeur" value={details.encoder} />
+          <Row label={t("Encodeur")} value={details.encoder} />
         </Section>
 
         {details.video.map((stream, index) => (
@@ -149,24 +149,24 @@ function Details({ details, file }: { details: MediaDetails; file: SelectedFile 
             key={stream.index}
             title={
               stream.attachedPicture
-                ? "Pochette"
+                ? t("Pochette")
                 : details.video.length > 1
-                  ? `Vidéo ${index + 1}`
-                  : "Vidéo"
+                  ? t("Vidéo {value}", { value: index + 1 })
+                  : t("Vidéo")
             }
           >
-            <Row label="Codec" value={stream.codecLongName ?? stream.codecName} />
-            <Row label="Profil" value={stream.profile} />
+            <Row label={t("Codec")} value={stream.codecLongName ?? stream.codecName} />
+            <Row label={t("Profil")} value={stream.profile} />
             <Row
-              label="Résolution"
+              label={t("Résolution")}
               value={stream.width && stream.height ? `${stream.width} × ${stream.height}` : undefined}
             />
-            <Row label="Rapport d'affichage" value={stream.displayAspectRatio} />
+            <Row label={t("Rapport d'affichage")} value={stream.displayAspectRatio} />
             <Row
-              label="Cadence"
+              label={t("Cadence")}
               value={
                 stream.frameRate.average !== undefined
-                  ? `${stream.frameRate.average} i/s${
+                  ? `${t("{rate} i/s", { rate: stream.frameRate.average })}${
                       stream.frameRate.averageFraction ? ` (${stream.frameRate.averageFraction})` : ""
                     }`
                   : undefined
@@ -174,56 +174,59 @@ function Details({ details, file }: { details: MediaDetails; file: SelectedFile 
             />
             {stream.frameRate.diverging && (
               <Row
-                label="Cadence réelle"
-                value={`${stream.frameRate.real} i/s (${stream.frameRate.realFraction})`}
-                hint="Cadence déclarée par le conteneur, différente de la moyenne observée."
+                label={t("Cadence réelle")}
+                value={`${t("{rate} i/s", { rate: stream.frameRate.real })} (${stream.frameRate.realFraction})`}
+                hint={t("Cadence déclarée par le conteneur, différente de la moyenne observée.")}
               />
             )}
-            <Row label="Images" value={stream.frameCount?.toLocaleString("fr-FR")} />
             <Row
-              label="Débit vidéo"
+              label={t("Images")}
+              value={stream.frameCount === undefined ? undefined : formatNumber(stream.frameCount)}
+            />
+            <Row
+              label={t("Débit vidéo")}
               value={
                 stream.bitRate
                   ? `${formatBitRate(stream.bitRate)}${stream.bitRateInferred ? " (déduit)" : ""}`
                   : undefined
               }
-              hint={stream.bitRateInferred ? "Le flux ne déclare pas son débit : celui du conteneur est repris." : undefined}
+              hint={stream.bitRateInferred ? t("Le flux ne déclare pas son débit : celui du conteneur est repris.") : undefined}
             />
-            <Row label="Format de pixels" value={stream.pixelFormat} />
-            <Row label="Langue" value={stream.language} />
+            <Row label={t("Format de pixels")} value={stream.pixelFormat} />
+            <Row label={t("Langue")} value={stream.language} />
           </Section>
         ))}
 
         {details.audio.map((stream, index) => (
-          <Section key={stream.index} title={details.audio.length > 1 ? `Audio ${index + 1}` : "Audio"}>
-            <Row label="Codec" value={stream.codecLongName ?? stream.codecName} />
-            <Row label="Profil" value={stream.profile} />
-            <Row label="Canaux" value={describeChannels(stream.channels, stream.channelLayout)} />
+          <Section key={stream.index} title={details.audio.length > 1 ? `Audio ${index + 1}` : t("Audio")}>
+            <Row label={t("Codec")} value={stream.codecLongName ?? stream.codecName} />
+            <Row label={t("Profil")} value={stream.profile} />
+            <Row label={t("Canaux")} value={describeChannels(stream.channels, stream.channelLayout)} />
             <Row
-              label="Échantillonnage"
+              label={t("Échantillonnage")}
               value={stream.sampleRate ? formatSampleRate(stream.sampleRate) : undefined}
             />
-            <Row label="Profondeur" value={stream.bitDepth ? `${stream.bitDepth} bits` : undefined} />
+            <Row label={t("Profondeur")} value={stream.bitDepth ? `${stream.bitDepth} bits` : undefined} />
             <Row
-              label="Débit audio"
+              label={t("Débit audio")}
               value={
                 stream.bitRate
                   ? `${formatBitRate(stream.bitRate)}${stream.bitRateInferred ? " (déduit)" : ""}`
                   : undefined
               }
             />
-            <Row label="Langue" value={stream.language} />
-            <Row label="Titre" value={stream.title} />
+            <Row label={t("Langue")} value={stream.language} />
+            <Row label={t("Titre")} value={stream.title} />
           </Section>
         ))}
 
         {details.subtitles.length > 0 && (
-          <Section title="Sous-titres">
+          <Section title={t("Sous-titres")}>
             {details.subtitles.map((stream, index) => (
               <Row
                 key={stream.index}
-                label={`Piste ${index + 1}`}
-                value={[stream.codecName, stream.language, stream.title, stream.forced ? "forcée" : undefined]
+                label={t("Piste {value}", { value: index + 1 })}
+                value={[stream.codecName, stream.language, stream.title, stream.forced ? t("forcée") : undefined]
                   .filter(Boolean)
                   .join(" · ")}
               />
@@ -232,7 +235,7 @@ function Details({ details, file }: { details: MediaDetails; file: SelectedFile 
         )}
 
         {details.tags.length > 0 && (
-          <Section title="Étiquettes">
+          <Section title={t("Étiquettes")}>
             {details.tags.map((tag) => (
               <Row key={tag.key} label={tag.key} value={tag.value} />
             ))}
@@ -246,13 +249,13 @@ function Details({ details, file }: { details: MediaDetails; file: SelectedFile 
             onClick={() => setAdvanced((current) => !current)}
             className="text-xs text-[var(--ft-accent-text)] underline"
           >
-            {advanced ? "Masquer" : "Afficher"} les informations techniques
+            {t("{value} les informations techniques", { value: advanced ? t("Masquer") : t("Afficher") })}
           </button>
           {advanced && (
-            <Section title="Technique avancée">
-              <Row label="Pochette" value={details.hasCoverArt ? "présente" : undefined} />
+            <Section title={t("Technique avancée")}>
+              <Row label={t("Pochette")} value={details.hasCoverArt ? t("présente") : undefined} />
               <Row
-                label="Autres flux"
+                label={t("Autres flux")}
                 value={details.otherStreams > 0 ? String(details.otherStreams) : undefined}
               />
               {details.replayGain.map((tag) => (
@@ -266,16 +269,16 @@ function Details({ details, file }: { details: MediaDetails; file: SelectedFile 
       {/* Ce qu'on veut faire juste après avoir lu la fiche. */}
       <div className="flex flex-wrap gap-2">
         {isRealVideo(details) && (
-          <OpenToolButton toolId={HANDOFF_TARGETS.videoFrameRate} files={[file]} label="Changer la fréquence d'images" />
+          <OpenToolButton toolId={HANDOFF_TARGETS.videoFrameRate} files={[file]} label={t("Changer la fréquence d'images")} />
         )}
         {details.audio.length > 0 && !isRealVideo(details) && (
-          <OpenToolButton toolId={HANDOFF_TARGETS.audioMetadata} files={[file]} label="Modifier les étiquettes" />
+          <OpenToolButton toolId={HANDOFF_TARGETS.audioMetadata} files={[file]} label={t("Modifier les étiquettes")} />
         )}
         {details.subtitles.some((stream) => stream.codecName) && isRealVideo(details) && (
           <OpenToolButton
             toolId={HANDOFF_TARGETS.subtitleExtract}
             files={[file]}
-            label="Extraire les sous-titres"
+            label={t("Extraire les sous-titres")}
           />
         )}
       </div>

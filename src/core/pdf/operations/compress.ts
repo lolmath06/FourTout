@@ -5,6 +5,7 @@ import { outputName } from "../filenames";
 import { decodeRawImage, listEmbeddedImages, type EmbeddedImage } from "../imageObjects";
 import { getRasterBackend, type RasterBackend } from "../raster/types";
 import type { OperationContext, OutputFile, PdfSource } from "../types";
+import { localized, t } from "@/i18n";
 
 /**
  * Réduction du poids d'un PDF.
@@ -44,23 +45,23 @@ const LEVELS: Record<CompressionLevel, LevelSettings> = {
   strong: { recompressImages: true, maxDimension: 1100, quality: 0.5 },
 };
 
-export const COMPRESSION_LEVELS: { value: CompressionLevel; label: string; hint: string }[] = [
+export const COMPRESSION_LEVELS: { value: CompressionLevel; label: string; hint: string }[] = localized(() => [
   {
     value: "light",
-    label: "Légère",
-    hint: "Réencode les images à très haute qualité, sans réduire la résolution. Dégradation minime.",
+    label: t("Légère"),
+    hint: t("Réencode les images à très haute qualité, sans réduire la résolution. Dégradation minime."),
   },
   {
     value: "balanced",
-    label: "Équilibrée",
-    hint: "Réduit les images embarquées en gardant une bonne lisibilité.",
+    label: t("Équilibrée"),
+    hint: t("Réduit les images embarquées en gardant une bonne lisibilité."),
   },
   {
     value: "strong",
-    label: "Forte",
-    hint: "Réduit fortement les images : privilégiez-la pour un envoi par e-mail.",
+    label: t("Forte"),
+    hint: t("Réduit fortement les images : privilégiez-la pour un envoi par e-mail."),
   },
-];
+]);
 
 export interface CompressionResult {
   output: OutputFile;
@@ -95,7 +96,7 @@ export async function compressPdf(
     const images = listEmbeddedImages(document);
     for (const [index, image] of images.entries()) {
       throwIfCancelled(context);
-      report(context, (index / Math.max(1, images.length)) * 0.8, `Image ${index + 1} sur ${images.length}`);
+      report(context, (index / Math.max(1, images.length)) * 0.8, t("Image {value} sur {count}", { value: index + 1, count: images.length }));
 
       const replaced = await recompressImage(document, image, settings, backend);
       if (replaced) imagesRecompressed += 1;
@@ -103,16 +104,16 @@ export async function compressPdf(
     }
   }
 
-  report(context, 0.85, "Réécriture du document");
+  report(context, 0.85, t("Réécriture du document"));
   const output = await savePdf(document, outputName(source.name, "compresse"));
 
   // Un fichier plus petit mais illisible ne serait pas une réussite :
   // on relit systématiquement le résultat avant de l'annoncer.
-  report(context, 0.95, "Vérification du fichier produit");
+  report(context, 0.95, t("Vérification du fichier produit"));
   await assertReadable(output.bytes, source.name);
 
   const compressedSize = output.bytes.length;
-  report(context, 1, "Terminé");
+  report(context, 1, t("Terminé"));
 
   return {
     output,
@@ -198,7 +199,7 @@ async function assertReadable(bytes: Uint8Array, name: string): Promise<void> {
   } catch (error) {
     throw new PdfError(
       "corrupted",
-      "Le fichier compressé n'a pas pu être relu ; l'original est conservé.",
+      t("Le fichier compressé n'a pas pu être relu ; l'original est conservé."),
       { cause: error },
     );
   }

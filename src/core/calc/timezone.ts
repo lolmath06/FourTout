@@ -22,6 +22,8 @@
  */
 
 /** Champs d'une heure murale, tels qu'un formulaire les fournit. */
+import { currentIntlLocale } from "@/i18n";
+import { t } from "@/i18n";
 export interface WallClock {
   year: number;
   month: number;
@@ -98,7 +100,7 @@ function partsFormatter(zone: string): Intl.DateTimeFormat {
         second: "2-digit",
       });
     } catch {
-      throw new TimeZoneError(`Fuseau horaire inconnu du système : « ${zone} ».`);
+      throw new TimeZoneError(t("Fuseau horaire inconnu du système : « {zone} ».", { zone }));
     }
     partsFormatters.set(zone, formatter);
   }
@@ -181,14 +183,16 @@ function abbreviationAt(zone: string, epochMs: number): string {
 const readableFormatters = new Map<string, Intl.DateTimeFormat>();
 
 function readableAt(zone: string, epochMs: number): string {
-  let formatter = readableFormatters.get(zone);
+  // Lecture humaine : dans la langue affichée. Le calcul, lui, n'en dépend pas.
+  const key = `${currentIntlLocale()}|${zone}`;
+  let formatter = readableFormatters.get(key);
   if (!formatter) {
-    formatter = new Intl.DateTimeFormat("fr-FR", {
+    formatter = new Intl.DateTimeFormat(currentIntlLocale(), {
       timeZone: zone,
       dateStyle: "full",
       timeStyle: "medium",
     });
-    readableFormatters.set(zone, formatter);
+    readableFormatters.set(key, formatter);
   }
   return formatter.format(new Date(epochMs));
 }
@@ -209,7 +213,7 @@ function describe(zone: string, epochMs: number): ZonedTime {
 
 /** Décrit un instant absolu tel qu'il est vu dans un fuseau. */
 export function zonedTimeAt(zone: string, epochMs: number): ZonedTime {
-  if (!Number.isFinite(epochMs)) throw new TimeZoneError("Instant invalide.");
+  if (!Number.isFinite(epochMs)) throw new TimeZoneError(t("Instant invalide."));
   return describe(zone, epochMs);
 }
 
@@ -234,7 +238,7 @@ function sameWall(a: WallClock, b: WallClock): boolean {
  */
 export function instantsForWallClock(zone: string, wall: WallClock): number[] {
   const naive = wallToUtcMs(wall);
-  if (!Number.isFinite(naive)) throw new TimeZoneError("Date ou heure invalide.");
+  if (!Number.isFinite(naive)) throw new TimeZoneError(t("Date ou heure invalide."));
 
   // On essaie les décalages en vigueur la veille et le lendemain, en plus de
   // celui estimé sur place. Autour d'un changement d'heure, ces deux décalages
@@ -277,8 +281,8 @@ export function convertZone(
   toZone: string,
   options: ConvertOptions = {},
 ): ZoneConversion {
-  if (!isKnownZone(fromZone)) throw new TimeZoneError(`Fuseau de départ inconnu : « ${fromZone} ».`);
-  if (!isKnownZone(toZone)) throw new TimeZoneError(`Fuseau d'arrivée inconnu : « ${toZone} ».`);
+  if (!isKnownZone(fromZone)) throw new TimeZoneError(t("Fuseau de départ inconnu : « {fromZone} ».", { fromZone }));
+  if (!isKnownZone(toZone)) throw new TimeZoneError(t("Fuseau d'arrivée inconnu : « {toZone} ».", { toZone }));
 
   const instants = instantsForWallClock(fromZone, wall);
 
@@ -297,11 +301,9 @@ export function convertZone(
       source,
       target: describe(toZone, shifted),
       note:
-        `Cette heure n'existe pas à ${fromZone} ce jour-là : l'horloge locale a avancé et ` +
-        `est passée directement de l'heure d'hiver à l'heure d'été. L'instant le plus proche ` +
-        `est ${source.wall.hour.toString().padStart(2, "0")}:${source.wall.minute
+        t("Cette heure n'existe pas à {fromZone} ce jour-là : l'horloge locale a avancé et est passée directement de l'heure d'hiver à l'heure d'été. L'instant le plus proche est {value}:{value2} heure locale.", { fromZone, value: source.wall.hour.toString().padStart(2, "0"), value2: source.wall.minute
           .toString()
-          .padStart(2, "0")} heure locale.`,
+          .padStart(2, "0") }),
     };
   }
 
@@ -324,10 +326,7 @@ export function convertZone(
     target: describe(toZone, chosen),
     alternative: { source: describe(fromZone, other), target: describe(toZone, other) },
     note:
-      `Cette heure est vécue deux fois à ${fromZone} ce jour-là : l'horloge locale a reculé. ` +
-      `La première occurrence est en ${earlierAbbr || formatOffset(zoneOffsetMinutes(fromZone, earlier))}, ` +
-      `la seconde en ${laterAbbr || formatOffset(zoneOffsetMinutes(fromZone, later))}. ` +
-      `Les deux sont affichées : seul le contexte permet de trancher.`,
+      t("Cette heure est vécue deux fois à {fromZone} ce jour-là : l'horloge locale a reculé. La première occurrence est en {value}, la seconde en {value2}. Les deux sont affichées : seul le contexte permet de trancher.", { fromZone, value: earlierAbbr || formatOffset(zoneOffsetMinutes(fromZone, earlier)), value2: laterAbbr || formatOffset(zoneOffsetMinutes(fromZone, later)) }),
   };
 }
 
@@ -443,9 +442,9 @@ export function systemZone(): string {
 /** Lit `2026-03-29` et `14:30` (ou `14:30:15`) en heure murale. */
 export function parseWallClock(date: string, time: string): WallClock {
   const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date.trim());
-  if (!dateMatch) throw new TimeZoneError("La date doit être écrite AAAA-MM-JJ.");
+  if (!dateMatch) throw new TimeZoneError(t("La date doit être écrite AAAA-MM-JJ."));
   const timeMatch = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(time.trim());
-  if (!timeMatch) throw new TimeZoneError("L'heure doit être écrite HH:MM ou HH:MM:SS.");
+  if (!timeMatch) throw new TimeZoneError(t("L'heure doit être écrite HH:MM ou HH:MM:SS."));
 
   const wall: WallClock = {
     year: Number(dateMatch[1]),
@@ -455,16 +454,16 @@ export function parseWallClock(date: string, time: string): WallClock {
     minute: Number(timeMatch[2]),
     second: timeMatch[3] ? Number(timeMatch[3]) : 0,
   };
-  if (wall.month < 1 || wall.month > 12) throw new TimeZoneError("Mois invalide.");
-  if (wall.day < 1 || wall.day > 31) throw new TimeZoneError("Jour invalide.");
-  if (wall.hour > 23) throw new TimeZoneError("L'heure doit être comprise entre 0 et 23.");
-  if (wall.minute > 59 || wall.second > 59) throw new TimeZoneError("Minutes ou secondes invalides.");
+  if (wall.month < 1 || wall.month > 12) throw new TimeZoneError(t("Mois invalide."));
+  if (wall.day < 1 || wall.day > 31) throw new TimeZoneError(t("Jour invalide."));
+  if (wall.hour > 23) throw new TimeZoneError(t("L'heure doit être comprise entre 0 et 23."));
+  if (wall.minute > 59 || wall.second > 59) throw new TimeZoneError(t("Minutes ou secondes invalides."));
 
   // Un 31 février passerait les contrôles ci-dessus : c'est le calendrier qui
   // tranche, en comparant la date reconstruite à celle demandée.
   const probe = new Date(Date.UTC(wall.year, wall.month - 1, wall.day));
   if (probe.getUTCMonth() !== wall.month - 1 || probe.getUTCDate() !== wall.day) {
-    throw new TimeZoneError("Cette date n'existe pas dans le calendrier.");
+    throw new TimeZoneError(t("Cette date n'existe pas dans le calendrier."));
   }
   return wall;
 }

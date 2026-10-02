@@ -4,6 +4,7 @@ import { PdfError } from "../errors";
 import { outputName } from "../filenames";
 import { getRasterBackend } from "../raster/types";
 import type { OperationContext, OutputFile } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Conversion d'images en PDF, une image par page.
@@ -59,7 +60,7 @@ async function embedImage(document: PDFDocument, image: ImageInput): Promise<PDF
   if (!backend) {
     throw new PdfError(
       "unsupported-image",
-      `« ${image.name} » n'est ni un PNG ni un JPEG.`,
+      t("« {name} » n'est ni un PNG ni un JPEG.", { name: image.name }),
     );
   }
   try {
@@ -68,7 +69,7 @@ async function embedImage(document: PDFDocument, image: ImageInput): Promise<PDF
   } catch (error) {
     throw new PdfError(
       "unsupported-image",
-      `« ${image.name} » n'a pas pu être décodé.`,
+      t("« {name} » n'a pas pu être décodé.", { name: image.name }),
       { cause: error },
     );
   }
@@ -79,14 +80,14 @@ export async function imagesToPdf(
   options: ImagesToPdfOptions,
   context?: OperationContext,
 ): Promise<OutputFile> {
-  if (images.length === 0) throw new PdfError("no-pages-selected", "Ajoutez au moins une image.");
+  if (images.length === 0) throw new PdfError("no-pages-selected", t("Ajoutez au moins une image."));
 
   const document = await PDFDocument.create();
   const margin = options.margin ?? 28;
 
   for (const [index, image] of images.entries()) {
     throwIfCancelled(context);
-    report(context, index / images.length, `Image ${index + 1} sur ${images.length}`);
+    report(context, index / images.length, t("Image {value} sur {count}", { value: index + 1, count: images.length }));
 
     const embedded = await embedImage(document, image);
 
@@ -112,7 +113,7 @@ export async function imagesToPdf(
     });
   }
 
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   const baseName = images.length === 1 ? images[0].name : "images";
   return savePdf(document, outputName(baseName, "pdf-converti"));
 }

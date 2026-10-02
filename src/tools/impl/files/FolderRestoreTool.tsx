@@ -22,6 +22,7 @@ import { revealFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { VerifyReport } from "./FolderBackupTool";
+import { formatDateTime, localized, t, tx } from "@/i18n";
 
 /**
  * Restauration d'une sauvegarde FourTout.
@@ -35,18 +36,18 @@ import { VerifyReport } from "./FolderBackupTool";
  * plus est restauré **et nommé** — le taire serait remettre en place un fichier
  * abîmé en laissant croire que tout va bien.
  */
-const MODES: { value: RestoreMode; label: string; hint: string }[] = [
+const MODES: { value: RestoreMode; label: string; hint: string }[] = localized(() => [
   {
     value: "skip",
-    label: "Ne pas écraser",
-    hint: "Les fichiers déjà présents dans la destination sont conservés tels quels.",
+    label: t("Ne pas écraser"),
+    hint: t("Les fichiers déjà présents dans la destination sont conservés tels quels."),
   },
   {
     value: "overwrite",
-    label: "Remplacer",
-    hint: "Les fichiers déjà présents sont remplacés par ceux de la sauvegarde.",
+    label: t("Remplacer"),
+    hint: t("Les fichiers déjà présents sont remplacés par ceux de la sauvegarde."),
   },
-];
+]);
 
 export function FolderRestoreTool(_props: ToolComponentProps) {
   const [backup, setBackup] = useState<string[]>([]);
@@ -76,9 +77,9 @@ export function FolderRestoreTool(_props: ToolComponentProps) {
     );
     if (!result) return;
     if (result.corrupted.length > 0 || result.failed.length > 0 || result.interrupted) {
-      notify.error("Restauration incomplète", `${result.restored} fichier(s) restauré(s)`);
+      notify.error(t("Restauration incomplète"), t("{restored} fichier(s) restauré(s)", { restored: result.restored }));
     } else {
-      notify.success("Restauration terminée", `${result.restored} fichier(s)`);
+      notify.success(t("Restauration terminée"), `${result.restored} fichier(s)`);
     }
   };
 
@@ -92,8 +93,8 @@ export function FolderRestoreTool(_props: ToolComponentProps) {
             setBackup(next);
             forget();
           }}
-          label="Dossier de la sauvegarde"
-          hint="celui qui contient « manifeste.json »"
+          label={t("Dossier de la sauvegarde")}
+          hint={t("celui qui contient « manifeste.json »")}
         />
         <PathPicker
           mode="directory"
@@ -102,19 +103,19 @@ export function FolderRestoreTool(_props: ToolComponentProps) {
             setDestination(next);
             forget();
           }}
-          label="Où restaurer"
-          hint="rien n'y sera supprimé"
+          label={t("Où restaurer")}
+          hint={t("rien n'y sera supprimé")}
         />
       </div>
 
       {ready && !preview && (
         <RunBar
-          label="Lire la sauvegarde"
+          label={t("Lire la sauvegarde")}
           icon="ArchiveRestore"
           running={inspecting.job.isRunning}
           progress={inspecting.job.progress}
           status={inspecting.job.status}
-          error={inspecting.error}
+          error={tx(inspecting.error)}
           cancel={inspecting.job.cancel}
           onRun={() =>
             void inspecting.execute((context) =>
@@ -129,27 +130,26 @@ export function FolderRestoreTool(_props: ToolComponentProps) {
           <StatGrid
             columns={4}
             stats={[
-              { label: "Fichiers", value: preview.files },
-              { label: "Dossiers", value: preview.directories },
-              { label: "Volume", value: formatFileSize(preview.bytes) },
+              { label: t("Fichiers"), value: preview.files },
+              { label: t("Dossiers"), value: preview.directories },
+              { label: t("Volume"), value: formatFileSize(preview.bytes) },
               {
-                label: "Collisions",
+                label: t("Collisions"),
                 value: preview.collisions.length,
                 tone: preview.collisions.length > 0 ? "warn" : "neutral",
               },
             ]}
           />
 
-          <Callout tone="info" title={`Sauvegarde de « ${preview.sourceName} »`}>
-            Créée le {new Date(preview.createdAt).toLocaleString("fr-FR")}. Rien n'a encore été
-            écrit dans la destination.
+          <Callout tone="info" title={t("Sauvegarde de « {sourceName} »", { sourceName: preview.sourceName })}>
+            {t("Créée le {value}. Rien n'a encore été écrit dans la destination.", { value: formatDateTime(new Date(preview.createdAt)) })}
           </Callout>
 
-          <Warnings title="Avertissements enregistrés lors de la sauvegarde" items={preview.warnings} />
+          <Warnings title={t("Avertissements enregistrés lors de la sauvegarde")} items={preview.warnings} />
 
           {preview.collisions.length > 0 && (
             <Panel
-              title="Fichiers déjà présents dans la destination"
+              title={t("Fichiers déjà présents dans la destination")}
               count={preview.collisions.length}
             >
               <ul className="max-h-56 divide-y divide-[var(--ft-rule)] overflow-y-auto text-xs">
@@ -163,12 +163,12 @@ export function FolderRestoreTool(_props: ToolComponentProps) {
           )}
 
           <RunBar
-            label="Vérifier l'intégrité avant de restaurer"
+            label={t("Vérifier l'intégrité avant de restaurer")}
             icon="ShieldCheck"
             running={verifying.job.isRunning}
             progress={verifying.job.progress}
             status={verifying.job.status}
-            error={verifying.error}
+            error={tx(verifying.error)}
             cancel={verifying.job.cancel}
             onRun={() => void verifying.execute((context) => verifyBackup(backup[0], context))}
           />
@@ -176,17 +176,15 @@ export function FolderRestoreTool(_props: ToolComponentProps) {
           {verification && <VerifyReport report={verification} />}
 
           {verification && !backupIsIntact(verification) && (
-            <Callout tone="error" title="Restaurer une sauvegarde abîmée">
-              Vous pouvez restaurer malgré tout : les fichiers en défaut seront copiés **et
-              signalés** dans le bilan, pour que vous sachiez exactement lesquels ne sont plus
-              d'origine.
+            <Callout tone="error" title={t("Restaurer une sauvegarde abîmée")}>
+              {t("Vous pouvez restaurer malgré tout : les fichiers en défaut seront copiés **et signalés** dans le bilan, pour que vous sachiez exactement lesquels ne sont plus d'origine.")}
             </Callout>
           )}
 
-          <Fieldset columns={1} title="En cas de collision">
-            <Field label="Mode" hint={MODES.find((entry) => entry.value === mode)?.hint}>
+          <Fieldset columns={1} title={t("En cas de collision")}>
+            <Field label={t("Mode")} hint={tx(MODES.find((entry) => entry.value === mode)?.hint)}>
               <OptionGroup
-                ariaLabel="Mode de restauration"
+                ariaLabel={t("Mode de restauration")}
                 value={mode}
                 onChange={setMode}
                 options={MODES}
@@ -195,19 +193,19 @@ export function FolderRestoreTool(_props: ToolComponentProps) {
           </Fieldset>
 
           {mode === "overwrite" && preview.collisions.length > 0 && (
-            <Callout tone="warning" title={`${preview.collisions.length} fichier(s) seront remplacés`}>
-              Leur contenu actuel dans la destination sera perdu.
+            <Callout tone="warning" title={t("{count} fichier(s) seront remplacés", { count: preview.collisions.length })}>
+              {t("Leur contenu actuel dans la destination sera perdu.")}
             </Callout>
           )}
 
           <RunBar
-            label={`Restaurer ${preview.files} fichier(s)`}
+            label={t("Restaurer {files} fichier(s)", { files: preview.files })}
             icon="ArchiveRestore"
             danger={mode === "overwrite" && preview.collisions.length > 0}
             running={restoring.job.isRunning}
             progress={restoring.job.progress}
             status={restoring.job.status}
-            error={restoring.error}
+            error={tx(restoring.error)}
             cancel={restoring.job.cancel}
             onRun={() => void restore()}
           />
@@ -219,46 +217,45 @@ export function FolderRestoreTool(_props: ToolComponentProps) {
           <StatGrid
             columns={4}
             stats={[
-              { label: "Restaurés", value: outcome.restored, tone: "ok" },
-              { label: "Conservés", value: outcome.skipped.length },
+              { label: t("Restaurés"), value: outcome.restored, tone: "ok" },
+              { label: t("Conservés"), value: outcome.skipped.length },
               {
-                label: "Abîmés",
+                label: t("Abîmés"),
                 value: outcome.corrupted.length,
                 tone: outcome.corrupted.length > 0 ? "danger" : "neutral",
               },
-              { label: "Écrit", value: formatFileSize(outcome.bytes) },
+              { label: t("Écrit"), value: formatFileSize(outcome.bytes) },
             ]}
           />
 
           {outcome.corrupted.length === 0 && outcome.failed.length === 0 && !outcome.interrupted ? (
             <Callout
               tone="success"
-              title="Restauration terminée"
+              title={t("Restauration terminée")}
               actions={
                 <Button size="sm" onClick={() => revealFile(outcome.destination)}>
-                  <Icon name="FolderTree" size={13} /> Ouvrir
+                  <Icon name="FolderTree" size={13} />{" "}{t("Ouvrir")}
                 </Button>
               }
             >
-              Tous les fichiers restaurés correspondent aux empreintes du manifeste.
+              {t("Tous les fichiers restaurés correspondent aux empreintes du manifeste.")}
             </Callout>
           ) : (
             <Callout
               tone="warning"
-              title={outcome.interrupted ? "Restauration interrompue" : "Restauration à vérifier"}
+              title={outcome.interrupted ? t("Restauration interrompue") : t("Restauration à vérifier")}
             >
-              Les fichiers déjà écrits sont complets. La destination n'est en revanche pas
-              intégralement conforme à la sauvegarde.
+              {t("Les fichiers déjà écrits sont complets. La destination n'est en revanche pas intégralement conforme à la sauvegarde.")}
             </Callout>
           )}
 
           <Warnings
-            title="Restaurés mais ne correspondant plus au manifeste"
+            title={t("Restaurés mais ne correspondant plus au manifeste")}
             items={outcome.corrupted}
           />
-          <Warnings title="En échec" items={outcome.failed} />
+          <Warnings title={t("En échec")} items={outcome.failed} />
           {outcome.skipped.length > 0 && (
-            <Panel title="Conservés (déjà présents dans la destination)" count={outcome.skipped.length}>
+            <Panel title={t("Conservés (déjà présents dans la destination)")} count={outcome.skipped.length}>
               <ul className="max-h-56 divide-y divide-[var(--ft-rule)] overflow-y-auto text-xs">
                 {outcome.skipped.slice(0, 300).map((path) => (
                   <li key={path} className="truncate px-3 py-1 font-mono" title={path}>

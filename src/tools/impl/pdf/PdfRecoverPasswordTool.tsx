@@ -20,15 +20,16 @@ import type { Job } from "@/features/jobs/store";
 import { notify } from "@/features/notifications/store";
 import type { PdfSource } from "@/core/pdf/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, formatNumber, localized, msg, t as tI18n, tx } from "@/i18n";
 
 const WARNING =
-  "Cette fonction teste automatiquement des mots de passe probables sur le fichier que vous avez sélectionné. Utilisez-la uniquement sur un document auquel vous êtes autorisé à accéder.";
+  msg("Cette fonction teste automatiquement des mots de passe probables sur le fichier que vous avez sélectionné. Utilisez-la uniquement sur un document auquel vous êtes autorisé à accéder.");
 
-const TIERS: { value: RecoveryTier; label: string; hint: string }[] = [
-  { value: "quick", label: "Rapide", hint: "~60 000 mots de passe très fréquents. Quelques secondes." },
-  { value: "extended", label: "Étendu", hint: "~1,4 million de candidats. Plus long, meilleures chances." },
-  { value: "full", label: "Complet", hint: "~14 millions de candidats (dictionnaire + règles). Peut être long." },
-];
+const TIERS: { value: RecoveryTier; label: string; hint: string }[] = localized(() => [
+  { value: "quick", label: tI18n("Rapide"), hint: tI18n("~60 000 mots de passe très fréquents. Quelques secondes.") },
+  { value: "extended", label: tI18n("Étendu"), hint: tI18n("~1,4 million de candidats. Plus long, meilleures chances.") },
+  { value: "full", label: tI18n("Complet"), hint: tI18n("~14 millions de candidats (dictionnaire + règles). Peut être long.") },
+]);
 
 /** Traduit l'état du job global en phase d'affichage. */
 type Phase = "idle" | "running" | "cancelling" | "found" | "exhausted" | "cancelled" | "error";
@@ -84,7 +85,7 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
         if (cancelled) return;
         setSource(next);
         setInfo(encryption ?? null);
-        if (!encryption) setInspectError("Ce PDF n'est pas protégé par un mot de passe.");
+        if (!encryption) setInspectError(tI18n("Ce PDF n'est pas protégé par un mot de passe."));
       } catch (error) {
         if (!cancelled) setInspectError(toPdfError(error).message);
       }
@@ -100,7 +101,7 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
     try {
       await startRecoveryJob({ source, params: info.params, tier });
     } catch (error) {
-      notify.error("Recherche impossible", error instanceof Error ? error.message : String(error));
+      notify.error(tI18n("Recherche impossible"), error instanceof Error ? error.message : String(error));
     }
   }, [source, info, tier]);
 
@@ -120,9 +121,9 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
     try {
       const output = await unlockPdf(doc, password);
       const saved = await saveFile(output);
-      if (saved.saved) notify.success("Copie déverrouillée enregistrée", saved.path);
+      if (saved.saved) notify.success(tI18n("Copie déverrouillée enregistrée"), saved.path);
     } catch (error) {
-      notify.error("Déverrouillage impossible", toPdfError(error).message);
+      notify.error(tI18n("Déverrouillage impossible"), toPdfError(error).message);
     }
   }, [job, source]);
 
@@ -130,14 +131,13 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
     <div className="space-y-4">
       <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-[color-mix(in_oklch,var(--ft-warn)_45%,var(--ft-border))] bg-[color-mix(in_oklch,var(--ft-warn)_8%,transparent)] px-3 py-2.5 text-xs text-[var(--ft-text)]">
         <Icon name="TriangleAlert" size={15} className="mt-px shrink-0 text-[var(--ft-warn)]" />
-        {WARNING}
+        {tx(WARNING)}
       </p>
 
       {!available && (
         <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2.5 text-xs text-[var(--ft-text-muted)]">
           <Icon name="Info" size={14} className="mt-px shrink-0" />
-          La récupération s'appuie sur le moteur natif de FourTout : elle n'est disponible que
-          dans l'application installée, pas dans l'aperçu navigateur.
+          {tI18n("La récupération s'appuie sur le moteur natif de FourTout : elle n'est disponible que dans l'application installée, pas dans l'aperçu navigateur.")}
         </p>
       )}
 
@@ -147,7 +147,7 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
         <div className="flex items-center gap-2.5 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] px-3 py-2.5 text-sm">
           <Icon name="Loader" size={16} className="shrink-0 animate-spin text-[var(--ft-accent)]" />
           <span>
-            Recherche en cours sur <span className="font-medium">{job.title}</span>.
+            <Trans source={"Recherche en cours sur <0>{title}</0>."} values={{ title: job.title }} components={[<span className="font-medium" />]} />
           </span>
         </div>
       )}
@@ -156,8 +156,8 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
         constraints={constraintsForTool(tool)}
         files={files}
         onChange={setFiles}
-        label="Déposez le PDF protégé"
-        hint="Le document et les mots de passe testés restent sur votre appareil."
+        label={tI18n("Déposez le PDF protégé")}
+        hint={tI18n("Le document et les mots de passe testés restent sur votre appareil.")}
         disabled={busy}
       />
 
@@ -173,35 +173,35 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
           <div className="flex items-center gap-2.5 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] px-3 py-2.5">
             <Icon name="Lock" size={16} className="shrink-0 text-[var(--ft-warn)]" />
             <span className="text-sm">
-              Document protégé — chiffrement <span className="font-medium">{info.label}</span>.
+              <Trans source={"Document protégé — chiffrement <0>{label}</0>."} values={{ label: info.label }} components={[<span className="font-medium" />]} />
             </span>
           </div>
 
           <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-4">
-            <p className="mb-2 text-xs font-medium text-[var(--ft-text-muted)]">Niveau de recherche</p>
+            <p className="mb-2 text-xs font-medium text-[var(--ft-text-muted)]">{tI18n("Niveau de recherche")}</p>
             <OptionGroup
-              ariaLabel="Niveau de recherche"
+              ariaLabel={tI18n("Niveau de recherche")}
               value={tier}
               onChange={setTier}
               options={TIERS}
               disabled={busy}
             />
             <p className="mt-2 text-xs text-[var(--ft-text-faint)]">
-              {TIERS.find((t) => t.value === tier)?.hint}
+              {tx(TIERS.find((t) => t.value === tier)?.hint)}
               {info.handler === "AES-256" &&
-                " Le chiffrement AES-256 est volontairement lent à tester : privilégiez d'abord le niveau Rapide."}
+                tI18n(" Le chiffrement AES-256 est volontairement lent à tester : privilégiez d'abord le niveau Rapide.")}
             </p>
 
             <div className="mt-4 flex items-center gap-2">
               {busy ? (
                 <Button variant="secondary" onClick={cancel} disabled={phase === "cancelling"}>
                   <Icon name={phase === "cancelling" ? "Loader" : "X"} size={15} className={phase === "cancelling" ? "animate-spin" : undefined} />
-                  {phase === "cancelling" ? "Arrêt en cours…" : "Arrêter"}
+                  {phase === "cancelling" ? tI18n("Arrêt en cours…") : tI18n("Arrêter")}
                 </Button>
               ) : (
                 <Button variant="primary" onClick={start} disabled={!available}>
                   <Icon name="Play" size={15} />
-                  Lancer la recherche
+                  {tI18n("Lancer la recherche")}
                 </Button>
               )}
             </div>
@@ -218,8 +218,8 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
         <ResultBanner
           icon="CircleAlert"
           tone="warn"
-          title="Mot de passe non trouvé dans ce niveau"
-          detail={`${formatInt(job?.result?.tested ?? 0)} candidats testés. Essayez un niveau plus large, ou ce mot de passe n'est pas dans le corpus.`}
+          title={tI18n("Mot de passe non trouvé dans ce niveau")}
+          detail={tI18n("{value} candidats testés. Essayez un niveau plus large, ou ce mot de passe n'est pas dans le corpus.", { value: formatInt(job?.result?.tested ?? 0) })}
           onDismiss={dismiss}
         />
       )}
@@ -227,13 +227,13 @@ export function PdfRecoverPasswordTool({ tool }: ToolComponentProps) {
         <ResultBanner
           icon="Info"
           tone="muted"
-          title="Recherche arrêtée"
-          detail={`${formatInt(job?.result?.tested ?? 0)} candidats testés avant l'arrêt.`}
+          title={tI18n("Recherche arrêtée")}
+          detail={tI18n("{value} candidats testés avant l'arrêt.", { value: formatInt(job?.result?.tested ?? 0) })}
           onDismiss={dismiss}
         />
       )}
       {phase === "error" && (
-        <ResultBanner icon="CircleAlert" tone="danger" title="Échec" detail={job?.error ?? job?.result?.message ?? ""} onDismiss={dismiss} />
+        <ResultBanner icon="CircleAlert" tone="danger" title={tI18n("Échec")} detail={job?.error ?? job?.result?.message ?? ""} onDismiss={dismiss} />
       )}
     </div>
   );
@@ -261,7 +261,7 @@ function StatsPanel({
       <div className="flex items-center justify-between text-sm">
         <span className="flex items-center gap-1.5 font-medium">
           {active && <Icon name="Loader" size={14} className="animate-spin text-[var(--ft-accent)]" />}
-          {formatInt(tested)} / {formatInt(knownTotal)} candidats
+          {tI18n("{value} / {value2} candidats", { value: formatInt(tested), value2: formatInt(knownTotal) })}
         </span>
         <span className="tabular-nums text-[var(--ft-text-muted)]">{Math.round(ratio * 100)} %</span>
       </div>
@@ -274,9 +274,9 @@ function StatsPanel({
       </div>
 
       <div className="grid grid-cols-3 gap-2 pt-1 text-center">
-        <Stat label="Débit" value={`${formatInt(Math.round(rate))}/s`} />
-        <Stat label="Écoulé" value={formatDuration(elapsed / 1000)} />
-        <Stat label="Restant" value={remaining !== undefined ? `~${formatDuration(remaining)}` : "—"} />
+        <Stat label={tI18n("Débit")} value={`${formatInt(Math.round(rate))}/s`} />
+        <Stat label={tI18n("Écoulé")} value={formatDuration(elapsed / 1000)} />
+        <Stat label={tI18n("Restant")} value={remaining !== undefined ? `~${formatDuration(remaining)}` : "—"} />
       </div>
     </div>
   );
@@ -286,7 +286,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <p className="text-sm font-semibold tabular-nums">{value}</p>
-      <p className="text-[11px] text-[var(--ft-text-muted)]">{label}</p>
+      <p className="text-[11px] text-[var(--ft-text-muted)]">{tx(label)}</p>
     </div>
   );
 }
@@ -307,14 +307,14 @@ function ResultFound({
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 text-sm font-medium">
           <Icon name="CircleCheck" size={18} className="text-[var(--ft-ok)]" />
-          Mot de passe trouvé
+          {tI18n("Mot de passe trouvé")}
         </p>
         <button
           type="button"
           onClick={onDismiss}
           className="text-xs text-[var(--ft-text-muted)] hover:text-[var(--ft-text)]"
         >
-          Fermer
+          {tI18n("Fermer")}
         </button>
       </div>
       <div className="mt-2 flex items-center gap-2">
@@ -325,19 +325,19 @@ function ResultFound({
           size="sm"
           onClick={() => {
             void navigator.clipboard.writeText(password).then(
-              () => notify.success("Mot de passe copié"),
-              () => notify.error("Copie impossible"),
+              () => notify.success(tI18n("Mot de passe copié")),
+              () => notify.error(tI18n("Copie impossible")),
             );
           }}
         >
           <Icon name="Check" size={13} />
-          Copier
+          {tI18n("Copier")}
         </Button>
       </div>
-      <p className="mt-2 text-xs text-[var(--ft-text-muted)]">Trouvé après {formatInt(tested)} essais.</p>
+      <p className="mt-2 text-xs text-[var(--ft-text-muted)]">{tI18n("Trouvé après {value} essais.", { value: formatInt(tested) })}</p>
       <Button size="sm" variant="primary" className="mt-3" onClick={onUnlock}>
         <Icon name="LockOpen" size={14} />
-        Enregistrer une copie déverrouillée
+        {tI18n("Enregistrer une copie déverrouillée")}
       </Button>
     </div>
   );
@@ -366,8 +366,8 @@ function ResultBanner({
     <div className="flex items-start gap-2.5 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-4">
       <Icon name={icon} size={16} className={`mt-0.5 shrink-0 ${color}`} />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">{title}</p>
-        {detail && <p className="mt-0.5 text-xs text-[var(--ft-text-muted)]">{detail}</p>}
+        <p className="text-sm font-medium">{tx(title)}</p>
+        {detail && <p className="mt-0.5 text-xs text-[var(--ft-text-muted)]">{tx(detail)}</p>}
       </div>
       {onDismiss && (
         <button
@@ -375,7 +375,7 @@ function ResultBanner({
           onClick={onDismiss}
           className="shrink-0 text-xs text-[var(--ft-text-muted)] hover:text-[var(--ft-text)]"
         >
-          Fermer
+          {tI18n("Fermer")}
         </button>
       )}
     </div>
@@ -383,7 +383,7 @@ function ResultBanner({
 }
 
 function formatInt(value: number): string {
-  return Math.round(value).toLocaleString("fr-FR");
+  return formatNumber(Math.round(value));
 }
 
 function formatDuration(seconds: number): string {

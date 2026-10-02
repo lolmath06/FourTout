@@ -21,6 +21,7 @@
  * volumes visés.
  */
 
+import { localized, t } from "@/i18n";
 export type UnitSystem = "si" | "iec";
 export type UnitBasis = "bit" | "byte";
 
@@ -38,49 +39,50 @@ const SI = 1000;
 const IEC = 1024;
 
 /** Unités de **taille**. */
-export const SIZE_UNITS: DataUnit[] = [
+export const SIZE_UNITS: DataUnit[] = localized(() => [
   { id: "bit", label: "bit", bits: 1, system: "si", basis: "bit" },
   { id: "kbit", label: "kbit", bits: SI, system: "si", basis: "bit" },
-  { id: "Mbit", label: "Mbit", bits: SI ** 2, system: "si", basis: "bit" },
-  { id: "Gbit", label: "Gbit", bits: SI ** 3, system: "si", basis: "bit" },
-  { id: "Tbit", label: "Tbit", bits: SI ** 4, system: "si", basis: "bit" },
+  { id: "Mbit", label: t("Mbit"), bits: SI ** 2, system: "si", basis: "bit" },
+  { id: "Gbit", label: t("Gbit"), bits: SI ** 3, system: "si", basis: "bit" },
+  { id: "Tbit", label: t("Tbit"), bits: SI ** 4, system: "si", basis: "bit" },
 
-  { id: "Kibit", label: "Kibit", bits: IEC, system: "iec", basis: "bit" },
-  { id: "Mibit", label: "Mibit", bits: IEC ** 2, system: "iec", basis: "bit" },
-  { id: "Gibit", label: "Gibit", bits: IEC ** 3, system: "iec", basis: "bit" },
-  { id: "Tibit", label: "Tibit", bits: IEC ** 4, system: "iec", basis: "bit" },
+  { id: "Kibit", label: t("Kibit"), bits: IEC, system: "iec", basis: "bit" },
+  { id: "Mibit", label: t("Mibit"), bits: IEC ** 2, system: "iec", basis: "bit" },
+  { id: "Gibit", label: t("Gibit"), bits: IEC ** 3, system: "iec", basis: "bit" },
+  { id: "Tibit", label: t("Tibit"), bits: IEC ** 4, system: "iec", basis: "bit" },
 
-  { id: "B", label: "o (octet)", bits: 8, system: "si", basis: "byte" },
-  { id: "kB", label: "ko (10³)", bits: 8 * SI, system: "si", basis: "byte" },
-  { id: "MB", label: "Mo (10⁶)", bits: 8 * SI ** 2, system: "si", basis: "byte" },
-  { id: "GB", label: "Go (10⁹)", bits: 8 * SI ** 3, system: "si", basis: "byte" },
-  { id: "TB", label: "To (10¹²)", bits: 8 * SI ** 4, system: "si", basis: "byte" },
+  { id: "B", label: t("o (octet)"), bits: 8, system: "si", basis: "byte" },
+  { id: "kB", label: t("ko (10³)"), bits: 8 * SI, system: "si", basis: "byte" },
+  { id: "MB", label: t("Mo (10⁶)"), bits: 8 * SI ** 2, system: "si", basis: "byte" },
+  { id: "GB", label: t("Go (10⁹)"), bits: 8 * SI ** 3, system: "si", basis: "byte" },
+  { id: "TB", label: t("To (10¹²)"), bits: 8 * SI ** 4, system: "si", basis: "byte" },
 
-  { id: "KiB", label: "Kio (2¹⁰)", bits: 8 * IEC, system: "iec", basis: "byte" },
-  { id: "MiB", label: "Mio (2²⁰)", bits: 8 * IEC ** 2, system: "iec", basis: "byte" },
-  { id: "GiB", label: "Gio (2³⁰)", bits: 8 * IEC ** 3, system: "iec", basis: "byte" },
-  { id: "TiB", label: "Tio (2⁴⁰)", bits: 8 * IEC ** 4, system: "iec", basis: "byte" },
-];
+  { id: "KiB", label: t("Kio (2¹⁰)"), bits: 8 * IEC, system: "iec", basis: "byte" },
+  { id: "MiB", label: t("Mio (2²⁰)"), bits: 8 * IEC ** 2, system: "iec", basis: "byte" },
+  { id: "GiB", label: t("Gio (2³⁰)"), bits: 8 * IEC ** 3, system: "iec", basis: "byte" },
+  { id: "TiB", label: t("Tio (2⁴⁰)"), bits: 8 * IEC ** 4, system: "iec", basis: "byte" },
+]);
 
 /** Unités de **débit** : les mêmes, par seconde. */
-export const RATE_UNITS: DataUnit[] = SIZE_UNITS.map((unit) => ({
+export const RATE_UNITS: DataUnit[] = localized(() => SIZE_UNITS.map((unit) => ({
   ...unit,
   id: `${unit.id}/s`,
   label: unit.basis === "bit" ? `${unit.label}/s` : `${unit.label.split(" ")[0]}/s`,
-}));
+})));
 
-const SIZE_BY_ID = new Map(SIZE_UNITS.map((unit) => [unit.id, unit]));
-const RATE_BY_ID = new Map(RATE_UNITS.map((unit) => [unit.id, unit]));
+// Recherches dans les listes localisées : les libellés suivent la langue.
+const SIZE_BY_ID = { get: (id: string) => SIZE_UNITS.find((unit) => unit.id === id) };
+const RATE_BY_ID = { get: (id: string) => RATE_UNITS.find((unit) => unit.id === id) };
 
 export function sizeUnit(id: string): DataUnit {
   const unit = SIZE_BY_ID.get(id);
-  if (!unit) throw new BandwidthError(`Unité de taille inconnue : « ${id} ».`);
+  if (!unit) throw new BandwidthError(t("Unité de taille inconnue : « {id} ».", { id }));
   return unit;
 }
 
 export function rateUnit(id: string): DataUnit {
   const unit = RATE_BY_ID.get(id);
-  if (!unit) throw new BandwidthError(`Unité de débit inconnue : « ${id} ».`);
+  if (!unit) throw new BandwidthError(t("Unité de débit inconnue : « {id} ».", { id }));
   return unit;
 }
 
@@ -92,15 +94,15 @@ export class BandwidthError extends Error {
 }
 
 function requirePositive(value: number, what: string, allowZero = false): number {
-  if (!Number.isFinite(value)) throw new BandwidthError(`${what} : ce n'est pas un nombre.`);
-  if (value < 0) throw new BandwidthError(`${what} ne peut pas être négatif.`);
-  if (!allowZero && value === 0) throw new BandwidthError(`${what} ne peut pas être nul.`);
+  if (!Number.isFinite(value)) throw new BandwidthError(t("{what} : ce n'est pas un nombre.", { what }));
+  if (value < 0) throw new BandwidthError(t("{what} ne peut pas être négatif.", { what }));
+  if (!allowZero && value === 0) throw new BandwidthError(t("{what} ne peut pas être nul.", { what }));
   return value;
 }
 
 /** Convertit une quantité exprimée dans une unité vers des bits. */
 export function toBits(value: number, unitId: string): number {
-  requirePositive(value, "La quantité", true);
+  requirePositive(value, t("La quantité"), true);
   return value * sizeUnit(unitId).bits;
 }
 
@@ -176,8 +178,8 @@ export function bandwidthFromTransfer(
   sizeUnitId: string,
   seconds: number,
 ): BandwidthResult {
-  requirePositive(size, "La taille");
-  requirePositive(seconds, "La durée");
+  requirePositive(size, t("La taille"));
+  requirePositive(seconds, t("La durée"));
   const bits = toBits(size, sizeUnitId);
   const bitsPerSecond = bits / seconds;
   const views = rateViews(bitsPerSecond);
@@ -269,8 +271,8 @@ export function transferTime(
   rate: number,
   rateUnitId: string,
 ): TransferTimeResult {
-  requirePositive(size, "La taille");
-  requirePositive(rate, "Le débit");
+  requirePositive(size, t("La taille"));
+  requirePositive(rate, t("Le débit"));
   const bits = toBits(size, sizeUnitId);
   const unit = rateUnit(rateUnitId);
   const bitsPerSecond = rate * unit.bits;

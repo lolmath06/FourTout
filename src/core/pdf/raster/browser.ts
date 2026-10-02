@@ -1,4 +1,5 @@
 import type { RasterBackend, RasterCanvas, RasterFormat, RasterPixels } from "./types";
+import { t } from "@/i18n";
 
 /**
  * Implémentation du backend bitmap reposant sur le canvas du navigateur.
@@ -33,7 +34,7 @@ class BrowserCanvas implements RasterCanvas {
     const blob = await new Promise<Blob | null>((resolve) =>
       this.handle.toBlob(resolve, MIME[format], format === "png" ? undefined : quality),
     );
-    if (!blob) throw new Error("Encodage de l'image impossible");
+    if (!blob) throw new Error(t("Encodage de l'image impossible"));
     return new Uint8Array(await blob.arrayBuffer());
   }
 

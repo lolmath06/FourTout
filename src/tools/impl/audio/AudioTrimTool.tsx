@@ -9,6 +9,7 @@ import type { SelectedFile } from "@/core/files";
 import { extensionToFormat } from "@/core/image/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 export function AudioTrimTool({ tool }: ToolComponentProps) {
   const [start, setStart] = useState("00:00:00.000");
@@ -21,7 +22,7 @@ export function AudioTrimTool({ tool }: ToolComponentProps) {
   return (
     <MediaToolShell
       tool={tool}
-      actionLabel="Découper"
+      actionLabel={t("Découper")}
       actionDisabled={!valid}
       run={async ({ files, context }) => {
         const ext = (files[0].extension || "mp3") as string;
@@ -30,7 +31,7 @@ export function AudioTrimTool({ tool }: ToolComponentProps) {
           { files: [files[0]], operation: trimAudio(startMs!, endMs!, format), outputName: outputName(files[0].name, "extrait", format), totalMs: endMs! - startMs! },
           context,
         );
-        return { files: [file], summary: `Portion ${formatTimecode(startMs!)} → ${formatTimecode(endMs!)}.` };
+        return { files: [file], summary: t("Portion {value} → {value2}.", { value: formatTimecode(startMs!), value2: formatTimecode(endMs!) }) };
       }}
     >
       {(_infos, files) => (
@@ -53,10 +54,10 @@ function TrimFields({ file, start, end, setStart, setEnd, defaultEnd }: {
   return (
     <div className="space-y-3">
       <Fieldset>
-        <Field label="Début (hh:mm:ss.mmm)"><TextInput value={start} onChange={(e) => setStart(e.target.value)} className="font-mono" /></Field>
-        <Field label="Fin (hh:mm:ss.mmm)"><TextInput value={end} onChange={(e) => setEnd(e.target.value)} className="font-mono" /></Field>
+        <Field label={t("Début (hh:mm:ss.mmm)")}><TextInput value={start} onChange={(e) => setStart(e.target.value)} className="font-mono" /></Field>
+        <Field label={t("Fin (hh:mm:ss.mmm)")}><TextInput value={end} onChange={(e) => setEnd(e.target.value)} className="font-mono" /></Field>
       </Fieldset>
-      <AudioPreview file={file} label="Écouter l'original pour repérer les temps" />
+      <AudioPreview file={file} label={t("Écouter l'original pour repérer les temps")} />
     </div>
   );
 }

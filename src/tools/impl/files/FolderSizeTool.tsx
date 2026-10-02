@@ -6,6 +6,7 @@ import { formatExactBytes, formatFileSize, formatSizeWithExact } from "@/core/fi
 import { folderStats, type FolderStats } from "@/core/files/native";
 import { revealFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { formatNumber, t, tx } from "@/i18n";
 
 /**
  * Analyse de la taille d'un dossier.
@@ -24,39 +25,38 @@ export function FolderSizeTool(_props: ToolComponentProps) {
         mode: "directory",
         paths,
         onChange: setPaths,
-        label: "Choisissez le dossier à analyser",
+        label: t("Choisissez le dossier à analyser"),
       }}
-      actionLabel="Analyser le dossier"
+      actionLabel={t("Analyser le dossier")}
       actionIcon="HardDrive"
       run={(context) => folderStats(paths[0], context)}
-      successMessage={(stats) => `${formatSizeWithExact(stats.totalBytes)} · ${stats.files} fichiers`}
+      successMessage={(stats) => t("{size} · {files} fichiers", { size: formatSizeWithExact(stats.totalBytes), files: stats.files })}
       renderResult={(stats) => (
         <div className="space-y-3" data-testid="folder-stats">
           <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
             {[
-              { label: "Taille totale", value: formatFileSize(stats.totalBytes) },
-              { label: "Fichiers", value: stats.files.toLocaleString("fr-FR") },
-              { label: "Dossiers", value: stats.directories.toLocaleString("fr-FR") },
-              { label: "Liens symboliques", value: stats.symlinks.toLocaleString("fr-FR") },
+              { label: t("Taille totale"), value: formatFileSize(stats.totalBytes) },
+              { label: t("Fichiers"), value: formatNumber(stats.files) },
+              { label: t("Dossiers"), value: formatNumber(stats.directories) },
+              { label: t("Liens symboliques"), value: formatNumber(stats.symlinks) },
             ].map((cell) => (
               <div
                 key={cell.label}
                 className="rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface)] px-2.5 py-2"
               >
                 <p className="text-lg font-semibold tabular-nums leading-6">{cell.value}</p>
-                <p className="text-[11px] text-[var(--ft-text-muted)]">{cell.label}</p>
+                <p className="text-[11px] text-[var(--ft-text-muted)]">{tx(cell.label)}</p>
               </div>
             ))}
           </div>
 
           <p className="ft-meta tabular-nums" data-testid="folder-total-exact">
-            Total exact : {formatExactBytes(stats.totalBytes)}. Les tailles sont comptées en
-            multiples binaires (1 Kio = 1024 octets), comme le système de fichiers.
+            {t("Total exact : {size}. Les tailles sont comptées en multiples binaires (1 Kio = 1024 octets), comme le système de fichiers.", { size: formatExactBytes(stats.totalBytes) })}
           </p>
 
           {stats.children.length > 0 && (
             <Table
-              title="Sous-dossiers, du plus lourd au plus léger"
+              title={t("Sous-dossiers, du plus lourd au plus léger")}
               rows={stats.children.slice(0, 15).map((child) => ({
                 key: child.path,
                 name: child.name,
@@ -69,7 +69,7 @@ export function FolderSizeTool(_props: ToolComponentProps) {
 
           {stats.largest.length > 0 && (
             <Table
-              title="Fichiers les plus volumineux"
+              title={t("Fichiers les plus volumineux")}
               rows={stats.largest.map((file) => ({
                 key: file.path,
                 name: file.name,
@@ -84,14 +84,14 @@ export function FolderSizeTool(_props: ToolComponentProps) {
             <div className="overflow-x-auto rounded-[var(--radius-card)] border border-[var(--ft-border)]">
               <table className="w-full border-collapse text-xs">
                 <caption className="px-3 py-2 text-left text-xs font-medium text-[var(--ft-text-muted)]">
-                  Répartition par extension
+                  {t("Répartition par extension")}
                 </caption>
                 <tbody>
                   {stats.byExtension.slice(0, 15).map((entry) => (
                     <tr key={entry.extension} className="border-t border-[var(--ft-border)]">
                       <td className="px-3 py-1 font-mono">{entry.extension}</td>
                       <td className="px-3 py-1 tabular-nums text-[var(--ft-text-muted)]">
-                        {entry.files} fichier(s)
+                        {t("{files} fichier(s)", { files: entry.files })}
                       </td>
                       <td
                         className="px-3 py-1 text-right tabular-nums"
@@ -113,7 +113,7 @@ export function FolderSizeTool(_props: ToolComponentProps) {
             <div className="rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-xs text-[var(--ft-warn)]">
               <p className="flex items-center gap-1.5 font-medium">
                 <Icon name="TriangleAlert" size={13} />
-                {stats.unreadable.length} dossier(s) illisible(s) — non comptés dans le total
+                {t("{count} dossier(s) illisible(s) — non comptés dans le total", { count: stats.unreadable.length })}
               </p>
               <ul className="mt-1 max-h-32 overflow-y-auto">
                 {stats.unreadable.slice(0, 20).map((entry) => (
@@ -154,7 +154,7 @@ function Table({
     <div className="overflow-x-auto rounded-[var(--radius-card)] border border-[var(--ft-border)]">
       <table className="w-full border-collapse text-xs">
         <caption className="px-3 py-2 text-left text-xs font-medium text-[var(--ft-text-muted)]">
-          {title}
+          {tx(title)}
         </caption>
         <tbody>
           {rows.map((row) => (
@@ -175,7 +175,7 @@ function Table({
                 <Button
                   size="sm"
                   variant="ghost"
-                  aria-label={`Ouvrir l'emplacement de ${row.name}`}
+                  aria-label={t("Ouvrir l'emplacement de {name}", { name: row.name })}
                   onClick={() => revealFile(row.path)}
                 >
                   <Icon name="FolderTree" size={13} />

@@ -11,6 +11,7 @@ import { formatFileSize } from "@/core/files";
 import { saveFile, revealFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 /**
  * Word (.docx) vers PDF.
@@ -53,16 +54,16 @@ export function DocxToPdfTool(_props: ToolComponentProps) {
           setPaths(next.slice(-1));
           setSaved(undefined);
         },
-        label: "Choisissez un document Word (.docx)",
-        hint: "Format .docx uniquement. Les anciens .doc ne sont pas lus.",
-        filters: [{ name: "Document Word", extensions: ["docx"] }],
+        label: t("Choisissez un document Word (.docx)"),
+        hint: t("Format .docx uniquement. Les anciens .doc ne sont pas lus."),
+        filters: [{ name: t("Document Word"), extensions: ["docx"] }],
       }}
-      actionLabel="Convertir en PDF"
+      actionLabel={t("Convertir en PDF")}
       actionIcon="FileText"
       actionDisabled={!source}
       run={async (context) => {
         const docx = await readDocx(source);
-        context.report?.({ ratio: 0.5, label: "Mise en page du PDF…" });
+        context.report?.({ ratio: 0.5, label: t("Mise en page du PDF…") });
         const name = `${stemOf(baseName(source))}.pdf`;
         const output = await documentToPdf(
           name,
@@ -77,7 +78,7 @@ export function DocxToPdfTool(_props: ToolComponentProps) {
         );
         return { docx, name: output.name, bytes: output.bytes };
       }}
-      successMessage={(result) => `${result.docx.blocks} blocs mis en page`}
+      successMessage={(result) => t("{blocks} blocs mis en page", { blocks: result.docx.blocks })}
       renderResult={(result) => (
         <div
           className="rounded-[var(--radius-card)] border border-l-2 border-[var(--ft-border)] bg-[var(--ft-surface)]"
@@ -86,20 +87,16 @@ export function DocxToPdfTool(_props: ToolComponentProps) {
           <div className="flex items-start gap-2 border-b border-[var(--ft-rule)] px-3 py-2">
             <Icon name="CircleCheck" size={15} className="mt-px shrink-0 text-[var(--ft-ok)]" />
             <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-medium leading-5">PDF produit — {result.name}</p>
+              <p className="text-[13px] font-medium leading-5">{t("PDF produit — {name}", { name: result.name })}</p>
               <p className="ft-meta ft-num">
-                {result.docx.blocks} bloc{result.docx.blocks > 1 ? "s" : ""} ·{" "}
-                {result.docx.tables} tableau{result.docx.tables > 1 ? "x" : ""} ·{" "}
-                {formatFileSize(result.bytes.length)}
+                {t("{blocks} {blocks, plural, one {bloc} other {blocs}} · {tables} {tables, plural, one {tableau} other {tableaux}} · {size}", { blocks: result.docx.blocks, tables: result.docx.tables, size: formatFileSize(result.bytes.length) })}
               </p>
             </div>
           </div>
 
           {result.docx.images > 0 && (
             <p className="ft-meta border-b border-[var(--ft-rule)] px-3 py-1.5 text-[var(--ft-warn)]">
-              {result.docx.images} image{result.docx.images > 1 ? "s" : ""} du document ne sont pas
-              reprises dans le PDF : le lecteur DOCX de FourTout extrait le texte, pas les
-              illustrations.
+              {t("{images} {images, plural, one {image} other {images}} du document ne sont pas reprises dans le PDF : le lecteur DOCX de FourTout extrait le texte, pas les illustrations.", { images: result.docx.images })}
             </p>
           )}
 
@@ -107,7 +104,7 @@ export function DocxToPdfTool(_props: ToolComponentProps) {
             <ul className="divide-y divide-[var(--ft-rule)]">
               {result.docx.dropped.slice(0, 8).map((entry) => (
                 <li key={entry} className="ft-meta ft-row-py px-3 text-[var(--ft-text-muted)]">
-                  Non repris : {entry}
+                  {t("Non repris : {entry}", { entry })}
                 </li>
               ))}
             </ul>
@@ -125,55 +122,52 @@ export function DocxToPdfTool(_props: ToolComponentProps) {
                 });
                 if (outcome.saved) {
                   setSaved(outcome.path);
-                  notify.success("PDF enregistré", outcome.path);
+                  notify.success(t("PDF enregistré"), outcome.path);
                 }
               }}
             >
-              <Icon name="HardDrive" size={13} /> Enregistrer
+              <Icon name="HardDrive" size={13} />{" "}{t("Enregistrer")}
             </Button>
             {saved && (
               <Button size="sm" variant="ghost" onClick={() => revealFile(saved)}>
-                <Icon name="FolderTree" size={13} /> Ouvrir le dossier
+                <Icon name="FolderTree" size={13} />{" "}{t("Ouvrir le dossier")}
               </Button>
             )}
           </div>
         </div>
       )}
       footer={
-        <Callout tone="info" title="Le contenu, pas la maquette">
-          FourTout reprend les titres, les paragraphes, le gras, l'italique, les listes et les
-          tableaux simples. Les mises en page Word complexes — colonnes, zones flottantes, en-têtes
-          et pieds de page, polices spécifiques, images — peuvent différer ou disparaître. Pour un
-          rendu fidèle au pixel, exportez en PDF depuis Word ou LibreOffice.
+        <Callout tone="info" title={t("Le contenu, pas la maquette")}>
+          {t("FourTout reprend les titres, les paragraphes, le gras, l'italique, les listes et les tableaux simples. Les mises en page Word complexes — colonnes, zones flottantes, en-têtes et pieds de page, polices spécifiques, images — peuvent différer ou disparaître. Pour un rendu fidèle au pixel, exportez en PDF depuis Word ou LibreOffice.")}
         </Callout>
       }
     >
-      <Fieldset columns={3} title="Mise en page">
-        <Field label="Titre du PDF" hint="Vide : le titre du document Word, s'il en a un.">
+      <Fieldset columns={3} title={t("Mise en page")}>
+        <Field label={t("Titre du PDF")} hint={t("Vide : le titre du document Word, s'il en a un.")}>
           <TextInput
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder="(titre du document)"
-            aria-label="Titre du PDF"
+            aria-label={t("Titre du PDF")}
           />
         </Field>
-        <Field label="Taille du texte" hint="En points.">
+        <Field label={t("Taille du texte")} hint={t("En points.")}>
           <NumberInput
             value={fontSize}
             min={8}
             max={18}
             onChange={(event) => setFontSize(Number(event.target.value))}
-            aria-label="Taille du texte"
+            aria-label={t("Taille du texte")}
           />
         </Field>
-        <Field label="Format de page">
+        <Field label={t("Format de page")}>
           <OptionGroup
-            ariaLabel="Format de page"
+            ariaLabel={t("Format de page")}
             value={pageSize}
             onChange={setPageSize}
             options={[
               { value: "a4", label: "A4" },
-              { value: "letter", label: "Letter" },
+              { value: "letter", label: t("Letter") },
             ]}
           />
         </Field>

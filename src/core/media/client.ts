@@ -4,6 +4,7 @@ import type { OperationContext, OutputFile } from "@/core/pdf/types";
 import { JobCancelledError } from "@/core/jobs/types";
 import { parseProbe, type MediaInfo } from "./types";
 import { isEncoderUnavailable } from "./errors";
+import { t } from "@/i18n";
 
 /**
  * Client du socle média. Orchestre le cycle complet d'une opération FFmpeg :
@@ -81,7 +82,7 @@ export async function readBytes(file: SelectedFile): Promise<Uint8Array> {
     const { readFile } = await import("@tauri-apps/plugin-fs");
     return await readFile(file.path);
   }
-  throw new Error("Fichier illisible.");
+  throw new Error(t("Fichier illisible."));
 }
 
 /** Écrit des octets dans un fichier temporaire natif et renvoie son chemin. */
@@ -159,7 +160,7 @@ export interface RunOptions {
 
 /** Exécute une opération média de bout en bout et renvoie le fichier produit. */
 export async function runMedia(options: RunOptions, context?: OperationContext): Promise<OutputFile> {
-  if (!isTauri()) throw new Error("Le traitement média nécessite l'application FourTout installée.");
+  if (!isTauri()) throw new Error(t("Le traitement média nécessite l'application FourTout installée."));
   const { invoke } = await import("@tauri-apps/api/core");
   const { listen } = await import("@tauri-apps/api/event");
 
@@ -167,7 +168,7 @@ export async function runMedia(options: RunOptions, context?: OperationContext):
   const staged: string[] = [];
   const produced: string[] = [];
 
-  const label = options.label ?? "Traitement…";
+  const label = options.label ?? t("Traitement…");
   const unlisten = await listen<{ jobId: string; ratio: number }>("media://progress", (event) => {
     if (event.payload.jobId === jobId) context?.report?.({ ratio: event.payload.ratio, label });
   });
@@ -212,7 +213,7 @@ export async function runMedia(options: RunOptions, context?: OperationContext):
         const retryable = attempt + 1 < attempts.length && isEncoderUnavailable(lastError.message);
         if (!retryable) throw lastError;
         options.onFallback?.({ attempt: attempt + 1, reason: lastError.message });
-        context?.report?.({ ratio: 0, label: "Reprise avec un encodeur logiciel…" });
+        context?.report?.({ ratio: 0, label: t("Reprise avec un encodeur logiciel…") });
         continue;
       }
 
@@ -220,7 +221,7 @@ export async function runMedia(options: RunOptions, context?: OperationContext):
       return { name: options.outputName, bytes: new Uint8Array(output), mimeType: operation.mimeType };
     }
 
-    throw lastError ?? new Error("Le traitement a échoué.");
+    throw lastError ?? new Error(t("Le traitement a échoué."));
   } finally {
     unlisten();
     context?.signal?.removeEventListener("abort", onAbort);

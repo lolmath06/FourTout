@@ -8,6 +8,7 @@ import { formatTimecode } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { fallbackTracker, sizeOutcome } from "./shared";
+import { t } from "@/i18n";
 
 /**
  * Accéléré et ralenti.
@@ -23,8 +24,8 @@ export function VideoSpeedTool({ tool }: ToolComponentProps) {
   return (
     <VideoToolShell
       tool={tool}
-      actionLabel="Changer la vitesse"
-      hint="La bande son suit l'image sans changer de hauteur."
+      actionLabel={t("Changer la vitesse")}
+      hint={t("La bande son suit l'image sans changer de hauteur.")}
       run={async ({ files, infos, caps, context }) => {
         const pipeline = speedPipeline(
           { caps, info: infos[0], extension: files[0].extension },
@@ -39,7 +40,7 @@ export function VideoSpeedTool({ tool }: ToolComponentProps) {
             onFallback: tracker.onFallback,
             outputName: outputName(files[0].name, `x${String(factor).replace(".", "-")}`, pipeline.container),
             totalMs: pipeline.durationMs,
-            label: "Changement de vitesse…",
+            label: t("Changement de vitesse…"),
           },
           context,
         );
@@ -51,9 +52,9 @@ export function VideoSpeedTool({ tool }: ToolComponentProps) {
         return (
           <div className="space-y-2">
             <Fieldset columns={1}>
-              <Field label="Vitesse">
+              <Field label={t("Vitesse")}>
                 <OptionGroup
-                  ariaLabel="Vitesse"
+                  ariaLabel={t("Vitesse")}
                   value={String(factor)}
                   onChange={(value) => setFactor(Number(value))}
                   options={SPEED_FACTORS.map((value) => ({ value: String(value), label: `${value}×` }))}
@@ -62,8 +63,7 @@ export function VideoSpeedTool({ tool }: ToolComponentProps) {
             </Fieldset>
             {duration > 0 && (
               <p className="text-xs text-[var(--ft-text-muted)]">
-                Durée : {formatTimecode(duration)} → {formatTimecode(speedDurationMs(duration, factor))}
-                {factor < 1 ? " (ralenti)" : factor > 1 ? " (accéléré)" : ""}
+                {t("Durée : {value} → {value2}{value3}", { value: formatTimecode(duration), value2: formatTimecode(speedDurationMs(duration, factor)), value3: factor < 1 ? " (ralenti)" : factor > 1 ? " (accéléré)" : "" })}
               </p>
             )}
           </div>

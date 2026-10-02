@@ -9,6 +9,7 @@ import { baseName, directoryName } from "@/core/files/paths";
 import { openFolder } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t } from "@/i18n";
 
 /**
  * Découpage d'un gros fichier en morceaux numérotés.
@@ -17,18 +18,18 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * la taille et l'empreinte SHA-256. C'est lui qui permettra au réassemblage de
  * **vérifier** le résultat au lieu de l'espérer.
  */
-const UNITS = [
-  { value: "1048576", label: "Mo" },
-  { value: "1073741824", label: "Go" },
-  { value: "1024", label: "Ko" },
-];
+const UNITS = localized(() => [
+  { value: "1048576", label: t("Mo") },
+  { value: "1073741824", label: t("Go") },
+  { value: "1024", label: t("Ko") },
+]);
 
-const PRESETS = [
-  { value: "100", label: "100 Mo" },
-  { value: "500", label: "500 Mo" },
-  { value: "700", label: "700 Mo (CD)" },
-  { value: "4000", label: "4 000 Mo (FAT32)" },
-];
+const PRESETS = localized(() => [
+  { value: "100", label: t("100 Mo") },
+  { value: "500", label: t("500 Mo") },
+  { value: "700", label: t("700 Mo (CD)") },
+  { value: "4000", label: t("4 000 Mo (FAT32)") },
+]);
 
 export function FileSplitTool(_props: ToolComponentProps) {
   const [paths, setPaths] = useState<string[]>([]);
@@ -48,21 +49,21 @@ export function FileSplitTool(_props: ToolComponentProps) {
           setPaths(next);
           setDestination("");
         },
-        label: "Choisissez le fichier à découper",
+        label: t("Choisissez le fichier à découper"),
       }}
-      actionLabel="Découper le fichier"
+      actionLabel={t("Découper le fichier")}
       actionIcon="Scissors"
       actionDisabled={partSize < 1024 || target.length === 0}
       run={(context) => splitFile(paths[0], target, partSize, context)}
-      successMessage={(summary) => `${summary.parts.length} morceaux écrits`}
+      successMessage={(summary) => t("{count} morceaux écrits", { count: summary.parts.length })}
       renderResult={(summary) => (
         <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklch,var(--ft-ok)_45%,var(--ft-border))] bg-[color-mix(in_oklch,var(--ft-ok)_6%,transparent)] p-4">
           <p className="flex items-center gap-2 text-sm font-medium">
             <Icon name="CircleCheck" size={17} className="text-[var(--ft-ok)]" />
-            {summary.parts.length} morceaux écrits — {formatFileSize(summary.totalSize)} au total
+            {t("{count} morceaux écrits — {size} au total", { count: summary.parts.length, size: formatFileSize(summary.totalSize) })}
           </p>
           <p className="mt-1 break-all text-xs text-[var(--ft-text-muted)]">
-            SHA-256 de l'original : <code className="font-mono">{summary.sha256}</code>
+            <Trans source={"SHA-256 de l'original : <0>{sha256}</0>"} values={{ sha256: summary.sha256 }} components={[<code className="font-mono" />]} />
           </p>
           <ul className="mt-2 max-h-48 overflow-y-auto text-xs">
             {summary.parts.map((part) => (
@@ -71,41 +72,41 @@ export function FileSplitTool(_props: ToolComponentProps) {
               </li>
             ))}
             <li className="truncate font-mono text-[var(--ft-accent-text)]">
-              {baseName(summary.manifestPath)} — manifeste de vérification
+              {t("{value} — manifeste de vérification", { value: baseName(summary.manifestPath) })}
             </li>
           </ul>
           <div className="mt-3">
             <Button size="sm" onClick={() => openFolder(summary.directory)}>
-              <Icon name="FolderTree" size={14} /> Ouvrir le dossier
+              <Icon name="FolderTree" size={14} />{" "}{t("Ouvrir le dossier")}
             </Button>
           </div>
         </div>
       )}
     >
       <Fieldset columns={3}>
-        <Field label="Taille d'un morceau">
+        <Field label={t("Taille d'un morceau")}>
           <NumberInput
             min={1}
             value={size}
             onChange={(event) => setSize(Math.max(1, Number(event.target.value) || 1))}
-            aria-label="Taille d'un morceau"
+            aria-label={t("Taille d'un morceau")}
           />
         </Field>
-        <Field label="Unité">
-          <Select aria-label="Unité" value={unit} onChange={setUnit} options={UNITS} />
+        <Field label={t("Unité")}>
+          <Select aria-label={t("Unité")} value={unit} onChange={setUnit} options={UNITS} />
         </Field>
-        <Field label="Tailles courantes">
+        <Field label={t("Tailles courantes")}>
           <Select
-            aria-label="Tailles courantes"
+            aria-label={t("Tailles courantes")}
             value={String(size)}
             onChange={(value) => {
               setSize(Number(value));
               setUnit(UNITS[0].value);
             }}
-            options={[{ value: String(size), label: `${size} ${unit === "1048576" ? "Mo" : ""}` }, ...PRESETS]}
+            options={[{ value: String(size), label: `${size} ${unit === "1048576" ? t("Mo") : ""}` }, ...PRESETS]}
           />
         </Field>
-        <Field label="Dossier de destination" full hint="Par défaut, à côté du fichier d'origine.">
+        <Field label={t("Dossier de destination")} full hint={t("Par défaut, à côté du fichier d'origine.")}>
           <div className="flex items-center gap-2">
             <span className="min-w-0 flex-1 truncate rounded-md border border-[var(--ft-border)] bg-[var(--ft-bg)] px-2.5 py-2 text-xs">
               {target || "—"}
@@ -113,20 +114,19 @@ export function FileSplitTool(_props: ToolComponentProps) {
             <Button
               size="sm"
               onClick={async () => {
-                const chosen = await pickDirectory("Dossier de destination");
+                const chosen = await pickDirectory(t("Dossier de destination"));
                 if (chosen) setDestination(chosen);
-                else notify.info("Destination inchangée");
+                else notify.info(t("Destination inchangée"));
               }}
             >
-              Choisir…
+              {t("Choisir…")}
             </Button>
           </div>
         </Field>
       </Fieldset>
 
       <p className="text-xs text-[var(--ft-text-muted)]">
-        Chaque morceau fera {formatFileSize(partSize)}. Les fichiers produits seront nommés
-        <code className="mx-1 font-mono">{baseName(paths[0] ?? "fichier")}.part001</code>, etc.
+        <Trans source={"Chaque morceau fera {size}. Les fichiers produits seront nommés<0>{value}.part001</0>, etc."} values={{ size: formatFileSize(partSize), value: baseName(paths[0] ?? "fichier") }} components={[<code className="mx-1 font-mono" />]} />
       </p>
     </NativeToolShell>
   );

@@ -8,6 +8,7 @@ import { measureText } from "@/core/text/clean";
 import { notify } from "@/features/notifications/store";
 import { saveFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t } from "@/i18n";
 
 export function LoremIpsumTool(_props: ToolComponentProps) {
   const [options, setOptions] = useState<LoremOptions>({
@@ -29,43 +30,41 @@ export function LoremIpsumTool(_props: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <Fieldset columns={3}>
-        <Field label="Unité">
+        <Field label={t("Unité")}>
           <OptionGroup
-            ariaLabel="Unité"
+            ariaLabel={t("Unité")}
             value={options.unit}
             onChange={(unit: LoremUnit) => set("unit", unit)}
             options={[
-              { value: "paragraphs", label: "Paragraphes" },
-              { value: "sentences", label: "Phrases" },
-              { value: "words", label: "Mots" },
+              { value: "paragraphs", label: t("Paragraphes") },
+              { value: "sentences", label: t("Phrases") },
+              { value: "words", label: t("Mots") },
             ]}
           />
         </Field>
-        <Field label="Quantité">
+        <Field label={t("Quantité")}>
           <NumberInput
             min={1}
             max={500}
             value={options.count}
             onChange={(event) => set("count", Math.max(1, Math.min(500, Number(event.target.value) || 1)))}
-            aria-label="Quantité"
+            aria-label={t("Quantité")}
           />
         </Field>
-        <Field label="Début" full>
+        <Field label={t("Début")} full>
           <CheckOption
             checked={options.startWithLorem}
             onChange={(v) => set("startWithLorem", v)}
-            label="Commencer par « Lorem ipsum dolor sit amet »"
+            label={t("Commencer par « Lorem ipsum dolor sit amet »")}
           />
         </Field>
       </Fieldset>
 
       <div className="flex flex-wrap items-center gap-2">
         <Button size="sm" variant="primary" onClick={generate}>
-          <Icon name="Repeat" size={14} /> Régénérer
+          <Icon name="Repeat" size={14} />{" "}{t("Régénérer")}
         </Button>
-        <span className="font-mono text-[11px] tabular-nums text-[var(--ft-text-faint)]">
-          {size.characters} caractères · {size.words} mots
-        </span>
+        <Trans source={"<0>{characters} caractères · {words} mots</0>"} values={{ characters: size.characters, words: size.words }} components={[<span className="font-mono text-[11px] tabular-nums text-[var(--ft-text-faint)]" />]} />
         <div className="flex-1" />
         <Button
           size="sm"
@@ -75,10 +74,10 @@ export function LoremIpsumTool(_props: ToolComponentProps) {
               bytes: new TextEncoder().encode(text),
               mimeType: "text/plain",
             });
-            if (saved.saved) notify.success("Fichier enregistré", saved.path);
+            if (saved.saved) notify.success(t("Fichier enregistré"), saved.path);
           }}
         >
-          <Icon name="Download" size={14} /> Télécharger
+          <Icon name="Download" size={14} />{" "}{t("Télécharger")}
         </Button>
         <Button
           size="sm"
@@ -86,20 +85,20 @@ export function LoremIpsumTool(_props: ToolComponentProps) {
           onClick={async () => {
             try {
               await navigator.clipboard.writeText(text);
-              notify.success("Copié dans le presse-papiers");
+              notify.success(t("Copié dans le presse-papiers"));
             } catch {
-              notify.error("Copie impossible");
+              notify.error(t("Copie impossible"));
             }
           }}
         >
-          <Icon name="Copy" size={14} /> Copier
+          <Icon name="Copy" size={14} />{" "}{t("Copier")}
         </Button>
       </div>
 
       <textarea
         value={text}
         readOnly
-        aria-label="Texte généré"
+        aria-label={t("Texte généré")}
         className="min-h-64 w-full resize-y rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-3 text-sm"
       />
     </div>

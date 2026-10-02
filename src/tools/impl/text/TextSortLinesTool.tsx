@@ -3,6 +3,7 @@ import { CheckOption, TextToolShell } from "@/components/text/TextToolShell";
 import { Field, Fieldset, Select } from "@/components/pdf/Field";
 import { sortLines, SORT_LABELS, type SortMode, type SortOptions } from "@/core/text/lines";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 const SAMPLE = `banane
 12 pommes
@@ -34,21 +35,21 @@ export function TextSortLinesTool(_props: ToolComponentProps) {
       input={input}
       onInputChange={setInput}
       output={result.text}
-      outputLabel="Lignes triées"
+      outputLabel={t("Lignes triées")}
       downloadName="lignes-triees.txt"
       sample={SAMPLE}
       summary={
         input.length > 0 ? (
           <span className="tabular-nums">
-            {result.linesBefore} lignes → {result.linesAfter} lignes · {SORT_LABELS[options.mode]}
+            {t("{linesBefore} lignes → {linesAfter} lignes · {value}", { linesBefore: result.linesBefore, linesAfter: result.linesAfter, value: SORT_LABELS[options.mode] })}
           </span>
         ) : undefined
       }
     >
       <Fieldset columns={2}>
-        <Field label="Ordre">
+        <Field label={t("Ordre")}>
           <Select
-            aria-label="Ordre de tri"
+            aria-label={t("Ordre de tri")}
             value={options.mode}
             onChange={(mode: SortMode) => {
               set("mode", mode);
@@ -60,17 +61,17 @@ export function TextSortLinesTool(_props: ToolComponentProps) {
             }))}
           />
         </Field>
-        <Field label="Options" full>
+        <Field label={t("Options")} full>
           <div className="grid gap-0.5 sm:grid-cols-2">
             <CheckOption
               checked={options.caseSensitive}
               onChange={(v) => set("caseSensitive", v)}
-              label="Sensible à la casse"
+              label={t("Sensible à la casse")}
             />
             <CheckOption
               checked={options.keepBlank}
               onChange={(v) => set("keepBlank", v)}
-              label="Conserver les lignes vides"
+              label={t("Conserver les lignes vides")}
             />
           </div>
         </Field>

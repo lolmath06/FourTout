@@ -5,6 +5,7 @@
  * et le journal, un message français pour l'interface. Ce n'est pas un
  * troisième dispositif, c'est le même, appliqué au domaine du texte.
  */
+import { localized, t } from "@/i18n";
 export type TextErrorCode =
   /** L'encodage source n'a pas pu être déterminé avec une confiance suffisante. */
   | "encoding-uncertain"
@@ -19,17 +20,17 @@ export type TextErrorCode =
   | "cancelled"
   | "unknown";
 
-const MESSAGES: Record<TextErrorCode, string> = {
+const MESSAGES: Record<TextErrorCode, string> = localized(() => ({
   "encoding-uncertain":
-    "L'encodage de ce fichier n'a pas pu être déterminé de façon fiable. Choisissez-le explicitement.",
+    t("L'encodage de ce fichier n'a pas pu être déterminé de façon fiable. Choisissez-le explicitement."),
   "encoding-unrepresentable":
-    "L'encodage de destination ne peut pas représenter certains caractères du texte.",
-  "encoding-unreadable": "Ce fichier ne semble pas être un fichier texte.",
-  "document-unsupported": "Ce format de document n'est pas pris en charge pour la comparaison.",
-  "document-empty": "Aucun texte n'a pu être extrait de ce document.",
-  cancelled: "Opération annulée.",
-  unknown: "Une erreur inattendue est survenue.",
-};
+    t("L'encodage de destination ne peut pas représenter certains caractères du texte."),
+  "encoding-unreadable": t("Ce fichier ne semble pas être un fichier texte."),
+  "document-unsupported": t("Ce format de document n'est pas pris en charge pour la comparaison."),
+  "document-empty": t("Aucun texte n'a pu être extrait de ce document."),
+  cancelled: t("Opération annulée."),
+  unknown: t("Une erreur inattendue est survenue."),
+}));
 
 export class TextError extends Error {
   readonly code: TextErrorCode;

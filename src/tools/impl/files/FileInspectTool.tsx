@@ -18,6 +18,7 @@ import { DIAGNOSTIC_SPECIALISTS, HANDOFF_TARGETS, specialistFor } from "@/featur
 import { OpenToolButton } from "@/features/handoff/openTool";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, formatDateTime, formatNumber, t, tx } from "@/i18n";
 
 /**
  * Fiche d'identité complète d'un fichier.
@@ -78,9 +79,9 @@ export function FileInspectTool({ tool }: ToolComponentProps) {
         mode: "files",
         paths,
         onChange: setPaths,
-        label: "Choisissez un fichier à inspecter",
+        label: t("Choisissez un fichier à inspecter"),
       }}
-      actionLabel="Inspecter le fichier"
+      actionLabel={t("Inspecter le fichier")}
       actionIcon="FileSearch"
       run={async (context) => {
         const info = await fileInfo(paths[0]);
@@ -114,17 +115,17 @@ export function FileInspectTool({ tool }: ToolComponentProps) {
       renderResult={(inspection) => <Report inspection={inspection} />}
     >
       <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-3">
-        <p className="ft-label mb-1">Empreintes à calculer</p>
+        <p className="ft-label mb-1">{t("Empreintes à calculer")}</p>
         <div className="grid gap-0.5 sm:grid-cols-2">
           {ALGORITHMS.map((algorithm) => (
             <CheckOption
               key={algorithm.value}
               checked={algorithms.includes(algorithm.value)}
               onChange={() => toggle(algorithm.value)}
-              label={algorithm.label}
+              label={tx(algorithm.label)}
               hint={
                 algorithm.legacy
-                  ? "Hérité : utile pour vérifier une empreinte publiée autrefois, inadapté à la sécurité."
+                  ? t("Hérité : utile pour vérifier une empreinte publiée autrefois, inadapté à la sécurité.")
                   : undefined
               }
             />
@@ -149,26 +150,20 @@ function Report({ inspection }: { inspection: Inspection }) {
   return (
     <div className="space-y-3" data-testid="file-inspect">
       {!info.extensionMatches && (
-        <Callout tone="warning" title="L'extension ne correspond pas au contenu">
+        <Callout tone="warning" title={t("L'extension ne correspond pas au contenu")}>
           <span className="block">
-            Extension : <strong>{info.extension.toUpperCase() || "aucune"}</strong> — Type détecté :{" "}
-            <strong>{info.magicLabel}</strong>.
+            <Trans source={"Extension : <0>{value}</0> — Type détecté : <1>{magicLabel}</1>."} values={{ value: info.extension.toUpperCase() || "aucune", magicLabel: info.magicLabel }} components={[<strong />, <strong />]} />
           </span>
-          <span className="mt-1 block">
-            Le fichier a sans doute été renommé. FourTout ne le renomme pas de lui-même : sur une
-            bibliothèque entière, une correction automatique fondée sur une supposition fait plus de
-            dégâts qu'un nom trompeur. Le bouton « Renommer ce fichier » ouvre le renommage par lot
-            avec ce fichier déjà chargé.
-          </span>
+          <Trans source={"<0>Le fichier a sans doute été renommé. FourTout ne le renomme pas de lui-même : sur une bibliothèque entière, une correction automatique fondée sur une supposition fait plus de dégâts qu'un nom trompeur. Le bouton « Renommer ce fichier » ouvre le renommage par lot avec ce fichier déjà chargé.</0>"} components={[<span className="mt-1 block" />]} />
         </Callout>
       )}
 
       {/* Les outils qui savent traiter ce contenu, avec le fichier transmis. */}
       <div className="flex flex-wrap items-center gap-2" data-testid="inspect-handoffs">
-        <span className="ft-label">Continuer avec</span>
+        <Trans source={"<0>Continuer avec</0>"} components={[<span className="ft-label" />]} />
         <OpenToolButton toolId={HANDOFF_TARGETS.preview} paths={[info.path]} variant="primary" />
         {specialist && <OpenToolButton toolId={specialist} paths={[info.path]} />}
-        <OpenToolButton toolId={diagnosis} paths={[info.path]} label="Diagnostiquer" />
+        <OpenToolButton toolId={diagnosis} paths={[info.path]} label={t("Diagnostiquer")} />
         {info.family === "archive" && info.magic !== "gz" && info.magic !== "xz" && (
           <OpenToolButton toolId={HANDOFF_TARGETS.archiveTest} paths={[info.path]} />
         )}
@@ -177,69 +172,69 @@ function Report({ inspection }: { inspection: Inspection }) {
           <OpenToolButton
             toolId={HANDOFF_TARGETS.rename}
             paths={[info.path]}
-            label="Renommer ce fichier"
+            label={t("Renommer ce fichier")}
           />
         )}
       </div>
 
-      <Panel title="Identité">
+      <Panel title={t("Identité")}>
         <dl className="grid gap-x-4 gap-y-1 p-3 text-xs sm:grid-cols-[14rem_1fr]">
-          <Row label="Nom" value={info.name} />
-          <Row label="Emplacement" value={info.path} mono />
-          <Row label="Type" value={info.isDir ? "Dossier" : "Fichier"} />
+          <Row label={t("Nom")} value={info.name} />
+          <Row label={t("Emplacement")} value={info.path} mono />
+          <Row label={t("Type")} value={info.isDir ? t("Dossier") : t("Fichier")} />
           <Row
-            label="Taille"
-            value={`${formatFileSize(info.size)} (${info.size.toLocaleString("fr-FR")} octets)`}
+            label={t("Taille")}
+            value={`${formatFileSize(info.size)} (${formatNumber(info.size)} octets)`}
           />
-          <Row label="Extension" value={info.extension || "—"} mono />
-          <Row label="Type MIME (d'après l'extension)" value={info.mime} mono />
+          <Row label={t("Extension")} value={info.extension || "—"} mono />
+          <Row label={t("Type MIME (d'après l'extension)")} value={info.mime} mono />
           <Row
-            label="Type réel (d'après les premiers octets)"
-            value={info.magic === "inconnu" ? "non reconnu" : `${info.magicLabel} (${info.magic})`}
+            label={t("Type réel (d'après les premiers octets)")}
+            value={info.magic === "inconnu" ? t("non reconnu") : `${info.magicLabel} (${info.magic})`}
           />
           <Row
-            label="Extension cohérente"
-            value={info.extensionMatches ? "oui" : "non — voir l'avertissement ci-dessus"}
+            label={t("Extension cohérente")}
+            value={info.extensionMatches ? "oui" : t("non — voir l'avertissement ci-dessus")}
           />
-          <Row label="Famille" value={info.family} />
-          <Row label="Modifié le" value={formatDate(info.modified)} />
-          <Row label="Créé le" value={formatDate(info.created)} />
-          <Row label="Dernier accès" value={formatDate(info.accessed)} />
-          <Row label="Lecture seule" value={info.readOnly ? "oui" : "non"} />
-          <Row label="Lien symbolique" value={info.isSymlink ? "oui" : "non"} />
+          <Row label={t("Famille")} value={info.family} />
+          <Row label={t("Modifié le")} value={formatDate(info.modified)} />
+          <Row label={t("Créé le")} value={formatDate(info.created)} />
+          <Row label={t("Dernier accès")} value={formatDate(info.accessed)} />
+          <Row label={t("Lecture seule")} value={info.readOnly ? "oui" : "non"} />
+          <Row label={t("Lien symbolique")} value={info.isSymlink ? "oui" : "non"} />
         </dl>
       </Panel>
 
       {encoding && (
-        <Panel title="Contenu texte">
+        <Panel title={t("Contenu texte")}>
           <dl className="grid gap-x-4 gap-y-1 p-3 text-xs sm:grid-cols-[14rem_1fr]">
             <Row
-              label="Encodage"
+              label={t("Encodage")}
               value={`${ENCODING_LABELS[encoding.id]}${
                 encoding.certain
                   ? " (certain : le fichier le déclare)"
                   : ` (hypothèse, ${Math.round(encoding.confidence * 100)} %)`
               }`}
             />
-            <Row label="Marque d'ordre des octets (BOM)" value={encoding.bom} />
-            <Row label="Fins de ligne" value={encoding.newline.toUpperCase()} />
-            <Row label="Ce qui a emporté la décision" value={encoding.reason} />
+            <Row label={t("Marque d'ordre des octets (BOM)")} value={encoding.bom} />
+            <Row label={t("Fins de ligne")} value={encoding.newline.toUpperCase()} />
+            <Row label={t("Ce qui a emporté la décision")} value={encoding.reason} />
           </dl>
         </Panel>
       )}
 
       {hashes && hashes.digests.length > 0 && (
-        <Panel title="Empreintes">
+        <Panel title={t("Empreintes")}>
           <dl className="grid gap-x-4 gap-y-1 p-3 text-xs sm:grid-cols-[14rem_1fr]">
             {hashes.digests.map(([label, digest]) => (
-              <Row key={label} label={label} value={digest} mono />
+              <Row key={label} label={tx(label)} value={digest} mono />
             ))}
           </dl>
         </Panel>
       )}
 
       {lines.length > 0 && (
-        <Panel title={`Premiers octets (${Math.min(head.length, HEAD_BYTES)} sur ${info.size.toLocaleString("fr-FR")})`}>
+        <Panel title={t("Premiers octets ({value} sur {value2})", { value: Math.min(head.length, HEAD_BYTES), value2: formatNumber(info.size) })}>
           <pre className="overflow-x-auto px-3 py-2 font-mono text-[11px] leading-5">
             {lines.map((line) => (
               <div key={line.offset}>
@@ -261,7 +256,7 @@ function Report({ inspection }: { inspection: Inspection }) {
 function Row({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="contents">
-      <dt className="text-[var(--ft-text-muted)]">{label}</dt>
+      <dt className="text-[var(--ft-text-muted)]">{tx(label)}</dt>
       <dd className={mono ? "break-all font-mono" : "break-words"}>{value}</dd>
     </div>
   );
@@ -269,5 +264,5 @@ function Row({ label, value, mono = false }: { label: string; value: string; mon
 
 function formatDate(milliseconds: number): string {
   if (!milliseconds) return "—";
-  return new Date(milliseconds).toLocaleString("fr-FR");
+  return formatDateTime(new Date(milliseconds));
 }

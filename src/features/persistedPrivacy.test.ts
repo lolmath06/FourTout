@@ -53,6 +53,7 @@ describe("ce qui est écrit sur le disque entre deux sessions", () => {
     const written = store.get<Record<string, unknown>>(STORAGE_KEYS.settings, {});
     expect(Object.keys(written).sort()).toEqual([
       "density",
+      "language",
       "motion",
       "showPrivacyNotes",
       "theme",

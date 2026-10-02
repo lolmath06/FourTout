@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
+import { tx } from "@/i18n";
 
 /**
  * Marqueur d'état, réduit au strict nécessaire.
@@ -20,7 +21,7 @@ export function Badge({
 }) {
   return (
     <span
-      title={title}
+      title={tx(title)}
       className={clsx(
         "inline-flex shrink-0 items-center gap-1 rounded-[var(--radius-sm)] px-1.5",
         "h-4 text-[10.5px] font-medium leading-none tracking-wide",

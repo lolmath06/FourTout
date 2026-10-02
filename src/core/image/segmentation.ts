@@ -34,28 +34,29 @@
 import { readAssetFile } from "@/core/speech/models";
 import type { SegmentationSession, SegmentationTensor } from "./background";
 import { ImageError } from "./errors";
+import { localized, t } from "@/i18n";
 
 /** Les deux modèles proposés, du plus rapide au plus fin. */
-export const SEGMENTATION_MODELS = [
+export const SEGMENTATION_MODELS = localized(() => [
   {
     id: "seg-u2netp",
     file: "segmentation/u2netp.onnx",
-    label: "Rapide",
-    detail: "U²-Net allégé, 4,6 Mo. Quelques secondes par image.",
+    label: t("Rapide"),
+    detail: t("U²-Net allégé, 4,6 Mo. Quelques secondes par image."),
   },
   {
     id: "seg-u2net",
     file: "segmentation/u2net.onnx",
-    label: "Précis",
-    detail: "U²-Net complet, 176 Mo. Bords plus fins, nettement plus lent.",
+    label: t("Précis"),
+    detail: t("U²-Net complet, 176 Mo. Bords plus fins, nettement plus lent."),
   },
-] as const;
+] as const);
 
 export type SegmentationModelId = (typeof SEGMENTATION_MODELS)[number]["id"];
 
 export function segmentationModel(id: SegmentationModelId) {
   const entry = SEGMENTATION_MODELS.find((model) => model.id === id);
-  if (!entry) throw new ImageError("segmentation-unavailable", `Modèle inconnu : ${id}.`);
+  if (!entry) throw new ImageError("segmentation-unavailable", t("Modèle inconnu : {id}.", { id }));
   return entry;
 }
 
@@ -117,8 +118,7 @@ async function assertRuntimeServed(): Promise<void> {
     if (response.status === 404 || type.includes("text/html")) {
       throw new ImageError(
         "segmentation-unavailable",
-        `le moteur d'inférence est incomplet (${file} est absent de cette ` +
-          "installation).",
+        t("le moteur d'inférence est incomplet ({file} est absent de cette installation).", { file }),
       );
     }
   }

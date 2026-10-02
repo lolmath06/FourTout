@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Icon } from "./Icon";
+import { tx } from "@/i18n";
 
 export function EmptyState({
   icon = "Inbox",
@@ -18,9 +19,9 @@ export function EmptyState({
         <Icon name={icon} size={18} />
       </span>
       <div className="space-y-0.5">
-        <p className="text-[13px] font-medium text-[var(--ft-text)]">{title}</p>
+        <p className="text-[13px] font-medium text-[var(--ft-text)]">{tx(title)}</p>
         {description && (
-          <p className="ft-meta max-w-md">{description}</p>
+          <p className="ft-meta max-w-md">{tx(description)}</p>
         )}
       </div>
       {action}

@@ -3,6 +3,7 @@ import { report } from "../document";
 import { outputName } from "../filenames";
 import { PdfError } from "../errors";
 import type { OperationContext, OutputFile } from "../types";
+import { t as tI18n } from "@/i18n";
 
 /**
  * Conversion d'un document texte en PDF.
@@ -56,7 +57,7 @@ export async function documentToPdf(
   if (options.title) {
     blocks.unshift({ type: "heading", level: 1, runs: [{ text: toWinAnsi(options.title), bold: true }] });
   }
-  if (blocks.length === 0) throw new PdfError("empty-document", "Le document est vide.");
+  if (blocks.length === 0) throw new PdfError("empty-document", tI18n("Le document est vide."));
 
   const document = await PDFDocument.create();
   const fonts = {
@@ -83,7 +84,7 @@ export async function documentToPdf(
   };
 
   for (const [index, block] of blocks.entries()) {
-    report(context, index / blocks.length, `Bloc ${index + 1} sur ${blocks.length}`);
+    report(context, index / blocks.length, tI18n("Bloc {value} sur {count}", { value: index + 1, count: blocks.length }));
     const fontSize = block.type === "heading" ? headingSize(block.level ?? 1, baseFont) : baseFont;
     const lineHeight = fontSize * 1.4;
     const indent = block.type === "listitem" ? 18 : 0;
@@ -107,7 +108,7 @@ export async function documentToPdf(
     y -= block.type === "heading" ? fontSize * 0.4 : fontSize * 0.5;
   }
 
-  report(context, 1, "Écriture du document");
+  report(context, 1, tI18n("Écriture du document"));
   const bytes = await document.save();
   return { name: outputName(name, "", "pdf"), bytes, mimeType: "application/pdf" };
 }

@@ -2,6 +2,7 @@ import { loadPdf, savePdf, stripEncryption } from "../document";
 import { PdfError } from "../errors";
 import { outputName } from "../filenames";
 import type { OutputFile, PdfSource } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Protection par mot de passe.
@@ -32,7 +33,7 @@ export async function protectPdf(
   options: ProtectOptions,
 ): Promise<OutputFile> {
   if (options.userPassword.length === 0) {
-    throw new PdfError("invalid-range", "Le mot de passe ne peut pas être vide.");
+    throw new PdfError("invalid-range", t("Le mot de passe ne peut pas être vide."));
   }
 
   const document = await loadPdf(source);
@@ -52,12 +53,12 @@ export async function protectPdf(
  */
 export async function unlockPdf(source: PdfSource, password: string): Promise<OutputFile> {
   if (password.length === 0) {
-    throw new PdfError("wrong-password", "Saisissez le mot de passe du document.");
+    throw new PdfError("wrong-password", t("Saisissez le mot de passe du document."));
   }
 
   const document = await loadPdf({ ...source, password });
   if (!document.isEncrypted && !hasEncryptionArtifacts(document)) {
-    throw new PdfError("invalid-range", "Ce document n'est pas protégé par un mot de passe.");
+    throw new PdfError("invalid-range", t("Ce document n'est pas protégé par un mot de passe."));
   }
 
   stripEncryption(document);

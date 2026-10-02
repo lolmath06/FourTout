@@ -8,6 +8,7 @@ import { processImages } from "@/core/image/pipeline";
 import { flip, rotateQuarter } from "@/core/image/operations";
 import type { SelectedFile } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 /** Quart de tour horaire : 0, 1 (90°→), 2 (180°), 3 (90°←). */
 const ROTATIONS = [
@@ -27,7 +28,7 @@ export function RotateFlipTool({ tool, rotationEnabled = true }: ToolComponentPr
   return (
     <ImageToolShell
       tool={tool}
-      actionLabel={rotationEnabled ? "Appliquer la rotation" : "Appliquer le miroir"}
+      actionLabel={rotationEnabled ? t("Appliquer la rotation") : t("Appliquer le miroir")}
       actionDisabled={quarters === "0" && !flipH && !flipV}
       run={async ({ files, context }) => {
         const outputs = await processImages(
@@ -43,7 +44,7 @@ export function RotateFlipTool({ tool, rotationEnabled = true }: ToolComponentPr
         );
         return {
           files: outputs,
-          summary: `${outputs.length} image${outputs.length > 1 ? "s" : ""} traitée${outputs.length > 1 ? "s" : ""}.`,
+          summary: t("{count} {count, plural, one {image} other {images}} {count, plural, one {traitée} other {traitées}}.", { count: outputs.length }),
           zipName: `images-${suffix}.zip`,
         };
       }}
@@ -52,17 +53,17 @@ export function RotateFlipTool({ tool, rotationEnabled = true }: ToolComponentPr
         <div className="space-y-3">
           <Fieldset columns={1}>
             {rotationEnabled && (
-              <Field label="Rotation">
-                <OptionGroup ariaLabel="Rotation" value={quarters} onChange={setQuarters} options={ROTATIONS} />
+              <Field label={t("Rotation")}>
+                <OptionGroup ariaLabel={t("Rotation")} value={quarters} onChange={setQuarters} options={ROTATIONS} />
               </Field>
             )}
-            <Field label="Miroir">
+            <Field label={t("Miroir")}>
               <div className="flex gap-1.5">
                 <Button size="sm" variant={flipH ? "primary" : "secondary"} onClick={() => setFlipH((v) => !v)}>
-                  Horizontal
+                  {t("Horizontal")}
                 </Button>
                 <Button size="sm" variant={flipV ? "primary" : "secondary"} onClick={() => setFlipV((v) => !v)}>
-                  Vertical
+                  {t("Vertical")}
                 </Button>
               </div>
             </Field>

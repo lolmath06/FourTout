@@ -4,6 +4,7 @@ import { pdfToImages } from "./toImages";
 import { decodeImage } from "@/core/image/codec";
 import { PdfError } from "../errors";
 import type { OperationContext, PdfSource } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Comparaison visuelle de deux PDF.
@@ -68,7 +69,7 @@ export async function comparePdfs(
 
   for (let index = 0; index < total; index += 1) {
     if (context?.signal?.aborted) throw new PdfError("cancelled");
-    context?.report?.({ ratio: index / total, label: `Page ${index + 1} sur ${total}` });
+    context?.report?.({ ratio: index / total, label: t("Page {value} sur {total}", { value: index + 1, total }) });
 
     const hasA = index < countA;
     const hasB = index < countB;
@@ -97,7 +98,7 @@ export async function comparePdfs(
     });
   }
 
-  context?.report?.({ ratio: 1, label: "Terminé" });
+  context?.report?.({ ratio: 1, label: t("Terminé") });
   return {
     pageCountA: countA,
     pageCountB: countB,

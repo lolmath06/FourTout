@@ -6,13 +6,14 @@ import { readMetadata, writeMetadata, type MetadataChanges } from "@/core/pdf/op
 import { EDITABLE_METADATA_FIELDS, type PdfMetadata, type PdfSource } from "@/core/pdf/types";
 import { Icon } from "@/components/ui/Icon";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t, tx } from "@/i18n";
 
-const LABELS: Record<string, string> = {
-  title: "Titre",
-  author: "Auteur",
-  subject: "Sujet",
-  keywords: "Mots-clés",
-};
+const LABELS: Record<string, string> = localized(() => ({
+  title: t("Titre"),
+  author: t("Auteur"),
+  subject: t("Sujet"),
+  keywords: t("Mots-clés"),
+}));
 
 export function PdfMetadataTool({ tool }: ToolComponentProps) {
   const [values, setValues] = useState<Record<string, string>>({});
@@ -21,7 +22,7 @@ export function PdfMetadataTool({ tool }: ToolComponentProps) {
   return (
     <PdfToolShell
       tool={tool}
-      actionLabel="Enregistrer les métadonnées"
+      actionLabel={t("Enregistrer les métadonnées")}
       run={async ({ documents }) => {
         // Seuls les champs réellement modifiés sont transmis : les autres
         // restent tels quels dans le document.
@@ -37,8 +38,8 @@ export function PdfMetadataTool({ tool }: ToolComponentProps) {
         return singleResult(
           output,
           count === 0
-            ? "Aucun champ modifié ; une copie a été créée."
-            : `${count} champ${count > 1 ? "s" : ""} mis à jour.`,
+            ? t("Aucun champ modifié ; une copie a été créée.")
+            : t("{count} {count, plural, one {champ} other {champs}} mis à jour.", { count }),
         );
       }}
     >
@@ -92,15 +93,15 @@ function MetadataForm({
         {EDITABLE_METADATA_FIELDS.map((field) => (
           <Field
             key={field}
-            label={LABELS[field]}
+            label={tx(LABELS[field])}
             full={field === "subject" || field === "keywords"}
-            hint={field === "keywords" ? "Séparez les mots-clés par des virgules." : undefined}
+            hint={field === "keywords" ? t("Séparez les mots-clés par des virgules.") : undefined}
           >
             <TextInput
               value={values[field] ?? ""}
               onChange={(event) => onValues({ ...values, [field]: event.target.value })}
-              placeholder={`Aucun ${LABELS[field].toLowerCase()}`}
-              aria-label={LABELS[field]}
+              placeholder={t("Aucun {value}", { value: tx(LABELS[field]).toLowerCase() })}
+              aria-label={tx(LABELS[field])}
             />
           </Field>
         ))}
@@ -110,13 +111,13 @@ function MetadataForm({
         <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-4">
           <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--ft-text-muted)]">
             <Icon name="Info" size={13} />
-            Informations non modifiables
+            {t("Informations non modifiables")}
           </h3>
           <dl className="grid gap-x-6 gap-y-1 text-xs sm:grid-cols-2">
-            <ReadOnly label="Créateur" value={original.creator} />
-            <ReadOnly label="Producteur" value={original.producer} />
-            <ReadOnly label="Créé le" value={formatDate(original.creationDate)} />
-            <ReadOnly label="Modifié le" value={formatDate(original.modificationDate)} />
+            <ReadOnly label={t("Créateur")} value={original.creator} />
+            <ReadOnly label={t("Producteur")} value={original.producer} />
+            <ReadOnly label={t("Créé le")} value={formatDate(original.creationDate)} />
+            <ReadOnly label={t("Modifié le")} value={formatDate(original.modificationDate)} />
           </dl>
         </div>
       )}
@@ -127,7 +128,7 @@ function MetadataForm({
 function ReadOnly({ label, value }: { label: string; value?: string }) {
   return (
     <div className="flex justify-between gap-3 border-b border-[var(--ft-border)] py-1 last:border-0">
-      <dt className="shrink-0 text-[var(--ft-text-muted)]">{label}</dt>
+      <dt className="shrink-0 text-[var(--ft-text-muted)]">{tx(label)}</dt>
       <dd className="truncate text-right" title={value}>
         {value ?? "—"}
       </dd>

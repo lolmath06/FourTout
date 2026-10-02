@@ -7,6 +7,7 @@ import { PreviewFrame } from "@/components/image/ImagePreview";
 import { saveFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 export function QrGenerateTool(_props: ToolComponentProps) {
   const [text, setText] = useState("https://example.com/fourtout-test");
@@ -26,7 +27,7 @@ export function QrGenerateTool(_props: ToolComponentProps) {
     try {
       const bytes = format === "png" ? await generateQrPng(text, { width, errorCorrection: ecc }) : await generateQrSvg(text, { width, errorCorrection: ecc });
       const res = await saveFile({ name: `qr-code.${format}`, bytes, mimeType: format === "png" ? "image/png" : "image/svg+xml" });
-      if (res.saved) notify.success("QR code enregistré", res.path);
+      if (res.saved) notify.success(t("QR code enregistré"), res.path);
     } finally {
       setBusy(false);
     }
@@ -35,26 +36,26 @@ export function QrGenerateTool(_props: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <Fieldset columns={1}>
-        <Field label="Texte ou URL">
+        <Field label={t("Texte ou URL")}>
           <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} className="w-full resize-y rounded-md border border-[var(--ft-border)] bg-[var(--ft-bg)] p-2.5 text-sm outline-none focus:border-[var(--ft-accent)]" />
         </Field>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Correction d'erreur" hint="Plus élevé = plus robuste, QR plus dense.">
-            <OptionGroup ariaLabel="Correction" value={ecc} onChange={setEcc} options={[{ value: "L", label: "L" }, { value: "M", label: "M" }, { value: "Q", label: "Q" }, { value: "H", label: "H" }]} />
+          <Field label={t("Correction d'erreur")} hint={t("Plus élevé = plus robuste, QR plus dense.")}>
+            <OptionGroup ariaLabel={t("Correction")} value={ecc} onChange={setEcc} options={[{ value: "L", label: "L" }, { value: "M", label: "M" }, { value: "Q", label: "Q" }, { value: "H", label: "H" }]} />
           </Field>
-          <Field label={`Taille (${width} px)`}><Slider value={width} onChange={setWidth} min={128} max={1024} step={64} /></Field>
+          <Field label={t("Taille ({width} px)", { width })}><Slider value={width} onChange={setWidth} min={128} max={1024} step={64} /></Field>
         </div>
       </Fieldset>
 
       <div className="flex flex-wrap gap-2">
-        <Button size="md" variant="primary" onClick={preview} disabled={!text.trim()}><Icon name="Eye" size={15} /> Aperçu</Button>
+        <Button size="md" variant="primary" onClick={preview} disabled={!text.trim()}><Icon name="Eye" size={15} />{" "}{t("Aperçu")}</Button>
         <Button size="md" onClick={() => save("png")} disabled={busy || !text.trim()}><Icon name="HardDrive" size={14} /> PNG</Button>
         <Button size="md" onClick={() => save("svg")} disabled={busy || !text.trim()}><Icon name="HardDrive" size={14} /> SVG</Button>
       </div>
 
       {url && (
         <PreviewFrame maxHeight={360}>
-          <img src={url} alt="QR code" className="max-h-[340px] bg-white p-2" />
+          <img src={url} alt={t("QR code")} className="max-h-[340px] bg-white p-2" />
         </PreviewFrame>
       )}
     </div>

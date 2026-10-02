@@ -17,6 +17,7 @@ import {
 } from "@/core/files/native";
 import { revealFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { formatNumber, t, tx } from "@/i18n";
 
 /**
  * Recherche de fichiers à la demande.
@@ -165,81 +166,81 @@ export function FileSearchTool(_props: ToolComponentProps) {
           setRoot(next);
           action.setResult(null);
         }}
-        label="Dossier où chercher"
-        hint="rien n'est indexé : la recherche part d'ici, à chaque fois"
+        label={t("Dossier où chercher")}
+        hint={t("rien n'est indexé : la recherche part d'ici, à chaque fois")}
         disabled={action.job.isRunning}
       />
 
       {root.length > 0 && (
         <>
-          <Fieldset columns={2} title="Nom et type">
-            <Field label="Le nom contient" hint="Insensible à la casse et aux accents du clavier.">
+          <Fieldset columns={2} title={t("Nom et type")}>
+            <Field label={t("Le nom contient")} hint={t("Insensible à la casse et aux accents du clavier.")}>
               <TextInput
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="facture"
-                aria-label="Le nom contient"
+                aria-label={t("Le nom contient")}
               />
             </Field>
-            <Field label="Extensions" hint="Séparées par des espaces ou des virgules : txt md json">
+            <Field label={t("Extensions")} hint={t("Séparées par des espaces ou des virgules : txt md json")}>
               <TextInput
                 value={extensions}
                 onChange={(event) => setExtensions(event.target.value)}
-                placeholder="txt, pdf"
-                aria-label="Extensions"
+                placeholder={t("txt, pdf")}
+                aria-label={t("Extensions")}
               />
             </Field>
           </Fieldset>
 
-          <Fieldset columns={2} title="Contenu">
+          <Fieldset columns={2} title={t("Contenu")}>
             <Field
-              label="Le fichier contient le texte"
-              hint="Seuls les fichiers qui ressemblent vraiment à du texte sont ouverts. L'encodage est détecté (UTF-8, UTF-16, Windows-1252…)."
+              label={t("Le fichier contient le texte")}
+              hint={t("Seuls les fichiers qui ressemblent vraiment à du texte sont ouverts. L'encodage est détecté (UTF-8, UTF-16, Windows-1252…).")}
               full
             >
               <TextInput
                 value={content}
                 onChange={(event) => setContent(event.target.value)}
                 placeholder="FourTout"
-                aria-label="Le fichier contient le texte"
+                aria-label={t("Le fichier contient le texte")}
               />
             </Field>
-            <Field label="Options de recherche">
+            <Field label={t("Options de recherche")}>
               <div className="space-y-0.5">
                 <CheckOption
                   checked={caseSensitive}
                   onChange={setCaseSensitive}
-                  label="Respecter la casse"
+                  label={t("Respecter la casse")}
                   disabled={content.length === 0}
                 />
                 <CheckOption
                   checked={wholeWord}
                   onChange={setWholeWord}
-                  label="Mot entier"
+                  label={t("Mot entier")}
                   disabled={content.length === 0}
                 />
               </div>
             </Field>
           </Fieldset>
 
-          <Fieldset columns={2} title="Taille et date">
-            <Field label="Taille minimale" hint="Exemples : 500 ko, 2 Mo, 1,5 Go">
+          <Fieldset columns={2} title={t("Taille et date")}>
+            <Field label={t("Taille minimale")} hint={t("Exemples : 500 ko, 2 Mo, 1,5 Go")}>
               <TextInput
                 value={minSize}
                 onChange={(event) => setMinSize(event.target.value)}
                 placeholder="—"
-                aria-label="Taille minimale"
+                aria-label={t("Taille minimale")}
               />
             </Field>
-            <Field label="Taille maximale">
+            <Field label={t("Taille maximale")}>
               <TextInput
                 value={maxSize}
                 onChange={(event) => setMaxSize(event.target.value)}
                 placeholder="—"
-                aria-label="Taille maximale"
+                aria-label={t("Taille maximale")}
               />
             </Field>
-            <Field label="Filtrer par date de modification" full>
+            <Field label={t("Filtrer par date de modification")} full>
               <CheckOption
                 checked={filterByDate}
                 onChange={(next) => {
@@ -249,72 +250,72 @@ export function FileSearchTool(_props: ToolComponentProps) {
                     setBefore("");
                   }
                 }}
-                label="Limiter à une période"
-                hint="Désactivé : la date des fichiers n'entre pas dans la recherche."
+                label={t("Limiter à une période")}
+                hint={t("Désactivé : la date des fichiers n'entre pas dans la recherche.")}
               />
             </Field>
-            <Field label="Modifié après le" hint={filterByDate ? undefined : "Activez le filtre ci-dessus."}>
+            <Field label={t("Modifié après le")} hint={filterByDate ? undefined : t("Activez le filtre ci-dessus.")}>
               <TextInput
                 type="date"
                 value={after}
                 disabled={!filterByDate}
                 onChange={(event) => setAfter(event.target.value)}
-                aria-label="Modifié après le"
+                aria-label={t("Modifié après le")}
               />
             </Field>
-            <Field label="Modifié avant le">
+            <Field label={t("Modifié avant le")}>
               <TextInput
                 type="date"
                 value={before}
                 disabled={!filterByDate}
                 onChange={(event) => setBefore(event.target.value)}
-                aria-label="Modifié avant le"
+                aria-label={t("Modifié avant le")}
               />
             </Field>
           </Fieldset>
 
-          <Fieldset columns={2} title="Parcours">
-            <Field label="Sous-dossiers">
+          <Fieldset columns={2} title={t("Parcours")}>
+            <Field label={t("Sous-dossiers")}>
               <div className="space-y-0.5">
                 <CheckOption
                   checked={recursive}
                   onChange={setRecursive}
-                  label="Descendre dans les sous-dossiers"
+                  label={t("Descendre dans les sous-dossiers")}
                 />
                 <CheckOption
                   checked={includeHidden}
                   onChange={setIncludeHidden}
-                  label="Inclure les fichiers cachés"
+                  label={t("Inclure les fichiers cachés")}
                 />
               </div>
             </Field>
             <Field
-              label="Nombre maximal de résultats"
-              hint="Garde-fou : au-delà, la recherche s'arrête et le dit."
+              label={t("Nombre maximal de résultats")}
+              hint={t("Garde-fou : au-delà, la recherche s'arrête et le dit.")}
             >
               <NumberInput
                 min={1}
                 max={100000}
                 value={maxResults}
                 onChange={(event) => setMaxResults(Number(event.target.value))}
-                aria-label="Nombre maximal de résultats"
+                aria-label={t("Nombre maximal de résultats")}
               />
             </Field>
           </Fieldset>
 
           {!hasCriteria && (
-            <Callout tone="info" title="Aucun critère : tous les fichiers seront listés">
-              Renseignez au moins un critère pour affiner — ils se cumulent tous.
+            <Callout tone="info" title={t("Aucun critère : tous les fichiers seront listés")}>
+              {t("Renseignez au moins un critère pour affiner — ils se cumulent tous.")}
             </Callout>
           )}
 
           <RunBar
-            label="Rechercher"
+            label={t("Rechercher")}
             icon="SearchCode"
             running={action.job.isRunning}
             progress={action.job.progress}
             status={action.job.status}
-            error={action.error}
+            error={tx(action.error)}
             cancel={action.job.cancel}
             onRun={run}
           />
@@ -326,46 +327,43 @@ export function FileSearchTool(_props: ToolComponentProps) {
           {stale && !action.job.isRunning && (
             <Callout
               tone="warning"
-              title="Les critères ont changé — relancez la recherche"
+              title={t("Les critères ont changé — relancez la recherche")}
               data-testid="search-stale"
             >
-              Les résultats ci-dessous viennent de la requête précédente. Ils ne correspondent plus
-              à ce que les champs affichent.
+              {t("Les résultats ci-dessous viennent de la requête précédente. Ils ne correspondent plus à ce que les champs affichent.")}
             </Callout>
           )}
           {report && (
             <StatGrid
               columns={5}
               stats={[
-                { label: "Résultats", value: report.hits.length, tone: report.hits.length > 0 ? "ok" : "neutral" },
-                { label: "Dossiers parcourus", value: report.scannedDirectories },
-                { label: "Fichiers inspectés", value: report.scannedFiles },
-                { label: "Fichiers lus", value: report.readFiles },
-                { label: "Binaires ignorés", value: report.binarySkipped },
+                { label: t("Résultats"), value: report.hits.length, tone: report.hits.length > 0 ? "ok" : "neutral" },
+                { label: t("Dossiers parcourus"), value: report.scannedDirectories },
+                { label: t("Fichiers inspectés"), value: report.scannedFiles },
+                { label: t("Fichiers lus"), value: report.readFiles },
+                { label: t("Binaires ignorés"), value: report.binarySkipped },
               ]}
             />
           )}
 
           {report?.truncated && (
-            <Callout tone="warning" title="Limite de résultats atteinte">
-              La recherche s'est arrêtée à {report.hits.length.toLocaleString("fr-FR")} résultats.
-              Affinez les critères, ou augmentez la limite.
+            <Callout tone="warning" title={t("Limite de résultats atteinte")}>
+              {t("La recherche s'est arrêtée à {value} résultats. Affinez les critères, ou augmentez la limite.", { value: formatNumber(report.hits.length) })}
             </Callout>
           )}
           {report && report.tooLarge > 0 && (
-            <Callout tone="info" title={`${report.tooLarge} fichier(s) trop volumineux`}>
-              Au-delà de 64 Mo, un fichier n'est pas ouvert pour la recherche de contenu. Il reste
-              trouvable par son nom, sa taille ou sa date.
+            <Callout tone="info" title={t("{tooLarge} fichier(s) trop volumineux", { tooLarge: report.tooLarge })}>
+              {t("Au-delà de 64 Mo, un fichier n'est pas ouvert pour la recherche de contenu. Il reste trouvable par son nom, sa taille ou sa date.")}
             </Callout>
           )}
 
           <Panel
             title={
               action.job.isRunning
-                ? "Résultats (recherche en cours…)"
+                ? t("Résultats (recherche en cours…)")
                 : stale
-                  ? "Résultats de la recherche précédente"
-                  : "Résultats"
+                  ? t("Résultats de la recherche précédente")
+                  : t("Résultats")
             }
             count={hits.length}
             testId="search-hits"
@@ -385,7 +383,7 @@ export function FileSearchTool(_props: ToolComponentProps) {
                       {hit.relative}
                     </span>
                     <span className="block text-[11px] text-[var(--ft-text-muted)]">
-                      {hit.reason}
+                      {tx(hit.reason)}
                       {hit.encoding && ` · ${hit.encoding}`}
                     </span>
                     {hit.excerpt && (
@@ -400,7 +398,7 @@ export function FileSearchTool(_props: ToolComponentProps) {
                   <Button
                     size="sm"
                     variant="ghost"
-                    aria-label={`Ouvrir l'emplacement de ${hit.name}`}
+                    aria-label={t("Ouvrir l'emplacement de {name}", { name: hit.name })}
                     onClick={() => revealFile(hit.path)}
                   >
                     <Icon name="FolderTree" size={13} />
@@ -409,18 +407,18 @@ export function FileSearchTool(_props: ToolComponentProps) {
               ))}
               {hits.length === 0 && !action.job.isRunning && (
                 <li className="px-3 py-2 text-[var(--ft-text-faint)]">
-                  Aucun fichier ne correspond à ces critères.
+                  {t("Aucun fichier ne correspond à ces critères.")}
                 </li>
               )}
               {hits.length > 1000 && (
                 <li className="px-3 py-1 text-[var(--ft-text-faint)]">
-                  … et {(hits.length - 1000).toLocaleString("fr-FR")} de plus
+                  {t("… et {value} de plus", { value: formatNumber((hits.length - 1000)) })}
                 </li>
               )}
             </ul>
           </Panel>
 
-          {report && <Warnings title="Avertissements" items={report.warnings} />}
+          {report && <Warnings title={t("Avertissements")} items={report.warnings} />}
         </div>
       )}
     </div>

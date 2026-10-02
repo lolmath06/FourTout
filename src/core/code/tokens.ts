@@ -12,6 +12,7 @@
 /* JWT                                                                       */
 /* ------------------------------------------------------------------------ */
 
+import { formatDateTime, localized, t } from "@/i18n";
 export interface JwtClaim {
   name: string;
   raw: unknown;
@@ -41,15 +42,15 @@ export class JwtError extends Error {
   }
 }
 
-const CLAIM_DESCRIPTIONS: Record<string, string> = {
-  iss: "Émetteur du token (issuer)",
-  sub: "Sujet : l'entité que le token décrit (subject)",
-  aud: "Destinataire prévu (audience)",
-  exp: "Date d'expiration (expiration time)",
-  nbf: "Pas valide avant cette date (not before)",
-  iat: "Date d'émission (issued at)",
-  jti: "Identifiant unique du token (JWT ID)",
-};
+const CLAIM_DESCRIPTIONS: Record<string, string> = localized(() => ({
+  iss: t("Émetteur du token (issuer)"),
+  sub: t("Sujet : l'entité que le token décrit (subject)"),
+  aud: t("Destinataire prévu (audience)"),
+  exp: t("Date d'expiration (expiration time)"),
+  nbf: t("Pas valide avant cette date (not before)"),
+  iat: t("Date d'émission (issued at)"),
+  jti: t("Identifiant unique du token (JWT ID)"),
+}));
 
 function base64UrlDecode(segment: string): string {
   const padded = segment.replace(/-/g, "+").replace(/_/g, "/");
@@ -58,7 +59,7 @@ function base64UrlDecode(segment: string): string {
   try {
     binary = atob(withPadding);
   } catch {
-    throw new JwtError("Segment non décodable : ce n'est pas du base64url valide.");
+    throw new JwtError(t("Segment non décodable : ce n'est pas du base64url valide."));
   }
   const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
   return new TextDecoder("utf-8").decode(bytes);
@@ -67,7 +68,7 @@ function base64UrlDecode(segment: string): string {
 function formatEpoch(seconds: number): string {
   const date = new Date(seconds * 1000);
   if (Number.isNaN(date.getTime())) return "date invalide";
-  return `${date.toLocaleString("fr-FR")} (${date.toISOString()})`;
+  return `${formatDateTime(date)} (${date.toISOString()})`;
 }
 
 /**
@@ -80,11 +81,11 @@ export function decodeJwt(token: string, now: Date = new Date()): DecodedJwt {
   const parts = trimmed.split(".");
   if (parts.length !== 3) {
     throw new JwtError(
-      `Un JWT compte trois segments séparés par des points ; celui-ci en a ${parts.length}.`,
+      t("Un JWT compte trois segments séparés par des points ; celui-ci en a {count}.", { count: parts.length }),
     );
   }
   if (parts.some((part) => part.length === 0)) {
-    throw new JwtError("Un des trois segments du token est vide.");
+    throw new JwtError(t("Un des trois segments du token est vide."));
   }
 
   let header: Record<string, unknown>;
@@ -92,14 +93,14 @@ export function decodeJwt(token: string, now: Date = new Date()): DecodedJwt {
   try {
     header = JSON.parse(base64UrlDecode(parts[0])) as Record<string, unknown>;
   } catch (error) {
-    throw error instanceof JwtError ? error : new JwtError("L'en-tête n'est pas un JSON valide.");
+    throw error instanceof JwtError ? error : new JwtError(t("L'en-tête n'est pas un JSON valide."));
   }
   try {
     payload = JSON.parse(base64UrlDecode(parts[1])) as Record<string, unknown>;
   } catch (error) {
     throw error instanceof JwtError
       ? error
-      : new JwtError("La charge utile n'est pas un JSON valide.");
+      : new JwtError(t("La charge utile n'est pas un JSON valide."));
   }
 
   const seconds = Math.floor(now.getTime() / 1000);
@@ -108,19 +109,19 @@ export function decodeJwt(token: string, now: Date = new Date()): DecodedJwt {
   let usable = true;
 
   for (const [name, raw] of Object.entries(payload)) {
-    const description = CLAIM_DESCRIPTIONS[name] ?? "Claim spécifique à l'application";
+    const description = CLAIM_DESCRIPTIONS[name] ?? t("Claim spécifique à l'application");
     if ((name === "exp" || name === "nbf" || name === "iat") && typeof raw === "number") {
       const readable = formatEpoch(raw);
       let expired = false;
       if (name === "exp" && raw <= seconds) {
         expired = true;
         usable = false;
-        warnings.push(`Le token a expiré le ${formatEpoch(raw)}.`);
+        warnings.push(t("Le token a expiré le {value}.", { value: formatEpoch(raw) }));
       }
       if (name === "nbf" && raw > seconds) {
         expired = true;
         usable = false;
-        warnings.push(`Le token n'est pas encore valide : utilisable à partir du ${formatEpoch(raw)}.`);
+        warnings.push(t("Le token n'est pas encore valide : utilisable à partir du {value}.", { value: formatEpoch(raw) }));
       }
       claims.push({ name, raw, readable, description, expired });
       continue;
@@ -131,7 +132,7 @@ export function decodeJwt(token: string, now: Date = new Date()): DecodedJwt {
   const algorithm = typeof header.alg === "string" ? header.alg : "inconnu";
   if (algorithm.toLowerCase() === "none") {
     warnings.push(
-      "L'en-tête annonce l'algorithme « none » : ce token n'est pas signé du tout.",
+      t("L'en-tête annonce l'algorithme « none » : ce token n'est pas signé du tout."),
     );
   }
 
@@ -155,7 +156,7 @@ function randomBytes(length: number): Uint8Array {
   if (!cryptoApi?.getRandomValues) {
     // Un générateur d'identifiants qui retomberait sur `Math.random()` serait
     // prévisible : mieux vaut échouer bruyamment.
-    throw new Error("Aucun générateur aléatoire cryptographique n'est disponible.");
+    throw new Error(t("Aucun générateur aléatoire cryptographique n'est disponible."));
   }
   cryptoApi.getRandomValues(bytes);
   return bytes;
@@ -240,13 +241,13 @@ export function describeTimestamp(
   const ms = unit === "s" ? value * 1000 : value;
   const date = new Date(ms);
   if (Number.isNaN(date.getTime())) {
-    throw new RangeError("Ce nombre ne correspond à aucune date représentable.");
+    throw new RangeError(t("Ce nombre ne correspond à aucune date représentable."));
   }
   return {
     unit,
     value,
     date,
-    local: date.toLocaleString("fr-FR", { dateStyle: "full", timeStyle: "long" }),
+    local: formatDateTime(date, { dateStyle: "full", timeStyle: "long" }),
     utc: date.toUTCString(),
     iso: date.toISOString(),
     relative: relativeTime(date, now),
@@ -297,18 +298,18 @@ const DIGITS = "0123456789abcdefghijklmnopqrstuvwxyz";
  */
 export function parseInBase(input: string, base: number): bigint {
   if (base < MIN_BASE || base > MAX_BASE || !Number.isInteger(base)) {
-    throw new BaseConversionError(`La base doit être un entier entre ${MIN_BASE} et ${MAX_BASE}.`);
+    throw new BaseConversionError(t("La base doit être un entier entre {MIN_BASE} et {MAX_BASE}.", { MIN_BASE, MAX_BASE }));
   }
   const cleaned = input
     .trim()
     .replace(/[\s_]/g, "")
     .replace(/^0[xXbBoO]/, "")
     .toLowerCase();
-  if (cleaned.length === 0) throw new BaseConversionError("Aucun nombre à convertir.");
+  if (cleaned.length === 0) throw new BaseConversionError(t("Aucun nombre à convertir."));
 
   const negative = cleaned.startsWith("-");
   const digits = negative ? cleaned.slice(1) : cleaned;
-  if (digits.length === 0) throw new BaseConversionError("Aucun chiffre après le signe.");
+  if (digits.length === 0) throw new BaseConversionError(t("Aucun chiffre après le signe."));
 
   const allowed = DIGITS.slice(0, base);
   let value = 0n;
@@ -317,7 +318,7 @@ export function parseInBase(input: string, base: number): bigint {
     const digit = allowed.indexOf(char);
     if (digit === -1) {
       throw new BaseConversionError(
-        `« ${char} » n'est pas un chiffre valide en base ${base} (chiffres autorisés : ${allowed}).`,
+        t("« {char} » n'est pas un chiffre valide en base {base} (chiffres autorisés : {allowed}).", { char, base, allowed }),
       );
     }
     value = value * bigBase + BigInt(digit);
@@ -327,7 +328,7 @@ export function parseInBase(input: string, base: number): bigint {
 
 export function formatInBase(value: bigint, base: number): string {
   if (base < MIN_BASE || base > MAX_BASE || !Number.isInteger(base)) {
-    throw new BaseConversionError(`La base doit être un entier entre ${MIN_BASE} et ${MAX_BASE}.`);
+    throw new BaseConversionError(t("La base doit être un entier entre {MIN_BASE} et {MAX_BASE}.", { MIN_BASE, MAX_BASE }));
   }
   return value.toString(base);
 }

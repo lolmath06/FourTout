@@ -7,6 +7,7 @@ import {
   PDFRef,
   type PDFDocument,
 } from "@cantoo/pdf-lib";
+import { t } from "@/i18n";
 
 /**
  * Inventaire des images embarquées dans un PDF.
@@ -122,8 +123,8 @@ export function listEmbeddedImages(document: PDFDocument): EmbeddedImage[] {
           encoding: "unsupported",
           reason:
             components === undefined
-              ? "espace colorimétrique non géré"
-              : `${bitsPerComponent} bits par composante`,
+              ? t("espace colorimétrique non géré")
+              : t("{bitsPerComponent} bits par composante", { bitsPerComponent }),
         });
         continue;
       }
@@ -134,7 +135,7 @@ export function listEmbeddedImages(document: PDFDocument): EmbeddedImage[] {
     images.push({
       ...base,
       encoding: "unsupported",
-      reason: filters.length === 0 ? "flux non compressé" : `filtre ${filters.join(" + ")}`,
+      reason: filters.length === 0 ? t("flux non compressé") : `filtre ${filters.join(" + ")}`,
     });
   }
 

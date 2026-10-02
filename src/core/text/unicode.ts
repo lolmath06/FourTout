@@ -7,14 +7,15 @@
  * d'où les comparaisons qui échouent et les noms de fichiers en double.
  */
 
+import { localized, t } from "@/i18n";
 export type UnicodeForm = "NFC" | "NFD" | "NFKC" | "NFKD";
 
-export const UNICODE_FORM_LABELS: Record<UnicodeForm, string> = {
-  NFC: "NFC — composée (recommandée)",
-  NFD: "NFD — décomposée",
-  NFKC: "NFKC — composée, compatibilité",
-  NFKD: "NFKD — décomposée, compatibilité",
-};
+export const UNICODE_FORM_LABELS: Record<UnicodeForm, string> = localized(() => ({
+  NFC: t("NFC — composée (recommandée)"),
+  NFD: t("NFD — décomposée"),
+  NFKC: t("NFKC — composée, compatibilité"),
+  NFKD: t("NFKD — décomposée, compatibilité"),
+}));
 
 export interface TextShape {
   /** Unités UTF-16 (la longueur JavaScript). */
@@ -81,9 +82,9 @@ export function listCodePoints(text: string, limit = 200): { char: string; code:
 
 function categoryOf(point: number): string {
   if (point >= 0x0300 && point <= 0x036f) return "accent combinant";
-  if (point === 0x00a0) return "espace insécable";
+  if (point === 0x00a0) return t("espace insécable");
   if (point >= 0x200b && point <= 0x200d) return "largeur nulle";
-  if (point === 0xfeff) return "marque d'ordre des octets";
-  if (point < 0x20) return "caractère de contrôle";
+  if (point === 0xfeff) return t("marque d'ordre des octets");
+  if (point < 0x20) return t("caractère de contrôle");
   return "";
 }

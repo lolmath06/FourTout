@@ -15,6 +15,7 @@ import {
   type CompareResult,
 } from "@/core/files/native";
 import { diffLines, type DiffResult } from "@/core/text/diff";
+import { Trans, formatNumber, t, tx } from "@/i18n";
 
 /**
  * « Pourquoi ces deux fichiers diffèrent-ils ? »
@@ -116,18 +117,18 @@ export function EntryDiff({
       testId="entry-diff"
       actions={
         onClose && (
-          <Button size="sm" variant="ghost" onClick={onClose} aria-label="Fermer le détail">
+          <Button size="sm" variant="ghost" onClick={onClose} aria-label={t("Fermer le détail")}>
             <Icon name="X" size={13} />
           </Button>
         )
       }
     >
       <div className="space-y-3 p-3">
-        {loading && <p className="ft-meta">Lecture des deux fichiers…</p>}
+        {loading && <p className="ft-meta">{t("Lecture des deux fichiers…")}</p>}
 
         {state?.error && (
-          <Callout tone="error" title="Comparaison impossible">
-            {state.error}
+          <Callout tone="error" title={t("Comparaison impossible")}>
+            {tx(state.error)}
           </Callout>
         )}
 
@@ -136,10 +137,10 @@ export function EntryDiff({
             <StatGrid
               columns={4}
               stats={[
-                { label: `Taille ${leftLabel}`, value: formatFileSize(state.compare.sizeA) },
-                { label: `Taille ${rightLabel}`, value: formatFileSize(state.compare.sizeB) },
+                { label: t("Taille {leftLabel}", { leftLabel }), value: formatFileSize(state.compare.sizeA) },
+                { label: t("Taille {rightLabel}", { rightLabel }), value: formatFileSize(state.compare.sizeB) },
                 {
-                  label: "Premier octet différent",
+                  label: t("Premier octet différent"),
                   value:
                     state.compare.firstDifference === null
                       ? "—"
@@ -147,8 +148,8 @@ export function EntryDiff({
                   tone: "warn",
                 },
                 {
-                  label: "Contenu",
-                  value: state.compare.identical ? "identique" : "différent",
+                  label: t("Contenu"),
+                  value: state.compare.identical ? "identique" : t("différent"),
                   tone: state.compare.identical ? "ok" : "warn",
                 },
               ]}
@@ -165,19 +166,15 @@ export function EntryDiff({
               <>
                 <div className="flex items-center gap-3">
                   <OptionGroup
-                    ariaLabel="Présentation de la différence"
+                    ariaLabel={t("Présentation de la différence")}
                     value={view}
                     onChange={setView}
                     options={[
-                      { value: "side", label: "Côte à côte" },
-                      { value: "unified", label: "Unifié" },
+                      { value: "side", label: t("Côte à côte") },
+                      { value: "unified", label: t("Unifié") },
                     ]}
                   />
-                  <span className="ft-meta tabular-nums">
-                    {state.diff.stats.added} ajoutée(s) · {state.diff.stats.removed} retirée(s) ·{" "}
-                    {state.diff.stats.modified} modifiée(s) · {state.diff.stats.unchanged}{" "}
-                    inchangée(s)
-                  </span>
+                  <Trans source={"<0>{added} ajoutée(s) · {removed} retirée(s) · {modified} modifiée(s) · {unchanged} inchangée(s)</0>"} values={{ added: state.diff.stats.added, removed: state.diff.stats.removed, modified: state.diff.stats.modified, unchanged: state.diff.stats.unchanged }} components={[<span className="ft-meta tabular-nums" />]} />
                 </div>
                 <div className="max-h-96 overflow-auto rounded-md border border-[var(--ft-border)]">
                   {view === "side" ? (
@@ -190,28 +187,24 @@ export function EntryDiff({
             )}
 
             {state.tooLarge && (
-              <Callout tone="info" title="Fichiers texte trop volumineux pour un diff ligne à ligne">
-                Au-delà de {formatFileSize(TEXT_LIMIT)}, FourTout ne charge pas les deux fichiers
-                en mémoire pour les aligner. Les plages divergentes ci-dessous ont été trouvées en
-                flux.
+              <Callout tone="info" title={t("Fichiers texte trop volumineux pour un diff ligne à ligne")}>
+                {t("Au-delà de {size}, FourTout ne charge pas les deux fichiers en mémoire pour les aligner. Les plages divergentes ci-dessous ont été trouvées en flux.", { size: formatFileSize(TEXT_LIMIT) })}
               </Callout>
             )}
 
             {state.binary && (
               <>
                 <p className="ft-meta">
-                  {state.binary.differingBytes.toLocaleString("fr-FR")} octet(s) différent(s) sur la
-                  partie commune, en {state.binary.ranges.length} plage(s)
-                  {state.binary.truncated && " (liste écourtée)"}.
+                  {t("{value} octet(s) différent(s) sur la partie commune, en {count} plage(s){value2}.", { value: formatNumber(state.binary.differingBytes), count: state.binary.ranges.length, value2: state.binary.truncated && " (liste écourtée)" })}
                 </p>
                 {state.binary.ranges.length > 0 ? (
                   <div className="overflow-x-auto rounded-md border border-[var(--ft-border)]">
                     <table className="w-full border-collapse text-[11px]">
                       <thead>
                         <tr className="border-b border-[var(--ft-rule)] text-left text-[var(--ft-text-muted)]">
-                          <th className="px-3 py-1 font-medium">Décalage</th>
-                          <th className="px-3 py-1 font-medium">Longueur</th>
-                          <th className="px-3 py-1 font-medium">Fin</th>
+                          <th className="px-3 py-1 font-medium">{t("Décalage")}</th>
+                          <th className="px-3 py-1 font-medium">{t("Longueur")}</th>
+                          <th className="px-3 py-1 font-medium">{t("Fin")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -230,8 +223,8 @@ export function EntryDiff({
                     </table>
                   </div>
                 ) : (
-                  <Callout tone="neutral" title="Aucune plage divergente">
-                    Les deux fichiers ont le même contenu sur toute leur longueur commune.
+                  <Callout tone="neutral" title={t("Aucune plage divergente")}>
+                    {t("Les deux fichiers ont le même contenu sur toute leur longueur commune.")}
                   </Callout>
                 )}
               </>

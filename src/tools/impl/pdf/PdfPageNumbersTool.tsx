@@ -16,21 +16,22 @@ import {
   type PageNumberPosition,
 } from "@/core/pdf/operations/annotate";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t } from "@/i18n";
 
-const POSITIONS: { value: PageNumberPosition; label: string }[] = [
-  { value: "top-left", label: "Haut gauche" },
-  { value: "top-center", label: "Haut centre" },
-  { value: "top-right", label: "Haut droite" },
-  { value: "bottom-left", label: "Bas gauche" },
-  { value: "bottom-center", label: "Bas centre" },
-  { value: "bottom-right", label: "Bas droite" },
-];
+const POSITIONS: { value: PageNumberPosition; label: string }[] = localized(() => [
+  { value: "top-left", label: t("Haut gauche") },
+  { value: "top-center", label: t("Haut centre") },
+  { value: "top-right", label: t("Haut droite") },
+  { value: "bottom-left", label: t("Bas gauche") },
+  { value: "bottom-center", label: t("Bas centre") },
+  { value: "bottom-right", label: t("Bas droite") },
+]);
 
-const FORMATS: { value: PageNumberFormat; label: string }[] = [
+const FORMATS: { value: PageNumberFormat; label: string }[] = localized(() => [
   { value: "plain", label: "1" },
-  { value: "page-n", label: "Page 1" },
+  { value: "page-n", label: t("Page 1") },
   { value: "n-of-total", label: "1 / 12" },
-];
+]);
 
 export function PdfPageNumbersTool({ tool }: ToolComponentProps) {
   const [startAt, setStartAt] = useState(1);
@@ -42,7 +43,7 @@ export function PdfPageNumbersTool({ tool }: ToolComponentProps) {
   return (
     <PdfToolShell
       tool={tool}
-      actionLabel="Numéroter"
+      actionLabel={t("Numéroter")}
       run={async ({ documents, context }) => {
         const [document] = documents;
         const output = await addPageNumbers(
@@ -52,7 +53,7 @@ export function PdfPageNumbersTool({ tool }: ToolComponentProps) {
         );
         return singleResult(
           output,
-          `${document.info?.pageCount ?? 0} pages numérotées à partir de ${startAt}.`,
+          t("{value} pages numérotées à partir de {startAt}.", { value: document.info?.pageCount ?? 0, startAt }),
         );
       }}
     >
@@ -60,46 +61,38 @@ export function PdfPageNumbersTool({ tool }: ToolComponentProps) {
         const pageCount = documents[0]?.info?.pageCount ?? 0;
         return (
           <Fieldset>
-            <Field label="Position">
+            <Field label={t("Position")}>
               <PositionPicker value={position} onChange={setPosition} options={POSITIONS} />
             </Field>
 
             <div className="flex flex-col gap-3">
-              <Field label="Format">
+              <Field label={t("Format")}>
                 <OptionGroup
-                  ariaLabel="Format du numéro"
+                  ariaLabel={t("Format du numéro")}
                   value={format}
                   onChange={setFormat}
                   options={FORMATS}
                 />
               </Field>
-              <Field label="Commencer à">
+              <Field label={t("Commencer à")}>
                 <NumberInput
                   min={0}
                   value={startAt}
                   onChange={(event) => setStartAt(Math.max(0, Number(event.target.value)))}
-                  aria-label="Numéro de départ"
+                  aria-label={t("Numéro de départ")}
                 />
               </Field>
             </div>
 
-            <Field label="Taille du texte">
+            <Field label={t("Taille du texte")}>
               <Slider value={fontSize} onChange={setFontSize} min={6} max={24} suffix=" pt" />
             </Field>
-            <Field label="Marge">
+            <Field label={t("Marge")}>
               <Slider value={margin} onChange={setMargin} min={10} max={72} suffix=" pt" />
             </Field>
 
             <p className="text-xs text-[var(--ft-text-faint)] sm:col-span-full">
-              Aperçu : la première page portera «{" "}
-              <span className="font-medium text-[var(--ft-text)]">
-                {formatPageNumber(startAt, startAt + pageCount - 1, format)}
-              </span>{" "}
-              », la dernière «{" "}
-              <span className="font-medium text-[var(--ft-text)]">
-                {formatPageNumber(startAt + pageCount - 1, startAt + pageCount - 1, format)}
-              </span>{" "}
-              ».
+              <Trans source={"Aperçu : la première page portera « <0>{value}</0> », la dernière « <1>{value2}</1> »."} values={{ value: formatPageNumber(startAt, startAt + pageCount - 1, format), value2: formatPageNumber(startAt + pageCount - 1, startAt + pageCount - 1, format) }} components={[<span className="font-medium text-[var(--ft-text)]" />, <span className="font-medium text-[var(--ft-text)]" />]} />
             </p>
           </Fieldset>
         );

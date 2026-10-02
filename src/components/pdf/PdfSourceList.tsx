@@ -3,6 +3,7 @@ import { formatFileSize } from "@/core/files";
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
 import type { LoadedPdf } from "./usePdfSources";
+import { t, tx } from "@/i18n";
 
 /**
  * Liste des documents chargés : nom, nombre de pages, taille, et le cas
@@ -47,17 +48,15 @@ export function PdfSourceList({
               <p className="truncate text-[13px]">{document.name}</p>
               <p className="ft-meta ft-num">
                 {document.error ? (
-                  <span className="text-[var(--ft-danger)]">{document.error}</span>
+                  <span className="text-[var(--ft-danger)]">{tx(document.error)}</span>
                 ) : document.needsPassword ? (
-                  <span className="text-[var(--ft-warn)]">Protégé par un mot de passe</span>
+                  <span className="text-[var(--ft-warn)]">{t("Protégé par un mot de passe")}</span>
                 ) : (
                   <>
                     {document.info?.pageCount} page{(document.info?.pageCount ?? 0) > 1 ? "s" : ""}
                     {document.info?.firstPageSize && (
                       <>
-                        {" · "}
-                        {Math.round(document.info.firstPageSize.width)} ×{" "}
-                        {Math.round(document.info.firstPageSize.height)} pt
+                        {" "}{t("· {value} × {value2} pt", { value: Math.round(document.info.firstPageSize.width), value2: Math.round(document.info.firstPageSize.height) })}
                       </>
                     )}
                     {" · "}
@@ -71,7 +70,7 @@ export function PdfSourceList({
               <span className="flex shrink-0 items-center">
                 <button
                   type="button"
-                  aria-label={`Monter ${document.name}`}
+                  aria-label={t("Monter {name}", { name: document.name })}
                   disabled={index === 0}
                   onClick={() => onMove(document.id, -1)}
                   className="rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)] disabled:opacity-30"
@@ -88,7 +87,7 @@ export function PdfSourceList({
             {onMove && (
               <button
                 type="button"
-                aria-label={`Descendre ${document.name}`}
+                aria-label={t("Descendre {name}", { name: document.name })}
                 disabled={index === documents.length - 1}
                 onClick={() => onMove(document.id, 1)}
                 className="shrink-0 rotate-180 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)] disabled:opacity-30"
@@ -100,7 +99,7 @@ export function PdfSourceList({
             {onRemove && (
               <button
                 type="button"
-                aria-label={`Retirer ${document.name}`}
+                aria-label={t("Retirer {name}", { name: document.name })}
                 onClick={() => onRemove(document.id)}
                 className="shrink-0 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-danger)]"
               >
@@ -144,12 +143,12 @@ function PasswordPrompt({
         onKeyDown={(event) => {
           if (event.key === "Enter") void submit();
         }}
-        placeholder="Mot de passe du document"
-        aria-label="Mot de passe du document"
+        placeholder={t("Mot de passe du document")}
+        aria-label={t("Mot de passe du document")}
         className="h-[var(--ft-control)] min-w-0 flex-1 rounded-[var(--radius-md)] border border-[var(--ft-border-strong)] bg-[var(--ft-bg)] px-2 text-[13px] outline-none focus:border-[var(--ft-accent)]"
       />
       <Button size="sm" onClick={submit} disabled={password.length === 0 || checking}>
-        {checking ? "Vérification…" : "Déverrouiller"}
+        {checking ? t("Vérification…") : t("Déverrouiller")}
       </Button>
     </div>
   );

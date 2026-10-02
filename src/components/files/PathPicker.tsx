@@ -5,6 +5,7 @@ import { notify } from "@/features/notifications/store";
 import { isTauri } from "@/core/platform";
 import { pickDirectory, pickFiles } from "@/core/files/native";
 import { baseName, directoryName, shortenPath } from "@/core/files/paths";
+import { t, tx } from "@/i18n";
 
 /**
  * Sélection de **chemins** pour les outils Fichiers.
@@ -84,16 +85,16 @@ export function PathPicker({
         onChange(multiple ? [...new Set([...paths, ...selection])] : selection.slice(0, 1));
       }
     } catch (error) {
-      notify.error("Sélection impossible", error instanceof Error ? error.message : undefined);
+      notify.error(t("Sélection impossible"), error instanceof Error ? error.message : undefined);
     }
   };
 
   const defaultLabel =
     mode === "directory"
-      ? "Choisissez un dossier"
+      ? t("Choisissez un dossier")
       : multiple
-        ? "Choisissez des fichiers"
-        : "Choisissez un fichier";
+        ? t("Choisissez des fichiers")
+        : t("Choisissez un fichier");
 
   return (
     <div>
@@ -123,8 +124,8 @@ export function PathPicker({
             {label ?? defaultLabel}
           </span>
           <span className="ft-meta block">
-            {isTauri() ? "ou déposez-les sur la fenêtre" : "boîte de dialogue du système"}
-            {hint && <span className="text-[var(--ft-text-faint)]"> · {hint}</span>}
+            {isTauri() ? t("ou déposez-les sur la fenêtre") : t("boîte de dialogue du système")}
+            {hint && <span className="text-[var(--ft-text-faint)]"> · {tx(hint)}</span>}
           </span>
         </span>
       </button>
@@ -146,7 +147,7 @@ export function PathPicker({
               </span>
               <button
                 type="button"
-                aria-label={`Retirer ${baseName(path)}`}
+                aria-label={t("Retirer {value}", { value: baseName(path) })}
                 onClick={() => onChange(paths.filter((entry) => entry !== path))}
                 className="shrink-0 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-danger)]"
               >

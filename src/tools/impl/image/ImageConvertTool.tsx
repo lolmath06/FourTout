@@ -8,12 +8,13 @@ import { formatFileSize } from "@/core/files";
 import type { ImageFormat, Rgb } from "@/core/image/types";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { presetString, useHandoff } from "@/features/handoff/store";
+import { localized, t } from "@/i18n";
 
-const FORMATS = [
-  { value: "png" as ImageFormat, label: "PNG", hint: "Sans perte, transparence" },
-  { value: "jpeg" as ImageFormat, label: "JPEG", hint: "Léger, photos" },
-  { value: "webp" as ImageFormat, label: "WebP", hint: "Compact et moderne" },
-];
+const FORMATS = localized(() => [
+  { value: "png" as ImageFormat, label: "PNG", hint: t("Sans perte, transparence") },
+  { value: "jpeg" as ImageFormat, label: "JPEG", hint: t("Léger, photos") },
+  { value: "webp" as ImageFormat, label: t("WebP"), hint: t("Compact et moderne") },
+]);
 
 /** Extension reçue du convertisseur universel → format interne. */
 function presetFormat(value: string | undefined): ImageFormat | undefined {
@@ -35,8 +36,8 @@ export function ImageConvertTool({ tool }: ToolComponentProps) {
   return (
     <ImageToolShell
       tool={tool}
-      actionLabel="Convertir"
-      hint="Formats lus : PNG, JPG, WebP, GIF, BMP, TIFF, SVG."
+      actionLabel={t("Convertir")}
+      hint={t("Formats lus : PNG, JPG, WebP, GIF, BMP, TIFF, SVG.")}
       run={async ({ files, context }) => {
         const outputs = await processImages(
           files,
@@ -47,7 +48,7 @@ export function ImageConvertTool({ tool }: ToolComponentProps) {
         const total = outputs.reduce((sum, file) => sum + file.bytes.length, 0);
         return {
           files: outputs,
-          summary: `${outputs.length} image${outputs.length > 1 ? "s" : ""} en ${format.toUpperCase()} · ${formatFileSize(total)}.`,
+          summary: t("{count} {count, plural, one {image} other {images}} en {value} · {size}.", { count: outputs.length, value: format.toUpperCase(), size: formatFileSize(total) }),
           zipName: `images-${format}.zip`,
         };
       }}
@@ -57,24 +58,24 @@ export function ImageConvertTool({ tool }: ToolComponentProps) {
           {files.some((file) => file.extension === "gif") && (
             <div className="sm:col-span-full flex items-start gap-2 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-xs text-[var(--ft-text-muted)]">
               <Icon name="Info" size={14} className="mt-px shrink-0" />
-              Les GIF animés sont convertis à partir de leur première image : l'animation n'est pas conservée.
+              {t("Les GIF animés sont convertis à partir de leur première image : l'animation n'est pas conservée.")}
             </div>
           )}
-          <Field label="Format de sortie" full>
-            <OptionGroup ariaLabel="Format" value={format} onChange={setFormat} options={FORMATS} />
+          <Field label={t("Format de sortie")} full>
+            <OptionGroup ariaLabel={t("Format")} value={format} onChange={setFormat} options={FORMATS} />
           </Field>
           {format === "jpeg" && (
-            <Field label="Qualité" hint="Plus la qualité est basse, plus le fichier est léger.">
+            <Field label={t("Qualité")} hint={t("Plus la qualité est basse, plus le fichier est léger.")}>
               <Slider value={quality} onChange={setQuality} min={40} max={100} suffix=" %" />
             </Field>
           )}
           {format === "webp" && (
-            <Field label="WebP" hint="Encodage sans perte : idéal pour les captures et les graphiques.">
-              <p className="text-xs text-[var(--ft-text-muted)]">Qualité maximale conservée, fichier compact.</p>
+            <Field label={t("WebP")} hint={t("Encodage sans perte : idéal pour les captures et les graphiques.")}>
+              <p className="text-xs text-[var(--ft-text-muted)]">{t("Qualité maximale conservée, fichier compact.")}</p>
             </Field>
           )}
           {format === "jpeg" && (
-            <Field label="Fond (remplace la transparence)">
+            <Field label={t("Fond (remplace la transparence)")}>
               <ColorField value={background} onChange={setBackground} />
             </Field>
           )}

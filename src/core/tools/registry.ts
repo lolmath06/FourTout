@@ -7,6 +7,7 @@ import type {
   ToolCapability,
   ToolDefinition,
 } from "./types";
+import { t } from "@/i18n";
 
 /**
  * Registre des outils : l'autorité unique sur ce qui existe dans FourTout.
@@ -36,10 +37,10 @@ export class ToolRegistry {
     // Une erreur ici est une erreur de développement : elle doit être bruyante
     // et attrapée par les tests, pas dégrader silencieusement l'application.
     if (duplicates.length > 0) {
-      throw new Error(`Identifiants d'outils dupliqués : ${duplicates.join(", ")}`);
+      throw new Error(t("Identifiants d'outils dupliqués : {value}", { value: duplicates.join(", ") }));
     }
     if (unknownCategories.length > 0) {
-      throw new Error(`Catégories inconnues référencées : ${unknownCategories.join(", ")}`);
+      throw new Error(t("Catégories inconnues référencées : {value}", { value: unknownCategories.join(", ") }));
     }
 
     this.tools = tools;

@@ -2,6 +2,8 @@ import { HashRouter, useRoutes } from "react-router-dom";
 import { useEffect } from "react";
 import { routes } from "./routes";
 import { applyTheme, useSettings } from "@/features/settings/store";
+import { startLanguageSync } from "@/features/settings/language";
+import { useI18n } from "@/i18n";
 import { warmMediaCapabilities } from "@/core/media/capabilities";
 
 function Routes() {
@@ -16,6 +18,8 @@ function Routes() {
  */
 export function App() {
   const theme = useSettings((state) => state.theme);
+  const locale = useI18n((state) => state.locale);
+  const revision = useI18n((state) => state.revision);
 
   useEffect(() => {
     applyTheme(theme);
@@ -29,8 +33,14 @@ export function App() {
     warmMediaCapabilities();
   }, []);
 
+  // La langue suit les paramètres, et ceux du système en mode « Système ».
+  useEffect(() => startLanguageSync(), []);
+
+  // Changer de langue remonte l'interface : chaque texte est traduit au rendu,
+  // y compris ceux que des composants avaient mémorisés. L'URL (fragment) et
+  // les données des magasins — favoris, récents, travaux en cours — survivent.
   return (
-    <HashRouter>
+    <HashRouter key={`${locale}:${revision}`}>
       <Routes />
     </HashRouter>
   );

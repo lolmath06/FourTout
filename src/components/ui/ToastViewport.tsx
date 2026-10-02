@@ -1,14 +1,15 @@
 import { useEffect } from "react";
 import { useNotifications, type NoticeKind } from "@/features/notifications/store";
 import { Icon } from "./Icon";
+import { localized, t, tx } from "@/i18n";
 
-const ICON_BY_KIND: Record<NoticeKind, string> = {
+const ICON_BY_KIND: Record<NoticeKind, string> = localized(() => ({
   success: "CircleCheck",
   error: "CircleAlert",
   warning: "TriangleAlert",
   info: "Info",
   loading: "Loader",
-};
+}));
 
 /** Filet latéral : la couleur porte l'état sans colorer toute la surface. */
 const BORDER_BY_KIND: Record<NoticeKind, string> = {
@@ -60,20 +61,20 @@ export function ToastViewport() {
         >
           <span className={`mt-px shrink-0 ${COLOR_BY_KIND[notice.kind]}`}>
             <Icon
-              name={ICON_BY_KIND[notice.kind]}
+              name={tx(ICON_BY_KIND[notice.kind])}
               size={14}
               className={notice.kind === "loading" ? "animate-spin" : undefined}
             />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[13px] font-medium leading-5">{notice.title}</p>
+            <p className="text-[13px] font-medium leading-5">{tx(notice.title)}</p>
             {notice.description && (
-              <p className="ft-meta mt-0.5 break-words">{notice.description}</p>
+              <p className="ft-meta mt-0.5 break-words">{tx(notice.description)}</p>
             )}
           </div>
           <button
             type="button"
-            aria-label="Fermer la notification"
+            aria-label={t("Fermer la notification")}
             onClick={() => dismiss(notice.id)}
             className="shrink-0 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-text)]"
           >

@@ -24,13 +24,14 @@ import {
   type StrengthResult,
 } from "@/core/security/password";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /** Barème d'entropie, affiché tel quel pour que le verdict soit vérifiable. */
 function entropyVerdict(bits: number): { label: string; tone: "error" | "warning" | "info" | "success" } {
-  if (bits < 50) return { label: "Insuffisant", tone: "error" };
-  if (bits < 70) return { label: "Correct pour un usage secondaire", tone: "warning" };
-  if (bits < 90) return { label: "Bon", tone: "info" };
-  return { label: "Très bon", tone: "success" };
+  if (bits < 50) return { label: t("Insuffisant"), tone: "error" };
+  if (bits < 70) return { label: t("Correct pour un usage secondaire"), tone: "warning" };
+  if (bits < 90) return { label: t("Bon"), tone: "info" };
+  return { label: t("Très bon"), tone: "success" };
 }
 
 /**
@@ -70,7 +71,7 @@ export function PasswordGenerateTool(_props: ToolComponentProps) {
       );
     } catch (failure) {
       setList([]);
-      setError(failure instanceof Error ? failure.message : "Génération impossible.");
+      setError(failure instanceof Error ? failure.message : t("Génération impossible."));
     }
   };
 
@@ -83,104 +84,104 @@ export function PasswordGenerateTool(_props: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <Fieldset columns={2}>
-        <Field label="Type">
+        <Field label={t("Type")}>
           <OptionGroup
-            ariaLabel="Type"
+            ariaLabel={t("Type")}
             value={mode}
             onChange={setMode}
             options={[
-              { value: "password", label: "Mot de passe" },
-              { value: "passphrase", label: "Phrase secrète" },
+              { value: "password", label: t("Mot de passe") },
+              { value: "passphrase", label: t("Phrase secrète") },
             ]}
           />
         </Field>
-        <Field label="Quantité" hint={`1 à ${MAX_COUNT}`}>
+        <Field label={t("Quantité")} hint={`1 à ${MAX_COUNT}`}>
           <NumberInput
             value={count}
             min={1}
             max={MAX_COUNT}
             onChange={(event) => setCount(Number(event.target.value))}
-            aria-label="Quantité"
+            aria-label={t("Quantité")}
           />
         </Field>
       </Fieldset>
 
       {mode === "password" ? (
-        <Fieldset columns={2} title="Composition">
-          <Field label={`Longueur (${MIN_LENGTH} à ${MAX_LENGTH})`}>
+        <Fieldset columns={2} title={t("Composition")}>
+          <Field label={t("Longueur ({MIN_LENGTH} à {MAX_LENGTH})", { MIN_LENGTH, MAX_LENGTH })}>
             <NumberInput
               value={options.length}
               min={MIN_LENGTH}
               max={MAX_LENGTH}
               onChange={(event) => update("length", Number(event.target.value))}
-              aria-label="Longueur"
+              aria-label={t("Longueur")}
               data-testid="password-length"
             />
           </Field>
-          <Field label="Caractères">
+          <Field label={t("Caractères")}>
             <div className="grid gap-1 sm:grid-cols-2">
               <CheckOption
                 checked={options.lowercase}
                 onChange={(value) => update("lowercase", value)}
-                label="Minuscules"
+                label={t("Minuscules")}
               />
               <CheckOption
                 checked={options.uppercase}
                 onChange={(value) => update("uppercase", value)}
-                label="Majuscules"
+                label={t("Majuscules")}
               />
               <CheckOption
                 checked={options.digits}
                 onChange={(value) => update("digits", value)}
-                label="Chiffres"
+                label={t("Chiffres")}
               />
               <CheckOption
                 checked={options.symbols}
                 onChange={(value) => update("symbols", value)}
-                label="Symboles"
+                label={t("Symboles")}
               />
             </div>
           </Field>
-          <Field label="Lisibilité" full>
+          <Field label={t("Lisibilité")} full>
             <CheckOption
               checked={options.excludeAmbiguous}
               onChange={(value) => update("excludeAmbiguous", value)}
-              label="Écarter les caractères ambigus"
-              hint="I, l, 1, O, 0 et la ponctuation qu'on confond à la lecture ou à la dictée."
+              label={t("Écarter les caractères ambigus")}
+              hint={t("I, l, 1, O, 0 et la ponctuation qu'on confond à la lecture ou à la dictée.")}
             />
           </Field>
         </Fieldset>
       ) : (
-        <Fieldset columns={2} title="Composition">
-          <Field label="Nombre de mots" hint="3 à 12">
+        <Fieldset columns={2} title={t("Composition")}>
+          <Field label={t("Nombre de mots")} hint="3 à 12">
             <NumberInput
               value={words}
               min={3}
               max={12}
               onChange={(event) => setWords(Number(event.target.value))}
-              aria-label="Nombre de mots"
+              aria-label={t("Nombre de mots")}
             />
           </Field>
-          <Field label="Séparateur">
+          <Field label={t("Séparateur")}>
             <TextInput
               value={separator}
               maxLength={3}
               onChange={(event) => setSeparator(event.target.value)}
-              aria-label="Séparateur"
+              aria-label={t("Séparateur")}
             />
           </Field>
-          <Field label="Options" full>
+          <Field label={t("Options")} full>
             <div className="grid gap-1 sm:grid-cols-2">
               <CheckOption
                 checked={capitalize}
                 onChange={setCapitalize}
-                label="Première lettre en majuscule"
+                label={t("Première lettre en majuscule")}
               />
               <CheckOption
                 checked={appendDigit}
                 onChange={setAppendDigit}
-                label="Ajouter un chiffre à la fin"
-                hint="Beaucoup de formulaires l'exigent."
+                label={t("Ajouter un chiffre à la fin")}
+                hint={t("Beaucoup de formulaires l'exigent.")}
               />
             </div>
           </Field>
@@ -189,24 +190,24 @@ export function PasswordGenerateTool(_props: ToolComponentProps) {
 
       <div className="flex flex-wrap items-center gap-2">
         <Button size="md" variant="primary" onClick={generate}>
-          <Icon name="RefreshCw" size={15} /> Générer
+          <Icon name="RefreshCw" size={15} />{" "}{t("Générer")}
         </Button>
-        <CopyButton value={list.join("\n")} label="Tout copier" />
+        <CopyButton value={list.join("\n")} label={t("Tout copier")} />
         <div className="flex-1" />
         <span className="ft-meta ft-num">
           {mode === "password"
-            ? `${alphabetSize} caractères possibles`
-            : `${WORDLIST.length} mots dans la liste`}
+            ? t("{alphabetSize} caractères possibles", { alphabetSize })
+            : t("{count} mots dans la liste", { count: WORDLIST.length })}
         </span>
       </div>
 
-      <InputError message={error} />
+      <InputError message={tx(error)} />
 
       {list.length > 0 && (
         <>
           <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
             <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-              {list.length > 1 ? "Propositions" : "Proposition"}
+              {list.length > 1 ? t("Propositions") : t("Proposition")}
             </h3>
             <ul className="divide-y divide-[var(--ft-rule)]">
               {list.map((value, index) => (
@@ -221,12 +222,12 @@ export function PasswordGenerateTool(_props: ToolComponentProps) {
           </section>
 
           <ValueTable
-            caption="Solidité théorique"
+            caption={t("Solidité théorique")}
             rows={[
-              { label: "Entropie", value: `${bits.toFixed(1)} bits`, highlight: true },
-              { label: "Verdict", value: verdict.label },
+              { label: t("Entropie"), value: `${bits.toFixed(1)} bits`, highlight: true },
+              { label: t("Verdict"), value: verdict.label },
               {
-                label: "Attaque hors ligne",
+                label: t("Attaque hors ligne"),
                 hint: `${GUESSES_PER_SECOND.toExponential(0)} essais/s`,
                 value: crackTime(bits),
               },
@@ -235,10 +236,8 @@ export function PasswordGenerateTool(_props: ToolComponentProps) {
         </>
       )}
 
-      <Callout tone="info" title="Rien n'est conservé">
-        Les mots de passe sont produits sur cet appareil par le générateur cryptographique du
-        système, et ne sont écrits nulle part : ni dans l'historique, ni dans les récents, ni dans
-        un fichier. Fermer cet écran les fait disparaître.
+      <Callout tone="info" title={t("Rien n'est conservé")}>
+        {t("Les mots de passe sont produits sur cet appareil par le générateur cryptographique du système, et ne sont écrits nulle part : ni dans l'historique, ni dans les récents, ni dans un fichier. Fermer cet écran les fait disparaître.")}
       </Callout>
     </div>
   );
@@ -293,7 +292,7 @@ export function PasswordStrengthTool(_props: ToolComponentProps) {
       .catch((failure: unknown) => {
         if (cancelled) return;
         setResult(undefined);
-        setError(failure instanceof Error ? failure.message : "Évaluation impossible.");
+        setError(failure instanceof Error ? failure.message : t("Évaluation impossible."));
       });
     return () => {
       cancelled = true;
@@ -304,12 +303,12 @@ export function PasswordStrengthTool(_props: ToolComponentProps) {
 
   return (
     <div className="space-y-4">
-      <Callout tone="info" title="Évaluation locale">
+      <Callout tone="info" title={t("Évaluation locale")}>
         {STRENGTH_NOTE}
       </Callout>
 
       <Fieldset columns={1}>
-        <Field label="Mot de passe à évaluer">
+        <Field label={t("Mot de passe à évaluer")}>
           <div className="flex items-center gap-2">
             <TextInput
               type={visible ? "text" : "password"}
@@ -318,13 +317,13 @@ export function PasswordStrengthTool(_props: ToolComponentProps) {
               autoComplete="off"
               spellCheck={false}
               onChange={(event) => setPassword(event.target.value)}
-              aria-label="Mot de passe à évaluer"
+              aria-label={t("Mot de passe à évaluer")}
               data-testid="password-input"
             />
             <Button
               size="sm"
               onClick={() => setVisible((current) => !current)}
-              aria-label={visible ? "Masquer" : "Afficher"}
+              aria-label={visible ? t("Masquer") : t("Afficher")}
             >
               <Icon name={visible ? "EyeOff" : "Eye"} size={14} />
             </Button>
@@ -332,7 +331,7 @@ export function PasswordStrengthTool(_props: ToolComponentProps) {
         </Field>
       </Fieldset>
 
-      <InputError message={error} />
+      <InputError message={tx(error)} />
 
       {result && (
         <>
@@ -353,19 +352,19 @@ export function PasswordStrengthTool(_props: ToolComponentProps) {
             value={result.label}
             formula={`Score ${result.score} sur 4 · ${result.length} caractère${result.length > 1 ? "s" : ""}`}
             secondary={[
-              { label: "Essais estimés", value: result.guesses.toExponential(2) },
+              { label: t("Essais estimés"), value: result.guesses.toExponential(2) },
               {
-                label: "Attaque hors ligne",
+                label: t("Attaque hors ligne"),
                 value: result.crackTime,
               },
             ]}
           />
 
           {result.warnings.length > 0 && (
-            <Callout tone={SCORE_TONE[result.score]} title="Points faibles">
+            <Callout tone={SCORE_TONE[result.score]} title={t("Points faibles")}>
               <ul className="list-disc space-y-0.5 pl-4">
                 {result.warnings.map((warning) => (
-                  <li key={warning}>{warning}</li>
+                  <li key={warning}>{tx(warning)}</li>
                 ))}
               </ul>
             </Callout>
@@ -373,16 +372,16 @@ export function PasswordStrengthTool(_props: ToolComponentProps) {
 
           {result.patterns.length > 0 && (
             <ValueTable
-              caption="Motifs reconnus"
+              caption={t("Motifs reconnus")}
               rows={result.patterns.map((pattern, index) => ({
-                label: `Segment ${index + 1}`,
+                label: t("Segment {value}", { value: index + 1 }),
                 value: pattern,
               }))}
             />
           )}
 
           {result.suggestions.length > 0 && (
-            <Callout tone="info" title="Suggestions">
+            <Callout tone="info" title={t("Suggestions")}>
               <ul className="list-disc space-y-0.5 pl-4">
                 {result.suggestions.map((suggestion) => (
                   <li key={suggestion}>{suggestion}</li>
@@ -395,18 +394,13 @@ export function PasswordStrengthTool(_props: ToolComponentProps) {
 
       {password.length === 0 && (
         <TextPane
-          label="Comment lire le score"
+          label={t("Comment lire le score")}
           readOnly
           droppable={false}
           monospace={false}
           minHeight="7rem"
           value={
-            "0 à 1 — devinable très vite, y compris par quelqu'un qui ne vous connaît pas.\n" +
-            "2 — tient face à une attaque en ligne limitée, pas face à une fuite de base.\n" +
-            "3 — correct pour un compte ordinaire.\n" +
-            "4 — adapté à un compte sensible (messagerie, banque, gestionnaire de mots de passe).\n\n" +
-            "Un score élevé ne dit rien de la réutilisation : un excellent mot de passe employé sur " +
-            "dix sites tombe avec le premier d'entre eux."
+            t("0 à 1 — devinable très vite, y compris par quelqu'un qui ne vous connaît pas.\n2 — tient face à une attaque en ligne limitée, pas face à une fuite de base.\n3 — correct pour un compte ordinaire.\n4 — adapté à un compte sensible (messagerie, banque, gestionnaire de mots de passe).\n\nUn score élevé ne dit rien de la réutilisation : un excellent mot de passe employé sur dix sites tombe avec le premier d'entre eux.")
           }
         />
       )}

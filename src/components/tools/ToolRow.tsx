@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
+import { categoryName, toolDescription, toolName } from "@/core/tools/localized";
 import { getCategory } from "@/core/tools/categories";
 import { toolRoute, type ToolDefinition } from "@/core/tools/types";
 import { Icon } from "@/components/ui/Icon";
 import { FavoriteButton } from "./FavoriteButton";
+
 
 /**
  * Ligne d'outil.
@@ -37,13 +39,13 @@ export function ToolRow({
 
       <span className="flex min-w-0 flex-1 items-baseline gap-2">
         <span className="shrink-0 truncate text-[13px] font-medium text-[var(--ft-text)]">
-          {tool.name}
+          {toolName(tool)}
         </span>
         <span className="ft-meta min-w-0 truncate">
           {showCategory && category && (
-            <span className="text-[var(--ft-text-faint)]">{category.name} · </span>
+            <span className="text-[var(--ft-text-faint)]">{categoryName(category)} · </span>
           )}
-          {tool.description}
+          {toolDescription(tool)}
         </span>
       </span>
 

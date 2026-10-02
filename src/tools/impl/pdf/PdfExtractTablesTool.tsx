@@ -15,6 +15,7 @@ import type { CsvDelimiter } from "@/core/text/csv";
 import { saveFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t } from "@/i18n";
 
 /**
  * Extraction des tableaux d'un PDF.
@@ -24,11 +25,11 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * cette fonction, puisqu'un PDF ne contient pas de tableaux mais du texte
  * positionné, et que la reconstruction est une déduction.
  */
-const DELIMITERS: { value: CsvDelimiter; label: string; hint: string }[] = [
-  { value: ";", label: "Point-virgule", hint: "Attendu par Excel en configuration française" },
-  { value: ",", label: "Virgule", hint: "Convention anglo-saxonne, la plus portable" },
-  { value: "\t", label: "Tabulation", hint: "Pour coller directement dans un tableur" },
-];
+const DELIMITERS: { value: CsvDelimiter; label: string; hint: string }[] = localized(() => [
+  { value: ";", label: t("Point-virgule"), hint: t("Attendu par Excel en configuration française") },
+  { value: ",", label: t("Virgule"), hint: t("Convention anglo-saxonne, la plus portable") },
+  { value: "\t", label: t("Tabulation"), hint: t("Pour coller directement dans un tableur") },
+]);
 
 export function PdfExtractTablesTool({ tool }: ToolComponentProps) {
   const [tables, setTables] = useState<DetectedTable[]>([]);
@@ -52,7 +53,7 @@ export function PdfExtractTablesTool({ tool }: ToolComponentProps) {
   const exportCsv = async () => {
     const file = tableToCsvFile(sourceName, finalTable(selected), { delimiter, bom: true });
     const saved = await saveFile(file);
-    if (saved.saved) notify.success("Tableau enregistré", saved.path);
+    if (saved.saved) notify.success(t("Tableau enregistré"), saved.path);
   };
 
   const exportXlsx = async () => {
@@ -61,7 +62,7 @@ export function PdfExtractTablesTool({ tool }: ToolComponentProps) {
       tables.map((_, index) => finalTable(index)),
     );
     const saved = await saveFile(file);
-    if (saved.saved) notify.success("Classeur enregistré", saved.path);
+    if (saved.saved) notify.success(t("Classeur enregistré"), saved.path);
   };
 
   const table = tables[selected];
@@ -69,8 +70,8 @@ export function PdfExtractTablesTool({ tool }: ToolComponentProps) {
   return (
     <PdfToolShell
       tool={tool}
-      actionLabel="Détecter les tableaux"
-      hint="FourTout reconstruit les tableaux à partir de la position du texte : les tableaux enregistrés comme image demandent d'abord un PDF recherchable."
+      actionLabel={t("Détecter les tableaux")}
+      hint={t("FourTout reconstruit les tableaux à partir de la position du texte : les tableaux enregistrés comme image demandent d'abord un PDF recherchable.")}
       run={async ({ documents, context }) => {
         setTables([]);
         setEdits({});
@@ -82,28 +83,23 @@ export function PdfExtractTablesTool({ tool }: ToolComponentProps) {
         // exporte ensuite, une fois le résultat relu.
         return {
           files: [],
-          summary: `${result.tables.length} tableau${result.tables.length > 1 ? "x" : ""} détecté${
-            result.tables.length > 1 ? "s" : ""
-          } sur ${result.pageCount} page${result.pageCount > 1 ? "s" : ""}.`,
+          summary: t("{count} {count, plural, one {tableau} other {tableaux}} {count, plural, one {détecté} other {détectés}} sur {pageCount} {pageCount, plural, one {page} other {pages}}.", { count: result.tables.length, pageCount: result.pageCount }),
         };
       }}
     >
       {() => (
         <>
-          <Callout tone="info" title="Comment FourTout reconstruit un tableau">
-            Un PDF ne contient pas de tableaux : il contient du texte à des coordonnées. FourTout
-            déduit les lignes et les colonnes de ces positions — avec ou sans bordures, cela ne
-            change rien. Les tableaux complexes (cellules fusionnées, texte sur plusieurs lignes)
-            peuvent demander une correction : relisez et modifiez les cellules avant d'exporter.
+          <Callout tone="info" title={t("Comment FourTout reconstruit un tableau")}>
+            {t("Un PDF ne contient pas de tableaux : il contient du texte à des coordonnées. FourTout déduit les lignes et les colonnes de ces positions — avec ou sans bordures, cela ne change rien. Les tableaux complexes (cellules fusionnées, texte sur plusieurs lignes) peuvent demander une correction : relisez et modifiez les cellules avant d'exporter.")}
           </Callout>
 
           {tables.length > 0 && table && (
             <>
               {tables.length > 1 && (
                 <Fieldset columns={1}>
-                  <Field label="Tableau détecté">
+                  <Field label={t("Tableau détecté")}>
                     <OptionGroup
-                      ariaLabel="Tableau détecté"
+                      ariaLabel={t("Tableau détecté")}
                       value={String(selected)}
                       onChange={(value) => setSelected(Number(value))}
                       options={tables.map((item, index) => ({
@@ -116,14 +112,11 @@ export function PdfExtractTablesTool({ tool }: ToolComponentProps) {
               )}
 
               <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--ft-text-muted)]">
-                <span className="tabular-nums">
-                  {table.rowCount} ligne{table.rowCount > 1 ? "s" : ""} ×{" "}
-                  {table.columnCount} colonne{table.columnCount > 1 ? "s" : ""}
-                </span>
+                <Trans source={"<0>{rowCount} {rowCount, plural, one {ligne} other {lignes}} × {columnCount} {columnCount, plural, one {colonne} other {colonnes}}</0>"} values={{ rowCount: table.rowCount, columnCount: table.columnCount }} components={[<span className="tabular-nums" />]} />
                 {table.fillRatio < 0.7 && (
                   <span className="flex items-center gap-1 text-[var(--ft-warn)]">
                     <Icon name="TriangleAlert" size={13} />
-                    Beaucoup de cellules vides : vérifiez le découpage en colonnes.
+                    {t("Beaucoup de cellules vides : vérifiez le découpage en colonnes.")}
                   </span>
                 )}
               </div>
@@ -135,13 +128,13 @@ export function PdfExtractTablesTool({ tool }: ToolComponentProps) {
                 onEdit={(key, value) => setEdits((current) => ({ ...current, [key]: value }))}
               />
 
-              <Fieldset columns={1} title="Export">
+              <Fieldset columns={1} title={t("Export")}>
                 <Field
-                  label="Séparateur du CSV"
-                  hint="Le fichier est écrit en UTF-8 avec BOM : les accents s'affichent correctement dans Excel."
+                  label={t("Séparateur du CSV")}
+                  hint={t("Le fichier est écrit en UTF-8 avec BOM : les accents s'affichent correctement dans Excel.")}
                 >
                   <OptionGroup
-                    ariaLabel="Séparateur du CSV"
+                    ariaLabel={t("Séparateur du CSV")}
                     value={delimiter}
                     onChange={setDelimiter}
                     options={DELIMITERS}
@@ -149,12 +142,11 @@ export function PdfExtractTablesTool({ tool }: ToolComponentProps) {
                 </Field>
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" variant="primary" onClick={exportCsv}>
-                    <Icon name="Download" size={14} /> Exporter ce tableau en CSV
+                    <Icon name="Download" size={14} />{" "}{t("Exporter ce tableau en CSV")}
                   </Button>
                   <Button size="sm" onClick={exportXlsx}>
                     <Icon name="Table" size={14} />
-                    Exporter {tables.length > 1 ? `les ${tables.length} tableaux` : "le tableau"} en
-                    XLSX
+                    {t("Exporter {value} en XLSX", { value: tables.length > 1 ? t("les {count} tableaux", { count: tables.length }) : t("le tableau") })}
                   </Button>
                 </div>
               </Fieldset>
@@ -200,7 +192,7 @@ function TableEditor({
                     <input
                       value={edits[key] ?? cell}
                       onChange={(event) => onEdit(key, event.target.value)}
-                      aria-label={`Ligne ${rowIndex + 1}, colonne ${columnIndex + 1}`}
+                      aria-label={t("Ligne {value}, colonne {value2}", { value: rowIndex + 1, value2: columnIndex + 1 })}
                       className={`w-full min-w-28 bg-transparent px-2 py-1 text-[13px] outline-none focus:bg-[var(--ft-hover)] ${
                         rowIndex === 0 ? "font-medium" : ""
                       }`}

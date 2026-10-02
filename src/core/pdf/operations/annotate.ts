@@ -3,6 +3,7 @@ import { loadPdf, report, savePdf, throwIfCancelled } from "../document";
 import { PdfError } from "../errors";
 import { outputName } from "../filenames";
 import type { OperationContext, OutputFile, PdfSource, Placement } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Ajouts par-dessus les pages existantes : filigrane texte et numérotation.
@@ -35,7 +36,7 @@ export async function addWatermark(
   context?: OperationContext,
 ): Promise<OutputFile> {
   if (options.text.trim().length === 0) {
-    throw new PdfError("invalid-range", "Le texte du filigrane est vide.");
+    throw new PdfError("invalid-range", t("Le texte du filigrane est vide."));
   }
 
   const document = await loadPdf(source);
@@ -50,7 +51,7 @@ export async function addWatermark(
     report(context, index / targets.length, `Page ${pageNumber}`);
   }
 
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   return savePdf(document, outputName(source.name, "filigrane"));
 }
 
@@ -155,7 +156,7 @@ export async function addPageNumbers(
     report(context, index / targets.length, `Page ${pageNumber}`);
   }
 
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   return savePdf(document, outputName(source.name, "numerote"));
 }
 

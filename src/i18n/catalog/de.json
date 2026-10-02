@@ -1,0 +1,3733 @@
+{
+  "categories": {
+    "pdf": {
+      "name": "PDF",
+      "description": "PDFs zusammenfügen, teilen, komprimieren, konvertieren und schützen.",
+      "keywords": [
+        "pdf",
+        "dokument",
+        "acrobat"
+      ]
+    },
+    "images": {
+      "name": "Bilder",
+      "description": "Bilder konvertieren, komprimieren, skalieren und bereinigen.",
+      "keywords": [
+        "bild",
+        "foto",
+        "png",
+        "jpg",
+        "jpeg",
+        "webp"
+      ]
+    },
+    "audio": {
+      "name": "Audio",
+      "description": "Ton konvertieren, schneiden, normalisieren, transkribieren und synthetisieren.",
+      "keywords": [
+        "audio",
+        "ton",
+        "musik",
+        "mp3",
+        "stimme"
+      ]
+    },
+    "video": {
+      "name": "Video",
+      "description": "Videos konvertieren, komprimieren, schneiden und untertiteln.",
+      "keywords": [
+        "video",
+        "film",
+        "mp4",
+        "clip"
+      ]
+    },
+    "text": {
+      "name": "Text & Dokumente",
+      "description": "Text analysieren, bereinigen, vergleichen und umwandeln.",
+      "keywords": [
+        "text",
+        "dokument",
+        "markdown",
+        "wörter"
+      ]
+    },
+    "files": {
+      "name": "Dateien & Archive",
+      "description": "Dateien komprimieren, entpacken, vergleichen, umbenennen und ordnen.",
+      "keywords": [
+        "datei",
+        "archiv",
+        "zip",
+        "ordner"
+      ]
+    },
+    "converters": {
+      "name": "Konverter",
+      "description": "Von einem Format ins andere, egal welcher Dateityp.",
+      "keywords": [
+        "konvertieren",
+        "umwandeln",
+        "konvertierung",
+        "konverter",
+        "format"
+      ]
+    },
+    "developer": {
+      "name": "Entwickler",
+      "description": "Technische Formate formatieren, kodieren, erzeugen und untersuchen.",
+      "keywords": [
+        "dev",
+        "entwickler",
+        "json",
+        "code",
+        "programmierung"
+      ]
+    },
+    "calculators": {
+      "name": "Rechner",
+      "description": "Einheiten, Prozente, Daten, Dauern und Alltagsrechnungen.",
+      "keywords": [
+        "rechnen",
+        "rechner",
+        "einheit",
+        "umrechnung",
+        "maß",
+        "mathe"
+      ]
+    },
+    "network": {
+      "name": "Netzwerk",
+      "description": "Eine Verbindung diagnostizieren, Ports testen, sehen, was im Heimnetz hängt.",
+      "keywords": [
+        "netzwerk",
+        "lan",
+        "ip",
+        "ping",
+        "port",
+        "verbindung",
+        "wlan",
+        "wifi"
+      ]
+    },
+    "diagnostics": {
+      "name": "Diagnose & Wiederherstellung",
+      "description": "Verstehen, was an einer beschädigten Datei kaputt ist, und retten, was zu retten ist.",
+      "keywords": [
+        "diagnose",
+        "beschädigt",
+        "defekt",
+        "kaputt",
+        "reparieren",
+        "wiederherstellen",
+        "festplatte",
+        "partition",
+        "smart"
+      ]
+    },
+    "security": {
+      "name": "Sicherheit & Datenschutz",
+      "description": "Passwörter, Verschlüsselung, Prüfsummen und Datenlöschung.",
+      "keywords": [
+        "sicherheit",
+        "datenschutz",
+        "verschlüsselung",
+        "passwort",
+        "hash"
+      ]
+    }
+  },
+  "tools": {
+    "pdf-merge": {
+      "name": "PDFs zusammenfügen",
+      "description": "Mehrere PDFs in der gewünschten Reihenfolge zu einem Dokument zusammenführen.",
+      "keywords": [
+        "zusammenfügen",
+        "zusammenführen",
+        "kombinieren",
+        "verbinden",
+        "mehrere pdfs",
+        "ein pdf",
+        "zwei pdfs zusammenfügen"
+      ],
+      "aliases": [
+        "merge pdf",
+        "combine pdf",
+        "pdf zusammenführen"
+      ]
+    },
+    "pdf-split": {
+      "name": "PDF teilen",
+      "description": "Ein PDF nach Seitenbereichen in mehrere Dateien aufteilen.",
+      "keywords": [
+        "teilen",
+        "aufteilen",
+        "trennen",
+        "zerlegen",
+        "splitten",
+        "halbieren"
+      ],
+      "aliases": [
+        "split pdf",
+        "pdf aufteilen"
+      ]
+    },
+    "pdf-extract-pages": {
+      "name": "Seiten extrahieren",
+      "description": "Aus ausgewählten Seiten ein neues PDF erstellen.",
+      "keywords": [
+        "extrahieren",
+        "auswählen",
+        "seiten herausnehmen",
+        "einige seiten behalten"
+      ],
+      "aliases": [
+        "extract pages",
+        "pdf seiten extrahieren"
+      ]
+    },
+    "pdf-remove-pages": {
+      "name": "Seiten entfernen",
+      "description": "Einzelne Seiten dauerhaft aus einem PDF entfernen.",
+      "keywords": [
+        "löschen",
+        "entfernen",
+        "seiten entfernen",
+        "seite löschen",
+        "letzte seite entfernen"
+      ],
+      "aliases": [
+        "delete pages",
+        "remove pages pdf"
+      ]
+    },
+    "pdf-reorder-pages": {
+      "name": "Seiten neu anordnen",
+      "description": "Die Seitenreihenfolge per Drag & Drop ändern.",
+      "keywords": [
+        "neu anordnen",
+        "reihenfolge",
+        "seiten sortieren",
+        "seite verschieben",
+        "umkehren"
+      ],
+      "aliases": [
+        "reorder pages",
+        "pdf organisieren"
+      ]
+    },
+    "pdf-rotate": {
+      "name": "Seiten drehen",
+      "description": "Alle oder einzelne Seiten um 90, 180 oder 270 Grad drehen.",
+      "keywords": [
+        "drehen",
+        "rotieren",
+        "rotation",
+        "geraderichten",
+        "seite steht kopf",
+        "ausrichten"
+      ],
+      "aliases": [
+        "rotate pdf",
+        "pdf drehen"
+      ]
+    },
+    "pdf-compress": {
+      "name": "PDF komprimieren",
+      "description": "Die Dateigröße eines PDFs verringern und es gut lesbar halten.",
+      "keywords": [
+        "komprimieren",
+        "verkleinern",
+        "größe reduzieren",
+        "dateigröße verringern",
+        "optimieren",
+        "zu groß",
+        "große datei",
+        "weniger mb"
+      ],
+      "aliases": [
+        "compress pdf",
+        "reduce pdf size",
+        "pdf verkleinern",
+        "pdf zu groß"
+      ]
+    },
+    "images-to-pdf": {
+      "name": "Bilder in PDF",
+      "description": "Eine Reihe von Bildern in ein PDF-Dokument mit Seiten umwandeln.",
+      "keywords": [
+        "bilder in pdf",
+        "fotos in pdf",
+        "jpg in pdf",
+        "png in pdf",
+        "scanner"
+      ],
+      "aliases": [
+        "image to pdf",
+        "jpg to pdf",
+        "png to pdf"
+      ]
+    },
+    "pdf-to-images": {
+      "name": "PDF in Bilder",
+      "description": "Jede Seite eines PDFs als PNG oder JPEG in der gewünschten Auflösung exportieren.",
+      "keywords": [
+        "pdf in bilder",
+        "pdf in png",
+        "pdf in jpg",
+        "pdf in jpeg",
+        "seiten exportieren",
+        "pdf als bild"
+      ],
+      "aliases": [
+        "pdf to image",
+        "pdf to jpg",
+        "pdf to png"
+      ]
+    },
+    "document-to-pdf": {
+      "name": "Dokument in PDF",
+      "description": "Eine Text-, Markdown- oder HTML-Datei in PDF umwandeln.",
+      "keywords": [
+        "text in pdf",
+        "markdown in pdf",
+        "html in pdf",
+        "txt in pdf",
+        "docx in pdf"
+      ],
+      "aliases": [
+        "text to pdf",
+        "markdown to pdf",
+        "html to pdf"
+      ]
+    },
+    "pdf-add-text": {
+      "name": "Text hinzufügen",
+      "description": "Text auf ein PDF schreiben, um ein Formular auszufüllen oder Anmerkungen zu machen.",
+      "keywords": [
+        "schreiben",
+        "kommentieren",
+        "ausfüllen",
+        "formular",
+        "anmerkung",
+        "text auf pdf"
+      ],
+      "aliases": [
+        "add text to pdf",
+        "pdf ausfüllen"
+      ]
+    },
+    "pdf-add-image": {
+      "name": "Bild oder Unterschrift hinzufügen",
+      "description": "Ein Bild, einen Stempel oder eine Unterschrift genau an der gewünschten Stelle einfügen.",
+      "keywords": [
+        "unterschreiben",
+        "unterschrift",
+        "signatur",
+        "stempel",
+        "logo",
+        "bild einfügen"
+      ],
+      "aliases": [
+        "sign pdf",
+        "add signature",
+        "pdf unterschreiben"
+      ]
+    },
+    "pdf-watermark": {
+      "name": "Wasserzeichen hinzufügen",
+      "description": "Einen Text als Wasserzeichen auf alle oder einzelne Seiten setzen.",
+      "keywords": [
+        "wasserzeichen",
+        "watermark",
+        "vertraulich",
+        "markieren",
+        "entwurf"
+      ],
+      "aliases": [
+        "watermark pdf"
+      ]
+    },
+    "pdf-page-numbers": {
+      "name": "Seiten nummerieren",
+      "description": "Anpassbare Seitenzahlen in Kopf- oder Fußzeile hinzufügen.",
+      "keywords": [
+        "nummerieren",
+        "paginierung",
+        "seitenzahlen",
+        "seitennummern"
+      ],
+      "aliases": [
+        "page numbers",
+        "pdf nummerieren"
+      ]
+    },
+    "pdf-protect": {
+      "name": "Mit Passwort schützen",
+      "description": "Ein PDF verschlüsseln, sodass es sich nur mit Passwort öffnen lässt.",
+      "keywords": [
+        "schützen",
+        "passwort",
+        "verschlüsseln",
+        "sperren",
+        "pdf absichern",
+        "passwort setzen",
+        "vertrauliches pdf"
+      ],
+      "aliases": [
+        "protect pdf",
+        "encrypt pdf",
+        "password pdf"
+      ]
+    },
+    "pdf-unlock": {
+      "name": "PDF entsperren",
+      "description": "Den Schutz eines PDFs entfernen, dessen Passwort Sie kennen.",
+      "keywords": [
+        "entsperren",
+        "passwort entfernen",
+        "schutz aufheben",
+        "entschlüsseln"
+      ],
+      "aliases": [
+        "unlock pdf",
+        "remove pdf password",
+        "decrypt pdf"
+      ],
+      "note": "FourTout knackt keine Schutzmechanismen: Sie müssen das Passwort kennen. Bei einem vergessenen Passwort siehe „PDF-Passwort wiederherstellen“."
+    },
+    "pdf-recover-password": {
+      "name": "PDF-Passwort wiederherstellen",
+      "description": "Wahrscheinliche Passwörter ausprobieren, um ein PDF mit vergessenem Passwort wieder zu öffnen.",
+      "keywords": [
+        "passwort vergessen",
+        "passwort wiederherstellen",
+        "wiederherstellen",
+        "gesperrtes pdf",
+        "passwort verloren",
+        "geschütztes pdf öffnen",
+        "wörterbuch",
+        "wiederherstellung"
+      ],
+      "aliases": [
+        "recover pdf password",
+        "forgot pdf password",
+        "pdf password recovery"
+      ],
+      "note": "Lokale Wiederherstellung per Wörterbuch und Regeln, für ein Dokument, das Sie öffnen dürfen. Das ist keine vollständige Suche: Ein Passwort, das nicht in der Wortliste steht, wird nicht gefunden."
+    },
+    "pdf-metadata": {
+      "name": "PDF-Metadaten",
+      "description": "Titel, Autor, Betreff und Stichwörter eines PDFs lesen und ändern.",
+      "keywords": [
+        "metadaten",
+        "eigenschaften",
+        "autor",
+        "titel",
+        "dokumentinfo"
+      ],
+      "aliases": [
+        "pdf metadata",
+        "edit pdf properties"
+      ]
+    },
+    "pdf-extract-images": {
+      "name": "Bilder aus einem PDF extrahieren",
+      "description": "Alle in einem PDF eingebetteten Bilder herausholen.",
+      "keywords": [
+        "bilder extrahieren",
+        "fotos herausholen",
+        "bilder speichern"
+      ],
+      "aliases": [
+        "extract images from pdf"
+      ]
+    },
+    "pdf-extract-text": {
+      "name": "Text aus einem PDF extrahieren",
+      "description": "Den markierbaren Text eines PDFs Seite für Seite herausholen.",
+      "keywords": [
+        "text extrahieren",
+        "text kopieren",
+        "pdf in text",
+        "inhalt herausholen"
+      ],
+      "aliases": [
+        "pdf to text",
+        "extract text"
+      ]
+    },
+    "pdf-edit-text": {
+      "name": "PDF-Text bearbeiten",
+      "description": "Text direkt auf der Seite korrigieren: Wort doppelklicken und ersetzen.",
+      "keywords": [
+        "pdf text bearbeiten",
+        "pdf text ändern",
+        "text im pdf korrigieren",
+        "text ersetzen",
+        "pdf bearbeiten",
+        "tippfehler korrigieren",
+        "datum ändern",
+        "betrag ändern"
+      ],
+      "aliases": [
+        "edit pdf text",
+        "modify pdf text",
+        "change text pdf",
+        "edit text in pdf"
+      ],
+      "note": "Visuelle Bearbeitung durch Ersetzen: Der Originaltext wird mit der gemessenen Hintergrundfarbe überdeckt und neu gezeichnet. Ideal für waagerechten Text auf einfarbigem Hintergrund (Dokumente, Rechnungen, Berichte). Bereiche auf ungleichmäßigem Hintergrund oder gedrehter Text werden markiert und nicht verändert."
+    },
+    "ocr-document": {
+      "name": "OCR für ein gescanntes PDF",
+      "description": "Den Text eines gescannten PDFs Seite für Seite erkennen, auf Französisch oder Englisch.",
+      "keywords": [
+        "ocr",
+        "texterkennung",
+        "scan",
+        "gescannt",
+        "foto in text",
+        "scan lesen",
+        "nicht markierbares pdf",
+        "bild in text"
+      ],
+      "aliases": [
+        "ocr",
+        "optical character recognition",
+        "image to text",
+        "scan to text"
+      ],
+      "note": "Lokale OCR-Engine (tesseract.js) an Bord: Es werden keine Daten über das Netzwerk gesendet. Für ein einzelnes Bild siehe „Text aus einem Bild extrahieren“."
+    },
+    "pdf-compare": {
+      "name": "Zwei PDFs vergleichen",
+      "description": "Die Unterschiede zwischen zwei Versionen eines Dokuments hervorheben.",
+      "keywords": [
+        "vergleichen",
+        "unterschiede",
+        "diff",
+        "zwei versionen",
+        "änderungen"
+      ],
+      "aliases": [
+        "compare pdf",
+        "pdf diff"
+      ]
+    },
+    "pdf-redact": {
+      "name": "PDF schwärzen",
+      "description": "Sensible Bereiche dauerhaft verbergen: Der Inhalt wird entfernt, nicht nur überdeckt.",
+      "keywords": [
+        "schwärzen",
+        "verbergen",
+        "anonymisieren",
+        "zensieren",
+        "sensible daten"
+      ],
+      "aliases": [
+        "redact pdf",
+        "schwärzung"
+      ]
+    },
+    "pdf-searchable": {
+      "name": "Gescanntes PDF in durchsuchbares PDF",
+      "description": "Den Text eines gescannten PDFs erkennen und als unsichtbare Ebene hinzufügen: Strg+F, Markieren und Kopieren funktionieren, das Aussehen bleibt gleich.",
+      "keywords": [
+        "durchsuchbares pdf",
+        "ocr pdf",
+        "pdf scannen",
+        "gescanntes pdf",
+        "pdf durchsuchbar machen",
+        "texterkennung pdf",
+        "textebene",
+        "nicht markierbares pdf"
+      ],
+      "aliases": [
+        "searchable pdf",
+        "ocr pdf",
+        "make pdf searchable",
+        "scanned pdf"
+      ],
+      "note": "Die Erkennung ist vollständig lokal. Die Originalseiten werden weder gerastert noch neu komprimiert: Es wird nur eine unsichtbare Textebene hinzugefügt. Die Qualität des Ergebnisses hängt von der des Scans ab."
+    },
+    "pdf-extract-tables": {
+      "name": "Tabellen aus einem PDF extrahieren",
+      "description": "Zeilen und Spalten aus der Position des Texts rekonstruieren und als CSV oder XLSX-Arbeitsmappe exportieren.",
+      "keywords": [
+        "pdf tabelle extrahieren",
+        "pdf tabelle",
+        "pdf in excel",
+        "pdf in csv",
+        "tabelle herausholen",
+        "pdf xlsx",
+        "tabellenkalkulation",
+        "spalten",
+        "zeilen"
+      ],
+      "aliases": [
+        "pdf to excel",
+        "extract tables",
+        "pdf table to csv",
+        "pdf to csv"
+      ],
+      "note": "Ein PDF enthält keine Tabellen, nur positionierten Text: FourTout rekonstruiert Zeilen und Spalten aus diesen Positionen. Komplexe Tabellen — verbundene Zellen, mehrzeiliger Text — müssen vor dem Export eventuell korrigiert werden."
+    },
+    "scans-to-pdf": {
+      "name": "Scans und Fotos in PDF",
+      "description": "Gescannte oder fotografierte Seiten zu einem PDF zusammenfügen, mit Bereinigung und Sortierung der Seiten.",
+      "keywords": [
+        "scans in pdf",
+        "fotos in pdf",
+        "scans zusammenfügen",
+        "gescannte seiten in pdf",
+        "dokumentfoto pdf",
+        "bereinigen und zusammenfügen"
+      ],
+      "aliases": [
+        "scans to pdf",
+        "photos to pdf",
+        "scan to pdf"
+      ],
+      "note": "Die Bereinigung wird auf alle Seiten mit denselben Einstellungen angewendet; das Zusammenfügen nutzt die Engine von „Bilder in PDF“."
+    },
+    "image-convert": {
+      "name": "Bild konvertieren",
+      "description": "Von einem Format ins andere: PNG, JPG, WebP. Liest auch GIF, BMP, TIFF und SVG.",
+      "keywords": [
+        "konvertieren",
+        "format ändern",
+        "png in jpg",
+        "jpg in png",
+        "png in webp",
+        "jpg in webp",
+        "webp in png",
+        "webp in jpg",
+        "webp",
+        "svg in png",
+        "gif in png",
+        "bmp",
+        "tiff",
+        "heic",
+        "avif"
+      ],
+      "aliases": [
+        "convert image",
+        "png to jpg",
+        "jpg to png",
+        "jpg to webp",
+        "webp to png",
+        "image converter"
+      ]
+    },
+    "image-compress": {
+      "name": "Bild komprimieren",
+      "description": "Die Dateigröße eines Bildes bei kontrolliertem Qualitätsverlust verringern.",
+      "keywords": [
+        "komprimieren",
+        "foto komprimieren",
+        "dateigröße verringern",
+        "verkleinern",
+        "optimieren",
+        "foto zu groß",
+        "weniger kb"
+      ],
+      "aliases": [
+        "compress image",
+        "optimize image",
+        "reduce image size"
+      ]
+    },
+    "image-resize": {
+      "name": "Bildgröße ändern",
+      "description": "Abmessungen in Pixeln oder Prozent ändern, mit oder ohne Seitenverhältnis.",
+      "keywords": [
+        "größe ändern",
+        "skalieren",
+        "fotogröße ändern",
+        "vergrößern",
+        "verkleinern",
+        "pixel",
+        "breite",
+        "höhe",
+        "1920",
+        "1080"
+      ],
+      "aliases": [
+        "resize image",
+        "scale image"
+      ]
+    },
+    "image-crop": {
+      "name": "Bild zuschneiden",
+      "description": "Ein Bild visuell zuschneiden, frei oder in einem Seitenverhältnis (1:1, 4:3, 16:9, 3:2).",
+      "keywords": [
+        "zuschneiden",
+        "beschneiden",
+        "foto zuschneiden",
+        "ausschnitt",
+        "seitenverhältnis",
+        "quadrat",
+        "crop"
+      ],
+      "aliases": [
+        "crop image"
+      ]
+    },
+    "image-rotate": {
+      "name": "Drehen und spiegeln",
+      "description": "In Vierteldrehungen drehen und spiegeln, mit sofortiger Vorschau.",
+      "keywords": [
+        "drehen",
+        "rotieren",
+        "rotation",
+        "geraderichten",
+        "schiefes foto",
+        "spiegeln",
+        "umdrehen",
+        "90 grad"
+      ],
+      "aliases": [
+        "rotate image",
+        "rotate and flip"
+      ]
+    },
+    "image-flip": {
+      "name": "Horizontal oder vertikal spiegeln",
+      "description": "Ein Bild wie in einem Spiegel umdrehen.",
+      "keywords": [
+        "spiegeln",
+        "umdrehen",
+        "symmetrie",
+        "flip",
+        "umkehren"
+      ],
+      "aliases": [
+        "flip image",
+        "mirror image"
+      ]
+    },
+    "image-grayscale": {
+      "name": "Schwarzweiß",
+      "description": "In Graustufen umwandeln oder mit einstellbarem Schwellenwert in reines Schwarzweiß.",
+      "keywords": [
+        "schwarzweiß",
+        "graustufen",
+        "grayscale",
+        "monochrom",
+        "schwellenwert",
+        "entsättigen"
+      ],
+      "aliases": [
+        "grayscale",
+        "black and white"
+      ]
+    },
+    "image-adjust": {
+      "name": "Bild anpassen",
+      "description": "Helligkeit, Kontrast, Sättigung und Gamma einstellen, mit Live-Vorschau.",
+      "keywords": [
+        "anpassen",
+        "helligkeit",
+        "kontrast",
+        "sättigung",
+        "gamma",
+        "aufhellen",
+        "abdunkeln",
+        "korrigieren"
+      ],
+      "aliases": [
+        "adjust image",
+        "brightness contrast"
+      ]
+    },
+    "image-blur": {
+      "name": "Weichzeichnen oder verpixeln",
+      "description": "Informationen verbergen: Unschärfe oder Mosaik, auf dem ganzen Bild oder einem gezeichneten Bereich.",
+      "keywords": [
+        "weichzeichnen",
+        "unscharf machen",
+        "verwischen",
+        "verpixeln",
+        "mosaik",
+        "verbergen",
+        "zensieren"
+      ],
+      "aliases": [
+        "blur image",
+        "pixelate"
+      ]
+    },
+    "image-remove-transparency": {
+      "name": "Transparenz entfernen",
+      "description": "Ein transparentes PNG oder WebP auf einen einfarbigen Hintergrund (weiß, schwarz oder farbig) reduzieren.",
+      "keywords": [
+        "transparenz entfernen",
+        "reduzieren",
+        "weißer hintergrund",
+        "einfarbiger hintergrund",
+        "alpha entfernen",
+        "deckend"
+      ],
+      "aliases": [
+        "remove transparency",
+        "flatten image"
+      ]
+    },
+    "image-remove-background": {
+      "name": "Hintergrund entfernen",
+      "description": "Das Motiv eines Fotos automatisch freistellen und den Hintergrund transparent machen.",
+      "keywords": [
+        "hintergrund entfernen",
+        "hintergrund löschen",
+        "transparenter hintergrund",
+        "foto freistellen",
+        "freistellen",
+        "motiv isolieren",
+        "profilbild",
+        "transparentes png"
+      ],
+      "aliases": [
+        "remove background",
+        "background remover",
+        "cutout",
+        "freisteller"
+      ],
+      "note": "Das Freistellungsmodell wird einmal über Einstellungen → Modelle installiert und funktioniert danach offline: Das Bild wird nie an einen Server gesendet. Es erkennt ein scharfes, gut abgegrenztes Hauptmotiv; bei Szenen ohne klares Motiv und bei sehr feinen Details liegt es daneben."
+    },
+    "image-color-transparent": {
+      "name": "Eine Farbe transparent machen",
+      "description": "Eine einheitliche Farbe (den Hintergrund) löschen und durch Transparenz ersetzen.",
+      "keywords": [
+        "transparent machen",
+        "freistellen",
+        "hintergrund entfernen",
+        "transparente farbe",
+        "transparenter hintergrund",
+        "chroma key"
+      ],
+      "aliases": [
+        "color to transparent",
+        "remove background color"
+      ]
+    },
+    "image-ocr": {
+      "name": "Text aus einem Bild extrahieren (OCR)",
+      "description": "Den Text eines Bildes erkennen, auf Französisch oder Englisch, zu 100 % lokal.",
+      "keywords": [
+        "ocr",
+        "text extrahieren",
+        "text aus foto",
+        "bild in text",
+        "text lesen",
+        "texterkennung",
+        "digitalisieren",
+        "text aus bild"
+      ],
+      "aliases": [
+        "ocr",
+        "image to text",
+        "extract text"
+      ]
+    },
+    "image-add-text": {
+      "name": "Text auf einem Bild",
+      "description": "Text auf ein Bild schreiben — Bildunterschrift, Meme, Anmerkung — und von Hand platzieren.",
+      "keywords": [
+        "text auf bild",
+        "bildunterschrift",
+        "meme",
+        "schreiben",
+        "foto beschriften"
+      ],
+      "aliases": [
+        "add text to image",
+        "meme generator"
+      ]
+    },
+    "image-metadata-read": {
+      "name": "Bild-Metadaten lesen",
+      "description": "EXIF, GPS, Kamera und Aufnahmedatum anzeigen.",
+      "keywords": [
+        "exif",
+        "metadaten",
+        "gps",
+        "wo wurde das foto aufgenommen",
+        "kamera",
+        "aufnahmedatum"
+      ],
+      "aliases": [
+        "exif viewer",
+        "image metadata"
+      ]
+    },
+    "image-metadata-strip": {
+      "name": "Bild-Metadaten entfernen",
+      "description": "EXIF- und GPS-Daten löschen, bevor Sie ein Foto teilen.",
+      "keywords": [
+        "exif entfernen",
+        "exif löschen",
+        "metadaten entfernen",
+        "foto anonymisieren",
+        "gps entfernen",
+        "vor dem teilen",
+        "privatsphäre"
+      ],
+      "aliases": [
+        "strip exif",
+        "remove metadata",
+        "bild anonymisieren"
+      ]
+    },
+    "image-batch-convert": {
+      "name": "Stapelkonvertierung von Bildern",
+      "description": "Dieselbe Konvertierung auf einen ganzen Ordner mit Bildern anwenden.",
+      "keywords": [
+        "stapel",
+        "massenweise",
+        "mehrere bilder",
+        "bilderordner",
+        "batch",
+        "alle meine fotos"
+      ],
+      "aliases": [
+        "batch convert",
+        "bulk image convert"
+      ]
+    },
+    "image-watermark": {
+      "name": "Wasserzeichen auf einem Bild",
+      "description": "Ein Logo oder einen Text als Wasserzeichen hinzufügen, einzeln oder im Stapel.",
+      "keywords": [
+        "wasserzeichen",
+        "watermark",
+        "logo",
+        "signatur",
+        "fotos schützen"
+      ],
+      "aliases": [
+        "watermark image"
+      ]
+    },
+    "image-favicon": {
+      "name": "Favicon erzeugen",
+      "description": "Aus einem Bild ein Favicon in mehreren Größen und die .ico-Datei erzeugen.",
+      "keywords": [
+        "favicon",
+        "website-symbol",
+        "ico",
+        "browser-tab",
+        "website-logo"
+      ],
+      "aliases": [
+        "favicon generator",
+        "ico"
+      ]
+    },
+    "image-icon-sizes": {
+      "name": "Mehrere Größen erzeugen",
+      "description": "Alle nützlichen Icon- oder Vorschaugrößen auf einmal exportieren.",
+      "keywords": [
+        "größen",
+        "icons",
+        "app-icon",
+        "vorschaubilder",
+        "thumbnails",
+        "alle auflösungen"
+      ],
+      "aliases": [
+        "icon generator",
+        "app icon sizes"
+      ]
+    },
+    "color-picker": {
+      "name": "Farbe analysieren und umrechnen",
+      "description": "Dominante Farben eines Bildes, pixelgenaue Pipette, HEX- / RGB- / HSL- / HSV-Schreibweisen und WCAG-Kontrast zwischen Text und Hintergrund.",
+      "keywords": [
+        "palette",
+        "dominante farben",
+        "farbe",
+        "hex",
+        "rgb",
+        "hsl",
+        "hsv",
+        "farben extrahieren",
+        "farbmuster",
+        "pipette",
+        "rgb in hex",
+        "hex in rgb",
+        "farbe umrechnen",
+        "farbcode",
+        "wcag kontrast",
+        "kontrast",
+        "barrierefreiheit",
+        "kontrastverhältnis",
+        "lesbarkeit"
+      ],
+      "aliases": [
+        "color picker",
+        "hex to rgb",
+        "color converter",
+        "eyedropper",
+        "wcag contrast",
+        "contrast checker"
+      ]
+    },
+    "document-perspective": {
+      "name": "Perspektive eines Dokuments korrigieren",
+      "description": "Das Foto eines schräg aufgenommenen Blatts geraderichten: vier Ecken setzen, und FourTout macht daraus ein frontales Rechteck.",
+      "keywords": [
+        "perspektive korrigieren",
+        "dokument geraderichten",
+        "dokumentfoto",
+        "schräges blatt",
+        "schiefes foto",
+        "vier ecken",
+        "mit dem handy scannen",
+        "entzerren",
+        "verzerrung"
+      ],
+      "aliases": [
+        "perspective correction",
+        "dewarp",
+        "document scanner",
+        "deskew photo"
+      ],
+      "note": "Die vier Ecken werden von Hand gesetzt: Das ist immer genau, wo eine automatische Erkennung danebenliegt. Die aus den Ecken abgeleiteten Proportionen sind Näherungen — wählen Sie A4 oder Letter für ein exaktes Ergebnis."
+    },
+    "scan-clean": {
+      "name": "Scan bereinigen",
+      "description": "Ein leicht schiefes Dokument geraderichten, den Kontrast erhöhen, einen grauen oder vergilbten Hintergrund aufhellen, in Graustufen oder Schwarzweiß umwandeln.",
+      "keywords": [
+        "scan bereinigen",
+        "gescanntes dokument bereinigen",
+        "scan geraderichten",
+        "deskew",
+        "schiefer scan",
+        "grauer hintergrund",
+        "vergilbtes papier",
+        "dokumentkontrast",
+        "unleserlicher scan",
+        "scan verbessern"
+      ],
+      "aliases": [
+        "clean scan",
+        "deskew",
+        "enhance scan",
+        "document cleanup"
+      ],
+      "note": "Jede Einstellung ist optional und in einer Vorher-nachher-Vorschau sichtbar. Das Aufhellen verändert nie dunkle Pixel: Feiner Text behält seine Deckkraft."
+    },
+    "image-compare": {
+      "name": "Zwei Bilder vergleichen",
+      "description": "Sehen und messen, was sich zwischen zwei Bildern ändert: nebeneinander, überlagert oder als Differenz, mit abweichenden Pixeln, PSNR und SSIM.",
+      "keywords": [
+        "bilder vergleichen",
+        "zwei bilder vergleichen",
+        "bilddifferenz",
+        "image diff",
+        "pixelvergleich",
+        "psnr",
+        "ssim",
+        "unterschied zwischen zwei fotos",
+        "vorher nachher",
+        "kompressionsqualität",
+        "überlagerung",
+        "unterschiede finden"
+      ],
+      "aliases": [
+        "compare images",
+        "image diff",
+        "pixel diff",
+        "psnr",
+        "ssim",
+        "image comparison"
+      ],
+      "note": "Zwei Bilder unterschiedlicher Größe werden nie ohne Ihre Zustimmung skaliert: Das Neuberechnen würde Abweichungen erzeugen, die es in den Dateien nicht gibt."
+    },
+    "image-contact-sheet": {
+      "name": "Kontaktabzug erstellen",
+      "description": "Mehrere Bilder im Raster auf einem einzigen Blatt anordnen, mit dem Namen jeder Datei.",
+      "keywords": [
+        "kontaktabzug",
+        "contact sheet",
+        "bilderraster",
+        "mosaik",
+        "vorschaubilder",
+        "bilder zusammenstellen",
+        "fotomontage",
+        "bildkatalog",
+        "mehrere bilder auf einer seite"
+      ],
+      "aliases": [
+        "contact sheet",
+        "photo grid",
+        "thumbnail sheet"
+      ]
+    },
+    "audio-record": {
+      "name": "Mit dem Mikrofon aufnehmen",
+      "description": "Ton vom Mikrofon aufnehmen und lokal speichern.",
+      "keywords": [
+        "aufnehmen",
+        "mikrofon",
+        "diktiergerät",
+        "stimme aufnehmen",
+        "sprachnotiz"
+      ],
+      "aliases": [
+        "record audio",
+        "voice recorder"
+      ]
+    },
+    "audio-trim": {
+      "name": "Audio schneiden",
+      "description": "Einen genauen Ausschnitt einer Audiodatei behalten.",
+      "keywords": [
+        "schneiden",
+        "kürzen",
+        "ausschnitt",
+        "zuschneiden",
+        "teil behalten"
+      ],
+      "aliases": [
+        "trim audio",
+        "cut audio",
+        "split audio"
+      ]
+    },
+    "audio-merge": {
+      "name": "Audiodateien zusammenfügen",
+      "description": "Mehrere Spuren hintereinander in eine Datei setzen.",
+      "keywords": [
+        "zusammenfügen",
+        "verbinden",
+        "aneinanderhängen",
+        "spuren zusammenführen"
+      ],
+      "aliases": [
+        "merge audio",
+        "join audio",
+        "concat audio"
+      ]
+    },
+    "audio-convert": {
+      "name": "Audio konvertieren",
+      "description": "Von einem Format ins andere: MP3, WAV, FLAC, OGG, M4A, OPUS.",
+      "keywords": [
+        "konvertieren",
+        "format ändern",
+        "wav in mp3",
+        "mp3 in wav",
+        "flac",
+        "ogg",
+        "m4a",
+        "opus",
+        "aac"
+      ],
+      "aliases": [
+        "convert audio",
+        "wav to mp3",
+        "audio converter"
+      ]
+    },
+    "audio-compress": {
+      "name": "Audio komprimieren",
+      "description": "Die Größe einer Audiodatei durch Anpassen der Bitrate verringern.",
+      "keywords": [
+        "komprimieren",
+        "größe verringern",
+        "verkleinern",
+        "bitrate",
+        "zu groß"
+      ],
+      "aliases": [
+        "compress audio",
+        "reduce audio size"
+      ]
+    },
+    "audio-volume": {
+      "name": "Lautstärke ändern",
+      "description": "Die Gesamtlautstärke einer Audiodatei erhöhen oder verringern.",
+      "keywords": [
+        "lautstärke",
+        "lauter",
+        "leiser",
+        "verstärken",
+        "ton leiser",
+        "zu leise"
+      ],
+      "aliases": [
+        "change volume",
+        "amplify audio"
+      ]
+    },
+    "audio-normalize": {
+      "name": "Audio normalisieren",
+      "description": "Die Lautheit mehrerer Dateien angleichen (Loudness).",
+      "keywords": [
+        "normalisieren",
+        "angleichen",
+        "loudness",
+        "lautheit",
+        "gleiche lautstärke",
+        "lufs"
+      ],
+      "aliases": [
+        "normalize audio",
+        "loudness"
+      ]
+    },
+    "audio-speed": {
+      "name": "Geschwindigkeit ändern",
+      "description": "Audio beschleunigen oder verlangsamen, mit oder ohne Tonhöhenkorrektur.",
+      "keywords": [
+        "geschwindigkeit",
+        "beschleunigen",
+        "verlangsamen",
+        "tempo",
+        "tonhöhe",
+        "schneller"
+      ],
+      "aliases": [
+        "audio speed",
+        "speed up audio",
+        "slow down audio"
+      ]
+    },
+    "audio-remove-silence": {
+      "name": "Stille entfernen",
+      "description": "Pausen in einer Aufnahme automatisch erkennen und herausschneiden.",
+      "keywords": [
+        "stille",
+        "pausen",
+        "pausen schneiden",
+        "aufnahme bereinigen",
+        "podcast"
+      ],
+      "aliases": [
+        "remove silence",
+        "trim silence"
+      ]
+    },
+    "video-extract-audio": {
+      "name": "Audio aus einem Video extrahieren",
+      "description": "Die Tonspur eines Videos im gewünschten Format herausholen.",
+      "keywords": [
+        "ton extrahieren",
+        "tonspur",
+        "video in mp3",
+        "mp4 in mp3",
+        "audio herausholen",
+        "ton eines videos"
+      ],
+      "aliases": [
+        "extract audio",
+        "video to mp3",
+        "mp4 to mp3"
+      ]
+    },
+    "audio-transcribe": {
+      "name": "Audio-Transkription",
+      "description": "Sprache aus einer Audio- oder Videodatei lokal in Text umwandeln.",
+      "keywords": [
+        "transkribieren",
+        "transkription",
+        "audio in text",
+        "sprache in text",
+        "abschrift",
+        "besprechung",
+        "interview",
+        "diktieren",
+        "untertiteln",
+        "mp3 transkribieren",
+        "video transkribieren"
+      ],
+      "aliases": [
+        "transcribe",
+        "speech to text",
+        "audio to text",
+        "stt"
+      ],
+      "note": "Spracherkennungsmodell, das auf Ihrem Rechner läuft und bei Bedarf installiert wird."
+    },
+    "audio-generate-srt": {
+      "name": "SRT-Untertitel erzeugen",
+      "description": "Aus Audio oder Video eine Untertiteldatei mit Zeitstempeln erzeugen.",
+      "keywords": [
+        "srt",
+        "untertitel",
+        "vtt",
+        "zeitstempel",
+        "captions",
+        "untertitel erzeugen",
+        "untertitel erstellen"
+      ],
+      "aliases": [
+        "generate subtitles",
+        "srt generator"
+      ]
+    },
+    "text-to-speech": {
+      "name": "Text in Sprache",
+      "description": "Einen Text vorlesen und als Audiodatei speichern, ohne Onlinedienst.",
+      "keywords": [
+        "sprachsynthese",
+        "tts",
+        "vorlesen",
+        "text in audio",
+        "synthetische stimme",
+        "text anhören",
+        "mp3 aus text"
+      ],
+      "aliases": [
+        "text to speech",
+        "tts",
+        "sprachausgabe"
+      ]
+    },
+    "pdf-to-audio": {
+      "name": "PDF in Audio",
+      "description": "Ein PDF mit der lokalen Sprachsynthese in ein Hörbuch verwandeln.",
+      "keywords": [
+        "pdf in audio",
+        "hörbuch",
+        "pdf anhören",
+        "pdf vorlesen",
+        "kurs anhören"
+      ],
+      "aliases": [
+        "pdf to audio",
+        "pdf to speech",
+        "audiobook"
+      ]
+    },
+    "text-file-to-audio": {
+      "name": "Textdatei in Audio",
+      "description": "Eine TXT- oder Markdown-Datei in eine vorgelesene Audiodatei umwandeln.",
+      "keywords": [
+        "txt in audio",
+        "hörbuch",
+        "erzählung",
+        "text anhören",
+        "mp3 aus text"
+      ],
+      "aliases": [
+        "txt to audio",
+        "text file to audio"
+      ]
+    },
+    "audio-channels": {
+      "name": "Audiokanäle umwandeln",
+      "description": "Eine Datei in Mono oder Stereo umwandeln oder unverändert lassen. Eine Mehrkanaldatei wird nie ungefragt heruntergemischt.",
+      "keywords": [
+        "mono stereo",
+        "audiokanäle",
+        "mono",
+        "stereo",
+        "in mono umwandeln",
+        "in stereo umwandeln",
+        "downmix",
+        "kanäle mischen",
+        "5.1 in stereo"
+      ],
+      "aliases": [
+        "audio channels",
+        "mono to stereo",
+        "stereo to mono",
+        "downmix"
+      ],
+      "note": "Von Mono nach Stereo wird der Kanal verdoppelt: Beide Seiten tragen dasselbe Signal. Es wird keine Räumlichkeit erfunden."
+    },
+    "audio-metadata": {
+      "name": "Audio-Tags bearbeiten",
+      "description": "Titel, Interpret, Album, Jahr, Genre, Titelnummer und Kommentar lesen und korrigieren — ohne den Ton neu zu kodieren.",
+      "keywords": [
+        "audio metadaten",
+        "tags",
+        "mp3 tags",
+        "id3",
+        "titel interpret album",
+        "titel korrigieren",
+        "jahr genre track",
+        "mp3 infos bearbeiten"
+      ],
+      "aliases": [
+        "audio metadata",
+        "id3 tags",
+        "edit tags",
+        "music tags"
+      ],
+      "note": "Beim Schreiben wird der Audiostrom unverändert kopiert (-c copy): Der Ton ist bitgenau identisch."
+    },
+    "media-info": {
+      "name": "Mediendatei untersuchen",
+      "description": "Alles, was eine Audio- oder Videodatei angibt: Container, Codecs, Auflösung, Bildrate, Bitraten, Kanäle, Tags.",
+      "keywords": [
+        "video metadaten",
+        "audio metadaten",
+        "medieninfo",
+        "codec",
+        "bitrate",
+        "videoauflösung",
+        "bildrate",
+        "fps",
+        "kanäle",
+        "abtastrate",
+        "video untersuchen",
+        "ffprobe"
+      ],
+      "aliases": [
+        "media info",
+        "media metadata",
+        "video metadata",
+        "ffprobe",
+        "mediainfo"
+      ]
+    },
+    "video-convert": {
+      "name": "Video konvertieren",
+      "description": "Von einem Format ins andere: MP4, MKV, WebM, MOV.",
+      "keywords": [
+        "konvertieren",
+        "format ändern",
+        "mkv in mp4",
+        "avi in mp4",
+        "webm",
+        "mov"
+      ],
+      "aliases": [
+        "convert video",
+        "mkv to mp4",
+        "video converter"
+      ],
+      "note": "Es werden nur Codecs angeboten, die in der installierten Engine tatsächlich vorhanden sind."
+    },
+    "video-compress": {
+      "name": "Video komprimieren",
+      "description": "Die Größe eines Videos stark verringern, indem Sie die Zielqualität wählen.",
+      "keywords": [
+        "komprimieren",
+        "größe verringern",
+        "verkleinern",
+        "zu groß",
+        "per mail senden",
+        "weniger mb",
+        "optimieren"
+      ],
+      "aliases": [
+        "compress video",
+        "reduce video size"
+      ]
+    },
+    "video-resolution": {
+      "name": "Auflösung ändern",
+      "description": "Ein Video in 1080p, 720p, 480p oder eine eigene Größe umwandeln.",
+      "keywords": [
+        "auflösung",
+        "1080p",
+        "720p",
+        "480p",
+        "4k",
+        "skalieren",
+        "größe ändern"
+      ],
+      "aliases": [
+        "resize video",
+        "change resolution",
+        "downscale video"
+      ]
+    },
+    "video-trim": {
+      "name": "Video schneiden",
+      "description": "Nur einen Ausschnitt behalten, wenn möglich ohne Neukodierung.",
+      "keywords": [
+        "schneiden",
+        "kürzen",
+        "ausschnitt",
+        "anfang entfernen",
+        "ende entfernen",
+        "clip"
+      ],
+      "aliases": [
+        "trim video",
+        "cut video"
+      ]
+    },
+    "video-merge": {
+      "name": "Videos zusammenfügen",
+      "description": "Mehrere Videos hintereinander zu einer Datei verbinden.",
+      "keywords": [
+        "zusammenfügen",
+        "verbinden",
+        "aneinanderhängen",
+        "clips zusammenführen"
+      ],
+      "aliases": [
+        "merge video",
+        "concat video",
+        "join video"
+      ]
+    },
+    "video-crop": {
+      "name": "Video zuschneiden",
+      "description": "Den zu behaltenden Bereich visuell wählen, mit festem Seitenverhältnis.",
+      "keywords": [
+        "zuschneiden",
+        "bildausschnitt",
+        "crop",
+        "ränder abschneiden",
+        "hochformat",
+        "9:16",
+        "quadrat",
+        "schwarze balken entfernen"
+      ],
+      "aliases": [
+        "crop video",
+        "vertical video",
+        "reframe"
+      ]
+    },
+    "video-to-gif": {
+      "name": "Video in GIF",
+      "description": "Einen Videoausschnitt in ein optimiertes animiertes GIF verwandeln.",
+      "keywords": [
+        "gif",
+        "video in gif",
+        "animation",
+        "schleife",
+        "mp4 in gif"
+      ],
+      "aliases": [
+        "video to gif",
+        "mp4 to gif",
+        "gif maker"
+      ]
+    },
+    "gif-to-video": {
+      "name": "GIF in Video",
+      "description": "Ein animiertes GIF in MP4 oder WebM umwandeln, die viel kleiner sind.",
+      "keywords": [
+        "gif in video",
+        "gif in mp4",
+        "gif umwandeln",
+        "animation in video",
+        "gif zu groß"
+      ],
+      "aliases": [
+        "gif to video",
+        "gif to mp4",
+        "gif to webm"
+      ]
+    },
+    "video-extract-frame": {
+      "name": "Einzelbild aus einem Video extrahieren",
+      "description": "Ein bestimmtes Einzelbild aufnehmen oder in regelmäßigen Abständen Standbilder erzeugen.",
+      "keywords": [
+        "standbild",
+        "einzelbild",
+        "frame",
+        "bild aus video",
+        "screenshot",
+        "vorschaubild"
+      ],
+      "aliases": [
+        "extract frame",
+        "video screenshot",
+        "video to image"
+      ]
+    },
+    "video-speed": {
+      "name": "Videogeschwindigkeit ändern",
+      "description": "Zeitraffer oder Zeitlupe erstellen, Ton inklusive.",
+      "keywords": [
+        "geschwindigkeit",
+        "zeitraffer",
+        "zeitlupe",
+        "timelapse",
+        "slow motion",
+        "schneller"
+      ],
+      "aliases": [
+        "video speed",
+        "timelapse",
+        "slow motion"
+      ]
+    },
+    "video-rotate": {
+      "name": "Video drehen",
+      "description": "Ein falsch herum gefilmtes Video korrigieren oder spiegeln.",
+      "keywords": [
+        "drehen",
+        "rotieren",
+        "rotation",
+        "auf dem kopf",
+        "hochkant gefilmt",
+        "geraderichten",
+        "spiegeln"
+      ],
+      "aliases": [
+        "rotate video",
+        "flip video",
+        "mirror video"
+      ]
+    },
+    "video-remove-audio": {
+      "name": "Ton aus einem Video entfernen",
+      "description": "Eine stumme Version des Videos erzeugen, ohne das Bild neu zu kodieren.",
+      "keywords": [
+        "ton entfernen",
+        "stumm",
+        "ohne audio",
+        "musik entfernen",
+        "stummschalten"
+      ],
+      "aliases": [
+        "remove audio",
+        "mute video"
+      ]
+    },
+    "video-replace-audio": {
+      "name": "Tonspur ersetzen",
+      "description": "Die Tonspur eines Videos ersetzen oder eine zusätzliche Spur hinzufügen.",
+      "keywords": [
+        "ton ersetzen",
+        "musik hinzufügen",
+        "synchronisation",
+        "tonspur",
+        "voice-over",
+        "zweite tonspur"
+      ],
+      "aliases": [
+        "replace audio",
+        "add audio track",
+        "dub video"
+      ],
+      "note": "Legen Sie das Video und die Audiodatei zusammen ab."
+    },
+    "video-volume": {
+      "name": "Videolautstärke ändern",
+      "description": "Den Ton eines Videos lauter oder leiser machen, ohne das Bild anzufassen.",
+      "keywords": [
+        "lautstärke",
+        "ton zu leise",
+        "ton zu laut",
+        "lauter machen",
+        "leiser machen",
+        "verstärken",
+        "lautstärke normalisieren"
+      ],
+      "aliases": [
+        "video volume",
+        "boost audio",
+        "louder video"
+      ]
+    },
+    "video-add-subtitles": {
+      "name": "Untertitelspur hinzufügen",
+      "description": "Eine SRT- oder VTT-Datei an das Video anhängen, im Player zuschaltbar.",
+      "keywords": [
+        "untertitel",
+        "srt",
+        "vtt",
+        "untertitelspur",
+        "softsub",
+        "anhängen"
+      ],
+      "aliases": [
+        "add subtitles",
+        "soft subtitles",
+        "mux srt"
+      ],
+      "note": "Legen Sie das Video und die Untertiteldatei zusammen ab."
+    },
+    "video-burn-subtitles": {
+      "name": "Untertitel einbrennen",
+      "description": "Untertitel ins Bild einbrennen: Sie erscheinen in jedem Player.",
+      "keywords": [
+        "einbrennen",
+        "hardsub",
+        "untertitel einbrennen",
+        "untertitel im bild",
+        "eingebrannte srt",
+        "überall sichtbare untertitel"
+      ],
+      "aliases": [
+        "burn subtitles",
+        "hardcode srt",
+        "hardsub"
+      ],
+      "note": "Legen Sie das Video und die Untertiteldatei zusammen ab."
+    },
+    "video-extract-subtitles": {
+      "name": "Untertitel aus einem Video extrahieren",
+      "description": "Vorhandene Untertitelspuren als SRT oder VTT exportieren.",
+      "keywords": [
+        "untertitel extrahieren",
+        "untertitel herausholen",
+        "srt exportieren",
+        "untertitelspur",
+        "mkv untertitel"
+      ],
+      "aliases": [
+        "extract subtitles",
+        "rip subtitles",
+        "demux srt"
+      ],
+      "note": "Nur Textspuren lassen sich exportieren; Bildspuren (PGS, DVD) sind Bilder."
+    },
+    "video-generate-subtitles": {
+      "name": "Untertitel für ein Video erzeugen",
+      "description": "Die Sprache eines Videos automatisch transkribieren und dann exportieren oder einbrennen.",
+      "keywords": [
+        "untertitel erzeugen",
+        "video transkribieren",
+        "automatisch untertiteln",
+        "automatische srt",
+        "spracherkennung"
+      ],
+      "aliases": [
+        "auto subtitles",
+        "generate subtitles"
+      ],
+      "note": "Nutzt das bereits installierte lokale Transkriptionsmodell (es wird nichts über das Netzwerk gesendet)."
+    },
+    "video-batch": {
+      "name": "Videos im Stapel verarbeiten",
+      "description": "Mehrere Videos konvertieren, komprimieren, skalieren, drehen oder ihren Ton extrahieren.",
+      "keywords": [
+        "stapel",
+        "massenweise",
+        "alle meine videos",
+        "ordner",
+        "batch"
+      ],
+      "aliases": [
+        "batch video",
+        "bulk video"
+      ]
+    },
+    "video-frame-rate": {
+      "name": "Bildrate ändern",
+      "description": "Ein Video in 24, 25, 30 oder 60 fps oder eine eigene Bildrate umwandeln, durch Verdoppeln und Weglassen von Bildern.",
+      "keywords": [
+        "video fps",
+        "fps ändern",
+        "bildrate",
+        "bilder pro sekunde",
+        "24 fps",
+        "25 fps",
+        "30 fps",
+        "60 fps",
+        "29.97",
+        "23.976",
+        "ntsc",
+        "pal"
+      ],
+      "aliases": [
+        "frame rate",
+        "change fps",
+        "fps converter",
+        "framerate"
+      ],
+      "note": "Es werden keine Zwischenbilder berechnet: Bilder werden verdoppelt oder weggelassen. Die Ausgabe hat eine konstante Bildrate."
+    },
+    "text-statistics": {
+      "name": "Wort- und Zeichenzähler",
+      "description": "Wörter, Zeichen, Sätze, Absätze und geschätzte Lesezeit.",
+      "keywords": [
+        "zählen",
+        "wortanzahl",
+        "zeichen",
+        "sätze",
+        "lesezeit",
+        "textlänge",
+        "statistik"
+      ],
+      "aliases": [
+        "word count",
+        "character count",
+        "reading time",
+        "wörter zählen"
+      ]
+    },
+    "text-case": {
+      "name": "Groß-/Kleinschreibung ändern",
+      "description": "GROSSBUCHSTABEN, kleinbuchstaben, Titelschreibung, camelCase, snake_case, kebab-case.",
+      "keywords": [
+        "großbuchstaben",
+        "kleinbuchstaben",
+        "groß klein",
+        "schreibweise",
+        "camelcase",
+        "snake case",
+        "kebab case",
+        "title case"
+      ],
+      "aliases": [
+        "uppercase",
+        "lowercase",
+        "change case",
+        "text case"
+      ]
+    },
+    "text-clean": {
+      "name": "Text bereinigen",
+      "description": "Überflüssige Leerzeichen, leere Zeilen, Tabulatoren und unsichtbare Zeichen entfernen.",
+      "keywords": [
+        "bereinigen",
+        "leerzeichen",
+        "leere zeilen",
+        "tabulatoren",
+        "trim",
+        "zeilenumbrüche entfernen",
+        "formatierung",
+        "kopierter text"
+      ],
+      "aliases": [
+        "clean text",
+        "trim whitespace",
+        "remove empty lines"
+      ]
+    },
+    "text-find-replace": {
+      "name": "Suchen und ersetzen",
+      "description": "Text massenhaft ersetzen, mit oder ohne regulären Ausdruck.",
+      "keywords": [
+        "ersetzen",
+        "suchen",
+        "austauschen",
+        "regex",
+        "suchen und ersetzen"
+      ],
+      "aliases": [
+        "find and replace",
+        "search replace"
+      ]
+    },
+    "text-compare": {
+      "name": "Zwei Texte vergleichen",
+      "description": "Zeile für Zeile sehen, was hinzugefügt, entfernt oder geändert wurde.",
+      "keywords": [
+        "vergleichen",
+        "unterschiede",
+        "diff",
+        "zwei versionen",
+        "änderungen"
+      ],
+      "aliases": [
+        "diff",
+        "compare text",
+        "text diff"
+      ]
+    },
+    "text-deduplicate": {
+      "name": "Duplikate entfernen",
+      "description": "Jede Zeile nur einmal behalten, wahlweise ohne Rücksicht auf Groß-/Kleinschreibung.",
+      "keywords": [
+        "duplikate",
+        "doppelte zeilen",
+        "deduplizieren",
+        "eindeutig",
+        "wiederholungen entfernen"
+      ],
+      "aliases": [
+        "remove duplicates",
+        "dedupe lines",
+        "unique lines"
+      ]
+    },
+    "text-sort-lines": {
+      "name": "Zeilen sortieren",
+      "description": "Zeilen alphabetisch, numerisch oder zufällig sortieren.",
+      "keywords": [
+        "sortieren",
+        "ordnen",
+        "alphabetisch",
+        "liste",
+        "zufällig"
+      ],
+      "aliases": [
+        "sort lines",
+        "sort list"
+      ]
+    },
+    "markdown-convert": {
+      "name": "Markdown ↔ HTML / Text",
+      "description": "Markdown in HTML oder reinen Text umwandeln und zurück.",
+      "keywords": [
+        "markdown",
+        "md",
+        "html",
+        "markdown umwandeln",
+        "reiner text",
+        "rendern"
+      ],
+      "aliases": [
+        "markdown to html",
+        "html to markdown",
+        "md converter"
+      ]
+    },
+    "text-extract-urls": {
+      "name": "URLs extrahieren",
+      "description": "Alle Webadressen aus einem Text herausholen.",
+      "keywords": [
+        "urls",
+        "links",
+        "webadressen",
+        "links extrahieren",
+        "http"
+      ],
+      "aliases": [
+        "extract urls",
+        "link extractor"
+      ]
+    },
+    "text-extract-emails": {
+      "name": "E-Mail-Adressen extrahieren",
+      "description": "Alle E-Mail-Adressen aus einem Text herausfiltern.",
+      "keywords": [
+        "e-mails",
+        "e-mail-adressen",
+        "mailadressen",
+        "e-mails extrahieren",
+        "kontakte"
+      ],
+      "aliases": [
+        "extract emails",
+        "email extractor"
+      ]
+    },
+    "text-extract-numbers": {
+      "name": "Zahlen extrahieren",
+      "description": "Alle Zahlen aus einem Text herausholen und ihre Summe berechnen.",
+      "keywords": [
+        "zahlen",
+        "ziffern",
+        "beträge extrahieren",
+        "summe",
+        "werte"
+      ],
+      "aliases": [
+        "extract numbers",
+        "number extractor"
+      ]
+    },
+    "lorem-ipsum": {
+      "name": "Lorem Ipsum",
+      "description": "Blindtext erzeugen: Wörter, Sätze oder Absätze.",
+      "keywords": [
+        "lorem",
+        "blindtext",
+        "fülltext",
+        "platzhalter",
+        "entwurf"
+      ],
+      "aliases": [
+        "lorem ipsum",
+        "dummy text",
+        "placeholder text"
+      ]
+    },
+    "text-unicode-normalize": {
+      "name": "Unicode normalisieren",
+      "description": "Die Schreibweise von Akzenten zwischen Systemen vereinheitlichen (NFC, NFD, NFKC, NFKD).",
+      "keywords": [
+        "unicode",
+        "akzente",
+        "umlaute",
+        "nfc",
+        "nfd",
+        "nfkc",
+        "nfkd",
+        "normalisieren",
+        "seltsame zeichen",
+        "mac windows umlaute"
+      ],
+      "aliases": [
+        "unicode normalization",
+        "normalize unicode",
+        "nfc nfd"
+      ]
+    },
+    "text-line-endings": {
+      "name": "Zeilenenden umwandeln",
+      "description": "Von CRLF (Windows) nach LF (Unix) und zurück, mit vorheriger Erkennung.",
+      "keywords": [
+        "crlf",
+        "lf",
+        "zeilenenden",
+        "wagenrücklauf",
+        "windows unix",
+        "^M",
+        "dos2unix",
+        "unix2dos",
+        "zeilenumbrüche"
+      ],
+      "aliases": [
+        "line endings",
+        "crlf to lf",
+        "dos2unix",
+        "unix2dos"
+      ]
+    },
+    "docx-extract": {
+      "name": "Word (DOCX) in Text, Markdown oder HTML",
+      "description": "Den Inhalt eines Word-Dokuments extrahieren: Überschriften, Absätze, Listen und Tabellen.",
+      "keywords": [
+        "docx",
+        "word",
+        "word-dokument",
+        "text aus word",
+        "docx in text",
+        "docx in html",
+        "docx in markdown",
+        "docx lesen"
+      ],
+      "aliases": [
+        "docx to text",
+        "word to text",
+        "docx to html",
+        "docx to markdown"
+      ],
+      "note": "Komplexes Layout (Spalten, Bilder, Formatvorlagen) wird nicht wiedergegeben: FourTout extrahiert den Inhalt und seine Struktur."
+    },
+    "docx-to-pdf": {
+      "name": "Word (DOCX) in PDF",
+      "description": "Ein Word-Dokument in PDF umwandeln: Überschriften, Absätze, Listen und einfache Tabellen.",
+      "keywords": [
+        "docx in pdf",
+        "word in pdf",
+        "word umwandeln",
+        "dokument in pdf"
+      ],
+      "aliases": [
+        "docx to pdf",
+        "word to pdf"
+      ],
+      "note": "FourTout übernimmt den Inhalt und seine Struktur — Überschriften, Absätze, Fett, Kursiv, Listen, einfache Tabellen —, aber nicht das Word-Layout: Spalten, Textfelder, Kopf- und Fußzeilen, besondere Schriften und Bilder können abweichen oder fehlen. Für ein pixelgenaues Ergebnis exportieren Sie aus Word oder LibreOffice als PDF."
+    },
+    "document-compare": {
+      "name": "Zwei Dokumente vergleichen",
+      "description": "Den Inhalt zweier Dokumente vergleichen — PDF, Word, Text, Markdown oder HTML —, auch in unterschiedlichen Formaten, Zeile für Zeile und Wort für Wort.",
+      "keywords": [
+        "dokumente vergleichen",
+        "zwei dokumente vergleichen",
+        "pdf und word vergleichen",
+        "unterschied zwischen zwei dokumenten",
+        "dokument diff",
+        "zwei versionen",
+        "was hat sich geändert",
+        "verträge vergleichen"
+      ],
+      "aliases": [
+        "compare documents",
+        "document diff",
+        "compare pdf docx"
+      ],
+      "note": "Verglichen wird der Text, nicht das Layout: Er zeigt, was sich inhaltlich geändert hat, auch zwischen zwei unterschiedlichen Formaten. Ein gescanntes PDF muss zuerst durch „Gescanntes PDF in durchsuchbares PDF“."
+    },
+    "text-encoding-detect": {
+      "name": "Kodierung einer Textdatei erkennen",
+      "description": "Kodierung, Byte-Order-Mark und Zeilenende-Konvention einer Datei bestimmen, mit dem tatsächlichen Grad an Gewissheit.",
+      "keywords": [
+        "textkodierung",
+        "kodierung erkennen",
+        "welche kodierung",
+        "seltsame zeichen",
+        "kaputte umlaute",
+        "mojibake",
+        "utf8 oder latin1",
+        "bom",
+        "zeilenende",
+        "unlesbare datei",
+        "charset",
+        "zeichensatz"
+      ],
+      "aliases": [
+        "detect encoding",
+        "charset detection",
+        "what encoding",
+        "bom"
+      ],
+      "note": "Außer über ein Byte-Order-Mark gibt keine Datei ihre Kodierung an: Die Erkennung bleibt eine Annahme, und FourTout zeigt seine tatsächliche Gewissheit statt eines irreführenden Urteils."
+    },
+    "text-encoding-convert": {
+      "name": "Kodierung einer Textdatei umwandeln",
+      "description": "Von einer Kodierung in eine andere — UTF-8, UTF-8 mit BOM, UTF-16 LE/BE, Windows-1252, Latin-1 — ohne unbemerkt ein Zeichen zu verlieren.",
+      "keywords": [
+        "kodierung umwandeln",
+        "utf16 utf8",
+        "latin1 utf8",
+        "windows 1252 utf8",
+        "kodierung ändern",
+        "umlaute reparieren",
+        "ansi in utf8",
+        "iso 8859 1",
+        "bom",
+        "transkodieren"
+      ],
+      "aliases": [
+        "convert encoding",
+        "utf16 to utf8",
+        "latin1 to utf8",
+        "transcode"
+      ],
+      "note": "Kann die Zielkodierung bestimmte Zeichen nicht darstellen, wird die Umwandlung abgelehnt und die betroffenen Zeichen werden aufgelistet. Ersetzt wird nur, wenn Sie es ausdrücklich verlangen."
+    },
+    "subtitle-edit": {
+      "name": "Untertitel bearbeiten",
+      "description": "Zwischen SRT und WebVTT umwandeln, Zeitstempel verschieben, zwei Dateien zusammenführen, prüfen und reparieren.",
+      "keywords": [
+        "untertitel",
+        "srt",
+        "vtt",
+        "webvtt",
+        "srt in vtt",
+        "vtt in srt",
+        "untertitel verschieben",
+        "untertitel synchronisieren",
+        "untertitel zu spät",
+        "untertitel zusammenführen",
+        "srt reparieren",
+        "überlappung"
+      ],
+      "aliases": [
+        "subtitles",
+        "srt to vtt",
+        "vtt to srt",
+        "shift subtitles",
+        "merge subtitles",
+        "fix srt"
+      ],
+      "note": "Was mechanisch sicher ist, wird korrigiert (Reihenfolge, Nummerierung, Zeilenenden); Überlappungen werden gemeldet, aber nie eigenmächtig gekürzt."
+    },
+    "archive-create": {
+      "name": "Archiv erstellen",
+      "description": "Dateien oder Ordner als ZIP, 7z, TAR, TAR.GZ oder TAR.XZ komprimieren, mit erhaltener Ordnerstruktur.",
+      "keywords": [
+        "zip",
+        "komprimieren",
+        "archivieren",
+        "7z",
+        "tar",
+        "tar.gz",
+        "in zip packen",
+        "dateien bündeln"
+      ],
+      "aliases": [
+        "create zip",
+        "compress files",
+        "make archive"
+      ],
+      "note": "Das hier erstellte 7z ist nicht verschlüsselt: Für ein passwortgeschütztes Archiv nutzen Sie „Passwortgeschütztes Archiv“, dessen AES-256-ZIP sich mit 7-Zip, WinRAR, Keka und dem Windows-Explorer öffnen lässt."
+    },
+    "archive-extract": {
+      "name": "Archiv entpacken",
+      "description": "Ein ZIP-, 7z-, TAR-, TAR.GZ- oder TAR.XZ-Archiv in einen Ordner Ihrer Wahl entpacken.",
+      "keywords": [
+        "entpacken",
+        "dekomprimieren",
+        "extrahieren",
+        "zip öffnen",
+        "unzip",
+        "auspacken"
+      ],
+      "aliases": [
+        "unzip",
+        "extract archive",
+        "decompress"
+      ],
+      "note": "Es wird nie eine Datei außerhalb des gewählten Ordners geschrieben: Einträge, deren Pfad nach oben führt („../“), absolute Pfade und symbolische Links werden abgelehnt und aufgelistet. RAR wird nicht unterstützt."
+    },
+    "archive-encrypted": {
+      "name": "Passwortgeschütztes Archiv",
+      "description": "Ein mit Passwort verschlüsseltes Archiv erstellen oder öffnen.",
+      "keywords": [
+        "geschütztes archiv",
+        "zip mit passwort",
+        "verschlüsseltes 7z",
+        "dateien schützen",
+        "sicheres archiv"
+      ],
+      "aliases": [
+        "encrypted zip",
+        "password protected archive"
+      ],
+      "note": "WinZip-AES-256-Verschlüsselung: Das Archiv lässt sich mit 7-Zip, WinRAR, PeaZip, Keka und dem Windows-Explorer öffnen. Das veraltete, in Sekunden knackbare „ZipCrypto“ wird nie verwendet. Die Dateinamen bleiben allerdings ohne Passwort lesbar — eine Grenze des ZIP-Formats."
+    },
+    "file-hash": {
+      "name": "Prüfsumme (Hash) berechnen",
+      "description": "SHA-256, SHA-512, SHA-1 oder MD5 einer oder mehrerer Dateien ermitteln, unabhängig von ihrer Größe.",
+      "keywords": [
+        "hash",
+        "prüfsumme",
+        "md5",
+        "sha256",
+        "sha1",
+        "checksum",
+        "fingerabdruck"
+      ],
+      "aliases": [
+        "file hash",
+        "checksum",
+        "md5",
+        "sha256"
+      ]
+    },
+    "file-verify-hash": {
+      "name": "Prüfsumme verifizieren",
+      "description": "Die Prüfsumme einer Datei mit der von der Quelle angegebenen vergleichen.",
+      "keywords": [
+        "verifizieren",
+        "integrität",
+        "checksum",
+        "ist die datei beschädigt",
+        "hash vergleichen",
+        "echtheit"
+      ],
+      "aliases": [
+        "verify checksum",
+        "check integrity",
+        "hash compare"
+      ]
+    },
+    "file-find-duplicates": {
+      "name": "Doppelte Dateien finden",
+      "description": "Duplikate in einem Ordner anhand des Inhalts statt des Namens finden.",
+      "keywords": [
+        "duplikate",
+        "identische dateien",
+        "platz sparen",
+        "aufräumen",
+        "doppelte fotos"
+      ],
+      "aliases": [
+        "find duplicates",
+        "duplicate finder"
+      ]
+    },
+    "file-compare": {
+      "name": "Zwei Dateien vergleichen",
+      "description": "Prüfen, ob zwei Dateien identisch sind, Byte für Byte oder Zeile für Zeile.",
+      "keywords": [
+        "vergleichen",
+        "identisch",
+        "unterschiede",
+        "binär",
+        "datei-diff"
+      ],
+      "aliases": [
+        "compare files",
+        "file diff"
+      ]
+    },
+    "file-bulk-rename": {
+      "name": "Massenumbenennung",
+      "description": "Hunderte Dateien mit einem Muster, einer Nummerierung oder einer Regex umbenennen.",
+      "keywords": [
+        "umbenennen",
+        "massenweise",
+        "stapelumbenennung",
+        "dateien nummerieren",
+        "präfix",
+        "suffix",
+        "alle meine dateien"
+      ],
+      "aliases": [
+        "bulk rename",
+        "batch rename"
+      ]
+    },
+    "file-clean-names": {
+      "name": "Dateinamen bereinigen",
+      "description": "Akzente, Leerzeichen und problematische Zeichen aus Dateinamen entfernen.",
+      "keywords": [
+        "akzente",
+        "umlaute",
+        "leerzeichen in namen",
+        "sonderzeichen",
+        "slug",
+        "normalisieren"
+      ],
+      "aliases": [
+        "clean filenames",
+        "sanitize filenames"
+      ]
+    },
+    "file-organize": {
+      "name": "Ordner aufräumen",
+      "description": "Dateien automatisch nach Endung, Datum oder Typ einsortieren.",
+      "keywords": [
+        "aufräumen",
+        "ordnen",
+        "sortieren",
+        "nach endung",
+        "nach datum",
+        "downloads aufräumen",
+        "ordnung schaffen"
+      ],
+      "aliases": [
+        "organize folder",
+        "sort files"
+      ]
+    },
+    "folder-size": {
+      "name": "Speicherplatz eines Ordners analysieren",
+      "description": "Sehen, was wirklich Platz belegt: größte Dateien, größte Unterordner, Aufteilung nach Typ.",
+      "keywords": [
+        "größe",
+        "speicherplatz",
+        "was belegt platz",
+        "große dateien",
+        "festplatte voll",
+        "analysieren"
+      ],
+      "aliases": [
+        "folder size",
+        "disk usage",
+        "disk analyzer",
+        "space analyzer"
+      ],
+      "note": "Gelesen werden nur die Metadaten des Dateisystems: Dateiinhalte werden nie geöffnet. Nicht lesbare Ordner werden gemeldet statt mit null gezählt, und symbolischen Links wird nicht gefolgt (ihr Ziel würde doppelt gezählt)."
+    },
+    "file-secure-delete": {
+      "name": "Sicheres Löschen",
+      "description": "Den Inhalt einer Datei vor dem Löschen überschreiben, damit eine Wiederherstellung per Software sehr unwahrscheinlich wird.",
+      "keywords": [
+        "endgültig löschen",
+        "sicheres löschen",
+        "unwiederbringlich",
+        "shred",
+        "datei vernichten",
+        "wirklich löschen"
+      ],
+      "aliases": [
+        "secure delete",
+        "shred",
+        "wipe file"
+      ],
+      "note": "Verstärktes Löschen per Software, keine physische Vernichtung: Auf SSDs, Speicherkarten, Btrfs/ZFS/APFS oder bei vorhandenen Snapshots und Backups kann keine Software garantieren, dass alle früheren Kopien verschwunden sind."
+    },
+    "file-split": {
+      "name": "Große Datei teilen",
+      "description": "Eine große Datei in nummerierte Teile zerlegen, mit Prüfmanifest.",
+      "keywords": [
+        "teilen",
+        "zerlegen",
+        "split",
+        "teile",
+        "datei zu groß",
+        "usb-stick",
+        "fat32",
+        "große datei senden",
+        "part001"
+      ],
+      "aliases": [
+        "split file",
+        "file splitter"
+      ]
+    },
+    "file-join": {
+      "name": "Datei zusammensetzen",
+      "description": "Eine Datei aus ihren .part001-Teilen wiederherstellen, mit Prüfsummenkontrolle.",
+      "keywords": [
+        "zusammensetzen",
+        "zusammenfügen",
+        "join",
+        "teile verbinden",
+        "part001",
+        "datei wiederherstellen"
+      ],
+      "aliases": [
+        "join files",
+        "merge parts",
+        "reassemble"
+      ]
+    },
+    "folder-tree": {
+      "name": "Ordnerbaum erzeugen",
+      "description": "Den Verzeichnisbaum eines Ordners als Text erzeugen, bereit zum Einfügen in ein README.",
+      "keywords": [
+        "baum",
+        "struktur",
+        "tree",
+        "ordnerstruktur",
+        "hierarchie",
+        "readme",
+        "ordnerliste"
+      ],
+      "aliases": [
+        "folder tree",
+        "directory tree"
+      ]
+    },
+    "file-info": {
+      "name": "Datei untersuchen",
+      "description": "Echter Typ anhand der Signatur, Passung der Endung, Kodierung, Datumsangaben, Prüfsummen und erste Bytes.",
+      "keywords": [
+        "informationen",
+        "eigenschaften",
+        "details",
+        "dateityp",
+        "untersuchen",
+        "welches format",
+        "mime",
+        "erstellungsdatum",
+        "was ist das für eine datei",
+        "magic bytes",
+        "signatur",
+        "irreführende endung",
+        "echtes format",
+        "kodierung"
+      ],
+      "aliases": [
+        "file info",
+        "file properties",
+        "file details",
+        "inspect file",
+        "magic bytes"
+      ],
+      "note": "Der angezeigte Typ stammt aus den ersten Bytes, nicht aus der Endung: Ein „.jpg“, das ein PNG enthält, wird als solches gemeldet. Es wird nichts automatisch umbenannt — die Korrektur bleibt eine Aktion, die Sie anstoßen."
+    },
+    "folder-compare": {
+      "name": "Zwei Ordner vergleichen",
+      "description": "Sehen, was zwischen zwei Ordnerbäumen identisch, geändert oder nur auf einer Seite vorhanden ist.",
+      "keywords": [
+        "ordner vergleichen",
+        "ordner-diff",
+        "unterschiede zwischen zwei ordnern",
+        "was hat sich geändert",
+        "zwei versionen eines ordners",
+        "vorher nachher",
+        "kopie prüfen",
+        "backup aktuell"
+      ],
+      "aliases": [
+        "compare folders",
+        "folder diff",
+        "directory compare",
+        "diff directories"
+      ],
+      "note": "Der Schnellmodus vergleicht Typ und Größe, ohne etwas zu lesen: Zwei gleich große Dateien gelten dort als „wahrscheinlich identisch“. Nur der zuverlässige Modus bestätigt die Gleichheit anhand des Inhalts — und liest nur gleich große Dateien, da eine abweichende Größe bereits genügt."
+    },
+    "folder-sync": {
+      "name": "Ordner synchronisieren",
+      "description": "Ein Ziel aus einer Quelle aktualisieren, mit detailliertem Plan vor jedem Schreibvorgang.",
+      "keywords": [
+        "synchronisieren",
+        "spiegeln",
+        "ordner kopieren",
+        "ordner aktualisieren",
+        "backup externe festplatte",
+        "usb-stick",
+        "replizieren",
+        "mirror",
+        "rsync"
+      ],
+      "aliases": [
+        "sync folders",
+        "mirror folder",
+        "folder sync",
+        "one-way sync"
+      ],
+      "note": "Einweg-Synchronisation: Die Quelle ist maßgeblich, das Ziel folgt ihr. Es wird nichts geschrieben, bevor Sie den Plan gelesen haben. Der Spiegelmodus löscht im Ziel, was es in der Quelle nicht mehr gibt, und verlangt dafür eine eigene Bestätigung."
+    },
+    "file-search": {
+      "name": "In Dateien suchen",
+      "description": "Dateien nach Name, Typ, Größe oder Datum finden — oder nach dem Text, den sie enthalten.",
+      "keywords": [
+        "suchen",
+        "in dateien suchen",
+        "datei finden",
+        "grep",
+        "dokument wiederfinden",
+        "wo ist diese datei",
+        "wort suchen",
+        "inhaltssuche",
+        "nach datum",
+        "nach größe"
+      ],
+      "aliases": [
+        "search files",
+        "find files",
+        "grep",
+        "search in files"
+      ],
+      "note": "Suche auf Abruf: FourTout indiziert nichts im Hintergrund und behält nichts zwischen zwei Suchen. Die Inhaltssuche öffnet nur, was wirklich nach Text aussieht — eine Binärdatei wird nie als Text gedeutet."
+    },
+    "file-preview": {
+      "name": "Dateivorschau",
+      "description": "Jede Datei ohne ihr Programm öffnen: Text, Bild, PDF, Audio, Video, Archiv oder rohe Bytes.",
+      "keywords": [
+        "vorschau",
+        "ansehen",
+        "ohne programm öffnen",
+        "inhalt sehen",
+        "quick look",
+        "datei anschauen",
+        "datei lesen"
+      ],
+      "aliases": [
+        "preview file",
+        "quick look",
+        "file viewer"
+      ],
+      "note": "Die Vorschau richtet sich nach dem tatsächlichen Inhalt, nicht nach der Endung. Große Textdateien werden nur teilweise geladen, und die Vorschau sagt das."
+    },
+    "file-hex-edit": {
+      "name": "Hex-Editor",
+      "description": "Die Bytes einer Datei Fenster für Fenster lesen und korrigieren, ohne sie je ganz zu laden.",
+      "keywords": [
+        "hexadezimal",
+        "hex editor",
+        "hex",
+        "bytes",
+        "binär",
+        "bytes ändern",
+        "offset",
+        "ascii",
+        "dump"
+      ],
+      "aliases": [
+        "hex editor",
+        "hex edit",
+        "binary editor"
+      ],
+      "note": "Bewusst begrenzter Editor: keine Binärvorlagen, keine Skripte, kein Einfügen oder Löschen von Bytes — nur Korrekturen an Ort und Stelle, die die Dateigröße nie ändern. Standardmäßig wird das Ergebnis in einer neuen Datei gespeichert."
+    },
+    "folder-backup": {
+      "name": "Ordner sichern",
+      "description": "Einen Ordner mit einem Prüfsummenmanifest kopieren, um ihn später prüfen und wiederherstellen zu können.",
+      "keywords": [
+        "sicherung",
+        "backup",
+        "sicherungskopie",
+        "dokumente archivieren",
+        "vor der neuinstallation",
+        "externe festplatte",
+        "dateien schützen"
+      ],
+      "aliases": [
+        "backup folder",
+        "create backup"
+      ],
+      "note": "Transparentes Format: ein Ordner „donnees“, der Ihre Ordnerstruktur abbildet, und ein lesbares „manifeste.json“. Kein proprietärer Container — auch ohne FourTout bleiben Ihre Dateien zugänglich. Keine versionierte Sicherung: Jede Sicherung ist eine vollständige, datierte Kopie."
+    },
+    "folder-restore": {
+      "name": "Sicherung wiederherstellen",
+      "description": "Eine FourTout-Sicherung prüfen und zurückspielen, ohne zu überschreiben, was Sie nicht ausgewählt haben.",
+      "keywords": [
+        "wiederherstellen",
+        "sicherung zurückspielen",
+        "dateien zurückholen",
+        "restore",
+        "zurücksetzen",
+        "sicherung prüfen"
+      ],
+      "aliases": [
+        "restore backup",
+        "verify backup"
+      ],
+      "note": "Die Integrität wird vor jedem Schreiben geprüft: Eine beschädigte Datei in der Sicherung wird benannt, nicht stillschweigend wiederhergestellt. Das Wiederherstellen löscht im Ziel nie etwas."
+    },
+    "checksum-manifest": {
+      "name": "Prüfsummenmanifest erstellen",
+      "description": "Eine .sha256-Datei mit der Prüfsumme jeder Datei eines Ordners erzeugen.",
+      "keywords": [
+        "manifest",
+        "prüfsummen",
+        "checksums",
+        "sha256sum",
+        "hash-liste",
+        "vor dem brennen",
+        "vor dem senden",
+        "integritätsprüfung",
+        "sfv"
+      ],
+      "aliases": [
+        "checksum manifest",
+        "create checksums",
+        "sha256sum"
+      ],
+      "note": "Das erzeugte Textformat ist das von sha256sum: Es lässt sich mit den Systemwerkzeugen auf jedem Rechner prüfen. MD5 und SHA-1 werden weiterhin angeboten, um alte Prüfsummen zu prüfen, aber als für Sicherheitszwecke ungeeignet gekennzeichnet."
+    },
+    "checksum-verify": {
+      "name": "Prüfsummenmanifest verifizieren",
+      "description": "Einen Ordner mit einer Prüfsummendatei vergleichen: intakt, geändert, fehlend oder unlesbar, Datei für Datei.",
+      "keywords": [
+        "prüfsummen verifizieren",
+        "manifest prüfen",
+        "sha256sum -c",
+        "haben sich meine dateien geändert",
+        "ordnerintegrität",
+        "bit rot"
+      ],
+      "aliases": [
+        "verify checksums",
+        "check manifest",
+        "sha256sum -c"
+      ],
+      "note": "Ein Manifest ist eine Angabe, keine Anweisung: Ein Eintrag, der aus dem geprüften Ordner hinausführen würde („../“, absoluter Pfad), wird abgelehnt und aufgelistet, nie befolgt."
+    },
+    "hmac": {
+      "name": "HMAC berechnen",
+      "description": "Einen Text oder eine Datei mit einem geheimen Schlüssel signieren, per HMAC-SHA-256 oder SHA-512.",
+      "keywords": [
+        "hmac",
+        "signatur",
+        "geheimer schlüssel",
+        "webhook",
+        "api",
+        "authentifizieren",
+        "anfrage signieren",
+        "nachrichtenauthentifizierungscode"
+      ],
+      "aliases": [
+        "hmac",
+        "message authentication code"
+      ],
+      "note": "Der Schlüssel wird weder gespeichert noch protokolliert noch zu den zuletzt verwendeten hinzugefügt: Er dient der Berechnung und verschwindet. Er wird vom Bildschirm gelöscht, sobald Sie das Werkzeug verlassen."
+    },
+    "file-compress": {
+      "name": "Datei komprimieren (GZ, XZ)",
+      "description": "Eine einzelne Datei zu .gz oder .xz verkleinern — ohne ein Archiv daraus zu machen.",
+      "keywords": [
+        "gzip",
+        "gz",
+        "xz",
+        "datei komprimieren",
+        "lzma",
+        "datei verkleinern",
+        "kompression",
+        "großes log"
+      ],
+      "aliases": [
+        "gzip",
+        "xz compress",
+        "compress file"
+      ],
+      "note": "„.gz“ und „.xz“ enthalten nur eine einzige Datei, ohne Ordnernamen oder Struktur. Um mehrere Dateien mit ihrer Ordnung zu komprimieren, nutzen Sie „Archiv erstellen“ mit dem Format TAR.GZ oder TAR.XZ."
+    },
+    "file-decompress": {
+      "name": "Datei dekomprimieren (GZ, XZ)",
+      "description": "Die Originaldatei aus einer .gz- oder .xz-Datei zurückgewinnen.",
+      "keywords": [
+        "gunzip",
+        "unxz",
+        ".gz öffnen",
+        ".xz öffnen",
+        "gz entpacken",
+        "gz dekomprimieren",
+        "xz dekomprimieren"
+      ],
+      "aliases": [
+        "gunzip",
+        "unxz",
+        "decompress file"
+      ],
+      "note": "Eine „.tar.gz“ enthält eine Ordnerstruktur: Nutzen Sie besser „Archiv entpacken“, das sie wiederherstellt. Hier würde eine .tar.gz einfach die .tar zurückgeben."
+    },
+    "archive-inspect": {
+      "name": "Archiv untersuchen",
+      "description": "Den Inhalt eines Archivs auflisten, ohne es zu entpacken: Pfade, Größen, Kompressionsraten, verdächtige Einträge.",
+      "keywords": [
+        "zip inhalt ansehen",
+        "archiv auflisten",
+        "ohne entpacken",
+        "was ist drin",
+        "zip untersuchen",
+        "7z inhalt",
+        "archiv durchsuchen"
+      ],
+      "aliases": [
+        "inspect archive",
+        "list archive",
+        "browse archive"
+      ],
+      "note": "Es wird nichts dekomprimiert: Nur das Inhaltsverzeichnis des Archivs wird gelesen. Einträge, deren Pfad den Zielordner verlassen würde, werden gemeldet, bevor Sie überhaupt ans Entpacken denken."
+    },
+    "archive-test": {
+      "name": "Archiv testen",
+      "description": "Prüfen, ob ein Archiv intakt ist, indem es vollständig dekomprimiert wird, ohne etwas auf die Festplatte zu schreiben.",
+      "keywords": [
+        "archiv testen",
+        "beschädigtes archiv",
+        "kaputtes zip",
+        "zip prüfen",
+        "unvollständiger download",
+        "archivintegrität",
+        "crc"
+      ],
+      "aliases": [
+        "test archive",
+        "verify archive",
+        "check archive"
+      ],
+      "note": "Der Inhalt wird tatsächlich dekomprimiert und seine Prüfsummen werden geprüft — ein Auflisten würde nichts beweisen, da nur der Kopf gelesen würde. Es wird nichts geschrieben: Die Bytes werden gezählt und verworfen."
+    },
+    "universal-converter": {
+      "name": "Universalkonverter",
+      "description": "Datei ablegen: FourTout schlägt die möglichen Umwandlungen in kompatible Formate vor.",
+      "keywords": [
+        "konvertieren",
+        "umwandeln",
+        "format ändern",
+        "beliebige datei",
+        "welches format",
+        "konverter"
+      ],
+      "aliases": [
+        "universal converter",
+        "convert anything",
+        "file converter"
+      ],
+      "note": "Die vorgeschlagenen Umwandlungen ergeben sich aus den Ein- und Ausgaben, die die Werkzeuge im Register angeben: keine separate Tabelle zu pflegen, und nie eine angekündigte Umwandlung ohne Werkzeug dahinter."
+    },
+    "json-tools": {
+      "name": "JSON — formatieren und validieren",
+      "description": "JSON einrücken, minimieren und auf Gültigkeit prüfen, mit genauer Fehlermeldung.",
+      "keywords": [
+        "json",
+        "formatieren",
+        "einrücken",
+        "validieren",
+        "prettify",
+        "minimieren",
+        "parsen"
+      ],
+      "aliases": [
+        "json formatter",
+        "json validator",
+        "json beautifier",
+        "prettify json"
+      ]
+    },
+    "xml-format": {
+      "name": "XML — formatieren",
+      "description": "Ein XML-Dokument einrücken und validieren.",
+      "keywords": [
+        "xml",
+        "formatieren",
+        "einrücken",
+        "validieren",
+        "tags"
+      ],
+      "aliases": [
+        "xml formatter",
+        "xml beautifier"
+      ]
+    },
+    "yaml-format": {
+      "name": "YAML — formatieren und umwandeln",
+      "description": "YAML formatieren und von oder nach JSON umwandeln.",
+      "keywords": [
+        "yaml",
+        "yml",
+        "formatieren",
+        "yaml in json",
+        "json in yaml",
+        "konfiguration"
+      ],
+      "aliases": [
+        "yaml formatter",
+        "yaml to json",
+        "json to yaml"
+      ]
+    },
+    "sql-format": {
+      "name": "SQL — formatieren",
+      "description": "Eine kompakte oder generierte SQL-Abfrage lesbar machen.",
+      "keywords": [
+        "sql",
+        "abfrage",
+        "formatieren",
+        "einrücken",
+        "lesbar",
+        "query"
+      ],
+      "aliases": [
+        "sql formatter",
+        "sql beautifier"
+      ]
+    },
+    "base64": {
+      "name": "Base64 — kodieren und dekodieren",
+      "description": "Text in Base64 umwandeln und zurück, einschließlich base64url.",
+      "keywords": [
+        "base64",
+        "kodieren",
+        "dekodieren",
+        "b64",
+        "kodierung",
+        "data uri"
+      ],
+      "aliases": [
+        "base64 encode",
+        "base64 decode",
+        "b64"
+      ]
+    },
+    "url-encode": {
+      "name": "URL — kodieren und dekodieren",
+      "description": "Eine URL und ihre Parameter kodieren oder dekodieren (Prozentkodierung).",
+      "keywords": [
+        "url",
+        "kodieren",
+        "dekodieren",
+        "prozentkodierung",
+        "querystring",
+        "sonderzeichen"
+      ],
+      "aliases": [
+        "url encode",
+        "url decode",
+        "uri encode"
+      ]
+    },
+    "jwt-decode": {
+      "name": "JWT — dekodieren",
+      "description": "Kopf und Nutzlast eines JWT lesen, ohne es irgendwohin zu senden.",
+      "keywords": [
+        "jwt",
+        "token",
+        "dekodieren",
+        "bearer",
+        "payload",
+        "claims"
+      ],
+      "aliases": [
+        "jwt decoder",
+        "decode token"
+      ],
+      "note": "Das Token wird lokal dekodiert: Es verlässt Ihren Rechner nie."
+    },
+    "uuid-generate": {
+      "name": "UUIDs erzeugen",
+      "description": "Eindeutige v4- oder v7-Kennungen erzeugen, einzeln oder im Stapel.",
+      "keywords": [
+        "uuid",
+        "guid",
+        "eindeutige kennung",
+        "id erzeugen",
+        "v4",
+        "v7"
+      ],
+      "aliases": [
+        "uuid generator",
+        "guid generator"
+      ]
+    },
+    "regex-tester": {
+      "name": "Regex-Tester",
+      "description": "Einen regulären Ausdruck live testen und Treffer und Gruppen sehen.",
+      "keywords": [
+        "regex",
+        "regulärer ausdruck",
+        "testen",
+        "treffer",
+        "muster",
+        "match"
+      ],
+      "aliases": [
+        "regex tester",
+        "regexp",
+        "regex101"
+      ]
+    },
+    "timestamp-convert": {
+      "name": "Unix-Zeitstempel",
+      "description": "Einen Zeitstempel in ein lesbares Datum umwandeln und zurück, mit Zeitzonen.",
+      "keywords": [
+        "zeitstempel",
+        "timestamp",
+        "unix",
+        "epoch",
+        "datum in sekunden",
+        "millisekunden",
+        "datum umwandeln"
+      ],
+      "aliases": [
+        "unix timestamp",
+        "epoch converter"
+      ]
+    },
+    "hash-text": {
+      "name": "Hash eines Texts erzeugen",
+      "description": "MD5, SHA-1, SHA-256 oder SHA-512 einer Zeichenkette berechnen.",
+      "keywords": [
+        "hash",
+        "md5",
+        "sha256",
+        "prüfsumme",
+        "text hashen",
+        "digest"
+      ],
+      "aliases": [
+        "hash generator",
+        "md5 text",
+        "sha256 text"
+      ]
+    },
+    "qr-generate": {
+      "name": "QR-Code erzeugen",
+      "description": "Einen QR-Code für eine URL, einen Text, einen Kontakt oder ein WLAN erstellen.",
+      "keywords": [
+        "qr-code",
+        "qrcode",
+        "barcode",
+        "qr erzeugen",
+        "wlan",
+        "wifi",
+        "vcard"
+      ],
+      "aliases": [
+        "qr code generator",
+        "make qr code"
+      ]
+    },
+    "qr-read": {
+      "name": "QR-Code lesen",
+      "description": "Einen QR-Code aus einem Bild oder Screenshot dekodieren.",
+      "keywords": [
+        "qr lesen",
+        "scannen",
+        "qr-code dekodieren",
+        "qr aus bild"
+      ],
+      "aliases": [
+        "qr code reader",
+        "scan qr code",
+        "decode qr"
+      ]
+    },
+    "number-base-convert": {
+      "name": "Hex, Dezimal, Binär umrechnen",
+      "description": "Zwischen Zahlensystemen wechseln: binär, oktal, dezimal, hexadezimal.",
+      "keywords": [
+        "hexadezimal",
+        "binär",
+        "dezimal",
+        "oktal",
+        "basis 16",
+        "basis 2",
+        "zahl umrechnen"
+      ],
+      "aliases": [
+        "hex to decimal",
+        "binary converter",
+        "base converter"
+      ]
+    },
+    "code-diff": {
+      "name": "Code-Diff",
+      "description": "Zwei Codeblöcke vergleichen, mit hervorgehobenen Ergänzungen und Löschungen.",
+      "keywords": [
+        "diff",
+        "code vergleichen",
+        "unterschiede",
+        "merge",
+        "versionen"
+      ],
+      "aliases": [
+        "code diff",
+        "compare code"
+      ]
+    },
+    "web-minify": {
+      "name": "HTML, CSS, JS minimieren",
+      "description": "Code durch Entfernen von Leerraum und Kommentaren verkleinern.",
+      "keywords": [
+        "minimieren",
+        "code komprimieren",
+        "verkleinern",
+        "uglify",
+        "produktion"
+      ],
+      "aliases": [
+        "minify",
+        "minify css",
+        "minify js",
+        "minify html"
+      ]
+    },
+    "web-beautify": {
+      "name": "HTML, CSS, JS formatieren",
+      "description": "Minimierten oder schlecht formatierten Code neu einrücken, damit er lesbar wird.",
+      "keywords": [
+        "formatieren",
+        "einrücken",
+        "beautify",
+        "prettify",
+        "unlesbarer code",
+        "neu einrücken"
+      ],
+      "aliases": [
+        "beautify",
+        "format code",
+        "prettify html"
+      ]
+    },
+    "cron-helper": {
+      "name": "Cron-Assistent",
+      "description": "Einen Cron-Ausdruck zusammenstellen und in verständlicher Sprache erklären.",
+      "keywords": [
+        "cron",
+        "crontab",
+        "zeitplanung",
+        "geplante aufgabe",
+        "cron-ausdruck",
+        "schedule"
+      ],
+      "aliases": [
+        "cron generator",
+        "crontab helper",
+        "cron expression"
+      ]
+    },
+    "toml-format": {
+      "name": "TOML — formatieren und validieren",
+      "description": "Eine TOML-Datei prüfen und in kanonischer Form neu schreiben.",
+      "keywords": [
+        "toml",
+        "formatieren",
+        "validieren",
+        "konfiguration",
+        "cargo",
+        "pyproject",
+        "einrücken",
+        "syntaxfehler"
+      ],
+      "aliases": [
+        "toml formatter",
+        "toml validator",
+        "toml linter",
+        "format toml"
+      ],
+      "note": "Beim Neuformatieren wird das Dokument aus seinen Daten neu aufgebaut: Kommentare und die ursprüngliche Reihenfolge gehen verloren. Die Validierung dagegen verändert nichts."
+    },
+    "base32": {
+      "name": "Base32 — kodieren und dekodieren",
+      "description": "Text gemäß RFC 4648 in Base32 umwandeln und zurück.",
+      "keywords": [
+        "base32",
+        "kodieren",
+        "dekodieren",
+        "rfc 4648",
+        "totp",
+        "kodierung",
+        "padding",
+        "alphabet"
+      ],
+      "aliases": [
+        "base32 encode",
+        "base32 decode",
+        "b32"
+      ]
+    },
+    "sqlite-explorer": {
+      "name": "SQLite-Datenbank — erkunden",
+      "description": "Eine SQLite-Datenbank schreibgeschützt öffnen: Schema, Daten, Abfragen, CSV-Export.",
+      "keywords": [
+        "sqlite",
+        "datenbank",
+        "db",
+        "erkunden",
+        "schema",
+        "tabelle",
+        "abfrage",
+        "select",
+        "sql",
+        "schreibgeschützt"
+      ],
+      "aliases": [
+        "sqlite browser",
+        "sqlite explorer",
+        "db browser",
+        "open sqlite"
+      ],
+      "note": "Ausschließlich lesender Explorer: Die Datenbank wird schreibgeschützt geöffnet, und keine Abfrage kann sie verändern."
+    },
+    "unit-length": {
+      "name": "Umrechner — Längen",
+      "description": "Meter, Kilometer, Meilen, Fuß, Zoll, Seemeilen.",
+      "keywords": [
+        "umrechnen",
+        "umrechnung",
+        "einheiten",
+        "länge",
+        "entfernung",
+        "meter",
+        "km",
+        "meilen",
+        "zoll",
+        "fuß",
+        "zentimeter"
+      ],
+      "aliases": [
+        "length converter",
+        "cm to inches",
+        "km to miles"
+      ]
+    },
+    "unit-weight": {
+      "name": "Umrechner — Gewichte und Massen",
+      "description": "Gramm, Kilogramm, Tonnen, Pfund, Unzen.",
+      "keywords": [
+        "umrechnen",
+        "umrechnung",
+        "einheiten",
+        "gewicht",
+        "masse",
+        "kilo",
+        "gramm",
+        "pfund",
+        "unze",
+        "tonne",
+        "lbs"
+      ],
+      "aliases": [
+        "weight converter",
+        "kg to lbs",
+        "pounds to kg"
+      ]
+    },
+    "unit-temperature": {
+      "name": "Umrechner — Temperaturen",
+      "description": "Celsius, Fahrenheit, Kelvin.",
+      "keywords": [
+        "umrechnen",
+        "umrechnung",
+        "einheiten",
+        "temperatur",
+        "celsius",
+        "fahrenheit",
+        "kelvin",
+        "grad",
+        "°c",
+        "°f"
+      ],
+      "aliases": [
+        "temperature converter",
+        "celsius to fahrenheit"
+      ]
+    },
+    "unit-volume": {
+      "name": "Umrechner — Volumen",
+      "description": "Liter, Milliliter, Gallonen, Pints, Tassen, Löffel.",
+      "keywords": [
+        "umrechnen",
+        "umrechnung",
+        "einheiten",
+        "volumen",
+        "liter",
+        "ml",
+        "gallone",
+        "pint",
+        "tasse",
+        "löffel",
+        "rezept"
+      ],
+      "aliases": [
+        "volume converter",
+        "cups to ml",
+        "gallons to liters"
+      ]
+    },
+    "unit-area": {
+      "name": "Umrechner — Flächen",
+      "description": "Quadratmeter, Hektar, Acres, Quadratfuß.",
+      "keywords": [
+        "umrechnen",
+        "umrechnung",
+        "einheiten",
+        "fläche",
+        "m2",
+        "quadratmeter",
+        "hektar",
+        "acre",
+        "grundstück"
+      ],
+      "aliases": [
+        "area converter",
+        "sqft to m2"
+      ]
+    },
+    "unit-speed": {
+      "name": "Umrechner — Geschwindigkeiten",
+      "description": "km/h, m/s, mph, Knoten.",
+      "keywords": [
+        "umrechnen",
+        "umrechnung",
+        "einheiten",
+        "geschwindigkeit",
+        "km/h",
+        "mph",
+        "m/s",
+        "knoten",
+        "knots"
+      ],
+      "aliases": [
+        "speed converter",
+        "kmh to mph"
+      ]
+    },
+    "unit-pressure": {
+      "name": "Umrechner — Drücke",
+      "description": "Pascal, Bar, PSI, Atmosphären, mmHg.",
+      "keywords": [
+        "umrechnen",
+        "umrechnung",
+        "einheiten",
+        "druck",
+        "bar",
+        "psi",
+        "pascal",
+        "atmosphäre",
+        "reifen"
+      ],
+      "aliases": [
+        "pressure converter",
+        "bar to psi"
+      ]
+    },
+    "unit-energy": {
+      "name": "Umrechner — Energie",
+      "description": "Joule, Kalorien, kWh, BTU.",
+      "keywords": [
+        "umrechnen",
+        "umrechnung",
+        "einheiten",
+        "energie",
+        "joule",
+        "kalorie",
+        "kwh",
+        "btu",
+        "kcal"
+      ],
+      "aliases": [
+        "energy converter",
+        "kwh to joules"
+      ]
+    },
+    "unit-power": {
+      "name": "Umrechner — Leistung",
+      "description": "Watt, Kilowatt, PS.",
+      "keywords": [
+        "umrechnen",
+        "umrechnung",
+        "einheiten",
+        "leistung",
+        "watt",
+        "kw",
+        "kilowatt",
+        "ps",
+        "pferdestärke",
+        "hp"
+      ],
+      "aliases": [
+        "power converter",
+        "watts to hp",
+        "kw to hp"
+      ]
+    },
+    "unit-data": {
+      "name": "Umrechner — Datenmengen",
+      "description": "Bytes, KB, MB, GB, TB und ihre binären Entsprechungen (KiB, MiB).",
+      "keywords": [
+        "umrechnen",
+        "umrechnung",
+        "einheiten",
+        "bytes",
+        "mb",
+        "gb",
+        "tb",
+        "megabyte",
+        "gigabyte",
+        "bits",
+        "kib",
+        "mib"
+      ],
+      "aliases": [
+        "data converter",
+        "mb to gb",
+        "bytes converter"
+      ]
+    },
+    "calc-percentage": {
+      "name": "Prozentrechnung",
+      "description": "Prozentsatz einer Zahl, Veränderung, Rabatt, MwSt., Anteil am Ganzen.",
+      "keywords": [
+        "prozent",
+        "%",
+        "rabatt",
+        "ermäßigung",
+        "mwst",
+        "mehrwertsteuer",
+        "erhöhung",
+        "veränderung",
+        "preisnachlass berechnen",
+        "anstieg",
+        "rückgang"
+      ],
+      "aliases": [
+        "percentage calculator",
+        "percent change",
+        "discount calculator"
+      ]
+    },
+    "calc-proportion": {
+      "name": "Dreisatz",
+      "description": "Ein Verhältnis lösen: Wenn A gleich B ist, wie viel ist C?",
+      "keywords": [
+        "dreisatz",
+        "verhältnis",
+        "kreuzmultiplikation",
+        "ratio",
+        "maßstab"
+      ],
+      "aliases": [
+        "rule of three",
+        "cross multiplication",
+        "proportion calculator"
+      ]
+    },
+    "calc-date-difference": {
+      "name": "Datumsrechner",
+      "description": "Anzahl der Tage zwischen zwei Daten; eine Dauer addieren oder abziehen.",
+      "keywords": [
+        "daten",
+        "tage zwischen",
+        "wie viele tage",
+        "tage addieren",
+        "werktage",
+        "fälligkeit",
+        "frist"
+      ],
+      "aliases": [
+        "date calculator",
+        "days between dates",
+        "date difference"
+      ]
+    },
+    "calc-duration": {
+      "name": "Zeitdauer berechnen",
+      "description": "Stunden, Minuten und Sekunden addieren und subtrahieren.",
+      "keywords": [
+        "dauer",
+        "stunden",
+        "minuten",
+        "stunden addieren",
+        "arbeitszeit",
+        "hh:mm"
+      ],
+      "aliases": [
+        "duration calculator",
+        "time calculator",
+        "add hours"
+      ]
+    },
+    "calc-age": {
+      "name": "Alter berechnen",
+      "description": "Genaues Alter in Jahren, Monaten und Tagen aus einem Geburtsdatum.",
+      "keywords": [
+        "alter",
+        "geburtsdatum",
+        "wie alt",
+        "geburtstag",
+        "jahre"
+      ],
+      "aliases": [
+        "age calculator",
+        "how old"
+      ]
+    },
+    "calc-scientific": {
+      "name": "Wissenschaftlicher Taschenrechner",
+      "description": "Erweiterte Rechenarten: Potenzen, Wurzeln, Trigonometrie, Logarithmen.",
+      "keywords": [
+        "taschenrechner",
+        "wissenschaftlich",
+        "quadratwurzel",
+        "potenz",
+        "trigonometrie",
+        "logarithmus",
+        "sin",
+        "cos",
+        "rechnen"
+      ],
+      "aliases": [
+        "scientific calculator",
+        "calculator"
+      ]
+    },
+    "calc-currency": {
+      "name": "Währungsrechner",
+      "description": "Beträge mit aktuellen Kursen zwischen Währungen umrechnen.",
+      "keywords": [
+        "währungen",
+        "währung",
+        "euro",
+        "dollar",
+        "wechselkurs",
+        "kurs",
+        "geld",
+        "euro umrechnen"
+      ],
+      "aliases": [
+        "currency converter",
+        "eur to usd",
+        "exchange rate"
+      ],
+      "note": "Das einzige FourTout-Werkzeug, das Internet braucht, und zwar nur, um die Tageskurse abzurufen. Offline werden die zuletzt bekannten Kurse wiederverwendet."
+    },
+    "calc-timezone": {
+      "name": "Zwischen Zeitzonen umrechnen",
+      "description": "Eine Ortszeit in eine andere umrechnen, Sommerzeit inklusive.",
+      "keywords": [
+        "zeitzone",
+        "zeitzonen",
+        "timezone",
+        "uhrzeit",
+        "zeitverschiebung",
+        "utc",
+        "gmt",
+        "uhrzeit berlin tokio",
+        "uhrzeit new york",
+        "sommerzeit",
+        "dst"
+      ],
+      "aliases": [
+        "timezone converter",
+        "time zone",
+        "convert time",
+        "world clock"
+      ],
+      "note": "Die Zeitverschiebungen stammen aus der Zeitzonendatenbank des Systems, für das angefragte Datum: Zeitumstellungen werden also berücksichtigt, und mehrdeutige oder nicht existierende Uhrzeiten werden gemeldet."
+    },
+    "calc-bandwidth": {
+      "name": "Bandbreite berechnen",
+      "description": "Eine durchschnittliche Datenrate aus übertragener Menge und Dauer ableiten.",
+      "keywords": [
+        "bandbreite",
+        "datenrate",
+        "durchsatz",
+        "bandwidth",
+        "mbit/s",
+        "mb pro sekunde",
+        "bits",
+        "bytes",
+        "geschwindigkeit",
+        "verbindung"
+      ],
+      "aliases": [
+        "bandwidth calculator",
+        "throughput",
+        "data rate"
+      ]
+    },
+    "calc-transfer-time": {
+      "name": "Übertragungsdauer berechnen",
+      "description": "Die Dauer einer Übertragung aus Größe und Datenrate schätzen.",
+      "keywords": [
+        "übertragungsdauer",
+        "dauer",
+        "download",
+        "upload",
+        "übertragung",
+        "wie lange",
+        "datenrate",
+        "größe",
+        "eta"
+      ],
+      "aliases": [
+        "transfer time",
+        "download time",
+        "upload time"
+      ],
+      "note": "Theoretische Rechnung: Größe ÷ Datenrate. Protokoll-Overhead, Latenz und Überlastung bleiben unberücksichtigt — eine echte Übertragung dauert immer länger."
+    },
+    "calc-interest": {
+      "name": "Zinsen berechnen",
+      "description": "Einfache Zinsen oder Zinseszins, mit optionalen regelmäßigen Einzahlungen.",
+      "keywords": [
+        "zinsen",
+        "zinseszins",
+        "einfache zinsen",
+        "kapitalisierung",
+        "sparen",
+        "geldanlage",
+        "zinssatz",
+        "rendite",
+        "sparkonto"
+      ],
+      "aliases": [
+        "compound interest",
+        "simple interest",
+        "savings calculator"
+      ],
+      "note": "Ein Mathematikwerkzeug, keine Finanzberatung: Steuern, Inflation und Gebühren werden nicht berücksichtigt."
+    },
+    "network-ping": {
+      "name": "Ping",
+      "description": "Messen, ob ein Host antwortet und wie schnell.",
+      "keywords": [
+        "ping",
+        "latenz",
+        "icmp",
+        "antwortet",
+        "erreichbar",
+        "paketverlust",
+        "antwortzeit",
+        "diagnose"
+      ],
+      "aliases": [
+        "ping",
+        "icmp echo",
+        "latency test"
+      ],
+      "note": "Sendet echte ICMP-Pakete, standardmäßig vier. Verweigert das System ICMP-Sockets, sagt das Werkzeug das, statt etwas anderes zu messen."
+    },
+    "network-ports": {
+      "name": "Ports testen",
+      "description": "Sehen, welche TCP-Ports eines Hosts eine Verbindung annehmen.",
+      "keywords": [
+        "port",
+        "ports",
+        "tcp",
+        "port testen",
+        "offener port",
+        "geschlossener port",
+        "verbindung",
+        "firewall",
+        "dienst",
+        "lauscht"
+      ],
+      "aliases": [
+        "port check",
+        "port test",
+        "tcp connect",
+        "is port open"
+      ],
+      "note": "Ein einziger Host, höchstens 256 Ports pro Durchlauf, per normaler TCP-Verbindung. Das ist kein Scanner: keine Tarnung, keine Diensterkennung, keine Schwachstellensuche."
+    },
+    "network-lan": {
+      "name": "Geräte im lokalen Netzwerk finden",
+      "description": "Die Rechner auflisten, die sich in Ihrem Subnetz melden.",
+      "keywords": [
+        "lokales netzwerk",
+        "lan",
+        "geräte",
+        "rechner",
+        "lokales netzwerk scannen",
+        "erkennung",
+        "drucker",
+        "ip-adresse",
+        "mac"
+      ],
+      "aliases": [
+        "lan discovery",
+        "network scan",
+        "find devices",
+        "arp table"
+      ],
+      "note": "Begrenzt auf das direkt verbundene Subnetz und 256 Adressen. Der genaue Bereich wird vor jedem Senden angezeigt, und nichts geht ohne Bestätigung hinaus."
+    },
+    "file-diagnose": {
+      "name": "Datei diagnostizieren",
+      "description": "Verstehen, was eine Datei wirklich ist und was ihr fehlt.",
+      "keywords": [
+        "datei diagnostizieren",
+        "beschädigte datei",
+        "kaputte datei",
+        "unlesbare datei",
+        "dateityp",
+        "endung",
+        "abgeschnitten",
+        "signatur",
+        "analysieren"
+      ],
+      "aliases": [
+        "file diagnosis",
+        "corrupt file",
+        "file check",
+        "inspect file"
+      ],
+      "note": "Die Originaldatei wird nie verändert. FourTout analysiert die interne Struktur von ZIP, PDF, PNG und JPEG und sagt bei anderen Formaten offen, was es nicht kann."
+    },
+    "archive-repair": {
+      "name": "Beschädigtes ZIP-Archiv",
+      "description": "Ein unlesbares Archiv diagnostizieren und retten, was es noch enthält.",
+      "keywords": [
+        "zip reparieren",
+        "kaputtes zip",
+        "beschädigtes zip",
+        "beschädigtes archiv",
+        "archiv wiederherstellen",
+        "unlesbares archiv",
+        "zentralverzeichnis",
+        "trotzdem entpacken"
+      ],
+      "aliases": [
+        "repair zip",
+        "recover zip",
+        "broken archive",
+        "zip repair"
+      ],
+      "note": "Stellt per Durchsuchen der lokalen Header wieder her, auch ohne Zentralverzeichnis. Einträge mit abgeschnittenen Daten werden als verloren gemeldet — sie werden nie rekonstruiert. Das Originalarchiv bleibt unberührt."
+    },
+    "pdf-repair": {
+      "name": "Beschädigtes PDF",
+      "description": "Ein unlesbares PDF diagnostizieren und reparieren, wenn das nachweisbar gelingt.",
+      "keywords": [
+        "pdf reparieren",
+        "beschädigtes pdf",
+        "kaputtes pdf",
+        "unlesbares pdf",
+        "pdf xref",
+        "startxref",
+        "abgeschnittenes pdf",
+        "pdf wiederherstellen"
+      ],
+      "aliases": [
+        "repair pdf",
+        "fix pdf",
+        "broken pdf",
+        "pdf recovery"
+      ],
+      "note": "Jede erzeugte Datei wird von der PDF-Engine erneut geöffnet und ihre Seiten werden gezählt: Lehnt die Engine sie ab, gilt die Reparatur als gescheitert und die Datei wird gelöscht. Ein Neuschreiben macht jede digitale Signatur ungültig."
+    },
+    "image-repair": {
+      "name": "Beschädigtes Bild",
+      "description": "Ein beschädigtes PNG oder JPEG diagnostizieren und die lesbaren Pixel retten.",
+      "keywords": [
+        "bild wiederherstellen",
+        "beschädigtes bild",
+        "kaputtes jpeg",
+        "beschädigtes png",
+        "beschädigtes foto",
+        "unlesbares bild",
+        "abgeschnittenes bild",
+        "png crc"
+      ],
+      "aliases": [
+        "repair image",
+        "recover photo",
+        "broken jpeg",
+        "png repair"
+      ],
+      "note": "Eine falsche Prüfsumme wird nie neu berechnet, und fehlende Zeilen eines abgeschnittenen Bildes werden nie erfunden. Die visuelle Wiederherstellung kodiert die dekodierten Pixel neu: Sie rettet das Bild, nicht die Datei."
+    },
+    "disk-inspect": {
+      "name": "Datenträger und Partitionen untersuchen",
+      "description": "Die Datenträger, Partitionen, Volumes und Zustandsanzeigen des Systems sehen.",
+      "keywords": [
+        "festplatte",
+        "datenträger",
+        "laufwerk",
+        "partitionen",
+        "dateisystem",
+        "speicherplatz",
+        "volume",
+        "smart",
+        "festplattenzustand",
+        "ssd",
+        "nvme",
+        "usb",
+        "einhängen"
+      ],
+      "aliases": [
+        "disk info",
+        "partitions",
+        "smart health",
+        "drive inspector",
+        "storage"
+      ],
+      "note": "Nur lesend, ohne Ausnahme: FourTout kann einen Datenträger weder partitionieren noch formatieren, einhängen, klonen oder löschen. Ausführliche Zustandsanzeigen hängen von `smartctl` ab, das FourTout nicht mitliefert."
+    },
+    "password-generate": {
+      "name": "Passwort erzeugen",
+      "description": "Starke Passwörter oder merkbare Passphrasen erstellen.",
+      "keywords": [
+        "passwort",
+        "erzeugen",
+        "zufällig",
+        "sicher",
+        "passphrase",
+        "kennwort",
+        "starkes passwort",
+        "passwort erstellen"
+      ],
+      "aliases": [
+        "password generator",
+        "generate password",
+        "passphrase"
+      ]
+    },
+    "password-strength": {
+      "name": "Passwortstärke testen",
+      "description": "Offline abschätzen, wie lange es dauern würde, ein Passwort zu knacken.",
+      "keywords": [
+        "stärke",
+        "sicheres passwort",
+        "sicherheit",
+        "ist mein passwort gut",
+        "entropie",
+        "passwort prüfen"
+      ],
+      "aliases": [
+        "password strength",
+        "password checker"
+      ],
+      "note": "Die Analyse ist rein lokal: Das eingegebene Passwort wird nie übertragen."
+    },
+    "file-encrypt": {
+      "name": "Dateien verschlüsseln",
+      "description": "Dateien mit moderner Verschlüsselung per Passwort schützen.",
+      "keywords": [
+        "verschlüsseln",
+        "schützen",
+        "passwort",
+        "aes",
+        "vertraulich",
+        "datei absichern"
+      ],
+      "aliases": [
+        "encrypt file",
+        "file encryption",
+        "aes encrypt"
+      ]
+    },
+    "file-decrypt": {
+      "name": "Dateien entschlüsseln",
+      "description": "Den Inhalt einer mit FourTout verschlüsselten Datei zurückgewinnen.",
+      "keywords": [
+        "entschlüsseln",
+        "verschlüsselte datei öffnen",
+        "wiederherstellen"
+      ],
+      "aliases": [
+        "decrypt file",
+        "file decryption"
+      ]
+    },
+    "metadata-strip-any": {
+      "name": "Metadaten einer Datei entfernen",
+      "description": "Autor, Datumsangaben, Gerät und Standort entfernen, bevor Sie ein Dokument teilen.",
+      "keywords": [
+        "metadaten",
+        "anonymisieren",
+        "vor dem teilen",
+        "privatsphäre",
+        "autor entfernen",
+        "spuren",
+        "dokument bereinigen"
+      ],
+      "aliases": [
+        "strip metadata",
+        "remove metadata",
+        "anonymize file"
+      ]
+    }
+  }
+}

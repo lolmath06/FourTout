@@ -1,0 +1,3750 @@
+{
+  "categories": {
+    "pdf": {
+      "name": "PDF",
+      "description": "合併、拆分、壓縮、轉換和保護 PDF。",
+      "keywords": [
+        "pdf",
+        "文件",
+        "acrobat"
+      ]
+    },
+    "images": {
+      "name": "圖片",
+      "description": "轉換、壓縮、調整尺寸和清理圖片。",
+      "keywords": [
+        "圖片",
+        "影像",
+        "照片",
+        "png",
+        "jpg",
+        "jpeg",
+        "webp"
+      ]
+    },
+    "audio": {
+      "name": "音訊",
+      "description": "轉換、剪輯、標準化、轉寫和合成聲音。",
+      "keywords": [
+        "音訊",
+        "聲音",
+        "音樂",
+        "mp3",
+        "語音"
+      ]
+    },
+    "video": {
+      "name": "影片",
+      "description": "轉換、壓縮、剪輯影片並新增字幕。",
+      "keywords": [
+        "影片",
+        "影片",
+        "mp4",
+        "片段"
+      ]
+    },
+    "text": {
+      "name": "文字與文件",
+      "description": "分析、清理、比較和轉換文字。",
+      "keywords": [
+        "文字",
+        "文字",
+        "文件",
+        "markdown",
+        "單字"
+      ]
+    },
+    "files": {
+      "name": "檔案與壓縮檔",
+      "description": "壓縮、解壓、比較、重新命名和整理檔案。",
+      "keywords": [
+        "檔案",
+        "壓縮檔",
+        "歸檔",
+        "zip",
+        "資料夾"
+      ]
+    },
+    "converters": {
+      "name": "轉換器",
+      "description": "無論檔案類型如何，都能從一種格式轉換為另一種格式。",
+      "keywords": [
+        "轉換",
+        "格式轉換",
+        "轉換器",
+        "格式",
+        "convert"
+      ]
+    },
+    "developer": {
+      "name": "開發者",
+      "description": "格式化、編碼、產生和檢查各種技術格式。",
+      "keywords": [
+        "dev",
+        "開發者",
+        "開發",
+        "json",
+        "程式碼",
+        "程式設計"
+      ]
+    },
+    "calculators": {
+      "name": "計算機",
+      "description": "單位、百分比、日期、時長和日常計算。",
+      "keywords": [
+        "計算",
+        "計算機",
+        "單位",
+        "換算",
+        "度量",
+        "數學"
+      ]
+    },
+    "network": {
+      "name": "網路",
+      "description": "診斷連線、測試連接埠、檢視家裡連著哪些裝置。",
+      "keywords": [
+        "網路",
+        "區域網路",
+        "lan",
+        "ip",
+        "ping",
+        "連接埠",
+        "連線",
+        "wifi"
+      ]
+    },
+    "diagnostics": {
+      "name": "診斷與恢復",
+      "description": "弄清損壞檔案到底壞在哪裡，並搶救能搶救的部分。",
+      "keywords": [
+        "診斷",
+        "損壞",
+        "壞了",
+        "修復",
+        "恢復",
+        "磁碟",
+        "分割區",
+        "smart"
+      ]
+    },
+    "security": {
+      "name": "安全與隱私",
+      "description": "密碼、加密、雜湊和資料擦除。",
+      "keywords": [
+        "安全",
+        "隱私",
+        "加密",
+        "密碼",
+        "雜湊"
+      ]
+    }
+  },
+  "tools": {
+    "pdf-merge": {
+      "name": "合併 PDF",
+      "description": "按您選擇的順序將多個 PDF 合併為一個文件。",
+      "keywords": [
+        "合併",
+        "拼接",
+        "組合",
+        "多個 pdf",
+        "一個 pdf",
+        "合併兩個 pdf"
+      ],
+      "aliases": [
+        "merge pdf",
+        "combine pdf",
+        "pdf 合併"
+      ]
+    },
+    "pdf-split": {
+      "name": "拆分 PDF",
+      "description": "按頁碼範圍將 PDF 拆分為多個檔案。",
+      "keywords": [
+        "拆分",
+        "分割",
+        "切分",
+        "分開",
+        "一分為二"
+      ],
+      "aliases": [
+        "split pdf",
+        "pdf 拆分"
+      ]
+    },
+    "pdf-extract-pages": {
+      "name": "提取頁面",
+      "description": "用選取的頁面建立一個新的 PDF。",
+      "keywords": [
+        "提取",
+        "選取",
+        "取出頁面",
+        "保留部分頁面"
+      ],
+      "aliases": [
+        "extract pages",
+        "pdf 提取頁面"
+      ]
+    },
+    "pdf-remove-pages": {
+      "name": "刪除頁面",
+      "description": "從 PDF 中永久刪除某些頁面。",
+      "keywords": [
+        "刪除",
+        "移除",
+        "刪除頁面",
+        "刪除一頁",
+        "刪除最後一頁"
+      ],
+      "aliases": [
+        "delete pages",
+        "remove pages pdf"
+      ]
+    },
+    "pdf-reorder-pages": {
+      "name": "調整頁面順序",
+      "description": "拖放即可更改頁面順序。",
+      "keywords": [
+        "調整順序",
+        "排序",
+        "頁面排序",
+        "移動頁面",
+        "倒序"
+      ],
+      "aliases": [
+        "reorder pages",
+        "organize pdf"
+      ]
+    },
+    "pdf-rotate": {
+      "name": "旋轉頁面",
+      "description": "將全部或部分頁面旋轉 90、180 或 270 度。",
+      "keywords": [
+        "旋轉",
+        "轉動",
+        "擺正",
+        "頁面倒置",
+        "方向"
+      ],
+      "aliases": [
+        "rotate pdf",
+        "pdf 旋轉"
+      ]
+    },
+    "pdf-compress": {
+      "name": "壓縮 PDF",
+      "description": "在保持閱讀清晰度的同時減小 PDF 的體積。",
+      "keywords": [
+        "壓縮",
+        "減小",
+        "縮小",
+        "減小體積",
+        "瘦身",
+        "最佳化",
+        "太大",
+        "大檔案",
+        "減少 mb"
+      ],
+      "aliases": [
+        "compress pdf",
+        "reduce pdf size",
+        "pdf 壓縮",
+        "pdf 太大"
+      ]
+    },
+    "images-to-pdf": {
+      "name": "圖片轉 PDF",
+      "description": "將一組圖片轉換為分頁的 PDF 文件。",
+      "keywords": [
+        "圖片轉 pdf",
+        "照片轉 pdf",
+        "jpg 轉 pdf",
+        "png 轉 pdf",
+        "掃描器"
+      ],
+      "aliases": [
+        "image to pdf",
+        "jpg to pdf",
+        "png to pdf"
+      ]
+    },
+    "pdf-to-images": {
+      "name": "PDF 轉圖片",
+      "description": "將 PDF 的每一頁按所需解析度匯出為 PNG 或 JPEG。",
+      "keywords": [
+        "pdf 轉圖片",
+        "pdf 轉 png",
+        "pdf 轉 jpg",
+        "pdf 轉 jpeg",
+        "匯出頁面",
+        "pdf 轉換為圖片"
+      ],
+      "aliases": [
+        "pdf to image",
+        "pdf to jpg",
+        "pdf to png"
+      ]
+    },
+    "document-to-pdf": {
+      "name": "文件轉 PDF",
+      "description": "將文字、Markdown 或 HTML 檔案轉換為 PDF。",
+      "keywords": [
+        "文字轉 pdf",
+        "markdown 轉 pdf",
+        "html 轉 pdf",
+        "txt 轉 pdf",
+        "docx 轉 pdf"
+      ],
+      "aliases": [
+        "text to pdf",
+        "markdown to pdf",
+        "html to pdf"
+      ]
+    },
+    "pdf-add-text": {
+      "name": "新增文字",
+      "description": "在 PDF 上書寫文字，用於填寫表單或新增批註。",
+      "keywords": [
+        "書寫",
+        "批註",
+        "填寫",
+        "表單",
+        "註解",
+        "pdf 加文字"
+      ],
+      "aliases": [
+        "add text to pdf",
+        "填寫 pdf"
+      ]
+    },
+    "pdf-add-image": {
+      "name": "新增圖片或簽名",
+      "description": "在指定位置插入圖片、印章或簽名。",
+      "keywords": [
+        "簽名",
+        "簽字",
+        "印章",
+        "蓋章",
+        "logo",
+        "貼上圖片"
+      ],
+      "aliases": [
+        "sign pdf",
+        "add signature",
+        "pdf 簽名"
+      ]
+    },
+    "pdf-watermark": {
+      "name": "新增浮水印",
+      "description": "在全部或部分頁面上加蓋文字浮水印。",
+      "keywords": [
+        "浮水印",
+        "watermark",
+        "機密",
+        "標記",
+        "草稿"
+      ],
+      "aliases": [
+        "watermark pdf"
+      ]
+    },
+    "pdf-page-numbers": {
+      "name": "新增頁碼",
+      "description": "在頁首或頁尾中新增可自訂的頁碼。",
+      "keywords": [
+        "頁碼",
+        "編頁碼",
+        "分頁",
+        "頁號"
+      ],
+      "aliases": [
+        "page numbers",
+        "pdf 頁碼"
+      ]
+    },
+    "pdf-protect": {
+      "name": "密碼保護",
+      "description": "加密 PDF，使其只能憑密碼開啟。",
+      "keywords": [
+        "保護",
+        "密碼",
+        "加密",
+        "上鎖",
+        "給 pdf 加密碼",
+        "機密 pdf"
+      ],
+      "aliases": [
+        "protect pdf",
+        "encrypt pdf",
+        "password pdf"
+      ]
+    },
+    "pdf-unlock": {
+      "name": "解鎖 PDF",
+      "description": "移除您知道密碼的 PDF 的保護。",
+      "keywords": [
+        "解鎖",
+        "去除密碼",
+        "取消保護",
+        "解密"
+      ],
+      "aliases": [
+        "unlock pdf",
+        "remove pdf password",
+        "decrypt pdf"
+      ],
+      "note": "FourTout 不會破解保護：您必須知道密碼。若忘記密碼，請參閱「找回 PDF 密碼」。"
+    },
+    "pdf-recover-password": {
+      "name": "找回 PDF 密碼",
+      "description": "嘗試可能的密碼，重新開啟忘記密碼的 PDF。",
+      "keywords": [
+        "忘記密碼",
+        "找回密碼",
+        "恢復",
+        "鎖定的 pdf",
+        "密碼丟了",
+        "開啟受保護的 pdf",
+        "字典"
+      ],
+      "aliases": [
+        "recover pdf password",
+        "forgot pdf password",
+        "pdf password recovery"
+      ],
+      "note": "基於字典和規則在本機進行恢復，僅限您有權開啟的文件。這不是窮舉搜尋：不在字典裡的密碼不會被找到。"
+    },
+    "pdf-metadata": {
+      "name": "PDF 中繼資料",
+      "description": "讀取並修改 PDF 的標題、作者、主題和關鍵詞。",
+      "keywords": [
+        "中繼資料",
+        "屬性",
+        "作者",
+        "標題",
+        "文件資訊"
+      ],
+      "aliases": [
+        "pdf metadata",
+        "edit pdf properties"
+      ]
+    },
+    "pdf-extract-images": {
+      "name": "提取 PDF 中的圖片",
+      "description": "取出 PDF 中嵌入的所有圖片。",
+      "keywords": [
+        "提取圖片",
+        "取出照片",
+        "儲存圖片"
+      ],
+      "aliases": [
+        "extract images from pdf"
+      ]
+    },
+    "pdf-extract-text": {
+      "name": "提取 PDF 中的文字",
+      "description": "逐頁取出 PDF 中可選取的文字。",
+      "keywords": [
+        "提取文字",
+        "複製文字",
+        "pdf 轉文字",
+        "取出內容"
+      ],
+      "aliases": [
+        "pdf to text",
+        "extract text"
+      ]
+    },
+    "pdf-edit-text": {
+      "name": "編輯 PDF 文字",
+      "description": "直接在頁面上修改文字：雙擊一個詞並替換它。",
+      "keywords": [
+        "編輯 pdf 文字",
+        "修改 pdf 文字",
+        "改正 pdf 裡的文字",
+        "取代文字",
+        "編輯 pdf",
+        "改錯字",
+        "改日期",
+        "改金額"
+      ],
+      "aliases": [
+        "edit pdf text",
+        "modify pdf text",
+        "change text pdf",
+        "edit text in pdf"
+      ],
+      "note": "透過替換實現的視覺化編輯：用取樣得到的背景色覆蓋原文字，然後重新繪製。最適合純色背景上的橫排文字（檔案、發票、報告）。背景不均勻或經過旋轉的區域會被標出，但不會修改。"
+    },
+    "ocr-document": {
+      "name": "掃描 PDF 的 OCR",
+      "description": "逐頁識別掃描版 PDF 中的文字，支援法語或英語。",
+      "keywords": [
+        "ocr",
+        "文字識別",
+        "掃描",
+        "掃描檔",
+        "照片轉文字",
+        "讀取掃描檔",
+        "無法選取的 pdf",
+        "圖片轉文字"
+      ],
+      "aliases": [
+        "ocr",
+        "optical character recognition",
+        "image to text",
+        "scan to text"
+      ],
+      "note": "內建本機 OCR 引擎（tesseract.js）：不會透過網路傳送任何資料。單張圖片請使用「提取圖片中的文字」。"
+    },
+    "pdf-compare": {
+      "name": "比較兩個 PDF",
+      "description": "突出顯示文件兩個版本之間的差異。",
+      "keywords": [
+        "比較",
+        "差異",
+        "對比",
+        "diff",
+        "兩個版本",
+        "改動"
+      ],
+      "aliases": [
+        "compare pdf",
+        "pdf diff"
+      ]
+    },
+    "pdf-redact": {
+      "name": "PDF 塗黑",
+      "description": "永久隱藏敏感區域：內容會被刪除，而不只是被遮住。",
+      "keywords": [
+        "塗黑",
+        "遮蓋",
+        "脫敏",
+        "匿名化",
+        "打碼",
+        "敏感資訊"
+      ],
+      "aliases": [
+        "redact pdf",
+        "塗黑"
+      ]
+    },
+    "pdf-searchable": {
+      "name": "掃描 PDF 轉可搜尋 PDF",
+      "description": "識別掃描版 PDF 的文字並新增為不可見圖層：Ctrl+F、選取和複製都可用，外觀不變。",
+      "keywords": [
+        "可搜尋 pdf",
+        "ocr pdf",
+        "掃描 pdf",
+        "掃描版 pdf",
+        "讓 pdf 可搜尋",
+        "pdf 文字識別",
+        "文字層",
+        "無法選取的 pdf"
+      ],
+      "aliases": [
+        "searchable pdf",
+        "ocr pdf",
+        "make pdf searchable",
+        "scanned pdf"
+      ],
+      "note": "識別完全在本機進行。原始頁面既不會被柵格化，也不會被重新壓縮：只新增一層不可見的文字。結果品質取決於掃描品質。"
+    },
+    "pdf-extract-tables": {
+      "name": "提取 PDF 中的表格",
+      "description": "根據文字的位置重建行和列，然後匯出為 CSV 或 XLSX 工作簿。",
+      "keywords": [
+        "提取 pdf 表格",
+        "pdf 表格",
+        "pdf 轉 excel",
+        "pdf 轉 csv",
+        "取出表格",
+        "pdf xlsx",
+        "電子表格",
+        "列",
+        "行"
+      ],
+      "aliases": [
+        "pdf to excel",
+        "extract tables",
+        "pdf table to csv",
+        "pdf to csv"
+      ],
+      "note": "PDF 裡並沒有表格，只有定位好的文字：FourTout 根據這些位置重建行和列。複雜的表格（合併單元格、多行文字）在匯出前可能需要手動修正。"
+    },
+    "scans-to-pdf": {
+      "name": "掃描檔和照片轉 PDF",
+      "description": "將掃描或拍攝的頁面清理、排序後合併為一個 PDF。",
+      "keywords": [
+        "掃描檔轉 pdf",
+        "照片轉 pdf",
+        "合併掃描檔",
+        "裝訂頁面",
+        "文件照片轉 pdf",
+        "清理併合並"
+      ],
+      "aliases": [
+        "scans to pdf",
+        "photos to pdf",
+        "scan to pdf"
+      ],
+      "note": "清理會以相同設定應用於所有頁面；合併使用「圖片轉 PDF」的引擎。"
+    },
+    "image-convert": {
+      "name": "轉換圖片",
+      "description": "在 PNG、JPG、WebP 之間轉換格式。也可讀取 GIF、BMP、TIFF 和 SVG。",
+      "keywords": [
+        "轉換",
+        "改格式",
+        "png 轉 jpg",
+        "jpg 轉 png",
+        "png 轉 webp",
+        "jpg 轉 webp",
+        "webp 轉 png",
+        "webp 轉 jpg",
+        "webp",
+        "svg 轉 png",
+        "gif 轉 png",
+        "bmp",
+        "tiff",
+        "heic",
+        "avif"
+      ],
+      "aliases": [
+        "convert image",
+        "png to jpg",
+        "jpg to png",
+        "jpg to webp",
+        "webp to png",
+        "image converter"
+      ]
+    },
+    "image-compress": {
+      "name": "壓縮圖片",
+      "description": "在控制畫質損失的同時減小圖片體積。",
+      "keywords": [
+        "壓縮",
+        "壓縮照片",
+        "減小體積",
+        "瘦身",
+        "最佳化",
+        "照片太大",
+        "減少 kb"
+      ],
+      "aliases": [
+        "compress image",
+        "optimize image",
+        "reduce image size"
+      ]
+    },
+    "image-resize": {
+      "name": "調整圖片尺寸",
+      "description": "按像素或百分比更改尺寸，可選擇是否保持比例。",
+      "keywords": [
+        "調整尺寸",
+        "改尺寸",
+        "照片尺寸",
+        "放大",
+        "縮小",
+        "像素",
+        "寬度",
+        "高度",
+        "1920",
+        "1080"
+      ],
+      "aliases": [
+        "resize image",
+        "scale image"
+      ]
+    },
+    "image-crop": {
+      "name": "裁剪圖片",
+      "description": "自由裁剪或按比例（1:1、4:3、16:9、3:2）視覺化裁剪圖片。",
+      "keywords": [
+        "裁剪",
+        "剪裁",
+        "裁剪照片",
+        "擷取",
+        "比例",
+        "正方形",
+        "crop"
+      ],
+      "aliases": [
+        "crop image"
+      ]
+    },
+    "image-rotate": {
+      "name": "旋轉與鏡像",
+      "description": "以四分之一圈為單位旋轉並鏡像翻轉，即時預覽。",
+      "keywords": [
+        "旋轉",
+        "轉動",
+        "擺正",
+        "歪了的照片",
+        "鏡像",
+        "翻轉",
+        "90 度"
+      ],
+      "aliases": [
+        "rotate image",
+        "rotate and flip"
+      ]
+    },
+    "image-flip": {
+      "name": "水平或垂直翻轉",
+      "description": "像鏡子一樣翻轉圖片。",
+      "keywords": [
+        "鏡像",
+        "翻轉",
+        "水平翻轉",
+        "垂直翻轉",
+        "對稱",
+        "flip"
+      ],
+      "aliases": [
+        "flip image",
+        "mirror image"
+      ]
+    },
+    "image-grayscale": {
+      "name": "黑白",
+      "description": "轉換為灰階，或使用可調閾值轉換為純黑白。",
+      "keywords": [
+        "黑白",
+        "灰階",
+        "grayscale",
+        "單色",
+        "閾值",
+        "去色"
+      ],
+      "aliases": [
+        "grayscale",
+        "black and white"
+      ]
+    },
+    "image-adjust": {
+      "name": "調整圖片",
+      "description": "調節亮度、對比度、飽和度和Gamma，即時預覽。",
+      "keywords": [
+        "調整",
+        "亮度",
+        "對比度",
+        "飽和度",
+        "Gamma",
+        "調亮",
+        "調暗",
+        "校正"
+      ],
+      "aliases": [
+        "adjust image",
+        "brightness contrast"
+      ]
+    },
+    "image-blur": {
+      "name": "模糊或馬賽克",
+      "description": "隱藏資訊：對整張圖片或繪製的區域進行模糊或打馬賽克。",
+      "keywords": [
+        "模糊",
+        "馬賽克",
+        "打碼",
+        "像素化",
+        "隱藏",
+        "遮擋"
+      ],
+      "aliases": [
+        "blur image",
+        "pixelate"
+      ]
+    },
+    "image-remove-transparency": {
+      "name": "去除透明",
+      "description": "將透明的 PNG 或 WebP 平鋪到純色背景（白色、黑色或任意顏色）上。",
+      "keywords": [
+        "去除透明",
+        "拼合",
+        "白色背景",
+        "純色背景",
+        "去除 alpha",
+        "不透明"
+      ],
+      "aliases": [
+        "remove transparency",
+        "flatten image"
+      ]
+    },
+    "image-remove-background": {
+      "name": "去除背景",
+      "description": "自動摳出照片中的主體，並讓背景變為透明。",
+      "keywords": [
+        "去除背景",
+        "刪除背景",
+        "透明背景",
+        "去背",
+        "一鍵去背",
+        "分離主體",
+        "頭像",
+        "透明 png"
+      ],
+      "aliases": [
+        "remove background",
+        "background remover",
+        "cutout"
+      ],
+      "note": "去背模型只需在「設定 → 模型」中安裝一次，之後即可離線使用：圖片絕不會發送到伺服器。它能識別清晰、邊界分明的主體；對沒有明顯主體的場景和非常細小的細節會出錯。"
+    },
+    "image-color-transparent": {
+      "name": "將某種顏色設為透明",
+      "description": "擦除一種純色（如背景）並替換為透明。",
+      "keywords": [
+        "設為透明",
+        "去背",
+        "去背景",
+        "透明色",
+        "透明背景",
+        "色鍵",
+        "摳綠"
+      ],
+      "aliases": [
+        "color to transparent",
+        "remove background color"
+      ]
+    },
+    "image-ocr": {
+      "name": "提取圖片中的文字（OCR）",
+      "description": "識別圖片中的法語或英語文字，100% 本機完成。",
+      "keywords": [
+        "ocr",
+        "提取文字",
+        "照片轉文字",
+        "圖片轉文字",
+        "讀取文字",
+        "文字識別",
+        "數位化",
+        "圖片裡的字"
+      ],
+      "aliases": [
+        "ocr",
+        "image to text",
+        "extract text"
+      ]
+    },
+    "image-add-text": {
+      "name": "在圖片上加文字",
+      "description": "在圖片上寫字——說明、迷因圖、批註——並手動擺放位置。",
+      "keywords": [
+        "圖片加字",
+        "配文",
+        "迷因圖",
+        "梗圖",
+        "書寫",
+        "給照片加註解"
+      ],
+      "aliases": [
+        "add text to image",
+        "meme generator"
+      ]
+    },
+    "image-metadata-read": {
+      "name": "檢視圖片中繼資料",
+      "description": "顯示 EXIF、GPS、相機和拍攝日期。",
+      "keywords": [
+        "exif",
+        "中繼資料",
+        "gps",
+        "照片在哪拍的",
+        "相機",
+        "拍攝日期"
+      ],
+      "aliases": [
+        "exif viewer",
+        "image metadata"
+      ]
+    },
+    "image-metadata-strip": {
+      "name": "刪除圖片中繼資料",
+      "description": "在分享照片前清除 EXIF 和 GPS 資料。",
+      "keywords": [
+        "刪除 exif",
+        "清除 exif",
+        "刪除中繼資料",
+        "照片匿名化",
+        "去除 gps",
+        "分享之前",
+        "隱私"
+      ],
+      "aliases": [
+        "strip exif",
+        "remove metadata",
+        "anonymize image"
+      ]
+    },
+    "image-batch-convert": {
+      "name": "批次轉換圖片",
+      "description": "將同一種轉換應用於整個圖片資料夾。",
+      "keywords": [
+        "批次",
+        "批處理",
+        "多張圖片",
+        "圖片資料夾",
+        "batch",
+        "所有照片"
+      ],
+      "aliases": [
+        "batch convert",
+        "bulk image convert"
+      ]
+    },
+    "image-watermark": {
+      "name": "圖片浮水印",
+      "description": "逐張或批次新增 logo 或文字浮水印。",
+      "keywords": [
+        "浮水印",
+        "watermark",
+        "logo",
+        "簽名",
+        "保護我的照片"
+      ],
+      "aliases": [
+        "watermark image"
+      ]
+    },
+    "image-favicon": {
+      "name": "產生網站圖示",
+      "description": "用一張圖片產生多種尺寸的 favicon 和 .ico 檔案。",
+      "keywords": [
+        "網站圖示",
+        "favicon",
+        "ico",
+        "瀏覽器標籤",
+        "網站 logo"
+      ],
+      "aliases": [
+        "favicon generator",
+        "ico"
+      ]
+    },
+    "image-icon-sizes": {
+      "name": "產生多種尺寸",
+      "description": "一次性匯出所有常用的圖示或縮圖尺寸。",
+      "keywords": [
+        "尺寸",
+        "圖示",
+        "應用圖示",
+        "縮圖",
+        "thumbnails",
+        "所有解析度"
+      ],
+      "aliases": [
+        "icon generator",
+        "app icon sizes"
+      ]
+    },
+    "color-picker": {
+      "name": "分析與轉換顏色",
+      "description": "圖片的主色、精確到像素的取色器、HEX / RGB / HSL / HSV 表示法，以及文字與背景之間的 WCAG 對比度。",
+      "keywords": [
+        "調色盤",
+        "主色",
+        "顏色",
+        "色值",
+        "hex",
+        "rgb",
+        "hsl",
+        "hsv",
+        "提取顏色",
+        "色卡",
+        "取色器",
+        "吸管",
+        "rgb 轉 hex",
+        "hex 轉 rgb",
+        "顏色轉換",
+        "顏色程式碼",
+        "wcag 對比度",
+        "對比度",
+        "無障礙",
+        "對比度比率",
+        "可讀性"
+      ],
+      "aliases": [
+        "color picker",
+        "hex to rgb",
+        "color converter",
+        "eyedropper",
+        "wcag contrast",
+        "contrast checker"
+      ]
+    },
+    "document-perspective": {
+      "name": "校正文件透視",
+      "description": "把斜著拍的紙張照片拉正：放好四個角，FourTout 會將它還原成正面看到的矩形。",
+      "keywords": [
+        "透視校正",
+        "拉正文件",
+        "文件照片",
+        "斜拍的紙",
+        "歪了的照片",
+        "四個角",
+        "手機掃描",
+        "矯正",
+        "變形"
+      ],
+      "aliases": [
+        "perspective correction",
+        "dewarp",
+        "document scanner",
+        "deskew photo"
+      ],
+      "note": "四個角由手動放置：在自動偵測會出錯的地方，這樣總是準確的。根據四角推算的比例是近似值——若需精確結果，請指定 A4 或 Letter。"
+    },
+    "scan-clean": {
+      "name": "清理掃描檔",
+      "description": "拉正略有傾斜的文件、提高對比度、把灰色或泛黃的背景變白、轉為灰階或黑白。",
+      "keywords": [
+        "清理掃描檔",
+        "清理掃描文件",
+        "拉正掃描檔",
+        "糾偏",
+        "deskew",
+        "掃描檔歪了",
+        "灰色背景",
+        "紙張泛黃",
+        "文件對比度",
+        "掃描檔看不清",
+        "最佳化掃描檔"
+      ],
+      "aliases": [
+        "clean scan",
+        "deskew",
+        "enhance scan",
+        "document cleanup"
+      ],
+      "note": "每項設定都是可選的，並可在前後對比預覽中檢視。變白處理從不改動深色像素：細小的文字仍保持清晰。"
+    },
+    "image-compare": {
+      "name": "比較兩張圖片",
+      "description": "檢視並測量兩張圖片之間的變化：並排、疊加或差異顯示，並給出不同像素數、PSNR 和 SSIM。",
+      "keywords": [
+        "比較圖片",
+        "對比兩張圖片",
+        "圖片差異",
+        "image diff",
+        "像素差異",
+        "psnr",
+        "ssim",
+        "兩張照片的區別",
+        "前後對比",
+        "壓縮品質",
+        "疊加",
+        "找不同"
+      ],
+      "aliases": [
+        "compare images",
+        "image diff",
+        "pixel diff",
+        "psnr",
+        "ssim",
+        "image comparison"
+      ],
+      "note": "尺寸不同的兩張圖片絕不會在未經您同意的情況下被縮放：重新取樣會產生檔案中並不存在的差異。"
+    },
+    "image-contact-sheet": {
+      "name": "製作縮圖聯絡表",
+      "description": "將多張圖片以網格排列在同一張紙上，並標註每個檔名。",
+      "keywords": [
+        "聯絡表",
+        "印樣",
+        "contact sheet",
+        "圖片網格",
+        "拼圖",
+        "縮圖",
+        "合併圖片",
+        "照片拼貼",
+        "圖片目錄",
+        "一頁多圖"
+      ],
+      "aliases": [
+        "contact sheet",
+        "photo grid",
+        "thumbnail sheet"
+      ]
+    },
+    "audio-record": {
+      "name": "麥克風錄音",
+      "description": "從麥克風錄製聲音並儲存在本機。",
+      "keywords": [
+        "錄音",
+        "麥克風",
+        "錄音機",
+        "錄下我的聲音",
+        "語音備忘"
+      ],
+      "aliases": [
+        "record audio",
+        "voice recorder"
+      ]
+    },
+    "audio-trim": {
+      "name": "剪輯音訊",
+      "description": "保留音訊檔中的指定片段。",
+      "keywords": [
+        "剪輯",
+        "裁剪",
+        "擷取",
+        "片段",
+        "縮短",
+        "保留一段"
+      ],
+      "aliases": [
+        "trim audio",
+        "cut audio",
+        "split audio"
+      ]
+    },
+    "audio-merge": {
+      "name": "合併音訊",
+      "description": "將多條音軌首尾相接合併成一個檔案。",
+      "keywords": [
+        "合併",
+        "拼接",
+        "連線",
+        "首尾相接",
+        "合併音軌"
+      ],
+      "aliases": [
+        "merge audio",
+        "join audio",
+        "concat audio"
+      ]
+    },
+    "audio-convert": {
+      "name": "轉換音訊",
+      "description": "在 MP3、WAV、FLAC、OGG、M4A、OPUS 之間轉換格式。",
+      "keywords": [
+        "轉換",
+        "改格式",
+        "wav 轉 mp3",
+        "mp3 轉 wav",
+        "flac",
+        "ogg",
+        "m4a",
+        "opus",
+        "aac"
+      ],
+      "aliases": [
+        "convert audio",
+        "wav to mp3",
+        "audio converter"
+      ]
+    },
+    "audio-compress": {
+      "name": "壓縮音訊",
+      "description": "透過調整位元速率減小音訊檔的體積。",
+      "keywords": [
+        "壓縮",
+        "減小體積",
+        "瘦身",
+        "位元速率",
+        "位元率",
+        "bitrate",
+        "太大"
+      ],
+      "aliases": [
+        "compress audio",
+        "reduce audio size"
+      ]
+    },
+    "audio-volume": {
+      "name": "調節音量",
+      "description": "提高或降低音訊檔的整體音量。",
+      "keywords": [
+        "音量",
+        "調大",
+        "調小",
+        "放大",
+        "降低音量",
+        "太小聲"
+      ],
+      "aliases": [
+        "change volume",
+        "amplify audio"
+      ]
+    },
+    "audio-normalize": {
+      "name": "音訊標準化",
+      "description": "統一多個檔案的響度（loudness）。",
+      "keywords": [
+        "標準化",
+        "歸一化",
+        "響度",
+        "loudness",
+        "統一音量",
+        "lufs"
+      ],
+      "aliases": [
+        "normalize audio",
+        "loudness"
+      ]
+    },
+    "audio-speed": {
+      "name": "更改速度",
+      "description": "加快或放慢音訊，可選擇是否校正音高。",
+      "keywords": [
+        "速度",
+        "加速",
+        "減速",
+        "節奏",
+        "音高",
+        "倍速"
+      ],
+      "aliases": [
+        "audio speed",
+        "speed up audio",
+        "slow down audio"
+      ]
+    },
+    "audio-remove-silence": {
+      "name": "刪除靜音",
+      "description": "自動偵測並剪掉錄音中的空白片段。",
+      "keywords": [
+        "靜音",
+        "空白",
+        "剪掉停頓",
+        "清理錄音",
+        "播客"
+      ],
+      "aliases": [
+        "remove silence",
+        "trim silence"
+      ]
+    },
+    "video-extract-audio": {
+      "name": "從影片中提取音訊",
+      "description": "以您選擇的格式取出影片的音軌。",
+      "keywords": [
+        "提取聲音",
+        "音軌",
+        "影片轉 mp3",
+        "mp4 轉 mp3",
+        "提取音訊",
+        "影片的聲音"
+      ],
+      "aliases": [
+        "extract audio",
+        "video to mp3",
+        "mp4 to mp3"
+      ]
+    },
+    "audio-transcribe": {
+      "name": "音訊轉寫",
+      "description": "在本機把音訊或影片檔中的語音轉換為文字。",
+      "keywords": [
+        "轉寫",
+        "轉錄",
+        "語音轉文字",
+        "音訊轉文字",
+        "會議",
+        "採訪",
+        "聽寫",
+        "字幕",
+        "mp3 轉文字",
+        "影片轉文字"
+      ],
+      "aliases": [
+        "transcribe",
+        "speech to text",
+        "audio to text",
+        "stt"
+      ],
+      "note": "在您的電腦上執行的語音識別模型，按需安裝。"
+    },
+    "audio-generate-srt": {
+      "name": "產生 SRT 字幕",
+      "description": "根據音訊或影片產生帶時間戳的字幕檔案。",
+      "keywords": [
+        "srt",
+        "字幕",
+        "vtt",
+        "時間戳",
+        "captions",
+        "產生字幕",
+        "做字幕"
+      ],
+      "aliases": [
+        "generate subtitles",
+        "srt generator"
+      ]
+    },
+    "text-to-speech": {
+      "name": "文字轉語音",
+      "description": "無需線上服務，朗讀文字並儲存為音訊檔。",
+      "keywords": [
+        "語音合成",
+        "tts",
+        "朗讀",
+        "文字轉音訊",
+        "合成語音",
+        "聽文字",
+        "把文字做成 mp3"
+      ],
+      "aliases": [
+        "text to speech",
+        "tts",
+        "文字轉語音"
+      ]
+    },
+    "pdf-to-audio": {
+      "name": "PDF 轉音訊",
+      "description": "藉助本機語音合成把 PDF 變成有聲書。",
+      "keywords": [
+        "pdf 轉音訊",
+        "有聲書",
+        "聽 pdf",
+        "朗讀 pdf",
+        "聽課"
+      ],
+      "aliases": [
+        "pdf to audio",
+        "pdf to speech",
+        "audiobook"
+      ]
+    },
+    "text-file-to-audio": {
+      "name": "文字檔轉音訊",
+      "description": "將 TXT 或 Markdown 檔案轉換為朗讀音訊檔。",
+      "keywords": [
+        "txt 轉音訊",
+        "有聲書",
+        "旁白",
+        "聽文字",
+        "把文字做成 mp3"
+      ],
+      "aliases": [
+        "txt to audio",
+        "text file to audio"
+      ]
+    },
+    "audio-channels": {
+      "name": "轉換聲道",
+      "description": "將檔案轉為單聲道或立體聲，或保持原樣。多聲道檔案絕不會在未經要求的情況下被縮混。",
+      "keywords": [
+        "單聲道 立體聲",
+        "聲道",
+        "單聲道",
+        "立體聲",
+        "轉單聲道",
+        "轉立體聲",
+        "縮混",
+        "混合聲道",
+        "5.1 轉立體聲"
+      ],
+      "aliases": [
+        "audio channels",
+        "mono to stereo",
+        "stereo to mono",
+        "downmix"
+      ],
+      "note": "從單聲道到立體聲時，聲道會被複制：左右兩側是同一個訊號。不會憑空製造空間感。"
+    },
+    "audio-metadata": {
+      "name": "編輯音訊標籤",
+      "description": "讀取並修正標題、藝術家、專輯、年份、流派、音軌號和備註——不重新編碼聲音。",
+      "keywords": [
+        "音訊中繼資料",
+        "標籤",
+        "mp3 標籤",
+        "id3",
+        "標題 藝術家 專輯",
+        "修改標題",
+        "年份 流派 音軌",
+        "編輯 mp3 資訊"
+      ],
+      "aliases": [
+        "audio metadata",
+        "id3 tags",
+        "edit tags",
+        "music tags"
+      ],
+      "note": "寫入時按原樣複製音訊流（-c copy）：得到的聲音逐位相同。"
+    },
+    "media-info": {
+      "name": "檢視媒體資訊",
+      "description": "音訊或影片檔宣告的一切：容器、編碼、解析度、影格速率、位元速率、聲道、標籤。",
+      "keywords": [
+        "影片中繼資料",
+        "音訊中繼資料",
+        "媒體資訊",
+        "編碼",
+        "位元速率",
+        "影片解析度",
+        "影格速率",
+        "fps",
+        "聲道",
+        "取樣率",
+        "檢視影片資訊",
+        "ffprobe"
+      ],
+      "aliases": [
+        "media info",
+        "media metadata",
+        "video metadata",
+        "ffprobe",
+        "mediainfo"
+      ]
+    },
+    "video-convert": {
+      "name": "轉換影片",
+      "description": "在 MP4、MKV、WebM、MOV 之間轉換格式。",
+      "keywords": [
+        "轉換",
+        "改格式",
+        "mkv 轉 mp4",
+        "avi 轉 mp4",
+        "webm",
+        "mov"
+      ],
+      "aliases": [
+        "convert video",
+        "mkv to mp4",
+        "video converter"
+      ],
+      "note": "只提供已安裝引擎中實際存在的編碼器。"
+    },
+    "video-compress": {
+      "name": "壓縮影片",
+      "description": "選擇目標畫質，大幅減小影片體積。",
+      "keywords": [
+        "壓縮",
+        "減小體積",
+        "瘦身",
+        "太大",
+        "郵件傳送",
+        "減少 mb",
+        "最佳化"
+      ],
+      "aliases": [
+        "compress video",
+        "reduce video size"
+      ]
+    },
+    "video-resolution": {
+      "name": "更改解析度",
+      "description": "將影片轉為 1080p、720p、480p 或自訂尺寸。",
+      "keywords": [
+        "解析度",
+        "1080p",
+        "720p",
+        "480p",
+        "4k",
+        "調整尺寸",
+        "清晰度"
+      ],
+      "aliases": [
+        "resize video",
+        "change resolution",
+        "downscale video"
+      ]
+    },
+    "video-trim": {
+      "name": "剪輯影片",
+      "description": "只保留一段，能不重新編碼就不重新編碼。",
+      "keywords": [
+        "剪輯",
+        "裁剪",
+        "擷取",
+        "片段",
+        "縮短",
+        "去掉開頭",
+        "去掉結尾",
+        "剪輯"
+      ],
+      "aliases": [
+        "trim video",
+        "cut video"
+      ]
+    },
+    "video-merge": {
+      "name": "合併影片",
+      "description": "將多個影片首尾相接合併成一個檔案。",
+      "keywords": [
+        "合併",
+        "拼接",
+        "連線",
+        "首尾相接",
+        "合併片段"
+      ],
+      "aliases": [
+        "merge video",
+        "concat video",
+        "join video"
+      ]
+    },
+    "video-crop": {
+      "name": "裁剪影片畫面",
+      "description": "以固定比例視覺化選擇要保留的區域。",
+      "keywords": [
+        "裁剪",
+        "裁切畫面",
+        "crop",
+        "去掉邊緣",
+        "豎屏",
+        "9:16",
+        "正方形",
+        "去黑邊"
+      ],
+      "aliases": [
+        "crop video",
+        "vertical video",
+        "reframe"
+      ]
+    },
+    "video-to-gif": {
+      "name": "影片轉 GIF",
+      "description": "將一段影片轉換為最佳化過的動態 GIF。",
+      "keywords": [
+        "gif",
+        "動圖",
+        "影片轉 gif",
+        "動畫",
+        "迴圈",
+        "mp4 轉 gif"
+      ],
+      "aliases": [
+        "video to gif",
+        "mp4 to gif",
+        "gif maker"
+      ]
+    },
+    "gif-to-video": {
+      "name": "GIF 轉影片",
+      "description": "將動態 GIF 轉換為體積小得多的 MP4 或 WebM。",
+      "keywords": [
+        "gif 轉影片",
+        "gif 轉 mp4",
+        "轉換 gif",
+        "動畫轉影片",
+        "gif 太大"
+      ],
+      "aliases": [
+        "gif to video",
+        "gif to mp4",
+        "gif to webm"
+      ]
+    },
+    "video-extract-frame": {
+      "name": "從影片中提取畫面",
+      "description": "擷取指定的一個影格，或按固定間隔截圖。",
+      "keywords": [
+        "截圖",
+        "影格",
+        "畫面",
+        "影片截圖",
+        "影片轉圖片",
+        "縮圖"
+      ],
+      "aliases": [
+        "extract frame",
+        "video screenshot",
+        "video to image"
+      ]
+    },
+    "video-speed": {
+      "name": "更改影片速度",
+      "description": "製作快轉或慢動作效果，音訊一併處理。",
+      "keywords": [
+        "速度",
+        "快轉",
+        "慢動作",
+        "延時",
+        "timelapse",
+        "slow motion",
+        "倍速"
+      ],
+      "aliases": [
+        "video speed",
+        "timelapse",
+        "slow motion"
+      ]
+    },
+    "video-rotate": {
+      "name": "旋轉影片",
+      "description": "糾正拍反方向的影片，或鏡像翻轉。",
+      "keywords": [
+        "旋轉",
+        "轉動",
+        "倒過來",
+        "豎著拍",
+        "擺正",
+        "鏡像",
+        "翻轉"
+      ],
+      "aliases": [
+        "rotate video",
+        "flip video",
+        "mirror video"
+      ]
+    },
+    "video-remove-audio": {
+      "name": "去除影片聲音",
+      "description": "不重新編碼畫面，產生靜音版本的影片。",
+      "keywords": [
+        "去除聲音",
+        "靜音",
+        "無聲",
+        "去掉音樂",
+        "關閉聲音"
+      ],
+      "aliases": [
+        "remove audio",
+        "mute video"
+      ]
+    },
+    "video-replace-audio": {
+      "name": "替換音軌",
+      "description": "替換影片的音軌，或額外新增一條音軌。",
+      "keywords": [
+        "替換聲音",
+        "加音樂",
+        "配音",
+        "音軌",
+        "旁白",
+        "第二條音軌"
+      ],
+      "aliases": [
+        "replace audio",
+        "add audio track",
+        "dub video"
+      ],
+      "note": "請同時拖入影片和音訊檔。"
+    },
+    "video-volume": {
+      "name": "調節影片音量",
+      "description": "不改動畫面，調高或調低影片的聲音。",
+      "keywords": [
+        "音量",
+        "聲音太小",
+        "聲音太大",
+        "調大聲音",
+        "調小聲音",
+        "放大",
+        "音量標準化"
+      ],
+      "aliases": [
+        "video volume",
+        "boost audio",
+        "louder video"
+      ]
+    },
+    "video-add-subtitles": {
+      "name": "新增字幕軌",
+      "description": "為影片附加 SRT 或 VTT 檔案，可在播放器中開啟。",
+      "keywords": [
+        "字幕",
+        "srt",
+        "vtt",
+        "字幕軌",
+        "軟字幕",
+        "附加"
+      ],
+      "aliases": [
+        "add subtitles",
+        "soft subtitles",
+        "mux srt"
+      ],
+      "note": "請同時拖入影片和字幕檔案。"
+    },
+    "video-burn-subtitles": {
+      "name": "壓制字幕",
+      "description": "把字幕燒錄進畫面：在任何播放器中都能顯示。",
+      "keywords": [
+        "壓制字幕",
+        "硬字幕",
+        "燒錄字幕",
+        "畫面內字幕",
+        "內嵌 srt",
+        "處處可見的字幕"
+      ],
+      "aliases": [
+        "burn subtitles",
+        "hardcode srt",
+        "hardsub"
+      ],
+      "note": "請同時拖入影片和字幕檔案。"
+    },
+    "video-extract-subtitles": {
+      "name": "提取影片中的字幕",
+      "description": "將已有的字幕軌匯出為 SRT 或 VTT。",
+      "keywords": [
+        "提取字幕",
+        "取出字幕",
+        "匯出 srt",
+        "字幕軌",
+        "mkv 字幕"
+      ],
+      "aliases": [
+        "extract subtitles",
+        "rip subtitles",
+        "demux srt"
+      ],
+      "note": "只有文字字幕軌可以匯出；圖形字幕軌（PGS、DVD）是圖片。"
+    },
+    "video-generate-subtitles": {
+      "name": "為影片產生字幕",
+      "description": "自動轉寫影片中的語音，然後匯出或壓制。",
+      "keywords": [
+        "產生字幕",
+        "影片轉寫",
+        "自動字幕",
+        "自動 srt",
+        "語音識別"
+      ],
+      "aliases": [
+        "auto subtitles",
+        "generate subtitles"
+      ],
+      "note": "使用已安裝的本機轉寫模型（不會透過網路傳送任何內容）。"
+    },
+    "video-batch": {
+      "name": "批次處理影片",
+      "description": "對多個影片進行轉換、壓縮、調整尺寸、旋轉或提取音訊。",
+      "keywords": [
+        "批次",
+        "批處理",
+        "所有影片",
+        "資料夾",
+        "batch"
+      ],
+      "aliases": [
+        "batch video",
+        "bulk video"
+      ]
+    },
+    "video-frame-rate": {
+      "name": "更改影格速率",
+      "description": "透過複製和丟棄影格，將影片轉為 24、25、30、60 fps 或自訂影格速率。",
+      "keywords": [
+        "影片 fps",
+        "更改 fps",
+        "影格速率",
+        "每秒影格數",
+        "24 fps",
+        "25 fps",
+        "30 fps",
+        "60 fps",
+        "29.97",
+        "23.976",
+        "ntsc",
+        "pal"
+      ],
+      "aliases": [
+        "frame rate",
+        "change fps",
+        "fps converter",
+        "framerate"
+      ],
+      "note": "不會計算中間影格：只複製或丟棄影格。輸出為恆定影格速率。"
+    },
+    "text-statistics": {
+      "name": "字數統計",
+      "description": "單字、字元、句子、段落數和預計閱讀時間。",
+      "keywords": [
+        "統計",
+        "字數",
+        "字元數",
+        "句子",
+        "閱讀時間",
+        "文字長度",
+        "統計資訊"
+      ],
+      "aliases": [
+        "word count",
+        "character count",
+        "reading time",
+        "字數統計"
+      ]
+    },
+    "text-case": {
+      "name": "轉換大小寫",
+      "description": "全部大寫、全部小寫、單字首字母大寫、camelCase、snake_case、kebab-case。",
+      "keywords": [
+        "大寫",
+        "小寫",
+        "大小寫",
+        "全大寫",
+        "camelcase",
+        "snake case",
+        "kebab case",
+        "title case"
+      ],
+      "aliases": [
+        "uppercase",
+        "lowercase",
+        "change case",
+        "text case"
+      ]
+    },
+    "text-clean": {
+      "name": "清理文字",
+      "description": "刪除多餘空格、空行、定位字元和不可見字元。",
+      "keywords": [
+        "清理",
+        "空格",
+        "空行",
+        "定位字元",
+        "trim",
+        "刪除換行",
+        "格式",
+        "複製貼上的文字"
+      ],
+      "aliases": [
+        "clean text",
+        "trim whitespace",
+        "remove empty lines"
+      ]
+    },
+    "text-find-replace": {
+      "name": "尋找與取代",
+      "description": "批次取代文字，可選是否使用正規表示式。",
+      "keywords": [
+        "替換",
+        "查詢",
+        "搜尋",
+        "正則",
+        "regex",
+        "查詢替換"
+      ],
+      "aliases": [
+        "find and replace",
+        "search replace"
+      ]
+    },
+    "text-compare": {
+      "name": "比較兩段文字",
+      "description": "逐行檢視哪些內容被新增、刪除或修改。",
+      "keywords": [
+        "比較",
+        "差異",
+        "對比",
+        "diff",
+        "兩個版本",
+        "改動"
+      ],
+      "aliases": [
+        "diff",
+        "compare text",
+        "text diff"
+      ]
+    },
+    "text-deduplicate": {
+      "name": "刪除重複行",
+      "description": "每行只保留一次，可選忽略大小寫。",
+      "keywords": [
+        "重複",
+        "去重",
+        "重複行",
+        "唯一",
+        "刪除重複"
+      ],
+      "aliases": [
+        "remove duplicates",
+        "dedupe lines",
+        "unique lines"
+      ]
+    },
+    "text-sort-lines": {
+      "name": "排序行",
+      "description": "按字母、數字或隨機順序排列各行。",
+      "keywords": [
+        "排序",
+        "排列",
+        "字母順序",
+        "清單",
+        "隨機"
+      ],
+      "aliases": [
+        "sort lines",
+        "sort list"
+      ]
+    },
+    "markdown-convert": {
+      "name": "Markdown ↔ HTML / 文字",
+      "description": "將 Markdown 轉換為 HTML 或純文字，也可反向轉換。",
+      "keywords": [
+        "markdown",
+        "md",
+        "html",
+        "轉換 markdown",
+        "純文字",
+        "渲染"
+      ],
+      "aliases": [
+        "markdown to html",
+        "html to markdown",
+        "md converter"
+      ]
+    },
+    "text-extract-urls": {
+      "name": "提取網址",
+      "description": "取出文字中包含的所有網址。",
+      "keywords": [
+        "網址",
+        "連結",
+        "url",
+        "提取連結",
+        "http"
+      ],
+      "aliases": [
+        "extract urls",
+        "link extractor"
+      ]
+    },
+    "text-extract-emails": {
+      "name": "提取電子郵件地址",
+      "description": "找出文字中的所有電子郵件地址。",
+      "keywords": [
+        "電子郵件",
+        "電子郵件",
+        "郵件地址",
+        "提取電子郵件",
+        "聯絡人"
+      ],
+      "aliases": [
+        "extract emails",
+        "email extractor"
+      ]
+    },
+    "text-extract-numbers": {
+      "name": "提取數字",
+      "description": "取出文字中的所有數字並計算總和。",
+      "keywords": [
+        "數字",
+        "數值",
+        "提取金額",
+        "求和",
+        "合計"
+      ],
+      "aliases": [
+        "extract numbers",
+        "number extractor"
+      ]
+    },
+    "lorem-ipsum": {
+      "name": "Lorem Ipsum",
+      "description": "產生佔位文字：單字、句子或段落。",
+      "keywords": [
+        "lorem",
+        "假文",
+        "佔位文字",
+        "填充文字",
+        "placeholder",
+        "樣稿"
+      ],
+      "aliases": [
+        "lorem ipsum",
+        "dummy text",
+        "placeholder text"
+      ]
+    },
+    "text-unicode-normalize": {
+      "name": "Unicode 正規化",
+      "description": "統一不同系統之間的字元寫法（NFC、NFD、NFKC、NFKD）。",
+      "keywords": [
+        "unicode",
+        "正規化",
+        "全形半形",
+        "nfc",
+        "nfd",
+        "nfkc",
+        "nfkd",
+        "奇怪字元",
+        "mac windows"
+      ],
+      "aliases": [
+        "unicode normalization",
+        "normalize unicode",
+        "nfc nfd"
+      ]
+    },
+    "text-line-endings": {
+      "name": "轉換換行符",
+      "description": "先偵測，再在 CRLF（Windows）和 LF（Unix）之間互相轉換。",
+      "keywords": [
+        "crlf",
+        "lf",
+        "換行符",
+        "回車",
+        "windows unix",
+        "^M",
+        "dos2unix",
+        "unix2dos",
+        "行尾"
+      ],
+      "aliases": [
+        "line endings",
+        "crlf to lf",
+        "dos2unix",
+        "unix2dos"
+      ]
+    },
+    "docx-extract": {
+      "name": "Word（DOCX）轉文字、Markdown 或 HTML",
+      "description": "提取 Word 文件的內容：標題、段落、清單和表格。",
+      "keywords": [
+        "docx",
+        "word",
+        "word 文件",
+        "提取 word 文字",
+        "docx 轉文字",
+        "docx 轉 html",
+        "docx 轉 markdown",
+        "讀取 docx"
+      ],
+      "aliases": [
+        "docx to text",
+        "word to text",
+        "docx to html",
+        "docx to markdown"
+      ],
+      "note": "複雜排版（分欄、圖片、樣式）不會被還原：FourTout 提取的是內容及其結構。"
+    },
+    "docx-to-pdf": {
+      "name": "Word（DOCX）轉 PDF",
+      "description": "將 Word 文件轉換為 PDF：標題、段落、清單和簡單表格。",
+      "keywords": [
+        "docx 轉 pdf",
+        "word 轉 pdf",
+        "轉換 word",
+        "文件轉 pdf"
+      ],
+      "aliases": [
+        "docx to pdf",
+        "word to pdf"
+      ],
+      "note": "FourTout 會保留內容及其結構——標題、段落、粗體、斜體、清單、簡單表格——但不保留 Word 排版：分欄、浮動文字框、頁首頁尾、特殊字型和圖片可能有所不同或缺失。若需像素級一致的效果，請從 Word 或 LibreOffice 匯出 PDF。"
+    },
+    "document-compare": {
+      "name": "比較兩個文件",
+      "description": "比較兩個文件（PDF、Word、文字、Markdown 或 HTML）的內容，即使格式不同也可以，逐行逐詞比較。",
+      "keywords": [
+        "比較文件",
+        "對比兩個文件",
+        "比較 pdf 和 word",
+        "兩個文件的差異",
+        "文件對比",
+        "兩個版本",
+        "改了什麼",
+        "比較合同"
+      ],
+      "aliases": [
+        "compare documents",
+        "document diff",
+        "compare pdf docx"
+      ],
+      "note": "比較的是文字而不是排版：它告訴您內容改了什麼，即使兩個文件格式不同。掃描版 PDF 需先經過「掃描 PDF 轉可搜尋 PDF」。"
+    },
+    "text-encoding-detect": {
+      "name": "偵測文字檔編碼",
+      "description": "識別檔案的編碼、位元組順序標記和換行約定，並給出真實的確定程度。",
+      "keywords": [
+        "文字編碼",
+        "偵測編碼",
+        "什麼編碼",
+        "亂碼",
+        "奇怪字元",
+        "mojibake",
+        "utf8 還是 gbk",
+        "bom",
+        "換行符",
+        "無法讀取的檔案",
+        "charset"
+      ],
+      "aliases": [
+        "detect encoding",
+        "charset detection",
+        "what encoding",
+        "bom"
+      ],
+      "note": "除了位元組順序標記，沒有檔案會宣告自己的編碼：偵測始終只是推測，FourTout 會展示真實的確定程度，而不是給出誤導性的結論。"
+    },
+    "text-encoding-convert": {
+      "name": "轉換文字檔編碼",
+      "description": "在 UTF-8、帶 BOM 的 UTF-8、UTF-16 LE/BE、Windows-1252、Latin-1 之間轉換，絕不會悄悄遺失任何字元。",
+      "keywords": [
+        "轉換編碼",
+        "utf16 utf8",
+        "latin1 utf8",
+        "windows 1252 utf8",
+        "更改編碼",
+        "修復亂碼",
+        "ansi 轉 utf8",
+        "iso 8859 1",
+        "bom",
+        "轉碼"
+      ],
+      "aliases": [
+        "convert encoding",
+        "utf16 to utf8",
+        "latin1 to utf8",
+        "transcode"
+      ],
+      "note": "如果目標編碼無法寫入某些字元，轉換會被拒絕，並列出這些字元。只有在您明確要求時才會進行替換。"
+    },
+    "subtitle-edit": {
+      "name": "編輯字幕",
+      "description": "在 SRT 和 WebVTT 之間轉換、平移時間戳、合併兩個檔案、檢查並修復。",
+      "keywords": [
+        "字幕",
+        "srt",
+        "vtt",
+        "webvtt",
+        "srt 轉 vtt",
+        "vtt 轉 srt",
+        "字幕平移",
+        "字幕同步",
+        "字幕延遲",
+        "合併字幕",
+        "修復 srt",
+        "重疊"
+      ],
+      "aliases": [
+        "subtitles",
+        "srt to vtt",
+        "vtt to srt",
+        "shift subtitles",
+        "merge subtitles",
+        "fix srt"
+      ],
+      "note": "機械上安全的問題會被修正（順序、編號、換行符）；重疊會被指出，但絕不會擅自縮短。"
+    },
+    "archive-create": {
+      "name": "建立壓縮檔",
+      "description": "將檔案或資料夾壓縮為 ZIP、7z、TAR、TAR.GZ 或 TAR.XZ，保留目錄結構。",
+      "keywords": [
+        "zip",
+        "壓縮",
+        "打包",
+        "7z",
+        "tar",
+        "tar.gz",
+        "打成 zip",
+        "歸檔檔案"
+      ],
+      "aliases": [
+        "create zip",
+        "compress files",
+        "make archive"
+      ],
+      "note": "這裡建立的 7z 不加密：如需密碼保護的壓縮檔，請使用「密碼保護壓縮檔」，其 AES-256 ZIP 可用 7-Zip、WinRAR、Keka 和 Windows 資源管理器開啟。"
+    },
+    "archive-extract": {
+      "name": "解壓縮",
+      "description": "將 ZIP、7z、TAR、TAR.GZ 或 TAR.XZ 壓縮檔解壓到您選擇的資料夾。",
+      "keywords": [
+        "解壓",
+        "解壓縮",
+        "開啟 zip",
+        "unzip",
+        "解包"
+      ],
+      "aliases": [
+        "unzip",
+        "extract archive",
+        "decompress"
+      ],
+      "note": "絕不會在所選資料夾之外寫入任何檔案：路徑向上回溯（「../」）的條目、絕對路徑和符號連結都會被拒絕並列出。不支援 RAR 格式。"
+    },
+    "archive-encrypted": {
+      "name": "密碼保護壓縮檔",
+      "description": "建立或開啟用密碼加密的壓縮檔。",
+      "keywords": [
+        "加密壓縮檔",
+        "帶密碼的 zip",
+        "加密 7z",
+        "保護檔案",
+        "安全壓縮檔"
+      ],
+      "aliases": [
+        "encrypted zip",
+        "password protected archive"
+      ],
+      "note": "WinZip AES-256 加密：壓縮檔可用 7-Zip、WinRAR、PeaZip、Keka 和 Windows 資源管理器開啟。絕不使用幾秒即可破解的舊式「ZipCrypto」。不過，檔名在沒有密碼時仍可讀取——這是 ZIP 格式的限制。"
+    },
+    "file-hash": {
+      "name": "計算雜湊",
+      "description": "取得一個或多個檔案的 SHA-256、SHA-512、SHA-1 或 MD5，不限檔案大小。",
+      "keywords": [
+        "雜湊",
+        "指紋",
+        "md5",
+        "sha256",
+        "sha1",
+        "檢查碼",
+        "checksum"
+      ],
+      "aliases": [
+        "file hash",
+        "checksum",
+        "md5",
+        "sha256"
+      ]
+    },
+    "file-verify-hash": {
+      "name": "驗證雜湊",
+      "description": "將檔案的雜湊與來源公佈的值進行比較。",
+      "keywords": [
+        "驗證",
+        "完整性",
+        "檢查碼",
+        "檔案是否損壞",
+        "比較雜湊",
+        "真實性"
+      ],
+      "aliases": [
+        "verify checksum",
+        "check integrity",
+        "hash compare"
+      ]
+    },
+    "file-find-duplicates": {
+      "name": "尋找重複檔案",
+      "description": "按內容而不是名稱找出資料夾中的重複檔案。",
+      "keywords": [
+        "重複",
+        "相同檔案",
+        "釋放空間",
+        "清理",
+        "重複照片"
+      ],
+      "aliases": [
+        "find duplicates",
+        "duplicate finder"
+      ]
+    },
+    "file-compare": {
+      "name": "比較兩個檔案",
+      "description": "逐位元組或逐行檢查兩個檔案是否完全相同。",
+      "keywords": [
+        "比較",
+        "相同",
+        "差異",
+        "二進位",
+        "檔案對比"
+      ],
+      "aliases": [
+        "compare files",
+        "file diff"
+      ]
+    },
+    "file-bulk-rename": {
+      "name": "批次重新命名",
+      "description": "用範本、編號或正規表示式重新命名成百上千個檔案。",
+      "keywords": [
+        "重新命名",
+        "批次",
+        "批次改名",
+        "檔案編號",
+        "字首",
+        "字尾",
+        "所有檔案"
+      ],
+      "aliases": [
+        "bulk rename",
+        "batch rename"
+      ]
+    },
+    "file-clean-names": {
+      "name": "清理檔名",
+      "description": "去除檔名中的重音符號、空格和有問題的字元。",
+      "keywords": [
+        "重音",
+        "檔名空格",
+        "特殊字元",
+        "slug",
+        "正規化"
+      ],
+      "aliases": [
+        "clean filenames",
+        "sanitize filenames"
+      ]
+    },
+    "file-organize": {
+      "name": "整理資料夾",
+      "description": "按副檔名、日期或類型自動歸類檔案。",
+      "keywords": [
+        "整理",
+        "歸類",
+        "分類",
+        "按副檔名",
+        "按日期",
+        "整理下載資料夾"
+      ],
+      "aliases": [
+        "organize folder",
+        "sort files"
+      ]
+    },
+    "folder-size": {
+      "name": "分析資料夾空間",
+      "description": "檢視到底是什麼佔用了空間：最大的檔案、最大的子資料夾、按類型分佈。",
+      "keywords": [
+        "大小",
+        "磁碟空間",
+        "什麼佔空間",
+        "大檔案",
+        "磁碟滿了",
+        "分析"
+      ],
+      "aliases": [
+        "folder size",
+        "disk usage",
+        "disk analyzer",
+        "space analyzer"
+      ],
+      "note": "唯讀取檔案系統的中繼資料：從不開啟檔案內容。無法讀取的資料夾會被標出而不是記為零，符號連結不會被跟隨（否則目標會被重複計算）。"
+    },
+    "file-secure-delete": {
+      "name": "安全刪除",
+      "description": "在刪除檔案前覆寫其內容，使軟體恢復變得極不可能。",
+      "keywords": [
+        "徹底刪除",
+        "安全刪除",
+        "無法恢復",
+        "粉碎",
+        "shred",
+        "銷燬檔案",
+        "真正刪除"
+      ],
+      "aliases": [
+        "secure delete",
+        "shred",
+        "wipe file"
+      ],
+      "note": "這是加強的軟體擦除，而非物理銷燬：在 SSD、儲存卡、Btrfs/ZFS/APFS 上，或存在快照和備份時，任何軟體都無法保證所有舊副本都已消失。"
+    },
+    "file-split": {
+      "name": "分割大檔案",
+      "description": "將大檔案切分為帶編號的分卷，並附帶檢查清單。",
+      "keywords": [
+        "分割",
+        "切分",
+        "split",
+        "分卷",
+        "檔案太大",
+        "隨身碟",
+        "fat32",
+        "傳送大檔案",
+        "part001"
+      ],
+      "aliases": [
+        "split file",
+        "file splitter"
+      ]
+    },
+    "file-join": {
+      "name": "合併分卷檔案",
+      "description": "從 .part001 分卷重建檔案，並驗證雜湊。",
+      "keywords": [
+        "合併分卷",
+        "拼接",
+        "join",
+        "合併分片",
+        "part001",
+        "重建檔案"
+      ],
+      "aliases": [
+        "join files",
+        "merge parts",
+        "reassemble"
+      ]
+    },
+    "folder-tree": {
+      "name": "產生資料夾目錄樹",
+      "description": "產生資料夾的文字目錄樹，可直接貼上到 README。",
+      "keywords": [
+        "目錄樹",
+        "結構",
+        "tree",
+        "資料夾結構",
+        "層級",
+        "readme",
+        "資料夾清單"
+      ],
+      "aliases": [
+        "folder tree",
+        "directory tree"
+      ]
+    },
+    "file-info": {
+      "name": "檢視檔案資訊",
+      "description": "透過簽章識別的真實類型、副檔名是否一致、編碼、日期、雜湊和開頭位元組。",
+      "keywords": [
+        "資訊",
+        "屬性",
+        "詳情",
+        "檔案類型",
+        "檢查",
+        "什麼格式",
+        "mime",
+        "建立日期",
+        "這是什麼檔案",
+        "magic bytes",
+        "檔案簽名",
+        "副檔名不符",
+        "真實格式",
+        "編碼"
+      ],
+      "aliases": [
+        "file info",
+        "file properties",
+        "file details",
+        "inspect file",
+        "magic bytes"
+      ],
+      "note": "顯示的類型來自開頭的位元組，而不是副檔名：一個內含 PNG 的「.jpg」會被如實標為 PNG。不會自動重新命名——是否更正由您決定。"
+    },
+    "folder-compare": {
+      "name": "比較兩個資料夾",
+      "description": "檢視兩個目錄樹之間哪些相同、哪些有修改、哪些只存在於一側。",
+      "keywords": [
+        "比較資料夾",
+        "資料夾對比",
+        "兩個資料夾的差異",
+        "改了什麼",
+        "資料夾的兩個版本",
+        "前後對比",
+        "檢查副本",
+        "備份是否最新"
+      ],
+      "aliases": [
+        "compare folders",
+        "folder diff",
+        "directory compare",
+        "diff directories"
+      ],
+      "note": "快速模式不讀取內容，只比較類型和大小：大小相同的兩個檔案被視為「可能相同」。只有可靠模式會透過內容確認是否一致——而且唯讀取大小相同的檔案，因為大小不同就足以得出結論。"
+    },
+    "folder-sync": {
+      "name": "同步資料夾",
+      "description": "從來源資料夾更新目標資料夾，寫入前先給出詳細計畫。",
+      "keywords": [
+        "同步",
+        "鏡像",
+        "複製資料夾",
+        "更新資料夾",
+        "備份到行動硬碟",
+        "隨身碟",
+        "複製",
+        "mirror",
+        "rsync"
+      ],
+      "aliases": [
+        "sync folders",
+        "mirror folder",
+        "folder sync",
+        "one-way sync"
+      ],
+      "note": "單向同步：以源為準，目標跟隨。在您看完計畫之前不會寫入任何內容。鏡像模式會從目標中刪除源中已不存在的內容，並需要單獨確認。"
+    },
+    "file-search": {
+      "name": "在檔案中搜尋",
+      "description": "按名稱、類型、大小、日期，或按檔案中包含的文字查詢檔案。",
+      "keywords": [
+        "搜尋",
+        "在檔案中搜尋",
+        "查詢檔案",
+        "grep",
+        "找文件",
+        "這個檔案在哪",
+        "搜尋字詞語",
+        "內容搜尋",
+        "按日期",
+        "按大小"
+      ],
+      "aliases": [
+        "search files",
+        "find files",
+        "grep",
+        "search in files"
+      ],
+      "note": "按需搜尋：FourTout 不在後臺建立任何索引，兩次搜尋之間也不保留任何內容。內容搜尋只打開真正像文字的檔案——二進位檔案絕不會被當作文字解讀。"
+    },
+    "file-preview": {
+      "name": "預覽檔案",
+      "description": "無需對應應用即可開啟任何檔案：文字、圖片、PDF、音訊、影片、壓縮檔或原始位元組。",
+      "keywords": [
+        "預覽",
+        "檢視",
+        "不用軟體開啟",
+        "檢視內容",
+        "quick look",
+        "看檔案",
+        "讀取檔案"
+      ],
+      "aliases": [
+        "preview file",
+        "quick look",
+        "file viewer"
+      ],
+      "note": "預覽方式依據真實內容而不是副檔名選擇。大型文字檔只會部分載入，預覽中會註明。"
+    },
+    "file-hex-edit": {
+      "name": "十六進位編輯",
+      "description": "逐視窗讀取並修改檔案的位元組，從不整體載入檔案。",
+      "keywords": [
+        "十六進位",
+        "hex editor",
+        "十六進位編輯器",
+        "位元組",
+        "二進位",
+        "修改位元組",
+        "偏移",
+        "ascii",
+        "轉儲"
+      ],
+      "aliases": [
+        "hex editor",
+        "hex edit",
+        "binary editor"
+      ],
+      "note": "這是一個刻意受限的編輯器：沒有二進位範本，沒有指令碼，不能插入或刪除位元組——只能原地修改，絕不改變檔案大小。預設情況下，結果儲存到新檔案。"
+    },
+    "folder-backup": {
+      "name": "備份資料夾",
+      "description": "複製資料夾並附帶雜湊清單，以便日後驗證和恢復。",
+      "keywords": [
+        "備份",
+        "備份資料夾",
+        "安全副本",
+        "歸檔文件",
+        "重灌系統前",
+        "行動硬碟",
+        "保護檔案"
+      ],
+      "aliases": [
+        "backup folder",
+        "create backup"
+      ],
+      "note": "透明格式：一個復刻您目錄結構的「donnees」資料夾，加上一個可讀的「manifeste.json」。沒有專有容器——即使沒有 FourTout，您的檔案依然可以存取。這不是版本化備份：每次備份都是一份完整、帶日期的副本。"
+    },
+    "folder-restore": {
+      "name": "恢復備份",
+      "description": "驗證 FourTout 備份，然後將其恢復，不會覆蓋您未選擇的內容。",
+      "keywords": [
+        "恢復",
+        "還原備份",
+        "找回檔案",
+        "restore",
+        "回退",
+        "驗證備份"
+      ],
+      "aliases": [
+        "restore backup",
+        "verify backup"
+      ],
+      "note": "寫入前會先檢查完整性：備份中損壞的檔案會被點名，而不是被悄悄恢復。恢復絕不會刪除目標中的任何內容。"
+    },
+    "checksum-manifest": {
+      "name": "建立雜湊清單",
+      "description": "產生一個 .sha256 檔案，列出資料夾中每個檔案的雜湊。",
+      "keywords": [
+        "清單",
+        "檢查碼",
+        "checksums",
+        "sha256sum",
+        "雜湊清單",
+        "燒錄前",
+        "傳送前",
+        "完整性檢查",
+        "sfv"
+      ],
+      "aliases": [
+        "checksum manifest",
+        "create checksums",
+        "sha256sum"
+      ],
+      "note": "產生的文字格式與 sha256sum 相同：在任何電腦上都能用系統工具驗證。MD5 和 SHA-1 仍可用於驗證舊雜湊，但會被標註為不適合安全用途。"
+    },
+    "checksum-verify": {
+      "name": "驗證雜湊清單",
+      "description": "將資料夾與檢查碼檔案對照：逐個檔案顯示完好、已修改、缺失或無法讀取。",
+      "keywords": [
+        "驗證檢查碼",
+        "檢查清單",
+        "sha256sum -c",
+        "檔案有沒有變",
+        "資料夾完整性",
+        "位元衰減"
+      ],
+      "aliases": [
+        "verify checksums",
+        "check manifest",
+        "sha256sum -c"
+      ],
+      "note": "清單是資料，不是指令：會跳出被驗證資料夾的條目（「../」、絕對路徑）會被拒絕並列出，絕不會被執行。"
+    },
+    "hmac": {
+      "name": "計算 HMAC",
+      "description": "用金鑰以 HMAC-SHA-256 或 SHA-512 為文字或檔案簽名。",
+      "keywords": [
+        "hmac",
+        "簽名",
+        "金鑰",
+        "webhook",
+        "api",
+        "認證",
+        "請求籤名",
+        "訊息認證碼"
+      ],
+      "aliases": [
+        "hmac",
+        "message authentication code"
+      ],
+      "note": "金鑰不會被儲存、記錄，也不會加入最近使用：它只用於計算，然後消失。一旦您離開該工具，它會立即從螢幕上清除。"
+    },
+    "file-compress": {
+      "name": "壓縮單個檔案（GZ、XZ）",
+      "description": "將單個檔案壓縮為 .gz 或 .xz，而不是做成壓縮檔。",
+      "keywords": [
+        "gzip",
+        "gz",
+        "xz",
+        "壓縮檔案",
+        "lzma",
+        "縮小檔案",
+        "壓縮",
+        "大日誌"
+      ],
+      "aliases": [
+        "gzip",
+        "xz compress",
+        "compress file"
+      ],
+      "note": "「.gz」和「.xz」只包含一個檔案，沒有資料夾名或目錄結構。要壓縮多個檔案並保留其組織方式，請使用「建立壓縮檔」的 TAR.GZ 或 TAR.XZ 格式。"
+    },
+    "file-decompress": {
+      "name": "解壓單個檔案（GZ、XZ）",
+      "description": "從 .gz 或 .xz 中還原原始檔案。",
+      "keywords": [
+        "gunzip",
+        "unxz",
+        "開啟 .gz",
+        "開啟 .xz",
+        "解壓 gz",
+        "解壓 xz"
+      ],
+      "aliases": [
+        "gunzip",
+        "unxz",
+        "decompress file"
+      ],
+      "note": "「.tar.gz」包含目錄結構：請改用「解壓縮」，它能還原目錄結構。在這裡，.tar.gz 只會得到一個 .tar。"
+    },
+    "archive-inspect": {
+      "name": "檢視壓縮檔內容",
+      "description": "不解壓即可列出壓縮檔內容：路徑、大小、壓縮率、可疑條目。",
+      "keywords": [
+        "檢視 zip 內容",
+        "列出壓縮檔",
+        "不解壓",
+        "裡面有什麼",
+        "檢查 zip",
+        "7z 內容",
+        "瀏覽壓縮檔"
+      ],
+      "aliases": [
+        "inspect archive",
+        "list archive",
+        "browse archive"
+      ],
+      "note": "不會解壓任何內容：唯讀取壓縮檔的目錄。路徑會跳出解壓目錄的條目，在您考慮解壓之前就會被標出。"
+    },
+    "archive-test": {
+      "name": "測試壓縮檔",
+      "description": "完整解壓一次以確認壓縮檔完好，但不向磁碟寫入任何內容。",
+      "keywords": [
+        "測試壓縮檔",
+        "壓縮檔損壞",
+        "zip 壞了",
+        "檢查 zip",
+        "下載不完整",
+        "壓縮檔完整性",
+        "crc"
+      ],
+      "aliases": [
+        "test archive",
+        "verify archive",
+        "check archive"
+      ],
+      "note": "內容會被真正解壓，並驗證其檢查碼——只列出目錄什麼也證明不了，因為那隻會讀取檔案頭。不寫入任何內容：位元組計數後即丟棄。"
+    },
+    "universal-converter": {
+      "name": "萬能轉換器",
+      "description": "拖入一個檔案：FourTout 會列出可轉換到的相容格式。",
+      "keywords": [
+        "轉換",
+        "格式轉換",
+        "改格式",
+        "任意檔案",
+        "什麼格式",
+        "轉換器"
+      ],
+      "aliases": [
+        "universal converter",
+        "convert anything",
+        "file converter"
+      ],
+      "note": "推薦的轉換來自注冊表中各工具宣告的輸入和輸出：無需另外維護一張表，也絕不會出現沒有工具支撐的轉換。"
+    },
+    "json-tools": {
+      "name": "JSON — 格式化與驗證",
+      "description": "縮排、壓縮並驗證 JSON，給出精確的錯誤資訊。",
+      "keywords": [
+        "json",
+        "格式化",
+        "縮排",
+        "驗證",
+        "美化",
+        "prettify",
+        "壓縮",
+        "解析"
+      ],
+      "aliases": [
+        "json formatter",
+        "json validator",
+        "json beautifier",
+        "prettify json"
+      ]
+    },
+    "xml-format": {
+      "name": "XML — 格式化",
+      "description": "縮排並驗證 XML 文件。",
+      "keywords": [
+        "xml",
+        "格式化",
+        "縮排",
+        "驗證",
+        "標籤"
+      ],
+      "aliases": [
+        "xml formatter",
+        "xml beautifier"
+      ]
+    },
+    "yaml-format": {
+      "name": "YAML — 格式化與轉換",
+      "description": "格式化 YAML，並與 JSON 互相轉換。",
+      "keywords": [
+        "yaml",
+        "yml",
+        "格式化",
+        "yaml 轉 json",
+        "json 轉 yaml",
+        "配置檔案"
+      ],
+      "aliases": [
+        "yaml formatter",
+        "yaml to json",
+        "json to yaml"
+      ]
+    },
+    "sql-format": {
+      "name": "SQL — 格式化",
+      "description": "讓緊湊的或自動產生的 SQL 查詢變得易讀。",
+      "keywords": [
+        "sql",
+        "查詢",
+        "格式化",
+        "縮排",
+        "易讀",
+        "query"
+      ],
+      "aliases": [
+        "sql formatter",
+        "sql beautifier"
+      ]
+    },
+    "base64": {
+      "name": "Base64 — 編碼與解碼",
+      "description": "在文字和 Base64 之間互相轉換，包括 base64url。",
+      "keywords": [
+        "base64",
+        "編碼",
+        "解碼",
+        "b64",
+        "data uri"
+      ],
+      "aliases": [
+        "base64 encode",
+        "base64 decode",
+        "b64"
+      ]
+    },
+    "url-encode": {
+      "name": "URL — 編碼與解碼",
+      "description": "對 URL 及其參數進行編碼或解碼（百分號編碼）。",
+      "keywords": [
+        "url",
+        "編碼",
+        "解碼",
+        "百分號編碼",
+        "查詢字串",
+        "特殊字元"
+      ],
+      "aliases": [
+        "url encode",
+        "url decode",
+        "uri encode"
+      ]
+    },
+    "jwt-decode": {
+      "name": "JWT — 解碼",
+      "description": "讀取 JWT 令牌的標頭和酬載，不傳送到任何地方。",
+      "keywords": [
+        "jwt",
+        "令牌",
+        "token",
+        "解碼",
+        "bearer",
+        "payload",
+        "claims"
+      ],
+      "aliases": [
+        "jwt decoder",
+        "decode token"
+      ],
+      "note": "令牌在本機解碼：絕不會離開您的電腦。"
+    },
+    "uuid-generate": {
+      "name": "產生 UUID",
+      "description": "逐個或批次產生唯一的 v4 或 v7 識別碼。",
+      "keywords": [
+        "uuid",
+        "guid",
+        "唯一識別碼",
+        "產生 id",
+        "v4",
+        "v7"
+      ],
+      "aliases": [
+        "uuid generator",
+        "guid generator"
+      ]
+    },
+    "regex-tester": {
+      "name": "正規表示式測試",
+      "description": "即時測試正規表示式，檢視相符項和分組。",
+      "keywords": [
+        "regex",
+        "正規表示式",
+        "正則",
+        "測試",
+        "相符",
+        "模式",
+        "match"
+      ],
+      "aliases": [
+        "regex tester",
+        "regexp",
+        "regex101"
+      ]
+    },
+    "timestamp-convert": {
+      "name": "Unix 時間戳",
+      "description": "在時間戳和可讀日期之間互相轉換，支援時區。",
+      "keywords": [
+        "時間戳",
+        "timestamp",
+        "unix",
+        "epoch",
+        "秒數日期",
+        "毫秒",
+        "日期轉換"
+      ],
+      "aliases": [
+        "unix timestamp",
+        "epoch converter"
+      ]
+    },
+    "hash-text": {
+      "name": "產生文字雜湊",
+      "description": "計算字串的 MD5、SHA-1、SHA-256 或 SHA-512。",
+      "keywords": [
+        "雜湊",
+        "md5",
+        "sha256",
+        "指紋",
+        "文字雜湊",
+        "摘要"
+      ],
+      "aliases": [
+        "hash generator",
+        "md5 text",
+        "sha256 text"
+      ]
+    },
+    "qr-generate": {
+      "name": "產生 QR 碼",
+      "description": "為網址、文字、聯絡人或 Wi-Fi 網路產生 QR 碼。",
+      "keywords": [
+        "QR 碼",
+        "qr 碼",
+        "qrcode",
+        "條形碼",
+        "產生 QR 碼",
+        "wifi",
+        "vcard"
+      ],
+      "aliases": [
+        "qr code generator",
+        "make qr code"
+      ]
+    },
+    "qr-read": {
+      "name": "識別 QR 碼",
+      "description": "從圖片或截圖中識別 QR 碼。",
+      "keywords": [
+        "掃QR 碼",
+        "識別 QR 碼",
+        "解碼QR 碼",
+        "圖片中的QR 碼"
+      ],
+      "aliases": [
+        "qr code reader",
+        "scan qr code",
+        "decode qr"
+      ]
+    },
+    "number-base-convert": {
+      "name": "十六進位、十進位、二進位轉換",
+      "description": "在二進位、八進位、十進位、十六進位之間轉換。",
+      "keywords": [
+        "十六進位",
+        "二進位",
+        "十進位",
+        "八進位",
+        "進位轉換",
+        "數字轉換",
+        "hex"
+      ],
+      "aliases": [
+        "hex to decimal",
+        "binary converter",
+        "base converter"
+      ]
+    },
+    "code-diff": {
+      "name": "程式碼比對",
+      "description": "比較兩段程式碼，高亮顯示新增和刪除。",
+      "keywords": [
+        "diff",
+        "程式碼比對",
+        "差異",
+        "合併",
+        "版本"
+      ],
+      "aliases": [
+        "code diff",
+        "compare code"
+      ]
+    },
+    "web-minify": {
+      "name": "壓縮 HTML、CSS、JS",
+      "description": "刪除空白和註解以減小程式碼體積。",
+      "keywords": [
+        "壓縮程式碼",
+        "minify",
+        "精簡",
+        "減小",
+        "uglify",
+        "生產環境"
+      ],
+      "aliases": [
+        "minify",
+        "minify css",
+        "minify js",
+        "minify html"
+      ]
+    },
+    "web-beautify": {
+      "name": "格式化 HTML、CSS、JS",
+      "description": "重新縮排被壓縮或格式混亂的程式碼，使其易讀。",
+      "keywords": [
+        "格式化",
+        "縮排",
+        "美化",
+        "beautify",
+        "prettify",
+        "程式碼看不懂",
+        "重新縮排"
+      ],
+      "aliases": [
+        "beautify",
+        "format code",
+        "prettify html"
+      ]
+    },
+    "cron-helper": {
+      "name": "Cron 助手",
+      "description": "構造 cron 表示式，並用通俗語言解釋。",
+      "keywords": [
+        "cron",
+        "crontab",
+        "定時",
+        "計畫任務",
+        "cron 表示式",
+        "schedule"
+      ],
+      "aliases": [
+        "cron generator",
+        "crontab helper",
+        "cron expression"
+      ]
+    },
+    "toml-format": {
+      "name": "TOML — 格式化與驗證",
+      "description": "檢查 TOML 檔案，並以規範形式重寫。",
+      "keywords": [
+        "toml",
+        "格式化",
+        "驗證",
+        "配置檔案",
+        "cargo",
+        "pyproject",
+        "縮排",
+        "語法錯誤"
+      ],
+      "aliases": [
+        "toml formatter",
+        "toml validator",
+        "toml linter",
+        "format toml"
+      ],
+      "note": "重新格式化會根據資料重建文件：註解和原始書寫順序會遺失。僅驗證則不會改動任何內容。"
+    },
+    "base32": {
+      "name": "Base32 — 編碼與解碼",
+      "description": "按照 RFC 4648 在文字和 Base32 之間互相轉換。",
+      "keywords": [
+        "base32",
+        "編碼",
+        "解碼",
+        "rfc 4648",
+        "totp",
+        "填充",
+        "字母表"
+      ],
+      "aliases": [
+        "base32 encode",
+        "base32 decode",
+        "b32"
+      ]
+    },
+    "sqlite-explorer": {
+      "name": "SQLite 資料庫 — 瀏覽",
+      "description": "以唯讀方式開啟 SQLite 資料庫：結構、資料、查詢、匯出 CSV。",
+      "keywords": [
+        "sqlite",
+        "資料庫",
+        "db",
+        "瀏覽",
+        "表結構",
+        "表",
+        "查詢",
+        "select",
+        "sql",
+        "唯讀"
+      ],
+      "aliases": [
+        "sqlite browser",
+        "sqlite explorer",
+        "db browser",
+        "open sqlite"
+      ],
+      "note": "嚴格唯讀的瀏覽器：資料庫以唯讀方式開啟，任何查詢都無法修改它。"
+    },
+    "unit-length": {
+      "name": "單位換算 — 長度",
+      "description": "公尺、公里、英里、英尺、英吋、海里。",
+      "keywords": [
+        "換算",
+        "轉換",
+        "單位",
+        "長度",
+        "距離",
+        "公尺",
+        "公里",
+        "km",
+        "英里",
+        "英吋",
+        "英尺",
+        "公分"
+      ],
+      "aliases": [
+        "length converter",
+        "cm to inches",
+        "km to miles"
+      ]
+    },
+    "unit-weight": {
+      "name": "單位換算 — 重量與質量",
+      "description": "克、公斤、噸、磅、盎司。",
+      "keywords": [
+        "換算",
+        "轉換",
+        "單位",
+        "重量",
+        "質量",
+        "公斤",
+        "公斤",
+        "克",
+        "磅",
+        "盎司",
+        "噸",
+        "斤",
+        "lbs"
+      ],
+      "aliases": [
+        "weight converter",
+        "kg to lbs",
+        "pounds to kg"
+      ]
+    },
+    "unit-temperature": {
+      "name": "單位換算 — 溫度",
+      "description": "攝氏、華氏、克耳文。",
+      "keywords": [
+        "換算",
+        "轉換",
+        "單位",
+        "溫度",
+        "攝氏",
+        "華氏",
+        "克耳文",
+        "度",
+        "°c",
+        "°f"
+      ],
+      "aliases": [
+        "temperature converter",
+        "celsius to fahrenheit"
+      ]
+    },
+    "unit-volume": {
+      "name": "單位換算 — 體積",
+      "description": "公升、毫升、加侖、品脫、杯、勺。",
+      "keywords": [
+        "換算",
+        "轉換",
+        "單位",
+        "體積",
+        "容量",
+        "公升",
+        "毫升",
+        "ml",
+        "加侖",
+        "品脫",
+        "杯",
+        "勺",
+        "食譜"
+      ],
+      "aliases": [
+        "volume converter",
+        "cups to ml",
+        "gallons to liters"
+      ]
+    },
+    "unit-area": {
+      "name": "單位換算 — 面積",
+      "description": "平方公尺、公頃、英畝、平方英尺。",
+      "keywords": [
+        "換算",
+        "轉換",
+        "單位",
+        "面積",
+        "m2",
+        "平方公尺",
+        "公頃",
+        "英畝",
+        "畝",
+        "土地"
+      ],
+      "aliases": [
+        "area converter",
+        "sqft to m2"
+      ]
+    },
+    "unit-speed": {
+      "name": "單位換算 — 速度",
+      "description": "km/h、m/s、mph、節。",
+      "keywords": [
+        "換算",
+        "轉換",
+        "單位",
+        "速度",
+        "時速",
+        "km/h",
+        "mph",
+        "m/s",
+        "節"
+      ],
+      "aliases": [
+        "speed converter",
+        "kmh to mph"
+      ]
+    },
+    "unit-pressure": {
+      "name": "單位換算 — 壓強",
+      "description": "帕斯卡、巴、PSI、大氣壓、mmHg。",
+      "keywords": [
+        "換算",
+        "轉換",
+        "單位",
+        "壓強",
+        "壓力",
+        "巴",
+        "psi",
+        "帕斯卡",
+        "大氣壓",
+        "胎壓"
+      ],
+      "aliases": [
+        "pressure converter",
+        "bar to psi"
+      ]
+    },
+    "unit-energy": {
+      "name": "單位換算 — 能量",
+      "description": "焦耳、卡路里、kWh、BTU。",
+      "keywords": [
+        "換算",
+        "轉換",
+        "單位",
+        "能量",
+        "焦耳",
+        "卡路里",
+        "千瓦時",
+        "度電",
+        "kwh",
+        "btu",
+        "千卡"
+      ],
+      "aliases": [
+        "energy converter",
+        "kwh to joules"
+      ]
+    },
+    "unit-power": {
+      "name": "單位換算 — 功率",
+      "description": "瓦、千瓦、馬力。",
+      "keywords": [
+        "換算",
+        "轉換",
+        "單位",
+        "功率",
+        "瓦",
+        "千瓦",
+        "kw",
+        "馬力",
+        "hp"
+      ],
+      "aliases": [
+        "power converter",
+        "watts to hp",
+        "kw to hp"
+      ]
+    },
+    "unit-data": {
+      "name": "單位換算 — 資料量",
+      "description": "位元組、KB、MB、GB、TB 及其二進位單位（KiB、MiB）。",
+      "keywords": [
+        "換算",
+        "轉換",
+        "單位",
+        "位元組",
+        "mb",
+        "gb",
+        "tb",
+        "兆位元組",
+        "吉位元組",
+        "位元",
+        "kib",
+        "mib"
+      ],
+      "aliases": [
+        "data converter",
+        "mb to gb",
+        "bytes converter"
+      ]
+    },
+    "calc-percentage": {
+      "name": "百分比計算",
+      "description": "求一個數的百分比、變化率、折扣、增值稅、佔總數的比例。",
+      "keywords": [
+        "百分比",
+        "%",
+        "折扣",
+        "打折",
+        "增值稅",
+        "漲幅",
+        "變化率",
+        "計算優惠",
+        "上漲",
+        "下降"
+      ],
+      "aliases": [
+        "percentage calculator",
+        "percent change",
+        "discount calculator"
+      ]
+    },
+    "calc-proportion": {
+      "name": "比例計算",
+      "description": "解比例式：如果 A 對應 B，那麼 C 對應多少？",
+      "keywords": [
+        "比例",
+        "比例式",
+        "交叉相乘",
+        "比率",
+        "比例尺"
+      ],
+      "aliases": [
+        "rule of three",
+        "cross multiplication",
+        "proportion calculator"
+      ]
+    },
+    "calc-date-difference": {
+      "name": "日期計算",
+      "description": "計算兩個日期之間的天數；加上或減去一段時長。",
+      "keywords": [
+        "日期",
+        "相差幾天",
+        "多少天",
+        "加天數",
+        "工作日",
+        "到期日",
+        "期限"
+      ],
+      "aliases": [
+        "date calculator",
+        "days between dates",
+        "date difference"
+      ]
+    },
+    "calc-duration": {
+      "name": "時長計算",
+      "description": "對小時、分鐘和秒進行加減。",
+      "keywords": [
+        "時長",
+        "小時",
+        "分鐘",
+        "加小時",
+        "工作時長",
+        "hh:mm"
+      ],
+      "aliases": [
+        "duration calculator",
+        "time calculator",
+        "add hours"
+      ]
+    },
+    "calc-age": {
+      "name": "計算年齡",
+      "description": "根據出生日期計算精確到年、月、日的年齡。",
+      "keywords": [
+        "年齡",
+        "出生日期",
+        "多大了",
+        "週歲",
+        "生日",
+        "年"
+      ],
+      "aliases": [
+        "age calculator",
+        "how old"
+      ]
+    },
+    "calc-scientific": {
+      "name": "工程計算機",
+      "description": "進階運算：乘方、開方、三角函數、對數。",
+      "keywords": [
+        "計算機",
+        "工程計算機",
+        "平方根",
+        "乘方",
+        "三角函數",
+        "對數",
+        "sin",
+        "cos",
+        "計算"
+      ],
+      "aliases": [
+        "scientific calculator",
+        "calculator"
+      ]
+    },
+    "calc-currency": {
+      "name": "貨幣換算",
+      "description": "按最新匯率在不同貨幣之間換算金額。",
+      "keywords": [
+        "貨幣",
+        "新臺幣",
+        "歐元",
+        "美元",
+        "匯率",
+        "換匯",
+        "錢",
+        "換算新臺幣"
+      ],
+      "aliases": [
+        "currency converter",
+        "eur to usd",
+        "exchange rate"
+      ],
+      "note": "FourTout 唯一需要聯網的工具，僅用於取得當天的匯率。離線時會沿用最近一次取得的匯率。"
+    },
+    "calc-timezone": {
+      "name": "時區換算",
+      "description": "把一個地方的時間換算成另一個地方的時間，包括日光節約時間。",
+      "keywords": [
+        "時區",
+        "時差",
+        "timezone",
+        "時間",
+        "utc",
+        "gmt",
+        "台北 巴黎時間",
+        "紐約時間",
+        "日光節約時間",
+        "dst"
+      ],
+      "aliases": [
+        "timezone converter",
+        "time zone",
+        "convert time",
+        "world clock"
+      ],
+      "note": "時差取自系統時區資料庫中對應日期的資料：會考慮時間調整，並標出含糊或不存在的時刻。"
+    },
+    "calc-bandwidth": {
+      "name": "計算頻寬",
+      "description": "根據傳輸的資料量和時長推算平均速率。",
+      "keywords": [
+        "頻寬",
+        "速率",
+        "網速",
+        "bandwidth",
+        "mbps",
+        "每秒 mb",
+        "位元",
+        "位元組",
+        "連線"
+      ],
+      "aliases": [
+        "bandwidth calculator",
+        "throughput",
+        "data rate"
+      ]
+    },
+    "calc-transfer-time": {
+      "name": "計算傳輸時間",
+      "description": "根據大小和速率估算傳輸所需時間。",
+      "keywords": [
+        "傳輸時間",
+        "時長",
+        "下載",
+        "上傳",
+        "傳輸",
+        "要多久",
+        "速率",
+        "大小",
+        "eta"
+      ],
+      "aliases": [
+        "transfer time",
+        "download time",
+        "upload time"
+      ],
+      "note": "理論計算：大小 ÷ 速率。不考慮協議開銷、延遲和擁塞——實際傳輸總是更久。"
+    },
+    "calc-interest": {
+      "name": "計算利息",
+      "description": "單利或複利，可選定期存入。",
+      "keywords": [
+        "利息",
+        "複利",
+        "單利",
+        "本息",
+        "儲蓄",
+        "投資",
+        "利率",
+        "收益",
+        "定期存款"
+      ],
+      "aliases": [
+        "compound interest",
+        "simple interest",
+        "savings calculator"
+      ],
+      "note": "這是數學工具，不是理財建議：不考慮稅費、通脹和手續費。"
+    },
+    "network-ping": {
+      "name": "Ping",
+      "description": "測量主機是否回應以及回應時間。",
+      "keywords": [
+        "ping",
+        "延遲",
+        "icmp",
+        "回應",
+        "可達",
+        "丟包",
+        "回應時間",
+        "診斷"
+      ],
+      "aliases": [
+        "ping",
+        "icmp echo",
+        "latency test"
+      ],
+      "note": "傳送真實的 ICMP 資料包，預設四個。如果系統拒絕 ICMP 套接字，工具會如實說明，而不會改測別的東西。"
+    },
+    "network-ports": {
+      "name": "測試連接埠",
+      "description": "檢視主機的哪些 TCP 連接埠接受連線。",
+      "keywords": [
+        "連接埠",
+        "tcp",
+        "測試連接埠",
+        "開放連接埠",
+        "關閉連接埠",
+        "連線",
+        "防火牆",
+        "服務",
+        "監聽"
+      ],
+      "aliases": [
+        "port check",
+        "port test",
+        "tcp connect",
+        "is port open"
+      ],
+      "note": "僅針對單個主機，每次最多 256 個連接埠，使用普通 TCP 連線。這不是掃描器：沒有隱蔽模式，沒有服務識別，也不搜尋漏洞。"
+    },
+    "network-lan": {
+      "name": "發現區域網路裝置",
+      "description": "列出在您的子網中出現的裝置。",
+      "keywords": [
+        "區域網路",
+        "lan",
+        "裝置",
+        "電腦",
+        "掃描區域網路",
+        "發現",
+        "印表機",
+        "ip 地址",
+        "mac"
+      ],
+      "aliases": [
+        "lan discovery",
+        "network scan",
+        "find devices",
+        "arp table"
+      ],
+      "note": "僅限直接相連的子網，最多 256 個地址。傳送任何資料前都會公佈確切範圍，未經確認不會發出任何內容。"
+    },
+    "file-diagnose": {
+      "name": "診斷檔案",
+      "description": "弄清一個檔案到底是什麼，以及缺了什麼。",
+      "keywords": [
+        "診斷檔案",
+        "檔案損壞",
+        "檔案壞了",
+        "無法讀取的檔案",
+        "檔案類型",
+        "副檔名",
+        "被截斷",
+        "檔案簽名",
+        "分析"
+      ],
+      "aliases": [
+        "file diagnosis",
+        "corrupt file",
+        "file check",
+        "inspect file"
+      ],
+      "note": "原始檔案絕不會被修改。FourTout 會分析 ZIP、PDF、PNG 和 JPEG 的內部結構，對其他格式也會如實說明。"
+    },
+    "archive-repair": {
+      "name": "損壞的 ZIP 壓縮檔",
+      "description": "診斷無法讀取的壓縮檔，並搶救其中仍然完好的內容。",
+      "keywords": [
+        "修復 zip",
+        "zip 壞了",
+        "zip 損壞",
+        "壓縮檔損壞",
+        "恢復壓縮檔",
+        "無法讀取的壓縮檔",
+        "中央目錄",
+        "強行解壓"
+      ],
+      "aliases": [
+        "repair zip",
+        "recover zip",
+        "broken archive",
+        "zip repair"
+      ],
+      "note": "即使沒有中央目錄，也能透過掃描本機檔案頭進行恢復。資料被截斷的條目會被標為遺失——絕不會憑空重建。原始壓縮檔不會被改動。"
+    },
+    "pdf-repair": {
+      "name": "損壞的 PDF",
+      "description": "診斷無法讀取的 PDF，並在可以證明時進行修復。",
+      "keywords": [
+        "修復 pdf",
+        "pdf 損壞",
+        "pdf 壞了",
+        "無法讀取的 pdf",
+        "pdf xref",
+        "startxref",
+        "被截斷的 pdf",
+        "重建 pdf"
+      ],
+      "aliases": [
+        "repair pdf",
+        "fix pdf",
+        "broken pdf",
+        "pdf recovery"
+      ],
+      "note": "產生的每個檔案都會由 PDF 引擎重新開啟並統計頁數：如果引擎拒絕它，修復會被判定為失敗，檔案會被刪除。重寫會使所有數位簽章失效。"
+    },
+    "image-repair": {
+      "name": "損壞的圖片",
+      "description": "診斷損壞的 PNG 或 JPEG，並搶救可讀取的像素。",
+      "keywords": [
+        "恢復圖片",
+        "圖片損壞",
+        "jpeg 壞了",
+        "png 損壞",
+        "照片損壞",
+        "無法讀取的圖片",
+        "圖片被截斷",
+        "png crc"
+      ],
+      "aliases": [
+        "repair image",
+        "recover photo",
+        "broken jpeg",
+        "png repair"
+      ],
+      "note": "錯誤的檢查碼絕不會被重新計算，被截斷圖片缺失的行也絕不會被編造。視覺化恢復會重新編碼已解碼的像素：救回的是畫面，而不是檔案。"
+    },
+    "disk-inspect": {
+      "name": "檢視磁碟與分割區",
+      "description": "檢視系統的磁碟、分割區、磁碟區和健康指標。",
+      "keywords": [
+        "磁碟",
+        "硬碟",
+        "分割區",
+        "檔案系統",
+        "磁碟空間",
+        "卷",
+        "smart",
+        "硬碟健康",
+        "ssd",
+        "nvme",
+        "usb",
+        "掛載"
+      ],
+      "aliases": [
+        "disk info",
+        "partitions",
+        "smart health",
+        "drive inspector",
+        "storage"
+      ],
+      "note": "唯讀，沒有例外：FourTout 不能分割區、格式化、掛載、克隆或擦除磁碟。詳細的健康指標依賴 `smartctl`，而 FourTout 並不附帶它。"
+    },
+    "password-generate": {
+      "name": "產生密碼",
+      "description": "產生高強度密碼或易記的密碼短語。",
+      "keywords": [
+        "密碼",
+        "產生",
+        "隨機",
+        "安全",
+        "密碼短語",
+        "強密碼",
+        "建立密碼"
+      ],
+      "aliases": [
+        "password generator",
+        "generate password",
+        "passphrase"
+      ]
+    },
+    "password-strength": {
+      "name": "測試密碼強度",
+      "description": "離線估算破解一個密碼需要多長時間。",
+      "keywords": [
+        "強度",
+        "強密碼",
+        "安全",
+        "我的密碼夠不夠好",
+        "熵",
+        "檢查密碼"
+      ],
+      "aliases": [
+        "password strength",
+        "password checker"
+      ],
+      "note": "分析完全在本機進行：您輸入的密碼絕不會被髮送出去。"
+    },
+    "file-encrypt": {
+      "name": "加密檔案",
+      "description": "用現代加密演算法為檔案設定密碼保護。",
+      "keywords": [
+        "加密",
+        "保護",
+        "密碼",
+        "aes",
+        "機密",
+        "保護檔案"
+      ],
+      "aliases": [
+        "encrypt file",
+        "file encryption",
+        "aes encrypt"
+      ]
+    },
+    "file-decrypt": {
+      "name": "解密檔案",
+      "description": "還原用 FourTout 加密的檔案內容。",
+      "keywords": [
+        "解密",
+        "開啟加密檔案",
+        "恢復"
+      ],
+      "aliases": [
+        "decrypt file",
+        "file decryption"
+      ]
+    },
+    "metadata-strip-any": {
+      "name": "刪除檔案中繼資料",
+      "description": "在分享文件前清除作者、日期、裝置和位置資訊。",
+      "keywords": [
+        "中繼資料",
+        "匿名化",
+        "分享之前",
+        "隱私",
+        "刪除作者",
+        "痕跡",
+        "清理文件"
+      ],
+      "aliases": [
+        "strip metadata",
+        "remove metadata",
+        "anonymize file"
+      ]
+    }
+  }
+}

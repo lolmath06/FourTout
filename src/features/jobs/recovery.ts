@@ -6,6 +6,7 @@ import {
 import type { EncryptionParamsDto } from "@/core/pdf/encryptionInfo";
 import type { PdfSource } from "@/core/pdf/types";
 import { latestJobForTool, useJobStore, type Job } from "./store";
+import { t } from "@/i18n";
 
 /**
  * Contrôleur global de la récupération de mot de passe.
@@ -69,7 +70,7 @@ export async function startRecoveryJob(options: StartRecoveryOptions): Promise<s
   const existing = activeRecoveryJob();
   if (existing) {
     if (existing.status === "running" || existing.status === "cancelling") {
-      throw new Error("Une recherche est déjà en cours.");
+      throw new Error(t("Une recherche est déjà en cours."));
     }
     // Un job terminé pour cet outil : on l'oublie pour n'en garder qu'un seul.
     clearRecoveryJob(existing.id);

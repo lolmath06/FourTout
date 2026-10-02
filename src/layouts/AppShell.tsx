@@ -8,6 +8,7 @@ import { useRecents } from "@/features/recents/store";
 import { useUiScale } from "@/features/settings/useUiScale";
 import { useActiveJobs } from "@/features/jobs/hooks";
 import { toolRoute } from "@/core/tools/types";
+import { t, tx } from "@/i18n";
 
 interface NavItem {
   to: string;
@@ -46,11 +47,11 @@ export function AppShell() {
   }, []);
 
   const items: NavItem[] = [
-    { to: "/", label: "Accueil", icon: "Home" },
-    { to: "/tools", label: "Outils", icon: "LayoutGrid" },
-    { to: "/favorites", label: "Favoris", icon: "Star", count: favorites.length },
-    { to: "/recents", label: "Récents", icon: "Clock3", count: recents.length },
-    { to: "/settings", label: "Paramètres", icon: "Settings" },
+    { to: "/", label: t("Accueil"), icon: "Home" },
+    { to: "/tools", label: t("Outils"), icon: "LayoutGrid" },
+    { to: "/favorites", label: t("Favoris"), icon: "Star", count: favorites.length },
+    { to: "/recents", label: t("Récents"), icon: "Clock3", count: recents.length },
+    { to: "/settings", label: t("Paramètres"), icon: "Settings" },
   ];
 
   return (
@@ -75,7 +76,7 @@ export function AppShell() {
           )}
         </div>
 
-        <nav className="flex flex-1 flex-col gap-px p-1.5" aria-label="Navigation principale">
+        <nav className="flex flex-1 flex-col gap-px p-1.5" aria-label={t("Navigation principale")}>
           {items.map((item) => (
             <NavLink
               key={item.to}
@@ -96,7 +97,7 @@ export function AppShell() {
               <Icon name={item.icon} size={15} />
               {!collapsed && (
                 <>
-                  <span className="flex-1 truncate">{item.label}</span>
+                  <span className="flex-1 truncate">{tx(item.label)}</span>
                   {item.count !== undefined && item.count > 0 && (
                     <span className="ft-num shrink-0 text-[11px] text-[var(--ft-text-faint)]">
                       {item.count}
@@ -115,7 +116,7 @@ export function AppShell() {
               onClick={() => navigate(toolRoute(activeJobs[0].toolId))}
               title={
                 collapsed
-                  ? `${activeJobs.length} opération${activeJobs.length > 1 ? "s" : ""} en cours`
+                  ? t("{count} {count, plural, one {opération} other {opérations}} en cours", { count: activeJobs.length })
                   : undefined
               }
               className={clsx(
@@ -126,7 +127,7 @@ export function AppShell() {
               <Icon name="Loader" size={13} className="shrink-0 animate-spin" />
               {!collapsed && (
                 <span className="flex-1 truncate">
-                  {activeJobs.length} opération{activeJobs.length > 1 ? "s" : ""} en cours
+                  {t("{count} {count, plural, one {opération} other {opérations}} en cours", { count: activeJobs.length })}
                 </span>
               )}
             </button>
@@ -134,7 +135,7 @@ export function AppShell() {
           {!collapsed && (
             <p className="flex h-7 items-center gap-2.5 px-2 text-[11px] text-[var(--ft-text-faint)]">
               <Icon name="ShieldCheck" size={13} />
-              Traitement local
+              {t("Traitement local")}
             </p>
           )}
         </div>

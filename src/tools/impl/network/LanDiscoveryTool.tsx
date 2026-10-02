@@ -17,6 +17,7 @@ import {
 } from "@/core/network/native";
 import { JobCancelledError } from "@/core/jobs/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Découverte des appareils du réseau local.
@@ -55,7 +56,7 @@ export function LanDiscoveryTool(_props: ToolComponentProps) {
         setSelected(usable?.name);
       })
       .catch((failure: unknown) =>
-        setError(failure instanceof Error ? failure.message : "Interfaces illisibles."),
+        setError(failure instanceof Error ? failure.message : t("Interfaces illisibles.")),
       );
   }, [available]);
 
@@ -75,7 +76,7 @@ export function LanDiscoveryTool(_props: ToolComponentProps) {
       .catch((failure: unknown) => {
         if (cancelled) return;
         setPlan(undefined);
-        setError(failure instanceof Error ? failure.message : "Plage incalculable.");
+        setError(failure instanceof Error ? failure.message : t("Plage incalculable."));
       });
     return () => {
       cancelled = true;
@@ -89,18 +90,18 @@ export function LanDiscoveryTool(_props: ToolComponentProps) {
     setRunning(true);
     setError(undefined);
     setResult(undefined);
-    setProgress({ label: "Examen des adresses…" });
+    setProgress({ label: t("Examen des adresses…") });
     try {
       setResult(
         await discoverLan(current, {
           signal: abort.signal,
           report: (update) =>
-            setProgress({ ...update, label: update.label ?? "Examen des adresses…" }),
+            setProgress({ ...update, label: update.label ?? t("Examen des adresses…") }),
         }),
       );
     } catch (failure) {
-      if (failure instanceof JobCancelledError) setError("Découverte interrompue.");
-      else setError(failure instanceof Error ? failure.message : "Découverte impossible.");
+      if (failure instanceof JobCancelledError) setError(t("Découverte interrompue."));
+      else setError(failure instanceof Error ? failure.message : t("Découverte impossible."));
     } finally {
       setRunning(false);
       setProgress(undefined);
@@ -113,11 +114,11 @@ export function LanDiscoveryTool(_props: ToolComponentProps) {
       {!available && <Callout tone="warning">{NETWORK_NATIVE_REQUIRED}</Callout>}
 
       <Fieldset columns={1}>
-        <Field label="Interface réseau" hint="Seul le sous-réseau directement connecté est exploré.">
+        <Field label={t("Interface réseau")} hint={t("Seul le sous-réseau directement connecté est exploré.")}>
           <Select
             value={selected ?? ""}
             onChange={setSelected}
-            aria-label="Interface réseau"
+            aria-label={t("Interface réseau")}
             options={interfaces.map((entry) => ({
               value: entry.name,
               label: `${entry.name} — ${entry.address}/${entry.prefix}${entry.loopback ? " (boucle locale)" : ""}`,
@@ -126,21 +127,21 @@ export function LanDiscoveryTool(_props: ToolComponentProps) {
         </Field>
       </Fieldset>
 
-      {error && <Callout tone="error">{error}</Callout>}
+      {error && <Callout tone="error">{tx(error)}</Callout>}
 
       {plan && current && (
         <>
           <ValueTable
-            caption="Ce qui sera examiné"
+            caption={t("Ce qui sera examiné")}
             rows={[
-              { label: "Interface", value: current.name },
-              { label: "Adresse locale", value: `${current.address}/${current.prefix}` },
-              { label: "Réseau annoncé par l'interface", value: plan.range.declaredCidr },
-              { label: "Réseau réellement parcouru", value: plan.range.scannedCidr, highlight: true },
-              { label: "Première adresse", value: plan.range.first },
-              { label: "Dernière adresse", value: plan.range.last },
+              { label: t("Interface"), value: current.name },
+              { label: t("Adresse locale"), value: `${current.address}/${current.prefix}` },
+              { label: t("Réseau annoncé par l'interface"), value: plan.range.declaredCidr },
+              { label: t("Réseau réellement parcouru"), value: plan.range.scannedCidr, highlight: true },
+              { label: t("Première adresse"), value: plan.range.first },
+              { label: t("Dernière adresse"), value: plan.range.last },
               {
-                label: "Nombre d'adresses",
+                label: t("Nombre d'adresses"),
                 value: String(plan.range.targetCount),
                 highlight: true,
               },
@@ -148,39 +149,35 @@ export function LanDiscoveryTool(_props: ToolComponentProps) {
           />
 
           {plan.range.narrowed && plan.range.note && (
-            <Callout tone="info" title="Plage volontairement réduite">
-              {plan.range.note}
+            <Callout tone="info" title={t("Plage volontairement réduite")}>
+              {tx(plan.range.note)}
             </Callout>
           )}
 
-          <Callout tone="warning" title="Rien n'a encore été envoyé">
-            {plan.summary} La découverte lit d'abord la table de voisinage du système — ce qui
-            n'émet aucun paquet — puis envoie un écho ICMP par adresse.
+          <Callout tone="warning" title={t("Rien n'a encore été envoyé")}>
+            {t("{summary} La découverte lit d'abord la table de voisinage du système — ce qui n'émet aucun paquet — puis envoie un écho ICMP par adresse.", { summary: plan.summary })}
           </Callout>
 
           <div className="flex flex-wrap gap-2">
             <Button variant="primary" onClick={run} disabled={!available || running}>
               <Icon name="Radar" size={14} />{" "}
-              {running ? "Découverte en cours…" : "Lancer la découverte"}
+              {running ? t("Découverte en cours…") : t("Lancer la découverte")}
             </Button>
             {running && (
               <Button variant="ghost" onClick={() => controller?.abort()}>
-                <Icon name="X" size={14} /> Arrêter
+                <Icon name="X" size={14} />{" "}{t("Arrêter")}
               </Button>
             )}
           </div>
         </>
       )}
 
-      {progress && <ProgressBar ratio={progress.ratio} label={progress.label} />}
+      {progress && <ProgressBar ratio={progress.ratio} label={tx(progress.label)} />}
 
       {result && (
         <>
           <p className="ft-value">
-            {result.devices.length} appareil{result.devices.length > 1 ? "s" : ""} observé
-            {result.devices.length > 1 ? "s" : ""} sur {result.examined} adresse
-            {result.examined > 1 ? "s" : ""} examinée{result.examined > 1 ? "s" : ""}
-            {result.cancelled && " · interrompu avant la fin"}
+            {t("{count} {count, plural, one {appareil} other {appareils}} {count, plural, one {observé} other {observés}} sur {examined} {examined, plural, one {adresse} other {adresses}} {examined, plural, one {examinée} other {examinées}}{value}", { count: result.devices.length, examined: result.examined, value: result.cancelled && t(" · interrompu avant la fin") })}
           </p>
 
           {result.devices.length > 0 && (
@@ -189,11 +186,11 @@ export function LanDiscoveryTool(_props: ToolComponentProps) {
                 <table className="ft-table">
                   <thead>
                     <tr>
-                      <th scope="col">Adresse</th>
-                      <th scope="col">Nom</th>
-                      <th scope="col">Adresse matérielle</th>
+                      <th scope="col">{t("Adresse")}</th>
+                      <th scope="col">{t("Nom")}</th>
+                      <th scope="col">{t("Adresse matérielle")}</th>
                       <th scope="col" className="text-right">
-                        Latence
+                        {t("Latence")}
                       </th>
                     </tr>
                   </thead>
@@ -204,7 +201,7 @@ export function LanDiscoveryTool(_props: ToolComponentProps) {
                           {device.address}
                           {device.isSelf && (
                             <span className="ml-1.5 text-[10.5px] text-[var(--ft-text-faint)]">
-                              cette machine
+                              {t("cette machine")}
                             </span>
                           )}
                         </th>
@@ -221,14 +218,13 @@ export function LanDiscoveryTool(_props: ToolComponentProps) {
                 </table>
               </div>
               <p className="ft-meta border-t border-[var(--ft-rule)] px-3 py-1.5">
-                Méthodes employées : {result.methods.join(" · ")}.
+                {t("Méthodes employées : {value}.", { value: result.methods.join(" · ") })}
               </p>
             </section>
           )}
 
-          <Callout tone="info" title="Appareils observés, pas inventaire complet">
-            {result.note} Aucun fabricant n'est affiché : le déduire demanderait d'interroger une
-            base en ligne, ce que FourTout ne fait pas. Ces résultats ne sont pas enregistrés.
+          <Callout tone="info" title={t("Appareils observés, pas inventaire complet")}>
+            {t("{note} Aucun fabricant n'est affiché : le déduire demanderait d'interroger une base en ligne, ce que FourTout ne fait pas. Ces résultats ne sont pas enregistrés.", { note: result.note })}
           </Callout>
         </>
       )}

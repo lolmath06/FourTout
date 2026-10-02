@@ -29,6 +29,7 @@ import { toolRegistry } from "@/core/tools/registry";
 import { OpenToolButton } from "@/features/handoff/openTool";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, formatNumber, localized, t, tx } from "@/i18n";
 
 /**
  * Aperçu universel.
@@ -80,15 +81,15 @@ const MEDIA_LIMIT = 256 * 1024 * 1024;
 /** Limite d'un PDF ouvert dans l'aperçu. */
 const PDF_LIMIT = 64 * 1024 * 1024;
 
-const KIND_LABEL: Record<PreviewKind, string> = {
-  text: "Texte",
+const KIND_LABEL: Record<PreviewKind, string> = localized(() => ({
+  text: t("Texte"),
   image: "Image",
   pdf: "Document PDF",
   audio: "Audio",
-  video: "Vidéo",
+  video: t("Vidéo"),
   archive: "Archive",
-  hex: "Octets bruts",
-};
+  hex: t("Octets bruts"),
+}));
 
 /** Famille détectée → forme d'aperçu. */
 function kindOf(info: FileInfo): PreviewKind {
@@ -166,7 +167,7 @@ export function FilePreviewTool({ tool }: ToolComponentProps) {
     ): Promise<Preview> => {
       release();
       const info = await fileInfo(path);
-      if (info.isDir) throw new Error("Choisissez un fichier : un dossier n'a pas d'aperçu.");
+      if (info.isDir) throw new Error(t("Choisissez un fichier : un dossier n'a pas d'aperçu."));
       const kind = kindOf(info);
 
       if (kind === "archive") {
@@ -201,7 +202,7 @@ export function FilePreviewTool({ tool }: ToolComponentProps) {
           const window = await readHex(path, 0, 2048);
           return { info, kind: "hex", hex: { bytes: window.bytes, total: window.fileSize } };
         }
-        context.report?.({ label: "Ouverture du document…" });
+        context.report?.({ label: t("Ouverture du document…") });
         const bytes = await readBytes(path, PDF_LIMIT);
         const source: PdfSource = { name: baseName(path), bytes };
         const description = await inspectPdf(source);
@@ -218,7 +219,7 @@ export function FilePreviewTool({ tool }: ToolComponentProps) {
         return { info, kind: "hex", hex: { bytes: window.bytes, total: window.fileSize } };
       }
 
-      context.report?.({ label: "Chargement de l'aperçu…" });
+      context.report?.({ label: t("Chargement de l'aperçu…") });
       const bytes = await readBytes(path, MEDIA_LIMIT);
       const type = MIME_BY_MAGIC[info.magic] ?? "application/octet-stream";
       const url = URL.createObjectURL(new Blob([bytes as unknown as BlobPart], { type }));
@@ -247,19 +248,19 @@ export function FilePreviewTool({ tool }: ToolComponentProps) {
           setPaths(next);
           action.setResult(null);
         }}
-        label="Choisissez un fichier à prévisualiser"
-        hint="l'aperçu suit le contenu réel, pas l'extension"
+        label={t("Choisissez un fichier à prévisualiser")}
+        hint={t("l'aperçu suit le contenu réel, pas l'extension")}
         disabled={action.job.isRunning}
       />
 
       {paths.length > 0 && (
         <RunBar
-          label="Prévisualiser"
+          label={t("Prévisualiser")}
           icon="Eye"
           running={action.job.isRunning}
           progress={action.job.progress}
           status={action.job.status}
-          error={action.error}
+          error={tx(action.error)}
           cancel={action.job.cancel}
           onRun={() => void action.execute((context) => build(paths[0], context))}
         />
@@ -279,11 +280,11 @@ function Rendered({ preview }: { preview: Preview }) {
       <StatGrid
         columns={4}
         stats={[
-          { label: "Aperçu", value: KIND_LABEL[kind] },
-          { label: "Type détecté", value: info.magicLabel },
-          { label: "Taille", value: formatFileSize(info.size) },
+          { label: t("Aperçu"), value: KIND_LABEL[kind] },
+          { label: t("Type détecté"), value: info.magicLabel },
+          { label: t("Taille"), value: formatFileSize(info.size) },
           {
-            label: "Extension cohérente",
+            label: t("Extension cohérente"),
             value: info.extensionMatches ? "oui" : "non",
             tone: info.extensionMatches ? "ok" : "warn",
           },
@@ -291,16 +292,15 @@ function Rendered({ preview }: { preview: Preview }) {
       />
 
       {!info.extensionMatches && (
-        <Callout tone="warning" title="L'extension ne correspond pas au contenu">
-          Le fichier s'appelle « .{info.extension || "sans extension"} » mais contient un{" "}
-          {info.magicLabel}. L'aperçu ci-dessous suit le contenu réel.
+        <Callout tone="warning" title={t("L'extension ne correspond pas au contenu")}>
+          {t("Le fichier s'appelle « .{value} » mais contient un {magicLabel}. L'aperçu ci-dessous suit le contenu réel.", { value: info.extension || t("sans extension"), magicLabel: info.magicLabel })}
         </Callout>
       )}
 
       {/* Les outils qui savent faire quelque chose de ce fichier, avec le
           fichier déjà transmis. */}
       <div className="flex flex-wrap items-center gap-2" data-testid="preview-handoffs">
-        <span className="ft-label">Continuer avec</span>
+        <Trans source={"<0>Continuer avec</0>"} components={[<span className="ft-label" />]} />
         <Relay toolId={HANDOFF_TARGETS.inspect} preview={preview} />
         {specialist && <Relay toolId={specialist} preview={preview} variant="primary" />}
         {kind === "archive" && (
@@ -315,7 +315,7 @@ function Rendered({ preview }: { preview: Preview }) {
       {kind === "pdf" && preview.pdf && <PdfPanel pdf={preview.pdf} />}
 
       {kind === "audio" && preview.url && (
-        <Panel title="Audio">
+        <Panel title={t("Audio")}>
           <div className="p-3">
             <audio src={preview.url} controls className="w-full" aria-label={info.name} />
           </div>
@@ -323,7 +323,7 @@ function Rendered({ preview }: { preview: Preview }) {
       )}
 
       {kind === "video" && preview.url && (
-        <Panel title="Vidéo">
+        <Panel title={t("Vidéo")}>
           <div className="bg-black">
             <video src={preview.url} controls className="max-h-[32rem] w-full" aria-label={info.name} />
           </div>
@@ -332,15 +332,14 @@ function Rendered({ preview }: { preview: Preview }) {
 
       {kind === "text" && preview.text && (
         <>
-          <Panel title={`Texte — ${preview.text.encoding}, fins de ligne ${preview.text.newline}`}>
+          <Panel title={t("Texte — {encoding}, fins de ligne {newline}", { encoding: preview.text.encoding, newline: preview.text.newline })}>
             <pre className="max-h-[32rem] overflow-auto px-3 py-2 font-mono text-[12px] leading-5">
               {preview.text.content}
             </pre>
           </Panel>
           {preview.text.truncated && (
-            <Callout tone="info" title="Aperçu partiel">
-              Seuls les {formatFileSize(TEXT_WINDOW)} premiers du fichier sont affichés — le reste
-              n'a pas été lu. Pour travailler sur le fichier entier, passez par les outils Texte.
+            <Callout tone="info" title={t("Aperçu partiel")}>
+              {t("Seuls les {size} premiers du fichier sont affichés — le reste n'a pas été lu. Pour travailler sur le fichier entier, passez par les outils Texte.", { size: formatFileSize(TEXT_WINDOW) })}
             </Callout>
           )}
         </>
@@ -351,7 +350,7 @@ function Rendered({ preview }: { preview: Preview }) {
       {kind === "hex" && preview.hex && (
         <>
           <Panel
-            title={`Octets bruts — ${preview.hex.bytes.length} premiers sur ${preview.hex.total.toLocaleString("fr-FR")}`}
+            title={t("Octets bruts — {count} premiers sur {value}", { count: preview.hex.bytes.length, value: formatNumber(preview.hex.total) })}
           >
             <pre className="max-h-[32rem] overflow-auto px-3 py-2 font-mono text-[11px] leading-5">
               {toHexLines(preview.hex.bytes, 0).map((line) => (
@@ -365,9 +364,8 @@ function Rendered({ preview }: { preview: Preview }) {
               ))}
             </pre>
           </Panel>
-          <Callout tone="neutral" title="Aucun aperçu visuel pour ce format">
-            FourTout ne prétend pas savoir afficher ce contenu : il en montre les octets. L'éditeur
-            hexadécimal permet de le parcourir en entier.
+          <Callout tone="neutral" title={t("Aucun aperçu visuel pour ce format")}>
+            {t("FourTout ne prétend pas savoir afficher ce contenu : il en montre les octets. L'éditeur hexadécimal permet de le parcourir en entier.")}
           </Callout>
         </>
       )}
@@ -389,15 +387,17 @@ function ImagePanel({ url, info }: { url: string; info: FileInfo }) {
 
   return (
     <Panel
-      title={size ? `Image — ${size.width} × ${size.height} pixels` : "Image"}
+      title={
+              size
+                ? t("Image — {width} × {height} pixels", { width: size.width, height: size.height })
+                : t("Image")
+            }
       testId="preview-image"
     >
       {failed ? (
         <div className="p-3">
-          <Callout tone="error" title="Ce contenu n'a pas pu être affiché">
-            Les octets ont bien été lus ({formatSizeWithExact(info.size)}) et reconnus comme{" "}
-            {info.magicLabel}, mais le moteur d'affichage du système n'en a rien fait. Le fichier
-            est probablement endommagé — l'éditeur hexadécimal permet de le vérifier.
+          <Callout tone="error" title={t("Ce contenu n'a pas pu être affiché")}>
+            {t("Les octets ont bien été lus ({size}) et reconnus comme {magicLabel}, mais le moteur d'affichage du système n'en a rien fait. Le fichier est probablement endommagé — l'éditeur hexadécimal permet de le vérifier.", { size: formatSizeWithExact(info.size), magicLabel: info.magicLabel })}
           </Callout>
         </div>
       ) : (
@@ -449,16 +449,15 @@ function PdfPanel({ pdf }: { pdf: { source: PdfSource; pages: number; encrypted:
 
   if (pdf.encrypted) {
     return (
-      <Callout tone="warning" title="Document protégé par mot de passe">
-        Le contenu ne peut pas être rendu sans le mot de passe. L'outil « Déverrouiller un PDF »
-        s'en charge.
+      <Callout tone="warning" title={t("Document protégé par mot de passe")}>
+        {t("Le contenu ne peut pas être rendu sans le mot de passe. L'outil « Déverrouiller un PDF » s'en charge.")}
       </Callout>
     );
   }
 
   return (
     <Panel
-      title={`Document PDF — page ${page} sur ${pdf.pages}`}
+      title={t("Document PDF — page {page} sur {pages}", { page, pages: pdf.pages })}
       testId="preview-pdf"
       actions={
         pdf.pages > 1 && (
@@ -468,7 +467,7 @@ function PdfPanel({ pdf }: { pdf: { source: PdfSource; pages: number; encrypted:
               variant="ghost"
               onClick={() => setPage((current) => Math.max(1, current - 1))}
               disabled={page <= 1}
-              aria-label="Page précédente"
+              aria-label={t("Page précédente")}
             >
               <Icon name="ArrowLeft" size={13} />
             </Button>
@@ -480,7 +479,7 @@ function PdfPanel({ pdf }: { pdf: { source: PdfSource; pages: number; encrypted:
               variant="ghost"
               onClick={() => setPage((current) => Math.min(pdf.pages, current + 1))}
               disabled={page >= pdf.pages}
-              aria-label="Page suivante"
+              aria-label={t("Page suivante")}
             >
               <Icon name="ArrowRight" size={13} />
             </Button>
@@ -489,16 +488,16 @@ function PdfPanel({ pdf }: { pdf: { source: PdfSource; pages: number; encrypted:
       }
     >
       <div className="flex min-h-64 items-center justify-center bg-[var(--ft-surface-2)] p-4">
-        {rendered.loading && <p className="ft-meta">Rendu de la page…</p>}
+        {rendered.loading && <p className="ft-meta">{t("Rendu de la page…")}</p>}
         {rendered.error && (
-          <Callout tone="error" title="Page illisible">
-            {rendered.error}
+          <Callout tone="error" title={t("Page illisible")}>
+            {tx(rendered.error)}
           </Callout>
         )}
         {rendered.url && (
           <img
             src={rendered.url}
-            alt={`Page ${page} de ${pdf.source.name}`}
+            alt={t("Page {page} de {name}", { page, name: pdf.source.name })}
             data-testid="preview-pdf-page"
             className="max-h-[36rem] max-w-full border border-[var(--ft-border)] bg-white object-contain shadow-sm"
           />
@@ -548,18 +547,18 @@ function ArchivePanel({ listing }: { listing: ArchiveListing }) {
       <StatGrid
         columns={4}
         stats={[
-          { label: "Entrées", value: listing.entries.length },
-          { label: "Fichiers", value: listing.files },
-          { label: "Taille décompressée", value: formatFileSize(listing.totalSize) },
+          { label: t("Entrées"), value: listing.entries.length },
+          { label: t("Fichiers"), value: listing.files },
+          { label: t("Taille décompressée"), value: formatFileSize(listing.totalSize) },
           {
-            label: "Entrées refusées",
+            label: t("Entrées refusées"),
             value: listing.rejected,
             tone: listing.rejected > 0 ? "danger" : "neutral",
           },
         ]}
       />
       <Panel
-        title="Contenu de l'archive (rien n'est extrait)"
+        title={t("Contenu de l'archive (rien n'est extrait)")}
         count={listing.entries.length}
         testId="preview-archive"
       >

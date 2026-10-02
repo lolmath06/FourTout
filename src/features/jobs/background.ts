@@ -1,5 +1,6 @@
 import { JobCancelledError } from "@/core/jobs/types";
 import { latestJobForTool, useJobStore, type Job, type JobKind } from "./store";
+import { msg, t } from "@/i18n";
 
 /**
  * Contrôleur générique des traitements longs qui **survivent à la navigation**.
@@ -15,7 +16,7 @@ import { latestJobForTool, useJobStore, type Job, type JobKind } from "./store";
  */
 
 /** Message porté par un job arrêté par l'utilisateur (et non par une panne). */
-export const JOB_CANCELLED = "Traitement annulé.";
+export const JOB_CANCELLED = msg("Traitement annulé.");
 
 interface BackgroundContext {
   controller: AbortController;
@@ -72,7 +73,7 @@ export async function startBackgroundJob<TResult>(
   const existing = jobForTool(options.toolId);
   if (existing) {
     if (existing.status === "running" || existing.status === "cancelling") {
-      throw new Error("Un traitement est déjà en cours pour cet outil.");
+      throw new Error(t("Un traitement est déjà en cours pour cet outil."));
     }
     clearBackgroundJob(existing.id);
   }
@@ -120,7 +121,7 @@ export async function startBackgroundJob<TResult>(
           ? JOB_CANCELLED
           : error instanceof Error
             ? error.message
-            : "Erreur inattendue.",
+            : t("Erreur inattendue."),
         endedAt: Date.now(),
       });
     }

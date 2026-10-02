@@ -1,4 +1,5 @@
 import type { ToolDefinition } from "@/core/tools/types";
+import { localized, t } from "@/i18n";
 
 /**
  * Outils vers lesquels les outils « Fichiers » savent passer la main.
@@ -74,12 +75,12 @@ export const HANDOFF_TARGETS = {
  * chaque identifiant existe au registre et porte une implémentation : aucun de
  * ces relais ne peut devenir un lien mort sans faire échouer la suite.
  */
-export const DIAGNOSTIC_SPECIALISTS: Record<string, { tool: HandoffTarget; label: string }> = {
-  zip: { tool: "archive-repair", label: "Diagnostiquer cette archive en détail" },
-  pdf: { tool: "pdf-repair", label: "Diagnostiquer ce PDF en détail" },
-  png: { tool: "image-repair", label: "Diagnostiquer cette image en détail" },
-  jpg: { tool: "image-repair", label: "Diagnostiquer cette image en détail" },
-};
+export const DIAGNOSTIC_SPECIALISTS: Record<string, { tool: HandoffTarget; label: string }> = localized(() => ({
+  zip: { tool: "archive-repair", label: t("Diagnostiquer cette archive en détail") },
+  pdf: { tool: "pdf-repair", label: t("Diagnostiquer ce PDF en détail") },
+  png: { tool: "image-repair", label: t("Diagnostiquer cette image en détail") },
+  jpg: { tool: "image-repair", label: t("Diagnostiquer cette image en détail") },
+}));
 
 export type HandoffTarget = (typeof HANDOFF_TARGETS)[keyof typeof HANDOFF_TARGETS];
 

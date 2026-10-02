@@ -17,6 +17,7 @@
 import { isTauri } from "@/core/platform";
 import { openWithPdfJs } from "@/core/pdf/pdfjs";
 import { readBytes } from "@/core/files/native";
+import { localized, t } from "@/i18n";
 
 export const DIAGNOSTICS_NATIVE_REQUIRED =
   "Le diagnostic lit un fichier sur votre disque : il nécessite l'application FourTout " +
@@ -191,18 +192,18 @@ export interface DiagnosticDetails {
   image?: ImageDetails;
 }
 
-export const SEVERITY_LABELS: Record<Severity, string> = {
-  info: "Constat",
-  warning: "Anomalie",
-  error: "Dommage",
-};
+export const SEVERITY_LABELS: Record<Severity, string> = localized(() => ({
+  info: t("Constat"),
+  warning: t("Anomalie"),
+  error: t("Dommage"),
+}));
 
-export const HEALTH_LABELS: Record<Health, string> = {
-  healthy: "Aucune anomalie relevée",
-  suspicious: "Anomalies sans perte de contenu démontrée",
-  damaged: "Structure ou contenu abîmés",
-  unreadable: "Rien d'exploitable n'a pu être lu",
-};
+export const HEALTH_LABELS: Record<Health, string> = localized(() => ({
+  healthy: t("Aucune anomalie relevée"),
+  suspicious: t("Anomalies sans perte de contenu démontrée"),
+  damaged: t("Structure ou contenu abîmés"),
+  unreadable: t("Rien d'exploitable n'a pu être lu"),
+}));
 
 /**
  * Ce que chaque degré de réparabilité veut dire, en toutes lettres.
@@ -211,12 +212,12 @@ export const HEALTH_LABELS: Record<Health, string> = {
  * « visuellement récupéré » ne sont pas des synonymes, et l'interface ne les
  * emploie jamais l'un pour l'autre.
  */
-export const REPAIRABILITY_LABELS: Record<Repairability, string> = {
-  none: "Aucune correction automatique défendable",
-  safeRepair: "Réparation sans perte",
-  recoverPartial: "Récupération partielle",
-  recoverVisual: "Récupération visuelle",
-};
+export const REPAIRABILITY_LABELS: Record<Repairability, string> = localized(() => ({
+  none: t("Aucune correction automatique défendable"),
+  safeRepair: t("Réparation sans perte"),
+  recoverPartial: t("Récupération partielle"),
+  recoverVisual: t("Récupération visuelle"),
+}));
 
 async function invokeNative<T>(command: string, args: Record<string, unknown>): Promise<T> {
   if (!isTauri()) throw new Error(DIAGNOSTICS_NATIVE_REQUIRED);
@@ -226,7 +227,7 @@ async function invokeNative<T>(command: string, args: Record<string, unknown>): 
   } catch (error) {
     const message =
       typeof error === "string" ? error : error instanceof Error ? error.message : "";
-    throw new Error(message || "Le diagnostic a échoué.");
+    throw new Error(message || t("Le diagnostic a échoué."));
   }
 }
 
@@ -308,7 +309,7 @@ export async function zipRecover(
   } catch (error) {
     const message =
       typeof error === "string" ? error : error instanceof Error ? error.message : "";
-    throw new Error(message === "cancelled" ? "Récupération interrompue." : message);
+    throw new Error(message === "cancelled" ? t("Récupération interrompue.") : message);
   } finally {
     unlisten();
     context?.signal?.removeEventListener("abort", onAbort);
@@ -383,7 +384,7 @@ export async function verifyPdf(path: string): Promise<PdfVerification> {
     return {
       readable: false,
       pages: 0,
-      error: error instanceof Error ? error.message : "Le moteur PDF refuse ce fichier.",
+      error: error instanceof Error ? error.message : t("Le moteur PDF refuse ce fichier."),
     };
   }
 }

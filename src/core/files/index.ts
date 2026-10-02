@@ -5,6 +5,7 @@ import type {
   FileSelection,
   SelectedFile,
 } from "./types";
+import { formatBinarySize, t } from "@/i18n";
 
 export type { FileConstraints, FileRejection, FileSelection, SelectedFile } from "./types";
 
@@ -45,26 +46,14 @@ export function kindOfExtension(extension: string): DataKind {
  * afficher « 10 Mio » pour 10 584 064 octets.
  */
 export function formatFileSize(bytes: number): string {
-  if (!Number.isFinite(bytes) || bytes < 0) return "—";
-  if (bytes < 1024) return `${bytes} o`;
-  const units = ["Kio", "Mio", "Gio", "Tio"];
-  let value = bytes / 1024;
-  let unit = 0;
-  while (value >= 1024 && unit < units.length - 1) {
-    value /= 1024;
-    unit += 1;
-  }
-  const decimals = value < 10 ? 2 : value < 100 ? 1 : 0;
-  return `${value.toLocaleString("fr-FR", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  })} ${units[unit]}`;
+  // Symboles et séparateurs suivent la langue : « 10,1 Mio », « 10.1 MiB ».
+  return formatBinarySize(bytes);
 }
 
 /** Nombre exact d'octets, groupé par milliers : « 10 584 064 octets ». */
 export function formatExactBytes(bytes: number): string {
   if (!Number.isFinite(bytes) || bytes < 0) return "—";
-  return `${bytes.toLocaleString("fr-FR")} octet${bytes > 1 ? "s" : ""}`;
+  return t("{count, plural, one {# octet} other {# octets}}", { count: bytes });
 }
 
 /**
@@ -139,19 +128,19 @@ export function validateSelection(
       rejected.push({
         name: file.name,
         reason: candidate.extension
-          ? `Format .${candidate.extension} non pris en charge par cet outil`
-          : "Type de fichier non reconnu",
+          ? t("Format .{extension} non pris en charge par cet outil", { extension: candidate.extension })
+          : t("Type de fichier non reconnu"),
       });
       continue;
     }
     if (constraints.maxFileSize !== undefined && file.size > constraints.maxFileSize) {
-      rejected.push({ name: file.name, reason: "Fichier trop volumineux" });
+      rejected.push({ name: file.name, reason: t("Fichier trop volumineux") });
       continue;
     }
     if (alreadySelected + accepted.length >= max) {
       rejected.push({
         name: file.name,
-        reason: max === 1 ? "Cet outil ne traite qu'un fichier à la fois" : `Maximum ${max} fichiers`,
+        reason: max === 1 ? t("Cet outil ne traite qu'un fichier à la fois") : t("Maximum {max} fichiers", { max }),
       });
       continue;
     }

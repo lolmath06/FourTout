@@ -24,6 +24,7 @@ import { outputName } from "@/core/pdf/filenames";
 import { useHandoff } from "@/features/handoff/store";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t, tx } from "@/i18n";
 
 /**
  * Conversion d'encodage.
@@ -33,12 +34,12 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * refusée, les caractères concernés sont nommés et situés, et le remplacement
  * n'a lieu que si l'utilisateur le demande explicitement.
  */
-const NEWLINE_OPTIONS: { value: Eol | "keep"; label: string }[] = [
-  { value: "keep", label: "Ne pas modifier" },
-  { value: "lf", label: "LF (Unix, macOS)" },
-  { value: "crlf", label: "CRLF (Windows)" },
-  { value: "cr", label: "CR (anciens Mac)" },
-];
+const NEWLINE_OPTIONS: { value: Eol | "keep"; label: string }[] = localized(() => [
+  { value: "keep", label: t("Ne pas modifier") },
+  { value: "lf", label: t("LF (Unix, macOS)") },
+  { value: "crlf", label: t("CRLF (Windows)") },
+  { value: "cr", label: t("CR (anciens Mac)") },
+]);
 
 export function TextEncodingConvertTool({ tool }: ToolComponentProps) {
   const handoff = useHandoff(tool.id);
@@ -110,21 +111,21 @@ export function TextEncodingConvertTool({ tool }: ToolComponentProps) {
       };
       setOutcome({
         files: [file],
-        summary: `${result.characters} caractère(s) réécrits de ${ENCODING_LABELS[result.from]} vers ${ENCODING_LABELS[result.to]}.`,
+        summary: t("{characters} caractère(s) réécrits de {value} vers {value2}.", { characters: result.characters, value: ENCODING_LABELS[result.from], value2: ENCODING_LABELS[result.to] }),
         warning:
           result.replaced.length > 0
-            ? `${result.replaced.length} caractère(s) ont été remplacés par « ${replacement} » : ${result.replaced
+            ? t("{count} caractère(s) ont été remplacés par « {replacement} » : {value}", { count: result.replaced.length, replacement, value: result.replaced
                 .slice(0, 6)
                 .map((item) => item.character)
-                .join(" ")}`
+                .join(" ") })
             : undefined,
       });
-      notify.success("Fichier converti", file.name);
+      notify.success(t("Fichier converti"), file.name);
     } catch (conversionError) {
       const failure = toTextError(conversionError);
       setError(failure.message);
       if (isTextError(conversionError) && conversionError.code === "encoding-unrepresentable") {
-        notify.error("Conversion refusée", "Des caractères seraient perdus.");
+        notify.error(t("Conversion refusée"), t("Des caractères seraient perdus."));
       }
     }
   };
@@ -135,48 +136,47 @@ export function TextEncodingConvertTool({ tool }: ToolComponentProps) {
         constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
         files={files}
         onChange={setFiles}
-        label="Déposez le fichier texte à convertir"
-        hint="Le fichier d'origine n'est jamais modifié : un nouveau fichier est produit."
+        label={t("Déposez le fichier texte à convertir")}
+        hint={t("Le fichier d'origine n'est jamais modifié : un nouveau fichier est produit.")}
       />
 
       {detection?.binary && (
-        <Callout tone="error" title="Ce fichier n'est pas du texte">
-          Il contient une forte proportion d'octets de contrôle. Le convertir n'aurait aucun sens et
-          l'endommagerait.
+        <Callout tone="error" title={t("Ce fichier n'est pas du texte")}>
+          {t("Il contient une forte proportion d'octets de contrôle. Le convertir n'aurait aucun sens et l'endommagerait.")}
         </Callout>
       )}
 
       {detection && !detection.binary && (
         <>
-          <Callout tone={detection.certain ? "success" : "info"} title="Encodage détecté">
-            {ENCODING_LABELS[detection.encoding]}
+          <Callout tone={detection.certain ? "success" : "info"} title={t("Encodage détecté")}>
+            {tx(ENCODING_LABELS[detection.encoding])}
             {detection.certain
-              ? " — le fichier le déclare lui-même."
-              : ` — hypothèse à ${Math.round(detection.confidence * 100)} % de confiance. ${detection.reason}`}
+              ? t(" — le fichier le déclare lui-même.")
+              : t(" — hypothèse à {value} % de confiance. {reason}", { value: Math.round(detection.confidence * 100), reason: detection.reason })}
           </Callout>
 
-          <Fieldset columns={3} title="Conversion">
-            <Field label="Encodage source">
+          <Fieldset columns={3} title={t("Conversion")}>
+            <Field label={t("Encodage source")}>
               <Select
                 value={from}
                 onChange={setFrom}
                 options={[
                   {
                     value: "auto" as const,
-                    label: `Automatique (${ENCODING_LABELS[detection.encoding]})`,
+                    label: t("Automatique ({value})", { value: ENCODING_LABELS[detection.encoding] }),
                   },
                   ...ENCODINGS.map((value) => ({ value, label: ENCODING_LABELS[value] })),
                 ]}
               />
             </Field>
-            <Field label="Encodage de destination">
+            <Field label={t("Encodage de destination")}>
               <Select
                 value={to}
                 onChange={setTo}
                 options={ENCODINGS.map((value) => ({ value, label: ENCODING_LABELS[value] }))}
               />
             </Field>
-            <Field label="Fins de ligne" hint="Réutilise le moteur de « Convertir les fins de ligne ».">
+            <Field label={t("Fins de ligne")} hint={t("Réutilise le moteur de « Convertir les fins de ligne ».")}>
               <Select value={newline} onChange={setNewline} options={NEWLINE_OPTIONS} />
             </Field>
           </Fieldset>
@@ -184,24 +184,21 @@ export function TextEncodingConvertTool({ tool }: ToolComponentProps) {
           {blocking.length > 0 && (
             <Callout
               tone={allowReplacement ? "warning" : "error"}
-              title={`${blocking.length} caractère(s) ne peuvent pas être écrits en ${ENCODING_LABELS[to]}`}
+              title={t("{count} caractère(s) ne peuvent pas être écrits en {value}", { count: blocking.length, value: ENCODING_LABELS[to] })}
             >
               <div className="space-y-2">
                 <ul className="space-y-0.5">
                   {blocking.slice(0, 8).map((item) => (
                     <li key={item.codePoint} className="ft-num">
-                      « {item.character} » — U+
-                      {item.codePoint.toString(16).toUpperCase().padStart(4, "0")}, ligne{" "}
-                      {item.line}
-                      {item.count > 1 ? ` (${item.count} fois)` : ""}
+                      {t("« {character} » — U+{value}, ligne {line}{value2}", { character: item.character, value: item.codePoint.toString(16).toUpperCase().padStart(4, "0"), line: item.line, value2: item.count > 1 ? ` (${item.count} fois)` : "" })}
                     </li>
                   ))}
-                  {blocking.length > 8 && <li>…et {blocking.length - 8} autre(s).</li>}
+                  {blocking.length > 8 && <li>{t("…et {value} autre(s).", { value: blocking.length - 8 })}</li>}
                 </ul>
                 <p>
                   {allowReplacement
-                    ? `Ces caractères seront remplacés par « ${replacement} ». Cette perte est irréversible.`
-                    : "La conversion est refusée tant que vous ne l'avez pas explicitement autorisée. Choisissez plutôt UTF-8, qui sait tout écrire."}
+                    ? t("Ces caractères seront remplacés par « {replacement} ». Cette perte est irréversible.", { replacement })
+                    : t("La conversion est refusée tant que vous ne l'avez pas explicitement autorisée. Choisissez plutôt UTF-8, qui sait tout écrire.")}
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   <label className="flex items-center gap-2 text-[13px]">
@@ -211,15 +208,15 @@ export function TextEncodingConvertTool({ tool }: ToolComponentProps) {
                       onChange={(event) => setAllowReplacement(event.target.checked)}
                       className="accent-[var(--ft-accent)]"
                     />
-                    Autoriser le remplacement
+                    {t("Autoriser le remplacement")}
                   </label>
                   {allowReplacement && (
                     <span className="flex items-center gap-2">
-                      <span className="ft-label">Remplacer par</span>
+                      <Trans source={"<0>Remplacer par</0>"} components={[<span className="ft-label" />]} />
                       <TextInput
                         value={replacement}
                         onChange={(event) => setReplacement(event.target.value.slice(0, 3))}
-                        aria-label="Caractère de remplacement"
+                        aria-label={t("Caractère de remplacement")}
                         className="w-16"
                       />
                     </span>
@@ -236,15 +233,15 @@ export function TextEncodingConvertTool({ tool }: ToolComponentProps) {
               onClick={convert}
               disabled={blocking.length > 0 && !allowReplacement}
             >
-              <Icon name="ArrowRightLeft" size={15} /> Convertir en {ENCODING_LABELS[to]}
+              <Icon name="ArrowRightLeft" size={15} />{" "}{t("Convertir en {value}", { value: ENCODING_LABELS[to] })}
             </Button>
           </div>
         </>
       )}
 
       {error && (
-        <Callout tone="error" title="La conversion a échoué">
-          {error}
+        <Callout tone="error" title={t("La conversion a échoué")}>
+          {tx(error)}
         </Callout>
       )}
 

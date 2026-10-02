@@ -1,12 +1,13 @@
 import { parseHexColor, rgbToHex, type Rgb } from "@/core/image/types";
+import { localized, t, tx } from "@/i18n";
 
 /** Choix d'une couleur : nuancier rapide + saisie hexadécimale + pipette native. */
-const PRESETS: { label: string; hex: string }[] = [
-  { label: "Blanc", hex: "#ffffff" },
-  { label: "Noir", hex: "#000000" },
-  { label: "Gris", hex: "#808080" },
-  { label: "Transparent clair", hex: "#f5f5f5" },
-];
+const PRESETS: { label: string; hex: string }[] = localized(() => [
+  { label: t("Blanc"), hex: "#ffffff" },
+  { label: t("Noir"), hex: "#000000" },
+  { label: t("Gris"), hex: "#808080" },
+  { label: t("Transparent clair"), hex: "#f5f5f5" },
+]);
 
 export function ColorField({
   value,
@@ -22,7 +23,7 @@ export function ColorField({
     <div className="flex flex-wrap items-center gap-2">
       <input
         type="color"
-        aria-label="Choisir une couleur"
+        aria-label={t("Choisir une couleur")}
         value={hex}
         onChange={(event) => {
           const parsed = parseHexColor(event.target.value);
@@ -32,7 +33,7 @@ export function ColorField({
       />
       <input
         type="text"
-        aria-label="Code hexadécimal"
+        aria-label={t("Code hexadécimal")}
         value={hex}
         onChange={(event) => {
           const parsed = parseHexColor(event.target.value);
@@ -45,7 +46,7 @@ export function ColorField({
           <button
             key={preset.hex}
             type="button"
-            title={preset.label}
+            title={tx(preset.label)}
             onClick={() => {
               const parsed = parseHexColor(preset.hex);
               if (parsed) onChange(parsed);

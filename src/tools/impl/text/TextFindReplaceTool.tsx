@@ -8,10 +8,9 @@ import {
   type ReplaceOptions,
 } from "@/core/text/replace";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, msg, t } from "@/i18n";
 
-const SAMPLE = `Le chat dort. Le chaton joue avec le chat.
-CHAT en majuscules, chat en minuscules.
-Un chat, deux chats, trois chats.`;
+const SAMPLE = msg("Le chat dort. Le chaton joue avec le chat.\nCHAT en majuscules, chat en minuscules.\nUn chat, deux chats, trois chats.");
 
 export function TextFindReplaceTool(_props: ToolComponentProps) {
   const [input, setInput] = useState("");
@@ -30,62 +29,60 @@ export function TextFindReplaceTool(_props: ToolComponentProps) {
       input={input}
       onInputChange={setInput}
       output={result.text}
-      outputLabel="Texte modifié"
+      outputLabel={t("Texte modifié")}
       downloadName="texte-remplace.txt"
       sample={SAMPLE}
       error={searchEmpty ? undefined : (result.error ?? undefined)}
       summary={
         !searchEmpty && !result.error && input.length > 0 ? (
           <span className="tabular-nums">
-            <strong>{matches.count}</strong> occurrence{matches.count > 1 ? "s" : ""} trouvée
-            {matches.count > 1 ? "s" : ""}
-            {result.count > 0 && ` · ${result.count} remplacée${result.count > 1 ? "s" : ""}`}
+            <Trans source={"<0>{count}</0> {count, plural, one {occurrence} other {occurrences}} {count, plural, one {trouvée} other {trouvées}}{value}"} values={{ count: matches.count, value: result.count > 0 && t(" · {count} {count, plural, one {remplacée} other {remplacées}}", { count: result.count }) }} components={[<strong />]} />
           </span>
         ) : undefined
       }
     >
       <Fieldset columns={2}>
-        <Field label="Rechercher">
+        <Field label={t("Rechercher")}>
           <TextInput
             value={options.search}
             onChange={(event) => set("search", event.target.value)}
             placeholder={options.regex ? "\\bchat\\w*" : "chat"}
-            aria-label="Texte à rechercher"
+            aria-label={t("Texte à rechercher")}
           />
         </Field>
-        <Field label="Remplacer par" hint={options.regex ? "$1, $2… reprennent les groupes capturés" : undefined}>
+        <Field label={t("Remplacer par")} hint={options.regex ? "$1, $2… reprennent les groupes capturés" : undefined}>
           <TextInput
             value={options.replacement}
             onChange={(event) => set("replacement", event.target.value)}
             placeholder="chien"
-            aria-label="Texte de remplacement"
+            aria-label={t("Texte de remplacement")}
           />
         </Field>
-        <Field label="Options" full>
+        <Field label={t("Options")} full>
           <div className="grid gap-0.5 sm:grid-cols-2">
             <CheckOption
               checked={options.all}
               onChange={(v) => set("all", v)}
-              label="Toutes les occurrences"
-              hint="Sinon, seule la première"
+              label={t("Toutes les occurrences")}
+              hint={t("Sinon, seule la première")}
             />
             <CheckOption
               checked={options.caseSensitive}
               onChange={(v) => set("caseSensitive", v)}
-              label="Sensible à la casse"
+              label={t("Sensible à la casse")}
             />
             <CheckOption
               checked={options.wholeWord}
               onChange={(v) => set("wholeWord", v)}
-              label="Mot entier"
-              hint="« chat » ne trouve pas « chaton »"
+              label={t("Mot entier")}
+              hint={t("« chat » ne trouve pas « chaton »")}
               disabled={options.regex}
             />
             <CheckOption
               checked={options.regex}
               onChange={(v) => set("regex", v)}
-              label="Expression régulière"
-              hint="Syntaxe JavaScript"
+              label={t("Expression régulière")}
+              hint={t("Syntaxe JavaScript")}
             />
           </div>
         </Field>

@@ -13,6 +13,7 @@
  * d'être rapide. Elle traite des documents bureautiques, pas des flux vidéo.
  */
 
+import { t } from "@/i18n";
 export class InflateError extends Error {
   constructor(message: string) {
     super(message);
@@ -31,7 +32,7 @@ class BitReader {
   bits(count: number): number {
     while (this.bitCount < count) {
       if (this.position >= this.bytes.length) {
-        throw new InflateError("Flux compressé tronqué.");
+        throw new InflateError(t("Flux compressé tronqué."));
       }
       this.bitBuffer |= this.bytes[this.position] << this.bitCount;
       this.position += 1;
@@ -51,7 +52,7 @@ class BitReader {
 
   readBytes(count: number): Uint8Array {
     if (this.position + count > this.bytes.length) {
-      throw new InflateError("Flux compressé tronqué.");
+      throw new InflateError(t("Flux compressé tronqué."));
     }
     const slice = this.bytes.subarray(this.position, this.position + count);
     this.position += count;
@@ -100,7 +101,7 @@ function decodeSymbol(reader: BitReader, table: HuffmanTable): number {
     first = (first + count) << 1;
     code <<= 1;
   }
-  throw new InflateError("Code de Huffman invalide.");
+  throw new InflateError(t("Code de Huffman invalide."));
 }
 
 const LENGTH_BASE = [
@@ -173,7 +174,7 @@ class OutputBuffer {
 
   /** Recopie `length` octets déjà écrits, `distance` octets en arrière. */
   copyBack(distance: number, length: number): void {
-    if (distance > this.size) throw new InflateError("Référence arrière hors du flux.");
+    if (distance > this.size) throw new InflateError(t("Référence arrière hors du flux."));
     this.ensure(length);
     let from = this.size - distance;
     for (let i = 0; i < length; i += 1) {
@@ -209,7 +210,7 @@ export function inflateRaw(bytes: Uint8Array, expectedSize = 0): Uint8Array {
       const length = header[0] | (header[1] << 8);
       const complement = header[2] | (header[3] << 8);
       if ((length ^ 0xffff) !== complement) {
-        throw new InflateError("Bloc non compressé incohérent.");
+        throw new InflateError(t("Bloc non compressé incohérent."));
       }
       output.pushChunk(reader.readBytes(length));
     } else if (type === 1 || type === 2) {
@@ -222,7 +223,7 @@ export function inflateRaw(bytes: Uint8Array, expectedSize = 0): Uint8Array {
       }
       inflateBlock(reader, output, literal, distance);
     } else {
-      throw new InflateError("Type de bloc DEFLATE réservé.");
+      throw new InflateError(t("Type de bloc DEFLATE réservé."));
     }
 
     if (isLast) break;
@@ -253,7 +254,7 @@ function readDynamicTables(reader: BitReader): {
       lengths[index] = symbol;
       index += 1;
     } else if (symbol === 16) {
-      if (index === 0) throw new InflateError("Répétition sans longueur précédente.");
+      if (index === 0) throw new InflateError(t("Répétition sans longueur précédente."));
       const previous = lengths[index - 1];
       const repeat = reader.bits(2) + 3;
       for (let i = 0; i < repeat; i += 1) lengths[index++] = previous;
@@ -262,7 +263,7 @@ function readDynamicTables(reader: BitReader): {
     } else {
       index += reader.bits(7) + 11;
     }
-    if (index > lengths.length) throw new InflateError("Table de Huffman incohérente.");
+    if (index > lengths.length) throw new InflateError(t("Table de Huffman incohérente."));
   }
 
   return {
@@ -288,13 +289,13 @@ function inflateBlock(
 
     const lengthIndex = symbol - 257;
     if (lengthIndex >= LENGTH_BASE.length) {
-      throw new InflateError("Code de longueur invalide.");
+      throw new InflateError(t("Code de longueur invalide."));
     }
     const length = LENGTH_BASE[lengthIndex] + reader.bits(LENGTH_EXTRA[lengthIndex]);
 
     const distanceSymbol = decodeSymbol(reader, distance);
     if (distanceSymbol >= DISTANCE_BASE.length) {
-      throw new InflateError("Code de distance invalide.");
+      throw new InflateError(t("Code de distance invalide."));
     }
     const back =
       DISTANCE_BASE[distanceSymbol] + reader.bits(DISTANCE_EXTRA[distanceSymbol]);

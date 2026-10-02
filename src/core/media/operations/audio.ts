@@ -1,4 +1,5 @@
 import { AUDIO_MIME, type AudioFormat } from "../types";
+import { localized, t } from "@/i18n";
 
 /**
  * Constructeurs d'opérations audio FFmpeg.
@@ -181,19 +182,19 @@ export function extractAudio(format: AudioFormat, options: { copy?: boolean } = 
 /** Nombre de canaux demandé en sortie. `keep` laisse la source intacte. */
 export type ChannelTarget = "keep" | "mono" | "stereo";
 
-export const CHANNEL_TARGETS: { value: ChannelTarget; label: string; hint: string }[] = [
-  { value: "keep", label: "Tel quel", hint: "Les canaux de la source sont conservés." },
+export const CHANNEL_TARGETS: { value: ChannelTarget; label: string; hint: string }[] = localized(() => [
+  { value: "keep", label: t("Tel quel"), hint: t("Les canaux de la source sont conservés.") },
   {
     value: "mono",
-    label: "Mono (1 canal)",
-    hint: "Les canaux sont mélangés en un seul par le mixage de FFmpeg, à volume corrigé.",
+    label: t("Mono (1 canal)"),
+    hint: t("Les canaux sont mélangés en un seul par le mixage de FFmpeg, à volume corrigé."),
   },
   {
     value: "stereo",
-    label: "Stéréo (2 canaux)",
-    hint: "Depuis du mono, les deux voies portent le même signal : c'est une duplication, pas une spatialisation.",
+    label: t("Stéréo (2 canaux)"),
+    hint: t("Depuis du mono, les deux voies portent le même signal : c'est une duplication, pas une spatialisation."),
   },
-];
+]);
 
 /** Nombre de canaux correspondant à une cible, ou `undefined` pour « tel quel ». */
 export function channelCount(target: ChannelTarget): number | undefined {
@@ -242,15 +243,15 @@ export interface AudioTags {
 }
 
 /** Clés FFmpeg correspondantes, dans l'ordre d'affichage de l'outil. */
-export const TAG_FIELDS: { key: keyof AudioTags; label: string; placeholder?: string }[] = [
-  { key: "title", label: "Titre" },
-  { key: "artist", label: "Artiste" },
-  { key: "album", label: "Album" },
-  { key: "date", label: "Année", placeholder: "2024" },
-  { key: "genre", label: "Genre" },
-  { key: "track", label: "Piste", placeholder: "3" },
-  { key: "comment", label: "Commentaire" },
-];
+export const TAG_FIELDS: { key: keyof AudioTags; label: string; placeholder?: string }[] = localized(() => [
+  { key: "title", label: t("Titre") },
+  { key: "artist", label: t("Artiste") },
+  { key: "album", label: t("Album") },
+  { key: "date", label: t("Année"), placeholder: "2024" },
+  { key: "genre", label: t("Genre") },
+  { key: "track", label: t("Piste"), placeholder: "3" },
+  { key: "comment", label: t("Commentaire") },
+]);
 
 /**
  * Réécrit les étiquettes d'un fichier audio **sans réencoder**.

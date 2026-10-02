@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { toolName } from "@/core/tools/localized";
+import { toolRegistry } from "@/core/tools/registry";
 import { useNavigate } from "react-router-dom";
 import { FileDropZone } from "@/components/files/FileDropZone";
 import { Icon } from "@/components/ui/Icon";
@@ -8,6 +10,7 @@ import { conversionsFor, KIND_LABELS, presetForTarget, type ConversionTarget } f
 import { setHandoff } from "@/features/handoff/store";
 import { toolRoute, type DataKind } from "@/core/tools/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Convertisseur universel.
@@ -42,8 +45,8 @@ export function UniversalConverterTool(_props: ToolComponentProps) {
         constraints={{ inputs: [], maxFiles: 1 }}
         files={files}
         onChange={setFiles}
-        label="Déposez un fichier"
-        hint="FourTout identifie le format et propose les conversions réellement disponibles."
+        label={t("Déposez un fichier")}
+        hint={t("FourTout identifie le format et propose les conversions réellement disponibles.")}
         // La ligne de détection ci-dessous décrit déjà le fichier retenu.
         showFileList={false}
       />
@@ -55,7 +58,7 @@ export function UniversalConverterTool(_props: ToolComponentProps) {
         >
           <span className="flex items-center gap-1.5 font-medium">
             <Icon name="FileSearch" size={14} />
-            {file.extension ? file.extension.toUpperCase() : "Format inconnu"}
+            {file.extension ? file.extension.toUpperCase() : t("Format inconnu")}
           </span>
           <span className="text-[var(--ft-text-muted)]">{file.name}</span>
           <span className="ft-value text-[var(--ft-text-muted)]">{formatFileSize(file.size)}</span>
@@ -66,20 +69,18 @@ export function UniversalConverterTool(_props: ToolComponentProps) {
       {file && targets.length === 0 && (
         <EmptyState
           icon="Shuffle"
-          title="Aucune conversion disponible pour ce format"
-          description={`FourTout ne propose pour l'instant aucune conversion depuis « ${
-            file.extension || "ce type de fichier"
-          } ». Les outils encore prévus n'apparaissent jamais ici : seule une conversion réellement implémentée est proposée.`}
+          title={t("Aucune conversion disponible pour ce format")}
+          description={t("FourTout ne propose pour l'instant aucune conversion depuis « {value} ». Les outils encore prévus n'apparaissent jamais ici : seule une conversion réellement implémentée est proposée.", { value: file.extension || t("ce type de fichier") })}
         />
       )}
 
       {targets.length > 0 && (
         <div className="space-y-4">
-          <p className="text-sm font-medium">Convertir vers</p>
+          <p className="text-sm font-medium">{t("Convertir vers")}</p>
           {grouped.map(([kind, entries]) => (
             <div key={kind}>
               <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-[var(--ft-text-faint)]">
-                {KIND_LABELS[kind]}
+                {tx(KIND_LABELS[kind])}
               </p>
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {entries.map((target) => (
@@ -96,7 +97,7 @@ export function UniversalConverterTool(_props: ToolComponentProps) {
                     <span className="min-w-0">
                       <span className="block text-sm font-medium">{target.to.toUpperCase()}</span>
                       <span className="block truncate text-xs text-[var(--ft-text-muted)]">
-                        {target.toolName}
+                        {targetToolName(target.toolId, target.toolName)}
                       </span>
                     </span>
                     <Icon name="ArrowRight" size={15} className="ml-auto mt-1 shrink-0 text-[var(--ft-text-faint)]" />
@@ -107,8 +108,7 @@ export function UniversalConverterTool(_props: ToolComponentProps) {
           ))}
           <p className="flex items-start gap-2 text-xs text-[var(--ft-text-muted)]">
             <Icon name="Info" size={13} className="mt-px shrink-0" />
-            Le bouton ouvre l'outil spécialisé avec votre fichier déjà chargé et le format
-            présélectionné : les réglages fins (qualité, codec, résolution) restent disponibles.
+            {t("Le bouton ouvre l'outil spécialisé avec votre fichier déjà chargé et le format présélectionné : les réglages fins (qualité, codec, résolution) restent disponibles.")}
           </p>
         </div>
       )}
@@ -125,4 +125,10 @@ function groupByKind(targets: ConversionTarget[]): [DataKind, ConversionTarget[]
     else groups.set(target.kind, [target]);
   }
   return [...groups.entries()];
+}
+
+/** Nom de l'outil de conversion dans la langue affichée. */
+function targetToolName(toolId: string, fallback: string): string {
+  const tool = toolRegistry.get(toolId);
+  return tool ? toolName(tool) : fallback;
 }

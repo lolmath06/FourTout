@@ -20,6 +20,7 @@ import {
 import { revealFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, formatDateTime, t, tx } from "@/i18n";
 
 /**
  * Sauvegarde d'un dossier.
@@ -60,11 +61,11 @@ export function FolderBackupTool(_props: ToolComponentProps) {
     if (!result) return;
     if (result.interrupted || result.failed.length > 0) {
       notify.error(
-        "Sauvegarde incomplète",
-        `${result.files} fichier(s) copié(s), ${result.failed.length} en échec`,
+        t("Sauvegarde incomplète"),
+        t("{files} fichier(s) copié(s), {count} en échec", { files: result.files, count: result.failed.length }),
       );
     } else {
-      notify.success("Sauvegarde terminée", `${result.files} fichiers · ${formatFileSize(result.bytes)}`);
+      notify.success(t("Sauvegarde terminée"), t("{files} fichiers · {size}", { files: result.files, size: formatFileSize(result.bytes) }));
     }
   };
 
@@ -79,8 +80,8 @@ export function FolderBackupTool(_props: ToolComponentProps) {
             backup.setResult(null);
             verify.setResult(null);
           }}
-          label="Dossier à sauvegarder"
-          hint="il n'est jamais modifié"
+          label={t("Dossier à sauvegarder")}
+          hint={t("il n'est jamais modifié")}
           disabled={backup.job.isRunning}
         />
         <PathPicker
@@ -90,38 +91,36 @@ export function FolderBackupTool(_props: ToolComponentProps) {
             setDestination(next);
             backup.setResult(null);
           }}
-          label="Où écrire la sauvegarde"
-          hint="un dossier vide, ou une sauvegarde FourTout à remplacer"
+          label={t("Où écrire la sauvegarde")}
+          hint={t("un dossier vide, ou une sauvegarde FourTout à remplacer")}
           disabled={backup.job.isRunning}
         />
       </div>
 
       {ready && (
         <>
-          <Fieldset columns={1} title="Contenu">
-            <Field label="Portée">
+          <Fieldset columns={1} title={t("Contenu")}>
+            <Field label={t("Portée")}>
               <CheckOption
                 checked={includeHidden}
                 onChange={setIncludeHidden}
-                label="Inclure les fichiers cachés"
-                hint="Les liens symboliques ne sont pas suivis : leur cible n'est pas sauvegardée, et le manifeste le dit."
+                label={t("Inclure les fichiers cachés")}
+                hint={t("Les liens symboliques ne sont pas suivis : leur cible n'est pas sauvegardée, et le manifeste le dit.")}
               />
             </Field>
           </Fieldset>
 
-          <Callout tone="info" title="Ce que cette sauvegarde est, et ce qu'elle n'est pas">
-            Une copie complète et datée, vérifiable par empreinte. Ce n'est pas un historique de
-            versions : elle ne conserve pas les états précédents et ne fait pas de sauvegarde
-            incrémentale. Chaque sauvegarde occupe la taille de la source.
+          <Callout tone="info" title={t("Ce que cette sauvegarde est, et ce qu'elle n'est pas")}>
+            {t("Une copie complète et datée, vérifiable par empreinte. Ce n'est pas un historique de versions : elle ne conserve pas les états précédents et ne fait pas de sauvegarde incrémentale. Chaque sauvegarde occupe la taille de la source.")}
           </Callout>
 
           <RunBar
-            label="Créer la sauvegarde"
+            label={t("Créer la sauvegarde")}
             icon="DatabaseBackup"
             running={backup.job.isRunning}
             progress={backup.job.progress}
             status={backup.job.status}
-            error={backup.error}
+            error={tx(backup.error)}
             cancel={backup.job.cancel}
             onRun={() => void run()}
           />
@@ -133,11 +132,11 @@ export function FolderBackupTool(_props: ToolComponentProps) {
           <StatGrid
             columns={4}
             stats={[
-              { label: "Fichiers", value: summary.files },
-              { label: "Dossiers", value: summary.directories },
-              { label: "Copié", value: formatFileSize(summary.bytes) },
+              { label: t("Fichiers"), value: summary.files },
+              { label: t("Dossiers"), value: summary.directories },
+              { label: t("Copié"), value: formatFileSize(summary.bytes) },
               {
-                label: "Échecs",
+                label: t("Échecs"),
                 value: summary.failed.length,
                 tone: summary.failed.length > 0 ? "danger" : "neutral",
               },
@@ -145,38 +144,37 @@ export function FolderBackupTool(_props: ToolComponentProps) {
           />
 
           {summary.interrupted ? (
-            <Callout tone="warning" title="Sauvegarde interrompue">
-              Le manifeste ne décrit que les fichiers réellement copiés — il ne prétend pas que la
-              sauvegarde est complète. Relancez-la pour obtenir une copie entière.
+            <Callout tone="warning" title={t("Sauvegarde interrompue")}>
+              {t("Le manifeste ne décrit que les fichiers réellement copiés — il ne prétend pas que la sauvegarde est complète. Relancez-la pour obtenir une copie entière.")}
             </Callout>
           ) : summary.failed.length > 0 ? (
-            <Callout tone="warning" title="Sauvegarde incomplète">
-              Certains fichiers n'ont pas pu être copiés. Ils ne figurent pas au manifeste.
+            <Callout tone="warning" title={t("Sauvegarde incomplète")}>
+              {t("Certains fichiers n'ont pas pu être copiés. Ils ne figurent pas au manifeste.")}
             </Callout>
           ) : (
             <Callout
               tone="success"
-              title="Sauvegarde terminée"
+              title={t("Sauvegarde terminée")}
               actions={
                 <Button size="sm" onClick={() => revealFile(summary.destination)}>
-                  <Icon name="FolderTree" size={13} /> Ouvrir
+                  <Icon name="FolderTree" size={13} />{" "}{t("Ouvrir")}
                 </Button>
               }
             >
-              Manifeste : <code className="font-mono">{summary.manifestPath}</code>
+              <Trans source={"Manifeste : <0>{manifestPath}</0>"} values={{ manifestPath: summary.manifestPath }} components={[<code className="font-mono" />]} />
             </Callout>
           )}
 
-          <Warnings title="Avertissements" items={summary.warnings} />
-          <Warnings title="Fichiers non copiés" items={summary.failed} />
+          <Warnings title={t("Avertissements")} items={summary.warnings} />
+          <Warnings title={t("Fichiers non copiés")} items={summary.failed} />
 
           <RunBar
-            label="Vérifier l'intégrité de la sauvegarde"
+            label={t("Vérifier l'intégrité de la sauvegarde")}
             icon="ShieldCheck"
             running={verify.job.isRunning}
             progress={verify.job.progress}
             status={verify.job.status}
-            error={verify.error}
+            error={tx(verify.error)}
             cancel={verify.job.cancel}
             onRun={() =>
               void verify.execute((context) => verifyBackup(summary.destination, context))
@@ -200,11 +198,11 @@ export function VerifyReport({ report }: { report: BackupVerifyReport }) {
       <StatGrid
         columns={4}
         stats={[
-          { label: "Intacts", value: report.ok, tone: "ok" },
-          { label: "Modifiés", value: report.modified, tone: report.modified > 0 ? "danger" : "neutral" },
-          { label: "Manquants", value: report.missing, tone: report.missing > 0 ? "danger" : "neutral" },
+          { label: t("Intacts"), value: report.ok, tone: "ok" },
+          { label: t("Modifiés"), value: report.modified, tone: report.modified > 0 ? "danger" : "neutral" },
+          { label: t("Manquants"), value: report.missing, tone: report.missing > 0 ? "danger" : "neutral" },
           {
-            label: "Illisibles",
+            label: t("Illisibles"),
             value: report.unreadable,
             tone: report.unreadable > 0 ? "danger" : "neutral",
           },
@@ -212,19 +210,17 @@ export function VerifyReport({ report }: { report: BackupVerifyReport }) {
       />
 
       {intact ? (
-        <Callout tone="success" title="Sauvegarde intacte">
-          Les {report.ok} fichiers correspondent exactement aux empreintes du manifeste, écrit le{" "}
-          {new Date(report.createdAt).toLocaleString("fr-FR")}.
+        <Callout tone="success" title={t("Sauvegarde intacte")}>
+          {t("Les {ok} fichiers correspondent exactement aux empreintes du manifeste, écrit le {value}.", { ok: report.ok, value: formatDateTime(new Date(report.createdAt)) })}
         </Callout>
       ) : (
-        <Callout tone="error" title="Cette sauvegarde est abîmée">
-          Restaurer maintenant remettrait en place des fichiers qui ne sont plus ceux d'origine.
-          Les fichiers concernés sont nommés ci-dessous.
+        <Callout tone="error" title={t("Cette sauvegarde est abîmée")}>
+          {t("Restaurer maintenant remettrait en place des fichiers qui ne sont plus ceux d'origine. Les fichiers concernés sont nommés ci-dessous.")}
         </Callout>
       )}
 
       {problems.length > 0 && (
-        <Panel title="Fichiers en défaut" count={problems.length}>
+        <Panel title={t("Fichiers en défaut")} count={problems.length}>
           <ul className="max-h-72 divide-y divide-[var(--ft-rule)] overflow-y-auto text-xs">
             {problems.slice(0, 300).map((check) => (
               <li key={check.path} className="flex items-start gap-2 px-3 py-1">
@@ -237,10 +233,10 @@ export function VerifyReport({ report }: { report: BackupVerifyReport }) {
                   </span>
                   <span className="block text-[11px] text-[var(--ft-text-muted)]">
                     {check.state === "missing"
-                      ? "Absent de la sauvegarde"
+                      ? t("Absent de la sauvegarde")
                       : check.state === "modified"
-                        ? "Contenu différent de celui enregistré au manifeste"
-                        : "Illisible"}
+                        ? t("Contenu différent de celui enregistré au manifeste")
+                        : t("Illisible")}
                   </span>
                 </span>
               </li>
@@ -251,7 +247,7 @@ export function VerifyReport({ report }: { report: BackupVerifyReport }) {
 
       {report.unexpected.length > 0 && (
         <Warnings
-          title="Fichiers présents dans la copie mais absents du manifeste"
+          title={t("Fichiers présents dans la copie mais absents du manifeste")}
           items={report.unexpected}
         />
       )}

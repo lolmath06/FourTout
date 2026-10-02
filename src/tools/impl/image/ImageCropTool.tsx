@@ -9,6 +9,7 @@ import { crop } from "@/core/image/operations";
 import type { SelectedFile } from "@/core/files";
 import type { PixelRect } from "@/core/image/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t } from "@/i18n";
 
 /** Sélection normalisée : fractions de 0 à 1 de l'image affichée. */
 interface NormRect {
@@ -20,13 +21,13 @@ interface NormRect {
 
 const DEFAULT: NormRect = { x: 0.1, y: 0.1, w: 0.8, h: 0.8 };
 
-const RATIOS = [
-  { value: "free", label: "Libre", ratio: 0 },
+const RATIOS = localized(() => [
+  { value: "free", label: t("Libre"), ratio: 0 },
   { value: "1:1", label: "1:1", ratio: 1 },
   { value: "4:3", label: "4:3", ratio: 4 / 3 },
   { value: "16:9", label: "16:9", ratio: 16 / 9 },
   { value: "3:2", label: "3:2", ratio: 3 / 2 },
-];
+]);
 
 export function ImageCropTool({ tool }: ToolComponentProps) {
   const [rect, setRect] = useState<NormRect>(DEFAULT);
@@ -36,7 +37,7 @@ export function ImageCropTool({ tool }: ToolComponentProps) {
     <ImageToolShell
       tool={tool}
       selection="single"
-      actionLabel="Recadrer"
+      actionLabel={t("Recadrer")}
       run={async ({ files, context }) => {
         const output = await processImage(
           files[0],
@@ -52,15 +53,15 @@ export function ImageCropTool({ tool }: ToolComponentProps) {
           { format: "same", suffix: "recadree" },
           context,
         );
-        return { files: [output], summary: "Image recadrée." };
+        return { files: [output], summary: t("Image recadrée.") };
       }}
     >
       {(files) => (
         <div className="space-y-3">
           <Fieldset columns={1}>
-            <Field label="Proportions">
+            <Field label={t("Proportions")}>
               <OptionGroup
-                ariaLabel="Proportions"
+                ariaLabel={t("Proportions")}
                 value={ratioKey}
                 onChange={(key) => {
                   setRatioKey(key);
@@ -78,7 +79,7 @@ export function ImageCropTool({ tool }: ToolComponentProps) {
             ratio={RATIOS.find((r) => r.value === ratioKey)?.ratio ?? 0}
           />
           <p className="text-xs text-[var(--ft-text-muted)]">
-            Faites glisser la zone ou ses poignées. Le résultat correspond exactement à la sélection.
+            {t("Faites glisser la zone ou ses poignées. Le résultat correspond exactement à la sélection.")}
           </p>
         </div>
       )}

@@ -7,6 +7,7 @@
  */
 
 /** Fins de ligne reconnues. */
+import { localized, t } from "@/i18n";
 export type Eol = "lf" | "crlf" | "cr";
 
 export const EOL_CHARS: Record<Eol, string> = { lf: "\n", crlf: "\r\n", cr: "\r" };
@@ -146,16 +147,16 @@ export type SortMode =
   | "shuffle"
   | "reverse";
 
-export const SORT_LABELS: Record<SortMode, string> = {
+export const SORT_LABELS: Record<SortMode, string> = localized(() => ({
   "alpha-asc": "A → Z",
   "alpha-desc": "Z → A",
-  "numeric-asc": "Numérique croissant",
-  "numeric-desc": "Numérique décroissant",
-  "length-asc": "Longueur croissante",
-  "length-desc": "Longueur décroissante",
-  shuffle: "Aléatoire",
-  reverse: "Inverser l'ordre",
-};
+  "numeric-asc": t("Numérique croissant"),
+  "numeric-desc": t("Numérique décroissant"),
+  "length-asc": t("Longueur croissante"),
+  "length-desc": t("Longueur décroissante"),
+  shuffle: t("Aléatoire"),
+  reverse: t("Inverser l'ordre"),
+}));
 
 export interface SortOptions {
   mode: SortMode;

@@ -33,6 +33,7 @@ import { HANDOFF_TARGETS } from "@/features/handoff/targets";
 import { OpenToolButton } from "@/features/handoff/openTool";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t, tx } from "@/i18n";
 
 /**
  * Éditeur hexadécimal **borné**.
@@ -177,8 +178,8 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
     if (offsets.length === 0) {
       setSearch(null);
       notify.error(
-        "Séquence introuvable",
-        "Aucune occurrence dans l'ensemble du fichier.",
+        t("Séquence introuvable"),
+        t("Aucune occurrence dans l'ensemble du fichier."),
       );
       return;
     }
@@ -198,8 +199,8 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
     const count = search.offsets.length;
     // Le retour au début est explicite : il est annoncé, pas subi.
     const next = (search.index + direction + count) % count;
-    if (direction === 1 && next === 0) notify.info("Retour au début du fichier");
-    if (direction === -1 && next === count - 1) notify.info("Retour à la fin du fichier");
+    if (direction === 1 && next === 0) notify.info(t("Retour au début du fichier"));
+    if (direction === -1 && next === count - 1) notify.info(t("Retour à la fin du fichier"));
     showOccurrence(search, next);
   };
 
@@ -219,8 +220,8 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
     if (!summary) return;
     setEdits(new Map());
     notify.success(
-      summary.inPlace ? "Fichier modifié" : "Fichier enregistré",
-      `${summary.patchedBytes} octet(s) écrit(s)`,
+      summary.inPlace ? t("Fichier modifié") : t("Fichier enregistré"),
+      t("{patchedBytes} octet(s) écrit(s)", { patchedBytes: summary.patchedBytes }),
     );
     if (summary.inPlace) void load(path, offset);
   };
@@ -241,20 +242,20 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
           setWindow(null);
           writing.setResult(null);
         }}
-        label="Choisissez un fichier"
-        hint="lu par fenêtres : la taille du fichier n'a aucune importance"
+        label={t("Choisissez un fichier")}
+        hint={t("lu par fenêtres : la taille du fichier n'a aucune importance")}
       />
 
       {error && (
-        <Callout tone="error" title="Lecture impossible">
-          {error}
+        <Callout tone="error" title={t("Lecture impossible")}>
+          {tx(error)}
         </Callout>
       )}
 
       {window && (
         <>
-          <Fieldset columns={3} title="Navigation et recherche">
-            <Field label="Aller au décalage" hint="Décimal (1024) ou hexadécimal (0x400, 400h)">
+          <Fieldset columns={3} title={t("Navigation et recherche")}>
+            <Field label={t("Aller au décalage")} hint={t("Décimal (1024) ou hexadécimal (0x400, 400h)")}>
               <TextInput
                 defaultValue={String(offset)}
                 onKeyDown={(event) => {
@@ -263,36 +264,36 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
                   if (parsed !== null) jump(parsed);
                 }}
                 placeholder="0x0"
-                aria-label="Aller au décalage"
+                aria-label={t("Aller au décalage")}
               />
             </Field>
             <Field
-              label="Chercher"
+              label={t("Chercher")}
               hint={
                 searchMode === "hex"
-                  ? "Une suite d'octets : DE AD BE EF."
-                  : "Une chaîne de caractères, prise telle quelle."
+                  ? t("Une suite d'octets : DE AD BE EF.")
+                  : t("Une chaîne de caractères, prise telle quelle.")
               }
             >
               <OptionGroup
-                ariaLabel="Nature de la séquence recherchée"
+                ariaLabel={t("Nature de la séquence recherchée")}
                 value={searchMode}
                 onChange={(next) => {
                   setSearchMode(next);
                   setSearch(null);
                 }}
                 options={[
-                  { value: "hex", label: "Octets (hex)" },
-                  { value: "text", label: "Texte" },
+                  { value: "hex", label: t("Octets (hex)") },
+                  { value: "text", label: t("Texte") },
                 ]}
               />
             </Field>
             <Field
-              label="Séquence"
+              label={t("Séquence")}
               hint={
                 searchMode === "hex" && needle.length > 0 && !parsedNeedle
-                  ? "Séquence hexadécimale incomplète ou invalide : il faut un nombre pair de chiffres."
-                  : "La recherche parcourt tout le fichier, pas seulement la partie affichée."
+                  ? t("Séquence hexadécimale incomplète ou invalide : il faut un nombre pair de chiffres.")
+                  : t("La recherche parcourt tout le fichier, pas seulement la partie affichée.")
               }
             >
               <TextInput
@@ -305,42 +306,41 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
                   if (event.key === "Enter") void runSearch();
                 }}
                 placeholder={searchMode === "hex" ? "DE AD BE EF" : "FourTout"}
-                aria-label="Séquence recherchée"
+                aria-label={t("Séquence recherchée")}
               />
             </Field>
           </Fieldset>
 
           {looksHexadecimal && (
-            <Callout tone="info" title="Recherche en mode Texte">
-              « {needle} » sera cherché comme une suite de caractères, pas comme des octets. Pour
-              chercher les octets correspondants, basculez sur « Octets (hex) ».
+            <Callout tone="info" title={t("Recherche en mode Texte")}>
+              {t("« {needle} » sera cherché comme une suite de caractères, pas comme des octets. Pour chercher les octets correspondants, basculez sur « Octets (hex) ».", { needle })}
             </Callout>
           )}
 
           <div className="flex flex-wrap items-center gap-2">
             <Button size="sm" onClick={() => jump(0)} disabled={offset === 0}>
-              <Icon name="ArrowLeft" size={13} /> Début
+              <Icon name="ArrowLeft" size={13} />{" "}{t("Début")}
             </Button>
             <Button
               size="sm"
               onClick={() => jump(Math.max(0, offset - PAGE_SIZE))}
               disabled={offset === 0}
             >
-              Précédent
+              {t("Précédent")}
             </Button>
             <Button
               size="sm"
               onClick={() => jump(offset + PAGE_SIZE)}
               disabled={offset + PAGE_SIZE >= window.fileSize}
             >
-              Suivant
+              {t("Suivant")}
             </Button>
             <Button
               size="sm"
               onClick={() => jump(Math.max(0, window.fileSize - PAGE_SIZE))}
               disabled={offset + PAGE_SIZE >= window.fileSize}
             >
-              Fin <Icon name="ArrowRight" size={13} />
+              {t("Fin")}{" "}<Icon name="ArrowRight" size={13} />
             </Button>
             <Button
               size="sm"
@@ -349,11 +349,9 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
               disabled={!parsedNeedle || parsedNeedle.length === 0 || finding.job.isRunning}
             >
               <Icon name="Search" size={13} />
-              {finding.job.isRunning ? "Recherche…" : "Chercher dans tout le fichier"}
+              {finding.job.isRunning ? t("Recherche…") : t("Chercher dans tout le fichier")}
             </Button>
-            <span className="ft-meta ml-auto tabular-nums">
-              Position {formatOffset(offset)} · {formatFileSize(window.fileSize)}
-            </span>
+            <Trans source={"<0>Position {value} · {size}</0>"} values={{ value: formatOffset(offset), size: formatFileSize(window.fileSize) }} components={[<span className="ft-meta ml-auto tabular-nums" />]} />
           </div>
 
           {search && (
@@ -363,38 +361,35 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
             >
               <Icon name="Search" size={13} className="text-[var(--ft-accent)]" />
               <span className="text-[13px] tabular-nums">
-                Occurrence <strong>{search.index + 1}</strong> sur{" "}
-                <strong>{search.offsets.length}</strong>
-                {search.truncated && " (liste écourtée)"} — décalage{" "}
-                <code className="font-mono">{formatOffset(search.offsets[search.index])}</code>
+                <Trans source={"Occurrence <0>{value}</0> sur <1>{count}</1>{value2} — décalage <2>{value3}</2>"} values={{ value: search.index + 1, count: search.offsets.length, value2: search.truncated && " (liste écourtée)", value3: formatOffset(search.offsets[search.index]) }} components={[<strong />, <strong />, <code className="font-mono" />]} />
               </span>
               <div className="ml-auto flex items-center gap-1">
                 <Button
                   size="sm"
                   onClick={() => step(-1)}
                   disabled={search.offsets.length < 2}
-                  aria-label="Occurrence précédente"
+                  aria-label={t("Occurrence précédente")}
                 >
-                  <Icon name="ArrowLeft" size={13} /> Précédente
+                  <Icon name="ArrowLeft" size={13} />{" "}{t("Précédente")}
                 </Button>
                 <Button
                   size="sm"
                   onClick={() => step(1)}
                   disabled={search.offsets.length < 2}
-                  aria-label="Occurrence suivante"
+                  aria-label={t("Occurrence suivante")}
                 >
-                  Suivante <Icon name="ArrowRight" size={13} />
+                  {t("Suivante")}{" "}<Icon name="ArrowRight" size={13} />
                 </Button>
                 <Button size="sm" variant="ghost" onClick={() => setSearch(null)}>
-                  Effacer
+                  {t("Effacer")}
                 </Button>
               </div>
             </div>
           )}
 
           {finding.error && (
-            <Callout tone="error" title="Recherche impossible">
-              {finding.error}
+            <Callout tone="error" title={t("Recherche impossible")}>
+              {tx(finding.error)}
             </Callout>
           )}
 
@@ -420,13 +415,12 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
               onClear={() => setSelected(null)}
             />
           ) : (
-            <Callout tone="neutral" title="Cliquez sur un octet pour le modifier">
-              La valeur choisie s'édite ici même, en hexadécimal ou en décimal. Rien n'est écrit
-              sur le disque avant que vous ne l'enregistriez.
+            <Callout tone="neutral" title={t("Cliquez sur un octet pour le modifier")}>
+              {t("La valeur choisie s'édite ici même, en hexadécimal ou en décimal. Rien n'est écrit sur le disque avant que vous ne l'enregistriez.")}
             </Callout>
           )}
 
-          <Panel title="Octets" testId="hex-view">
+          <Panel title={t("Octets")} testId="hex-view">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse font-mono text-[11px] leading-5">
                 <tbody>
@@ -441,7 +435,7 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
                             key={byte.offset}
                             type="button"
                             onClick={() => setSelected(byte.offset)}
-                            aria-label={`Octet ${byte.offset}, valeur ${toHexByte(byte.value)}`}
+                            aria-label={t("Octet {offset}, valeur {value}", { offset: byte.offset, value: toHexByte(byte.value) })}
                             data-testid={`hex-byte-${byte.offset}`}
                             data-matched={byte.matched ? "true" : undefined}
                             className={`mr-1 rounded px-0.5 ${
@@ -469,56 +463,53 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
           </Panel>
 
           <p className="ft-meta tabular-nums">
-            {formatExactBytes(window.fileSize)} au total · fenêtre de {window.bytes.length} octets à
-            partir de {formatOffset(offset)}
+            {t("{size} au total · fenêtre de {count} octets à partir de {value}", { size: formatExactBytes(window.fileSize), count: window.bytes.length, value: formatOffset(offset) })}
           </p>
 
           {edits.size > 0 && (
             <>
               <Callout
                 tone="warning"
-                title={`${edits.size} octet(s) modifié(s), pas encore enregistré(s)`}
+                title={t("{size} octet(s) modifié(s), pas encore enregistré(s)", { size: edits.size })}
               >
-                Rien n'a été écrit sur le disque. Les modifications tiennent en{" "}
-                {pendingPatches.length} plage(s) contiguë(s).
+                {t("Rien n'a été écrit sur le disque. Les modifications tiennent en {count} plage(s) contiguë(s).", { count: pendingPatches.length })}
               </Callout>
 
-              <Fieldset columns={1} title="Enregistrement">
+              <Fieldset columns={1} title={t("Enregistrement")}>
                 <Field
-                  label="Destination"
+                  label={t("Destination")}
                   hint={
                     overwrite
-                      ? "L'original sera modifié sur place. Il n'y aura pas de retour en arrière."
-                      : "Le fichier d'origine reste intact : vous choisirez où écrire la copie modifiée."
+                      ? t("L'original sera modifié sur place. Il n'y aura pas de retour en arrière.")
+                      : t("Le fichier d'origine reste intact : vous choisirez où écrire la copie modifiée.")
                   }
                 >
                   <OptionGroup
-                    ariaLabel="Destination de l'enregistrement"
+                    ariaLabel={t("Destination de l'enregistrement")}
                     value={overwrite ? "in-place" : "copy"}
                     onChange={(value) => setOverwrite(value === "in-place")}
                     options={[
-                      { value: "copy", label: "Enregistrer sous…" },
-                      { value: "in-place", label: "Écraser l'original" },
+                      { value: "copy", label: t("Enregistrer sous…") },
+                      { value: "in-place", label: t("Écraser l'original") },
                     ]}
                   />
                 </Field>
               </Fieldset>
 
               {overwrite && (
-                <Callout tone="error" title="L'original sera écrasé">
-                  Les {edits.size} octet(s) seront réécrits directement dans{" "}
-                  <code className="font-mono">{path}</code>. Aucune copie de secours n'est faite.
+                <Callout tone="error" title={t("L'original sera écrasé")}>
+                  <Trans source={"Les {size} octet(s) seront réécrits directement dans <0>{path}</0>. Aucune copie de secours n'est faite."} values={{ size: edits.size, path }} components={[<code className="font-mono" />]} />
                 </Callout>
               )}
 
               <RunBar
-                label={overwrite ? "Écraser l'original" : "Enregistrer sous…"}
+                label={overwrite ? t("Écraser l'original") : t("Enregistrer sous…")}
                 icon="Save"
                 danger={overwrite}
                 running={writing.job.isRunning}
                 progress={writing.job.progress}
                 status={writing.job.status}
-                error={writing.error}
+                error={tx(writing.error)}
                 cancel={writing.job.cancel}
                 onRun={() => void save()}
                 secondary={
@@ -527,7 +518,7 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
                     onClick={() => setEdits(new Map())}
                     className="text-xs text-[var(--ft-text-muted)] underline-offset-2 hover:underline"
                   >
-                    Annuler toutes les modifications
+                    {t("Annuler toutes les modifications")}
                   </button>
                 }
               />
@@ -537,22 +528,20 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
           {writing.result && (
             <Callout
               tone="success"
-              title={writing.result.inPlace ? "Original modifié" : "Copie modifiée enregistrée"}
+              title={writing.result.inPlace ? t("Original modifié") : t("Copie modifiée enregistrée")}
               actions={
                 <Button size="sm" onClick={() => revealFile(writing.result!.path)}>
-                  <Icon name="FolderTree" size={13} /> Ouvrir l'emplacement
+                  <Icon name="FolderTree" size={13} />{" "}{t("Ouvrir l'emplacement")}
                 </Button>
               }
             >
-              {writing.result.patchedBytes} octet(s) écrit(s) dans{" "}
-              <code className="font-mono">{writing.result.path}</code>. La taille du fichier est
-              inchangée ({formatFileSize(writing.result.size)}).
+              <Trans source={"{patchedBytes} octet(s) écrit(s) dans <0>{path}</0>. La taille du fichier est inchangée ({size})."} values={{ patchedBytes: writing.result.patchedBytes, path: writing.result.path, size: formatFileSize(writing.result.size) }} components={[<code className="font-mono" />]} />
             </Callout>
           )}
 
           {path && (
             <div className="flex flex-wrap items-center gap-2" data-testid="hex-handoffs">
-              <span className="ft-label">Continuer avec</span>
+              <Trans source={"<0>Continuer avec</0>"} components={[<span className="ft-label" />]} />
               <OpenToolButton toolId={HANDOFF_TARGETS.inspect} paths={[path]} />
               <OpenToolButton toolId={HANDOFF_TARGETS.preview} paths={[path]} />
               <OpenToolButton toolId={HANDOFF_TARGETS.hash} paths={[path]} />
@@ -561,7 +550,7 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
         </>
       )}
 
-      {loading && !window && <p className="ft-meta">Lecture…</p>}
+      {loading && !window && <p className="ft-meta">{t("Lecture…")}</p>}
     </div>
   );
 }
@@ -592,38 +581,38 @@ function ByteEditor({
     >
       <header className="flex items-center gap-2 border-b border-[var(--ft-rule)] px-3 py-1.5">
         <Icon name="Binary" size={14} className="text-[var(--ft-accent)]" />
-        <h3 className="ft-section">Octet {formatOffset(offset)}</h3>
+        <h3 className="ft-section">{t("Octet {value}", { value: formatOffset(offset) })}</h3>
         {modified && (
           <span className="ft-meta text-[var(--ft-warn)]">
-            modifié — valeur d'origine {toHexByte(original!)}
+            {t("modifié — valeur d'origine {value}", { value: toHexByte(original!) })}
           </span>
         )}
         <div className="flex-1" />
         {modified && original !== undefined && (
           <Button size="sm" variant="ghost" onClick={() => onChange(original)}>
-            Rétablir
+            {t("Rétablir")}
           </Button>
         )}
-        <Button size="sm" variant="ghost" onClick={onClear} aria-label="Fermer l'éditeur d'octet">
+        <Button size="sm" variant="ghost" onClick={onClear} aria-label={t("Fermer l'éditeur d'octet")}>
           <Icon name="X" size={13} />
         </Button>
       </header>
       <div className="grid gap-x-4 gap-y-3 p-3 sm:grid-cols-3">
-        <Field label="Valeur hexadécimale" hint="Deux chiffres, de 00 à FF">
+        <Field label={t("Valeur hexadécimale")} hint={t("Deux chiffres, de 00 à FF")}>
           <HexByteField value={value} onChange={onChange} />
         </Field>
-        <Field label="Décimal" hint="0 à 255">
+        <Field label={t("Décimal")} hint="0 à 255">
           <TextInput
             value={String(value)}
             onChange={(event) => {
               const parsed = Number.parseInt(event.target.value, 10);
               if (Number.isFinite(parsed) && parsed >= 0 && parsed <= 255) onChange(parsed);
             }}
-            aria-label="Valeur décimale de l'octet"
+            aria-label={t("Valeur décimale de l'octet")}
           />
         </Field>
-        <Field label="Caractère ASCII" hint="Un point quand l'octet n'est pas imprimable">
-          <TextInput value={toAscii([value])} readOnly aria-label="Caractère ASCII de l'octet" />
+        <Field label={t("Caractère ASCII")} hint={t("Un point quand l'octet n'est pas imprimable")}>
+          <TextInput value={toAscii([value])} readOnly aria-label={t("Caractère ASCII de l'octet")} />
         </Field>
       </div>
     </div>
@@ -663,7 +652,7 @@ function HexByteField({ value, onChange }: { value: number; onChange: (value: nu
       }}
       onBlur={() => setDraft(toHexByte(value))}
       inputMode="text"
-      aria-label="Valeur hexadécimale de l'octet"
+      aria-label={t("Valeur hexadécimale de l'octet")}
     />
   );
 }

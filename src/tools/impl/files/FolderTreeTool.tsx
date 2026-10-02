@@ -9,6 +9,7 @@ import { baseName } from "@/core/files/paths";
 import { saveFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t, tx } from "@/i18n";
 
 /**
  * Arborescence texte d'un dossier, prête à coller dans un README ou un ticket.
@@ -27,9 +28,9 @@ export function FolderTreeTool(_props: ToolComponentProps) {
         mode: "directory",
         paths,
         onChange: setPaths,
-        label: "Choisissez le dossier",
+        label: t("Choisissez le dossier"),
       }}
-      actionLabel="Générer l'arborescence"
+      actionLabel={t("Générer l'arborescence")}
       actionIcon="FolderTree"
       run={(context) =>
         folderTree(
@@ -47,16 +48,14 @@ export function FolderTreeTool(_props: ToolComponentProps) {
           context,
         )
       }
-      successMessage={(result) => `${result.directories} dossiers, ${result.files} fichiers`}
+      successMessage={(result) => t("{directories} dossiers, {files} fichiers", { directories: result.directories, files: result.files })}
       renderResult={(result) => (
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-3 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-sm">
-            <span className="tabular-nums">
-              {result.directories} dossier(s) · {result.files} fichier(s)
-            </span>
+            <Trans source={"<0>{directories} dossier(s) · {files} fichier(s)</0>"} values={{ directories: result.directories, files: result.files }} components={[<span className="tabular-nums" />]} />
             {result.truncated && (
               <span className="flex items-center gap-1.5 text-xs text-[var(--ft-warn)]">
-                <Icon name="TriangleAlert" size={13} /> profondeur maximale atteinte
+                <Icon name="TriangleAlert" size={13} />{" "}{t("profondeur maximale atteinte")}
               </span>
             )}
             <div className="flex-1" />
@@ -64,65 +63,65 @@ export function FolderTreeTool(_props: ToolComponentProps) {
               size="sm"
               onClick={async () => {
                 const saved = await saveFile({
-                  name: `${baseName(paths[0] ?? "arborescence")}-arborescence.txt`,
+                  name: t("{value}-arborescence.txt", { value: baseName(paths[0] ?? "arborescence") }),
                   bytes: new TextEncoder().encode(result.text),
                   mimeType: "text/plain",
                 });
-                if (saved.saved) notify.success("Fichier enregistré", saved.path);
+                if (saved.saved) notify.success(t("Fichier enregistré"), saved.path);
               }}
             >
-              <Icon name="Download" size={14} /> Télécharger
+              <Icon name="Download" size={14} />{" "}{t("Télécharger")}
             </Button>
             <Button
               size="sm"
               variant="primary"
               onClick={async () => {
                 await navigator.clipboard.writeText(result.text);
-                notify.success("Arborescence copiée");
+                notify.success(t("Arborescence copiée"));
               }}
             >
-              <Icon name="Copy" size={14} /> Copier
+              <Icon name="Copy" size={14} />{" "}{t("Copier")}
             </Button>
           </div>
           <pre
             data-testid="folder-tree"
             className="max-h-[32rem] overflow-auto rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-3 font-mono text-xs leading-relaxed"
           >
-            {result.text}
+            {tx(result.text)}
           </pre>
         </div>
       )}
     >
       <Fieldset columns={2}>
-        <Field label="Profondeur maximale">
+        <Field label={t("Profondeur maximale")}>
           <NumberInput
             min={1}
             max={20}
             value={maxDepth}
             onChange={(event) => setMaxDepth(Math.max(1, Math.min(20, Number(event.target.value) || 1)))}
-            aria-label="Profondeur maximale"
+            aria-label={t("Profondeur maximale")}
           />
         </Field>
-        <Field label="Dossiers ignorés" hint="Séparés par des virgules">
+        <Field label={t("Dossiers ignorés")} hint={t("Séparés par des virgules")}>
           <TextInput
             value={ignore}
             onChange={(event) => setIgnore(event.target.value)}
-            aria-label="Dossiers ignorés"
+            aria-label={t("Dossiers ignorés")}
           />
         </Field>
-        <Field label="Options" full>
+        <Field label={t("Options")} full>
           <div className="grid gap-0.5 sm:grid-cols-3">
             <CheckOption
               checked={includeHidden}
               onChange={setIncludeHidden}
-              label="Inclure les fichiers cachés"
+              label={t("Inclure les fichiers cachés")}
             />
             <CheckOption
               checked={directoriesOnly}
               onChange={setDirectoriesOnly}
-              label="Dossiers seulement"
+              label={t("Dossiers seulement")}
             />
-            <CheckOption checked={showSizes} onChange={setShowSizes} label="Afficher les tailles" />
+            <CheckOption checked={showSizes} onChange={setShowSizes} label={t("Afficher les tailles")} />
           </div>
         </Field>
       </Fieldset>

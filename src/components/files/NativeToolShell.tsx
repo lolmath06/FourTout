@@ -7,6 +7,7 @@ import type { OperationContext } from "@/core/pdf/types";
 import { isFilesEngineAvailable, NATIVE_REQUIRED } from "@/core/files/native";
 import { notify } from "@/features/notifications/store";
 import { Callout, ProgressBar } from "@/components/ui/Callout";
+import { t, tx } from "@/i18n";
 
 /**
  * Ossature commune aux outils Fichiers travaillant sur des chemins.
@@ -48,8 +49,8 @@ export function NativeToolShell<TResult>({
 
   if (!isFilesEngineAvailable()) {
     return (
-      <Callout tone="info" title="Application installée requise">
-        {NATIVE_REQUIRED}
+      <Callout tone="info" title={t("Application installée requise")}>
+        {tx(NATIVE_REQUIRED)}
       </Callout>
     );
   }
@@ -61,7 +62,7 @@ export function NativeToolShell<TResult>({
     );
     if (outcome !== undefined) {
       setResult(outcome);
-      if (successMessage) notify.success("Terminé", successMessage(outcome));
+      if (successMessage) notify.success(t("Terminé"), successMessage(outcome));
     }
   };
 
@@ -82,7 +83,7 @@ export function NativeToolShell<TResult>({
         <div className="flex items-center justify-end gap-2 border-t border-[var(--ft-border)] pt-4">
           {job.isRunning && (
             <Button size="sm" variant="ghost" onClick={job.cancel}>
-              Annuler
+              {t("Annuler")}
             </Button>
           )}
           <Button
@@ -94,28 +95,28 @@ export function NativeToolShell<TResult>({
             {job.isRunning ? (
               <>
                 <Icon name="Loader" size={15} className="animate-spin" />
-                {job.progress.label ?? "Traitement…"}
+                {job.progress.label ?? t("Traitement…")}
               </>
             ) : (
               <>
                 <Icon name={actionIcon} size={15} />
-                {actionLabel}
+                {tx(actionLabel)}
               </>
             )}
           </Button>
         </div>
       )}
 
-      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
+      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={tx(job.progress.label)} />}
 
       {job.status === "cancelled" && (
-        <Callout tone="neutral" title="Opération annulée">
-          Aucun résultat n'a été produit.
+        <Callout tone="neutral" title={t("Opération annulée")}>
+          {t("Aucun résultat n'a été produit.")}
         </Callout>
       )}
 
       {errorMessage && (
-        <Callout tone="error" title="L'opération a échoué">
+        <Callout tone="error" title={t("L'opération a échoué")}>
           {errorMessage}
         </Callout>
       )}

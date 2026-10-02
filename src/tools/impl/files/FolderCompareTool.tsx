@@ -18,6 +18,7 @@ import {
   type FolderCompareReport,
 } from "@/core/files/native";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { compareText, formatNumber, localized, t, tx } from "@/i18n";
 
 /**
  * Comparaison de deux arborescences.
@@ -28,18 +29,18 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * avoir lu un octet serait une affirmation que l'outil n'a pas les moyens de
  * tenir — et c'est précisément le cas où l'utilisateur se ferait avoir.
  */
-const MODES: { value: CompareMode; label: string; hint: string }[] = [
+const MODES: { value: CompareMode; label: string; hint: string }[] = localized(() => [
   {
     value: "quick",
-    label: "Rapide",
-    hint: "Compare type et taille. Aucun octet n'est lu : deux fichiers de même taille ne sont pas départagés.",
+    label: t("Rapide"),
+    hint: t("Compare type et taille. Aucun octet n'est lu : deux fichiers de même taille ne sont pas départagés."),
   },
   {
     value: "reliable",
-    label: "Fiable",
-    hint: "Confirme l'égalité par le contenu (SHA-256). Seuls les fichiers de même taille sont relus.",
+    label: t("Fiable"),
+    hint: t("Confirme l'égalité par le contenu (SHA-256). Seuls les fichiers de même taille sont relus."),
   },
-];
+]);
 
 const STATUS_ORDER: CompareEntryStatus[] = [
   "different",
@@ -49,13 +50,13 @@ const STATUS_ORDER: CompareEntryStatus[] = [
   "same",
 ];
 
-const STATUS_LABEL: Record<CompareEntryStatus, string> = {
-  different: "Différent",
-  "left-only": "Gauche seulement",
-  "right-only": "Droite seulement",
-  "type-conflict": "Conflit de type",
+const STATUS_LABEL: Record<CompareEntryStatus, string> = localized(() => ({
+  different: t("Différent"),
+  "left-only": t("Gauche seulement"),
+  "right-only": t("Droite seulement"),
+  "type-conflict": t("Conflit de type"),
   same: "Identique",
-};
+}));
 
 const STATUS_COLOR: Record<CompareEntryStatus, string> = {
   different: "var(--ft-warn)",
@@ -98,8 +99,8 @@ export function FolderCompareTool(_props: ToolComponentProps) {
             setLeft(next);
             reset();
           }}
-          label="Dossier de gauche"
-          hint="la référence"
+          label={t("Dossier de gauche")}
+          hint={t("la référence")}
           disabled={action.job.isRunning}
         />
         <PathPicker
@@ -109,23 +110,23 @@ export function FolderCompareTool(_props: ToolComponentProps) {
             setRight(next);
             reset();
           }}
-          label="Dossier de droite"
-          hint="celui qu'on compare"
+          label={t("Dossier de droite")}
+          hint={t("celui qu'on compare")}
           disabled={action.job.isRunning}
         />
       </div>
 
       {sameFolder && (
-        <Callout tone="warning" title="Les deux dossiers sont le même">
-          Choisissez deux dossiers distincts : comparer un dossier à lui-même ne dirait rien.
+        <Callout tone="warning" title={t("Les deux dossiers sont le même")}>
+          {t("Choisissez deux dossiers distincts : comparer un dossier à lui-même ne dirait rien.")}
         </Callout>
       )}
 
       {ready && (
-        <Fieldset columns={2} title="Comparaison">
-          <Field label="Mode" hint={MODES.find((entry) => entry.value === mode)?.hint}>
+        <Fieldset columns={2} title={t("Comparaison")}>
+          <Field label={t("Mode")} hint={tx(MODES.find((entry) => entry.value === mode)?.hint)}>
             <OptionGroup
-              ariaLabel="Mode de comparaison"
+              ariaLabel={t("Mode de comparaison")}
               value={mode}
               onChange={(next) => {
                 setMode(next);
@@ -134,15 +135,15 @@ export function FolderCompareTool(_props: ToolComponentProps) {
               options={MODES}
             />
           </Field>
-          <Field label="Portée">
+          <Field label={t("Portée")}>
             <CheckOption
               checked={includeHidden}
               onChange={(next) => {
                 setIncludeHidden(next);
                 reset();
               }}
-              label="Inclure les fichiers cachés"
-              hint="Les liens symboliques sont toujours signalés, jamais suivis."
+              label={t("Inclure les fichiers cachés")}
+              hint={t("Les liens symboliques sont toujours signalés, jamais suivis.")}
             />
           </Field>
         </Fieldset>
@@ -150,12 +151,12 @@ export function FolderCompareTool(_props: ToolComponentProps) {
 
       {ready && (
         <RunBar
-          label="Comparer les dossiers"
+          label={t("Comparer les dossiers")}
           icon="GitCompareArrows"
           running={action.job.isRunning}
           progress={action.job.progress}
           status={action.job.status}
-          error={action.error}
+          error={tx(action.error)}
           cancel={action.job.cancel}
           onRun={() =>
             void action.execute((context) =>
@@ -199,7 +200,7 @@ function Report({
         .sort(
           (a, b) =>
             STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status) ||
-            a.relative.localeCompare(b.relative, "fr"),
+            compareText(a.relative, b.relative),
         ),
     [report, filter],
   );
@@ -209,12 +210,12 @@ function Report({
       <StatGrid
         columns={5}
         stats={[
-          { label: "Identiques", value: report.same, tone: "ok" },
-          { label: "Différents", value: report.different, tone: report.different > 0 ? "warn" : "neutral" },
-          { label: "Gauche seulement", value: report.leftOnly },
-          { label: "Droite seulement", value: report.rightOnly },
+          { label: t("Identiques"), value: report.same, tone: "ok" },
+          { label: t("Différents"), value: report.different, tone: report.different > 0 ? "warn" : "neutral" },
+          { label: t("Gauche seulement"), value: report.leftOnly },
+          { label: t("Droite seulement"), value: report.rightOnly },
           {
-            label: "Conflits de type",
+            label: t("Conflits de type"),
             value: report.typeConflicts,
             tone: report.typeConflicts > 0 ? "danger" : "neutral",
           },
@@ -222,15 +223,12 @@ function Report({
       />
 
       {report.mode === "quick" ? (
-        <Callout tone="warning" title="Mode rapide : l'égalité n'est pas prouvée">
-          Les {report.same.toLocaleString("fr-FR")} entrées dites « identiques » ont le même type et
-          la même taille, mais leur contenu n'a pas été lu. Deux fichiers de même taille peuvent
-          parfaitement différer. Relancez en mode fiable pour confirmer.
+        <Callout tone="warning" title={t("Mode rapide : l'égalité n'est pas prouvée")}>
+          {t("Les {value} entrées dites « identiques » ont le même type et la même taille, mais leur contenu n'a pas été lu. Deux fichiers de même taille peuvent parfaitement différer. Relancez en mode fiable pour confirmer.", { value: formatNumber(report.same) })}
         </Callout>
       ) : (
-        <Callout tone="info" title="Mode fiable : égalité confirmée par le contenu">
-          {formatFileSize(report.hashedBytes)} relus pour départager les fichiers de même taille.
-          Les tailles différentes ont conclu sans aucune lecture.
+        <Callout tone="info" title={t("Mode fiable : égalité confirmée par le contenu")}>
+          {t("{size} relus pour départager les fichiers de même taille. Les tailles différentes ont conclu sans aucune lecture.", { size: formatFileSize(report.hashedBytes) })}
         </Callout>
       )}
 
@@ -252,13 +250,13 @@ function Report({
                   : "border-[var(--ft-border)] text-[var(--ft-text-muted)] hover:bg-[var(--ft-hover)]"
               }`}
             >
-              {value === "all" ? "Tout" : STATUS_LABEL[value]} ({count.toLocaleString("fr-FR")})
+              {value === "all" ? t("Tout") : STATUS_LABEL[value]} ({formatNumber(count)})
             </button>
           );
         })}
       </div>
 
-      <Panel title="Entrées" count={visible.length} testId="compare-entries">
+      <Panel title={t("Entrées")} count={visible.length} testId="compare-entries">
         <ul className="max-h-[28rem] divide-y divide-[var(--ft-rule)] overflow-y-auto text-xs">
           {visible.slice(0, 500).map((entry) => {
             // Seules les entrées présentes des deux côtés ont un « pourquoi »
@@ -276,11 +274,11 @@ function Report({
                     {entry.isDir && "/"}
                   </span>
                   <span className="block text-[11px] text-[var(--ft-text-faint)]">
-                    {entry.reason}
+                    {tx(entry.reason)}
                     {explainable && (
                       <span className="text-[var(--ft-accent)]">
                         {" "}
-                        — {open ? "masquer le détail" : "voir la différence"}
+                        — {open ? t("masquer le détail") : t("voir la différence")}
                       </span>
                     )}
                   </span>
@@ -327,11 +325,11 @@ function Report({
             );
           })}
           {visible.length === 0 && (
-            <li className="px-3 py-2 text-[var(--ft-text-faint)]">Aucune entrée dans ce filtre.</li>
+            <li className="px-3 py-2 text-[var(--ft-text-faint)]">{t("Aucune entrée dans ce filtre.")}</li>
           )}
           {visible.length > 500 && (
             <li className="px-3 py-1 text-[var(--ft-text-faint)]">
-              … et {(visible.length - 500).toLocaleString("fr-FR")} de plus
+              {t("… et {value} de plus", { value: formatNumber((visible.length - 500)) })}
             </li>
           )}
         </ul>
@@ -339,16 +337,16 @@ function Report({
 
       {report.caseCollisions.length > 0 && (
         <Warnings
-          title="Chemins qui ne diffèrent que par la casse — ambigus d'une plateforme à l'autre"
+          title={t("Chemins qui ne diffèrent que par la casse — ambigus d'une plateforme à l'autre")}
           items={report.caseCollisions}
         />
       )}
       <Warnings
-        title="Liens symboliques rencontrés (non suivis)"
+        title={t("Liens symboliques rencontrés (non suivis)")}
         items={[...report.leftNotes.symlinks, ...report.rightNotes.symlinks]}
       />
       <Warnings
-        title="Entrées illisibles"
+        title={t("Entrées illisibles")}
         items={[...report.leftNotes.unreadable, ...report.rightNotes.unreadable]}
       />
     </div>

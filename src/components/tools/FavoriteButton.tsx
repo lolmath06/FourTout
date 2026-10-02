@@ -1,8 +1,10 @@
 import clsx from "clsx";
+import { toolName } from "@/core/tools/localized";
 import { useFavorites } from "@/features/favorites/store";
 import { notify } from "@/features/notifications/store";
 import { toolRegistry } from "@/core/tools/registry";
 import { Icon } from "@/components/ui/Icon";
+import { t, tx } from "@/i18n";
 
 export function FavoriteButton({
   toolId,
@@ -19,21 +21,22 @@ export function FavoriteButton({
   const toggle = useFavorites((state) => state.toggle);
   const isFavorite = ids.includes(toolId);
 
-  const label = isFavorite ? "Retirer des favoris" : "Ajouter aux favoris";
+  const label = isFavorite ? t("Retirer des favoris") : t("Ajouter aux favoris");
 
   return (
     <button
       type="button"
-      aria-label={label}
+      aria-label={tx(label)}
       aria-pressed={isFavorite}
-      title={label}
+      title={tx(label)}
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
         toggle(toolId);
-        const name = toolRegistry.get(toolId)?.name ?? "Outil";
-        if (isFavorite) notify.info(`${name} retiré des favoris`);
-        else notify.success(`${name} ajouté aux favoris`);
+        const tool = toolRegistry.get(toolId);
+        const name = tool ? toolName(tool) : t("Outil");
+        if (isFavorite) notify.info(t("{name} retiré des favoris", { name }));
+        else notify.success(t("{name} ajouté aux favoris", { name }));
       }}
       className={clsx(
         "inline-flex shrink-0 items-center gap-1.5 rounded-md p-1.5 transition-colors",
@@ -46,7 +49,7 @@ export function FavoriteButton({
       <Icon name="Star" size={size} className={isFavorite ? "fill-current" : undefined} />
       {withLabel && (
         <span className="text-xs font-medium">
-          {isFavorite ? "Dans les favoris" : "Ajouter aux favoris"}
+          {isFavorite ? t("Dans les favoris") : t("Ajouter aux favoris")}
         </span>
       )}
     </button>

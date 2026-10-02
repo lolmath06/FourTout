@@ -16,6 +16,7 @@ import { toPdfError } from "@/core/pdf/errors";
 import { notify } from "@/features/notifications/store";
 import type { PdfSource } from "@/core/pdf/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 interface Placement { x: number; y: number; width: number; height: number }
 
@@ -50,9 +51,9 @@ export function PdfAddImageTool(_props: ToolComponentProps) {
     const bytes = await readSelectedFile(image);
     const result = await job.run(async (context) => {
       const output = await addImageToPdf(usable.source, [{ page, bytes, ...placement }], { report: context.report, signal: context.signal });
-      return { files: [output], summary: "Image ajoutée au document." };
+      return { files: [output], summary: t("Image ajoutée au document.") };
     });
-    if (result) { setOutcome(result); notify.success("Fichier prêt", result.summary); }
+    if (result) { setOutcome(result); notify.success(t("Fichier prêt"), result.summary); }
   };
 
   const errorMessage = job.error ? toPdfError(job.error.cause).message : undefined;
@@ -60,8 +61,8 @@ export function PdfAddImageTool(_props: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-2">
-        <FileDropZone constraints={{ inputs: [{ kind: "pdf", extensions: ["pdf"] }], maxFiles: 1 }} files={pdfFiles} onChange={setPdfFiles} label="1. Déposez le PDF" disabled={job.isRunning} />
-        <FileDropZone constraints={{ inputs: [{ kind: "image", extensions: ["png", "jpg", "jpeg", "webp"] }], maxFiles: 1 }} files={imgFiles} onChange={setImgFiles} label="2. Image ou signature (PNG transparent)" disabled={job.isRunning} />
+        <FileDropZone constraints={{ inputs: [{ kind: "pdf", extensions: ["pdf"] }], maxFiles: 1 }} files={pdfFiles} onChange={setPdfFiles} label={t("1. Déposez le PDF")} disabled={job.isRunning} />
+        <FileDropZone constraints={{ inputs: [{ kind: "image", extensions: ["png", "jpg", "jpeg", "webp"] }], maxFiles: 1 }} files={imgFiles} onChange={setImgFiles} label={t("2. Image ou signature (PNG transparent)")} disabled={job.isRunning} />
       </div>
       {loaded.length > 0 && <PdfSourceList documents={loaded} onUnlock={unlock} />}
 
@@ -69,7 +70,7 @@ export function PdfAddImageTool(_props: ToolComponentProps) {
         <>
           <PageNav page={page} pageCount={pageCount} onPage={setPage} />
           <ImageStage source={usable.source} page={page} imageUrl={imgPreview.url} placement={placement} onChange={setPlacement} />
-          <ApplyBar job={job} onApply={apply} disabled={false} label="Ajouter l'image" icon="Signature" />
+          <ApplyBar job={job} onApply={apply} disabled={false} label={t("Ajouter l'image")} icon="Signature" />
         </>
       )}
 
@@ -122,13 +123,13 @@ function ImageStage({ source, page, imageUrl, placement, onChange }: {
     <PreviewFrame maxHeight={560}>
       <div ref={boxRef} className="relative inline-block select-none">
         {render.url ? (
-          <img src={render.url} alt={`Page ${page}`} className="block max-h-[540px] max-w-full object-contain" draggable={false} />
+          <img src={render.url} alt={t("Page {page}", { page })} className="block max-h-[540px] max-w-full object-contain" draggable={false} />
         ) : (
-          <div className="flex h-64 items-center justify-center text-sm text-[var(--ft-text-muted)]"><Icon name="Loader" size={16} className="mr-2 animate-spin" /> Rendu…</div>
+          <div className="flex h-64 items-center justify-center text-sm text-[var(--ft-text-muted)]"><Icon name="Loader" size={16} className="mr-2 animate-spin" />{" "}{t("Rendu…")}</div>
         )}
         {imageUrl && (
           <div className="absolute cursor-move outline outline-1 outline-dashed outline-[var(--ft-accent)]" style={{ left: `${placement.x * 100}%`, top: `${placement.y * 100}%`, width: `${placement.width * 100}%`, height: `${placement.height * 100}%` }} onPointerDown={startMove}>
-            <img src={imageUrl} alt="À insérer" className="h-full w-full object-contain" draggable={false} />
+            <img src={imageUrl} alt={t("À insérer")} className="h-full w-full object-contain" draggable={false} />
             <span onPointerDown={startResize} className="absolute -bottom-1.5 -right-1.5 size-3.5 cursor-se-resize rounded-full border border-[var(--ft-accent)] bg-white" />
           </div>
         )}

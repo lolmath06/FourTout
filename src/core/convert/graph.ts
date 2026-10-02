@@ -1,5 +1,6 @@
 import { toolRegistry, type ToolRegistry } from "@/core/tools/registry";
 import type { DataKind, ToolDefinition } from "@/core/tools/types";
+import { localized, t } from "@/i18n";
 
 /**
  * Graphe de conversion.
@@ -157,19 +158,19 @@ export function convertibleExtensions(registry?: ToolRegistry): string[] {
 }
 
 /** Libellé lisible d'une famille de sortie. */
-export const KIND_LABELS: Record<DataKind, string> = {
+export const KIND_LABELS: Record<DataKind, string> = localized(() => ({
   image: "Images",
-  video: "Vidéo",
+  video: t("Vidéo"),
   audio: "Audio",
   pdf: "PDF",
   document: "Documents",
-  text: "Texte",
-  data: "Données",
+  text: t("Texte"),
+  data: t("Données"),
   archive: "Archives",
   folder: "Dossiers",
   url: "Liens",
   none: "Autres",
-};
+}));
 
 /**
  * Réglage prérempli transmis à l'outil destinataire.

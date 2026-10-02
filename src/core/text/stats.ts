@@ -1,4 +1,5 @@
 import { detectLineEndings } from "./lines";
+import { t } from "@/i18n";
 
 /**
  * Statistiques de texte.
@@ -86,11 +87,11 @@ function clamp(value: number): number {
 
 /** Interprétation grand public d'un score de lisibilité. */
 export function describeReadability(score: number): string {
-  if (score >= 80) return "Très facile à lire";
-  if (score >= 60) return "Facile à lire";
-  if (score >= 40) return "Assez difficile";
-  if (score >= 20) return "Difficile";
-  return "Très difficile";
+  if (score >= 80) return t("Très facile à lire");
+  if (score >= 60) return t("Facile à lire");
+  if (score >= 40) return t("Assez difficile");
+  if (score >= 20) return t("Difficile");
+  return t("Très difficile");
 }
 
 /** « 1 min 20 s », « 45 s », « — » pour un texte vide. */

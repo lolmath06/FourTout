@@ -6,22 +6,23 @@ import { usePageRange } from "@/components/pdf/usePageRange";
 import { pdfToImages, type ImageOutputFormat } from "@/core/pdf/operations/toImages";
 import { parsePageRange } from "@/core/pdf/pageRange";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t } from "@/i18n";
 
-const FORMATS = [
-  { value: "png" as ImageOutputFormat, label: "PNG", hint: "Sans perte, idéal pour du texte" },
-  { value: "jpeg" as ImageOutputFormat, label: "JPEG", hint: "Plus léger, idéal pour des photos" },
-];
+const FORMATS = localized(() => [
+  { value: "png" as ImageOutputFormat, label: "PNG", hint: t("Sans perte, idéal pour du texte") },
+  { value: "jpeg" as ImageOutputFormat, label: "JPEG", hint: t("Plus léger, idéal pour des photos") },
+]);
 
-const RESOLUTIONS = [
-  { value: "96", label: "Écran (96 ppp)" },
-  { value: "150", label: "Bonne (150 ppp)" },
-  { value: "300", label: "Impression (300 ppp)" },
-];
+const RESOLUTIONS = localized(() => [
+  { value: "96", label: t("Écran (96 ppp)") },
+  { value: "150", label: t("Bonne (150 ppp)") },
+  { value: "300", label: t("Impression (300 ppp)") },
+]);
 
-const SCOPES = [
-  { value: "all" as const, label: "Toutes les pages" },
-  { value: "selection" as const, label: "Pages choisies" },
-];
+const SCOPES = localized(() => [
+  { value: "all" as const, label: t("Toutes les pages") },
+  { value: "selection" as const, label: t("Pages choisies") },
+]);
 
 export function PdfToImagesTool({ tool }: ToolComponentProps) {
   const [format, setFormat] = useState<ImageOutputFormat>("png");
@@ -33,7 +34,7 @@ export function PdfToImagesTool({ tool }: ToolComponentProps) {
   return (
     <PdfToolShell
       tool={tool}
-      actionLabel="Convertir en images"
+      actionLabel={t("Convertir en images")}
       actionDisabled={scope === "selection" && input.trim().length === 0}
       run={async ({ documents, context }) => {
         const [document] = documents;
@@ -47,7 +48,7 @@ export function PdfToImagesTool({ tool }: ToolComponentProps) {
         );
         return {
           files,
-          summary: `${files.length} image${files.length > 1 ? "s" : ""} en ${format.toUpperCase()} à ${dpi} ppp.`,
+          summary: t("{count} {count, plural, one {image} other {images}} en {value} à {dpi} ppp.", { count: files.length, value: format.toUpperCase(), dpi }),
           zipName: "pdf-en-images.zip",
         };
       }}
@@ -100,27 +101,27 @@ function ImageFields({
 
   return (
     <Fieldset>
-      <Field label="Format">
-        <OptionGroup ariaLabel="Format de sortie" value={format} onChange={onFormat} options={FORMATS} />
+      <Field label={t("Format")}>
+        <OptionGroup ariaLabel={t("Format de sortie")} value={format} onChange={onFormat} options={FORMATS} />
       </Field>
-      <Field label="Résolution" hint="Plus la résolution est élevée, plus les images sont grandes.">
-        <OptionGroup ariaLabel="Résolution" value={dpi} onChange={onDpi} options={RESOLUTIONS} />
+      <Field label={t("Résolution")} hint={t("Plus la résolution est élevée, plus les images sont grandes.")}>
+        <OptionGroup ariaLabel={t("Résolution")} value={dpi} onChange={onDpi} options={RESOLUTIONS} />
       </Field>
 
       {format === "jpeg" && (
-        <Field label="Qualité JPEG">
+        <Field label={t("Qualité JPEG")}>
           <Slider value={quality} onChange={onQuality} min={40} max={100} suffix=" %" />
         </Field>
       )}
 
-      <Field label="Portée">
-        <OptionGroup ariaLabel="Pages concernées" value={scope} onChange={onScope} options={SCOPES} />
+      <Field label={t("Portée")}>
+        <OptionGroup ariaLabel={t("Pages concernées")} value={scope} onChange={onScope} options={SCOPES} />
       </Field>
 
       {scope === "selection" && (
         <div className="sm:col-span-full">
           <PageRangeInput
-            label="Pages à convertir"
+            label={t("Pages à convertir")}
             value={input}
             onChange={onInput}
             pageCount={pageCount}

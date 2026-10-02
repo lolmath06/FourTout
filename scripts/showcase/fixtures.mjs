@@ -6,7 +6,8 @@
  * avec des noms et des contenus manifestement fictifs. Ils sont écrits dans
  * `showcase-output/fixtures/`, qui n'est pas versionné.
  *
- * Usage : `node scripts/showcase/fixtures.mjs`
+ * Usage : `node scripts/showcase/fixtures.mjs` — `SHOWCASE_LANG=en` écrit la
+ * variante anglaise (noms et contenus en anglais), à côté de la française.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -16,12 +17,37 @@ import { FIXTURES } from "./paths.mjs";
 
 mkdirSync(FIXTURES, { recursive: true });
 
+/** Noms et textes visibles à l'écran, par langue de la vitrine. */
+export const FIXTURE_TEXT = {
+  fr: {
+    author: "Exemple",
+    footer: "Document d'exemple — contenu fictif",
+    pdfs: [
+      ["rapport-annuel-exemple.pdf", "Rapport annuel (exemple)", 6],
+      ["annexes-exemple.pdf", "Annexes (exemple)", 3],
+      ["presentation-exemple.pdf", "Présentation (exemple)", 4],
+    ],
+    image: "paysage-exemple",
+  },
+  en: {
+    author: "Sample",
+    footer: "Sample document — fictitious content",
+    pdfs: [
+      ["annual-report-sample.pdf", "Annual report (sample)", 6],
+      ["appendices-sample.pdf", "Appendices (sample)", 3],
+      ["presentation-sample.pdf", "Presentation (sample)", 4],
+    ],
+    image: "landscape-sample",
+  },
+};
+const TEXT = FIXTURE_TEXT[process.env.SHOWCASE_LANG ?? "fr"] ?? FIXTURE_TEXT.fr;
+
 // ---------------------------------------------------------------- PDF
 
 async function pdf(file, title, pages) {
   const doc = await PDFDocument.create();
   doc.setTitle(title);
-  doc.setAuthor("Exemple");
+  doc.setAuthor(TEXT.author);
   doc.setProducer("FourTout showcase fixtures");
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const regular = await doc.embedFont(StandardFonts.Helvetica);
@@ -35,14 +61,12 @@ async function pdf(file, title, pages) {
       page.drawRectangle({ x: 48, y: 700 - line * 24, width, height: 8, color: rgb(0.86, 0.88, 0.91) });
     }
     page.drawRectangle({ x: 48, y: 90, width: 499, height: 70, color: rgb(0.93, 0.95, 0.99) });
-    page.drawText("Document d'exemple — contenu fictif", { x: 64, y: 120, size: 11, font: regular, color: rgb(0.2, 0.3, 0.55) });
+    page.drawText(TEXT.footer, { x: 64, y: 120, size: 11, font: regular, color: rgb(0.2, 0.3, 0.55) });
   }
   writeFileSync(join(FIXTURES, file), await doc.save());
 }
 
-await pdf("rapport-annuel-exemple.pdf", "Rapport annuel (exemple)", 6);
-await pdf("annexes-exemple.pdf", "Annexes (exemple)", 3);
-await pdf("presentation-exemple.pdf", "Présentation (exemple)", 4);
+for (const [file, title, pages] of TEXT.pdfs) await pdf(file, title, pages);
 
 // ------------------------------------------------------------- images
 
@@ -94,7 +118,7 @@ function landscape(width, height) {
   return canvas;
 }
 
-writeFileSync(join(FIXTURES, "paysage-exemple.png"), landscape(1600, 1000).toBuffer("image/png"));
-writeFileSync(join(FIXTURES, "paysage-exemple.jpg"), landscape(1600, 1000).toBuffer("image/jpeg", 90));
+writeFileSync(join(FIXTURES, `${TEXT.image}.png`), landscape(1600, 1000).toBuffer("image/png"));
+writeFileSync(join(FIXTURES, `${TEXT.image}.jpg`), landscape(1600, 1000).toBuffer("image/jpeg", 90));
 
 console.log(`Fixtures écrites dans ${FIXTURES}`);

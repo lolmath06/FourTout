@@ -11,6 +11,7 @@
  * saisit et ce qu'il lit sur son calendrier.
  */
 
+import { t } from "@/i18n";
 const MS_PER_DAY = 86_400_000;
 
 /** Découpe une date `AAAA-MM-JJ` sans passer par le parseur (qui lirait UTC). */
@@ -185,7 +186,7 @@ export function computeAge(birth: Date, reference: Date): AgeResult {
   const from = startOfDay(birth);
   const to = startOfDay(reference);
   if (from.getTime() > to.getTime()) {
-    throw new RangeError("La date de naissance est postérieure à la date de référence.");
+    throw new RangeError(t("La date de naissance est postérieure à la date de référence."));
   }
 
   const span = calendarSpan(from, to);

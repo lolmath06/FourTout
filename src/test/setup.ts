@@ -24,3 +24,12 @@ if (typeof window !== "undefined" && typeof URL.createObjectURL !== "function") 
   URL.createObjectURL = () => `blob:fourtout-test/${++counter}`;
   URL.revokeObjectURL = () => {};
 }
+
+// Les tests sont écrits contre le texte source de l'interface, en français :
+// le système de test « parle » donc français, et la préférence « Système »
+// s'y résout comme sur un poste francophone. Les tests d'internationalisation
+// choisissent explicitement leurs langues.
+if (typeof navigator !== "undefined") {
+  Object.defineProperty(navigator, "languages", { value: ["fr-FR", "fr"], configurable: true });
+  Object.defineProperty(navigator, "language", { value: "fr-FR", configurable: true });
+}

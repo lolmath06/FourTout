@@ -29,7 +29,9 @@
     "speech:assets": "node scripts/generate-speech-assets.mjs",
     "onnx:assets": "node scripts/sync-onnx-assets.mjs",
     "docs:features": "node scripts/generate-features-doc.mjs",
-    "fixtures:contract": "node scripts/fixture-contract.mjs"
+    "fixtures:contract": "node scripts/fixture-contract.mjs",
+    "i18n:extract": "node scripts/i18n/extract.mjs",
+    "i18n:status": "node scripts/i18n/status.mjs"
   },
   "dependencies": {
     "@cantoo/pdf-lib": "^2.9.1",

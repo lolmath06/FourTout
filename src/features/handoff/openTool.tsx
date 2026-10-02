@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/Button";
+import { toolName } from "@/core/tools/localized";
 import { Icon } from "@/components/ui/Icon";
 import { toolRegistry } from "@/core/tools/registry";
 import type { Handoff } from "./store";
@@ -38,7 +39,7 @@ export function OpenToolButton({
       data-testid={`open-tool-${toolId}`}
     >
       <Icon name={icon ?? target.icon} size={13} />
-      {label ?? target.name}
+      {label ?? toolName(target)}
     </Button>
   );
 }

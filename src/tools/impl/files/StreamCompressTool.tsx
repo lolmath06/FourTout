@@ -24,6 +24,7 @@ import { HANDOFF_TARGETS } from "@/features/handoff/targets";
 import { OpenToolButton } from "@/features/handoff/openTool";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t, tx } from "@/i18n";
 
 /**
  * Compression d'un **fichier seul** en GZ ou XZ, et l'inverse.
@@ -36,18 +37,18 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * L'outil le dit à l'écran plutôt qu'en note de bas de page, et détecte le cas
  * du `.tar.gz` déposé pour renvoyer vers « Extraire une archive ».
  */
-const FORMATS: { value: StreamFormat; label: string; hint: string }[] = [
+const FORMATS: { value: StreamFormat; label: string; hint: string }[] = localized(() => [
   {
     value: "gz",
-    label: "GZIP (.gz)",
-    hint: "Universel et rapide. C'est ce que produisent gzip et la plupart des serveurs.",
+    label: t("GZIP (.gz)"),
+    hint: t("Universel et rapide. C'est ce que produisent gzip et la plupart des serveurs."),
   },
   {
     value: "xz",
-    label: "XZ (.xz)",
-    hint: "Plus lent, nettement plus compact sur du texte et des journaux.",
+    label: t("XZ (.xz)"),
+    hint: t("Plus lent, nettement plus compact sur du texte et des journaux."),
   },
-];
+]);
 
 export function StreamCompressTool({ tool }: ToolComponentProps) {
   const [direction, setDirection] = useState<"compress" | "decompress">(
@@ -121,7 +122,7 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
     );
     if (summary) {
       notify.success(
-        direction === "compress" ? "Fichier compressé" : "Fichier décompressé",
+        direction === "compress" ? t("Fichier compressé") : t("Fichier décompressé"),
         `${formatFileSize(summary.inputBytes)} → ${formatFileSize(summary.outputBytes)}`,
       );
     }
@@ -130,7 +131,7 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <OptionGroup
-        ariaLabel="Sens de l'opération"
+        ariaLabel={t("Sens de l'opération")}
         value={direction}
         onChange={(next) => {
           setDirection(next);
@@ -138,15 +139,15 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
           action.setResult(null);
         }}
         options={[
-          { value: "compress", label: "Compresser" },
-          { value: "decompress", label: "Décompresser" },
+          { value: "compress", label: t("Compresser") },
+          { value: "decompress", label: t("Décompresser") },
         ]}
       />
 
-      <Callout tone="info" title="« .gz » et « .xz » ne contiennent qu'un seul fichier">
+      <Callout tone="info" title={t("« .gz » et « .xz » ne contiennent qu'un seul fichier")}>
         {direction === "compress"
-          ? "Compresser produit un flux : un seul fichier, sans nom de dossier ni arborescence. Pour regrouper plusieurs fichiers en conservant leur organisation, passez par « Créer une archive » et son format TAR.GZ ou TAR.XZ."
-          : "Décompresser attend un flux déjà compressé — un .gz ou un .xz. Un fichier ordinaire n'a rien à y faire, et un .tar.gz redonnera le .tar, pas l'arborescence qu'il contient."}
+          ? t("Compresser produit un flux : un seul fichier, sans nom de dossier ni arborescence. Pour regrouper plusieurs fichiers en conservant leur organisation, passez par « Créer une archive » et son format TAR.GZ ou TAR.XZ.")
+          : t("Décompresser attend un flux déjà compressé — un .gz ou un .xz. Un fichier ordinaire n'a rien à y faire, et un .tar.gz redonnera le .tar, pas l'arborescence qu'il contient.")}
       </Callout>
 
       <PathPicker
@@ -156,52 +157,47 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
           setPaths(next);
           action.setResult(null);
         }}
-        label={direction === "compress" ? "Fichier à compresser" : "Fichier .gz ou .xz à décompresser"}
-        hint="traité en flux : la taille n'a pas d'importance"
+        label={direction === "compress" ? t("Fichier à compresser") : t("Fichier .gz ou .xz à décompresser")}
+        hint={t("traité en flux : la taille n'a pas d'importance")}
         disabled={action.job.isRunning}
         filters={
           direction === "decompress"
-            ? [{ name: "Flux compressés", extensions: ["gz", "xz", "tgz", "txz"] }]
+            ? [{ name: t("Flux compressés"), extensions: ["gz", "xz", "tgz", "txz"] }]
             : undefined
         }
       />
 
       {path && direction === "decompress" && isTarball && (
-        <Callout tone="warning" title="Ce fichier est une archive TAR compressée">
-          Le décompresser ici redonnera le <code className="font-mono">.tar</code>, pas
-          l'arborescence qu'il contient. Pour retrouver les fichiers, utilisez « Extraire une
-          archive », qui fait les deux étapes.
+        <Callout tone="warning" title={t("Ce fichier est une archive TAR compressée")}>
+          <Trans source={"Le décompresser ici redonnera le <0>.tar</0>, pas l'arborescence qu'il contient. Pour retrouver les fichiers, utilisez « Extraire une archive », qui fait les deux étapes."} components={[<code className="font-mono" />]} />
         </Callout>
       )}
 
       {notCompressed && (
-        <Callout tone="warning" title="Ce fichier n'est pas compressé en GZ ni en XZ">
+        <Callout tone="warning" title={t("Ce fichier n'est pas compressé en GZ ni en XZ")}>
           <span className="block">
-            Ses premiers octets le désignent comme : <strong>{detected?.label}</strong>. Il n'y a
-            donc rien à décompresser — le fichier n'a rien d'anormal, il n'est simplement pas un
-            flux compressé.
+            <Trans source={"Ses premiers octets le désignent comme : <0>{label}</0>. Il n'y a donc rien à décompresser — le fichier n'a rien d'anormal, il n'est simplement pas un flux compressé."} values={{ label: detected?.label }} components={[<strong />]} />
           </span>
           <span className="mt-1 block">
-            Pour le <strong>compresser</strong>, basculez sur « Compresser » ci-dessus.
+            <Trans source={"Pour le <0>compresser</0>, basculez sur « Compresser » ci-dessus."} components={[<strong />]} />
           </span>
         </Callout>
       )}
 
       {path && direction === "decompress" && detected === null && streamFormat === null && (
-        <Callout tone="warning" title="Format non reconnu">
-          FourTout ne sait dire ni d'après le nom ni d'après les premiers octets s'il s'agit d'un
-          flux GZIP ou XZ. Choisissez le format explicitement ci-dessous.
+        <Callout tone="warning" title={t("Format non reconnu")}>
+          {t("FourTout ne sait dire ni d'après le nom ni d'après les premiers octets s'il s'agit d'un flux GZIP ou XZ. Choisissez le format explicitement ci-dessous.")}
         </Callout>
       )}
 
       {path && (
-        <Fieldset columns={2} title="Réglages">
+        <Fieldset columns={2} title={t("Réglages")}>
           <Field
-            label="Format"
-            hint={FORMATS.find((entry) => entry.value === effectiveFormat)?.hint}
+            label={t("Format")}
+            hint={tx(FORMATS.find((entry) => entry.value === effectiveFormat)?.hint)}
           >
             <OptionGroup
-              ariaLabel="Format de compression"
+              ariaLabel={t("Format de compression")}
               value={effectiveFormat}
               onChange={setFormat}
               options={FORMATS}
@@ -210,8 +206,8 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
           </Field>
           {direction === "compress" && (
             <Field
-              label={`Compression : ${level}`}
-              hint="0 = stocké sans compression, 9 = plus lent mais plus petit"
+              label={t("Compression : {level}", { level })}
+              hint={t("0 = stocké sans compression, 9 = plus lent mais plus petit")}
             >
               <Slider min={0} max={9} step={1} value={level} onChange={setLevel} />
             </Field>
@@ -221,12 +217,12 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
 
       {path && !notCompressed && (
         <RunBar
-          label={direction === "compress" ? "Compresser…" : "Décompresser…"}
+          label={direction === "compress" ? t("Compresser…") : t("Décompresser…")}
           icon={direction === "compress" ? "FileArchive" : "FileOutput"}
           running={action.job.isRunning}
           progress={action.job.progress}
           status={action.job.status}
-          error={action.error}
+          error={tx(action.error)}
           cancel={action.job.cancel}
           onRun={() => void run()}
         />
@@ -237,14 +233,14 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
           <StatGrid
             columns={4}
             stats={[
-              { label: "Format", value: action.result.format },
-              { label: "Entrée", value: formatFileSize(action.result.inputBytes) },
-              { label: "Sortie", value: formatFileSize(action.result.outputBytes) },
-              { label: "Taille finale", value: `${action.result.ratio.toFixed(1)} %` },
+              { label: t("Format"), value: action.result.format },
+              { label: t("Entrée"), value: formatFileSize(action.result.inputBytes) },
+              { label: t("Sortie"), value: formatFileSize(action.result.outputBytes) },
+              { label: t("Taille finale"), value: `${action.result.ratio.toFixed(1)} %` },
             ]}
           />
           <div className="flex flex-wrap items-center gap-2" data-testid="stream-handoffs">
-            <span className="ft-label">Continuer avec</span>
+            <Trans source={"<0>Continuer avec</0>"} components={[<span className="ft-label" />]} />
             <OpenToolButton
               toolId={HANDOFF_TARGETS.inspect}
               paths={[action.result.output]}
@@ -254,10 +250,10 @@ export function StreamCompressTool({ tool }: ToolComponentProps) {
 
           <Callout
             tone="success"
-            title={direction === "compress" ? "Fichier compressé" : "Fichier décompressé"}
+            title={direction === "compress" ? t("Fichier compressé") : t("Fichier décompressé")}
             actions={
               <Button size="sm" onClick={() => revealFile(action.result!.output)}>
-                <Icon name="FolderTree" size={13} /> Ouvrir
+                <Icon name="FolderTree" size={13} />{" "}{t("Ouvrir")}
               </Button>
             }
           >

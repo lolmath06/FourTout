@@ -1,4 +1,5 @@
 import type { OperationContext } from "@/core/pdf/types";
+import { localized, t } from "@/i18n";
 
 /**
  * Reconnaissance de texte (OCR), moteur abstrait.
@@ -92,15 +93,15 @@ export interface OcrEngine {
 }
 
 /** Libellés français des langues, pour l'interface. */
-export const OCR_LANGUAGE_LABELS: Record<OcrLanguage, string> = {
-  fra: "Français",
+export const OCR_LANGUAGE_LABELS: Record<OcrLanguage, string> = localized(() => ({
+  fra: t("Français"),
   eng: "Anglais",
-  "fra+eng": "Français + Anglais",
+  "fra+eng": t("Français + Anglais"),
   deu: "Allemand",
   spa: "Espagnol",
   ita: "Italien",
   por: "Portugais",
-};
+}));
 
 /** Langues dont le modèle est réellement embarqué dans l'application. */
 export const BUNDLED_LANGUAGES: OcrLanguage[] = ["fra", "eng", "fra+eng"];

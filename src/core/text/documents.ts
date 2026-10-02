@@ -5,6 +5,7 @@ import { detectEncoding } from "./encoding";
 import { TextError } from "./errors";
 import { htmlToText } from "./html";
 import { diffLines, type DiffResult } from "./diff";
+import { localized, t } from "@/i18n";
 
 /**
  * Amener n'importe quel document à du **texte comparable**.
@@ -85,7 +86,7 @@ export function docxToText(bytes: Uint8Array): string {
     if (!entry) {
       throw new TextError(
         "document-unsupported",
-        "Ce fichier .docx ne contient pas de partie « word/document.xml ».",
+        t("Ce fichier .docx ne contient pas de partie « word/document.xml »."),
       );
     }
     xml = new TextDecoder("utf-8").decode(entry);
@@ -153,7 +154,7 @@ export async function documentToText(
   if (!format) {
     throw new TextError(
       "document-unsupported",
-      `« ${input.name} » : formats acceptés — ${Object.values(DOCUMENT_FORMAT_LABELS).join(", ")}.`,
+      t("« {name} » : formats acceptés — {value}.", { name: input.name, value: Object.values(DOCUMENT_FORMAT_LABELS).join(", ") }),
     );
   }
 
@@ -163,7 +164,7 @@ export async function documentToText(
     if (!text) {
       throw new TextError(
         "document-empty",
-        `« ${input.name} » ne contient aucun texte : s'il s'agit d'un scan, produisez d'abord un PDF recherchable.`,
+        t("« {name} » ne contient aucun texte : s'il s'agit d'un scan, produisez d'abord un PDF recherchable.", { name: input.name }),
       );
     }
     return { name: input.name, format, text, pages: extracted.pages.length };
@@ -171,7 +172,7 @@ export async function documentToText(
 
   if (format === "docx") {
     const text = docxToText(input.bytes);
-    if (!text) throw new TextError("document-empty", `« ${input.name} » ne contient aucun texte.`);
+    if (!text) throw new TextError("document-empty", t("« {name} » ne contient aucun texte.", { name: input.name }));
     return { name: input.name, format, text };
   }
 
@@ -179,12 +180,12 @@ export async function documentToText(
   // même moteur que l'outil « Détecter l'encodage ».
   const detection = detectEncoding(input.bytes);
   if (detection.binary) {
-    throw new TextError("encoding-unreadable", `« ${input.name} » n'est pas un fichier texte.`);
+    throw new TextError("encoding-unreadable", t("« {name} » n'est pas un fichier texte.", { name: input.name }));
   }
   const raw = detection.text;
   const text = format === "html" ? htmlToText(raw) : raw;
   if (!text.trim()) {
-    throw new TextError("document-empty", `« ${input.name} » est vide.`);
+    throw new TextError("document-empty", t("« {name} » est vide.", { name: input.name }));
   }
   return { name: input.name, format, text, encoding: detection.encoding };
 }
@@ -201,10 +202,10 @@ export type CompareMode =
    */
   | "normalized";
 
-export const COMPARE_MODE_LABELS: Record<CompareMode, string> = {
-  exact: "Texte exact",
-  normalized: "Texte normalisé",
-};
+export const COMPARE_MODE_LABELS: Record<CompareMode, string> = localized(() => ({
+  exact: t("Texte exact"),
+  normalized: t("Texte normalisé"),
+}));
 
 /**
  * Normalise un texte pour la comparaison de contenu.
@@ -253,19 +254,19 @@ export async function compareDocuments(
 ): Promise<DocumentComparison> {
   const mode = options.mode ?? "normalized";
 
-  context?.report?.({ ratio: 0, label: `Lecture de ${a.name}` });
+  context?.report?.({ ratio: 0, label: t("Lecture de {name}", { name: a.name }) });
   const left = await documentToText(a, { signal: context?.signal });
   if (context?.signal?.aborted) throw new TextError("cancelled");
 
-  context?.report?.({ ratio: 0.4, label: `Lecture de ${b.name}` });
+  context?.report?.({ ratio: 0.4, label: t("Lecture de {name}", { name: b.name }) });
   const right = await documentToText(b, { signal: context?.signal });
   if (context?.signal?.aborted) throw new TextError("cancelled");
 
-  context?.report?.({ ratio: 0.8, label: "Comparaison" });
+  context?.report?.({ ratio: 0.8, label: t("Comparaison") });
   const leftText = mode === "normalized" ? normalizeForCompare(left.text) : left.text;
   const rightText = mode === "normalized" ? normalizeForCompare(right.text) : right.text;
   const diff = diffLines(leftText, rightText);
 
-  context?.report?.({ ratio: 1, label: "Terminé" });
+  context?.report?.({ ratio: 1, label: t("Terminé") });
   return { left, right, mode, diff, leftText, rightText };
 }

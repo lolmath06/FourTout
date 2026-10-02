@@ -25,6 +25,7 @@ import { useToolJob } from "@/features/jobs/hooks";
 import { notify } from "@/features/notifications/store";
 import { fallbackTracker } from "./shared";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Sous-titres automatiques d'une vidéo.
@@ -45,7 +46,7 @@ export function VideoGenerateSubtitlesTool({ tool }: ToolComponentProps) {
           tool={tool}
           assets={assets}
           focus="subtitles"
-          dropLabel="Déposez votre vidéo"
+          dropLabel={t("Déposez votre vidéo")}
           renderExtras={({ segments, file }) => (
             <BurnPanel toolId={tool.id} segments={segments} file={file} />
           )}
@@ -107,20 +108,20 @@ function BurnPanel({
               onFallback: tracker.onFallback,
               outputName: outputName(file.name, "sous-titres-incrustes", pipeline.container),
               totalMs: info.durationMs,
-              label: "Incrustation…",
+              label: t("Incrustation…"),
             },
             context,
           );
-          notify.success("Vidéo sous-titrée prête");
+          notify.success(t("Vidéo sous-titrée prête"));
           return {
             files: [produced],
-            summary: `${segments.length} passages incrustés dans l'image.`,
+            summary: t("{count} passages incrustés dans l'image.", { count: segments.length }),
             warning: tracker.warning(),
           };
         },
       });
     } catch (error) {
-      notify.error("Lancement impossible", describeMediaError(error).message);
+      notify.error(t("Lancement impossible"), describeMediaError(error).message);
     } finally {
       startingRef.current = false;
     }
@@ -137,40 +138,39 @@ function BurnPanel({
         className="flex w-full items-center gap-2 text-sm font-medium"
       >
         <Icon name={open ? "ChevronDown" : "ChevronRight"} size={15} />
-        Incruster ces sous-titres dans la vidéo
+        {t("Incruster ces sous-titres dans la vidéo")}
       </button>
       <p className="mt-1 pl-6 text-[11px] text-[var(--ft-text-faint)]">
-        Le texte affiché ci-dessus, corrections comprises, est gravé dans l'image. La vidéo est
-        réencodée ; l'audio est recopié tel quel.
+        {t("Le texte affiché ci-dessus, corrections comprises, est gravé dans l'image. La vidéo est réencodée ; l'audio est recopié tel quel.")}
       </p>
 
       {open && (
         <div className="mt-3 space-y-3">
           <Fieldset columns={2}>
-            <Field label="Taille du texte">
+            <Field label={t("Taille du texte")}>
               <Slider value={style.fontSize} onChange={(fontSize) => patch({ fontSize })} min={10} max={60} />
             </Field>
-            <Field label="Position">
+            <Field label={t("Position")}>
               <OptionGroup
-                ariaLabel="Position"
+                ariaLabel={t("Position")}
                 value={style.position}
                 onChange={(position) => patch({ position: position as SubtitlePosition })}
                 options={[
-                  { value: "bottom", label: "En bas" },
-                  { value: "center", label: "Au centre" },
-                  { value: "top", label: "En haut" },
+                  { value: "bottom", label: t("En bas") },
+                  { value: "center", label: t("Au centre") },
+                  { value: "top", label: t("En haut") },
                 ]}
               />
             </Field>
-            <Field label="Lisibilité" full>
+            <Field label={t("Lisibilité")} full>
               <OptionGroup
-                ariaLabel="Lisibilité"
+                ariaLabel={t("Lisibilité")}
                 value={style.outline}
                 onChange={(outline) => patch({ outline: outline as BurnStyle["outline"] })}
                 options={[
-                  { value: "outline", label: "Contour noir" },
-                  { value: "box", label: "Bandeau" },
-                  { value: "none", label: "Aucun" },
+                  { value: "outline", label: t("Contour noir") },
+                  { value: "box", label: t("Bandeau") },
+                  { value: "none", label: t("Aucun") },
                 ]}
               />
             </Field>
@@ -179,7 +179,7 @@ function BurnPanel({
           <div className="flex items-center justify-end gap-2">
             {running && (
               <Button size="sm" variant="ghost" onClick={() => job && cancelMediaJob(job.id)}>
-                Annuler
+                {t("Annuler")}
               </Button>
             )}
             <Button
@@ -190,11 +190,11 @@ function BurnPanel({
             >
               {running ? (
                 <>
-                  <Icon name="Loader" size={14} className="animate-spin" /> {job?.step ?? "Incrustation…"}
+                  <Icon name="Loader" size={14} className="animate-spin" /> {job?.step ?? t("Incrustation…")}
                 </>
               ) : (
                 <>
-                  <Icon name="Subtitles" size={14} /> Incruster dans la vidéo
+                  <Icon name="Subtitles" size={14} />{" "}{t("Incruster dans la vidéo")}
                 </>
               )}
             </Button>
@@ -217,7 +217,7 @@ function BurnPanel({
                   : "border-[var(--ft-danger)] text-[var(--ft-danger)]"
               }`}
             >
-              {describeMediaError(new Error(failed)).message}
+              {tx(describeMediaError(new Error(failed)).message)}
             </p>
           )}
 

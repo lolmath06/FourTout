@@ -17,6 +17,7 @@ import {
 } from "@/core/network/native";
 import { JobCancelledError } from "@/core/jobs/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 const STATUS_CLASS: Record<PortStatus, string> = {
   open: "text-[var(--ft-success)] font-semibold",
@@ -51,19 +52,19 @@ export function PortCheckTool(_props: ToolComponentProps) {
     setRunning(true);
     setError(undefined);
     setSummary(undefined);
-    setProgress({ label: "Test des ports…" });
+    setProgress({ label: t("Test des ports…") });
     try {
       setSummary(
         await checkPorts(
           host,
           spec,
           { timeoutMs: timeout },
-          { signal: abort.signal, report: (update) => setProgress({ ...update, label: update.label ?? "Test des ports…" }) },
+          { signal: abort.signal, report: (update) => setProgress({ ...update, label: update.label ?? t("Test des ports…") }) },
         ),
       );
     } catch (failure) {
-      if (failure instanceof JobCancelledError) setError("Test interrompu.");
-      else setError(failure instanceof Error ? failure.message : "Test impossible.");
+      if (failure instanceof JobCancelledError) setError(t("Test interrompu."));
+      else setError(failure instanceof Error ? failure.message : t("Test impossible."));
     } finally {
       setRunning(false);
       setProgress(undefined);
@@ -75,17 +76,16 @@ export function PortCheckTool(_props: ToolComponentProps) {
     <div className="space-y-4">
       {!available && <Callout tone="warning">{NETWORK_NATIVE_REQUIRED}</Callout>}
 
-      <Callout tone="neutral" title="Un outil de diagnostic, pas un scanner">
-        Un seul hôte à la fois, {MAX_PORTS} ports au maximum par lancement, par connexion TCP
-        ordinaire. Une demande du type « 1-65535 » est refusée : ce n'est pas l'usage de cet outil.
+      <Callout tone="neutral" title={t("Un outil de diagnostic, pas un scanner")}>
+        {t("Un seul hôte à la fois, {MAX_PORTS} ports au maximum par lancement, par connexion TCP ordinaire. Une demande du type « 1-65535 » est refusée : ce n'est pas l'usage de cet outil.", { MAX_PORTS })}
       </Callout>
 
       <Fieldset columns={1}>
-        <Field label="Hôte ou adresse IP">
+        <Field label={t("Hôte ou adresse IP")}>
           <TextInput
             value={host}
             onChange={(event) => setHost(event.target.value)}
-            aria-label="Hôte ou adresse IP"
+            aria-label={t("Hôte ou adresse IP")}
             placeholder="192.168.1.1"
             autoFocus
           />
@@ -94,23 +94,23 @@ export function PortCheckTool(_props: ToolComponentProps) {
 
       <Fieldset columns={2}>
         <Field
-          label="Ports"
-          hint="Liste et plages séparées par des virgules : 22, 80, 443, 8000-8010."
+          label={t("Ports")}
+          hint={t("Liste et plages séparées par des virgules : 22, 80, 443, 8000-8010.")}
         >
           <TextInput
             value={spec}
             onChange={(event) => setSpec(event.target.value)}
-            aria-label="Ports à tester"
+            aria-label={t("Ports à tester")}
           />
         </Field>
-        <Field label="Délai d'attente (ms)" hint="De 100 à 10 000.">
+        <Field label={t("Délai d'attente (ms)")} hint={t("De 100 à 10 000.")}>
           <NumberInput
             value={timeout}
             min={100}
             max={10000}
             step={100}
             onChange={(event) => setTimeoutMs(Number(event.target.value))}
-            aria-label="Délai d'attente"
+            aria-label={t("Délai d'attente")}
           />
         </Field>
       </Fieldset>
@@ -121,18 +121,18 @@ export function PortCheckTool(_props: ToolComponentProps) {
           onClick={run}
           disabled={!available || running || host.trim().length === 0}
         >
-          <Icon name="PlugZap" size={14} /> {running ? "Test en cours…" : "Tester les ports"}
+          <Icon name="PlugZap" size={14} /> {running ? t("Test en cours…") : t("Tester les ports")}
         </Button>
         {running && (
           <Button variant="ghost" onClick={() => controller?.abort()}>
-            <Icon name="X" size={14} /> Arrêter
+            <Icon name="X" size={14} />{" "}{t("Arrêter")}
           </Button>
         )}
       </div>
 
-      {progress && <ProgressBar ratio={progress.ratio} label={progress.label} />}
+      {progress && <ProgressBar ratio={progress.ratio} label={tx(progress.label)} />}
 
-      {error && <Callout tone="error">{error}</Callout>}
+      {error && <Callout tone="error">{tx(error)}</Callout>}
 
       {summary && (
         <>
@@ -141,7 +141,7 @@ export function PortCheckTool(_props: ToolComponentProps) {
             {summary.tested > 1 ? "s" : ""} testé{summary.tested > 1 ? "s" : ""} ·{" "}
             <strong>{summary.open} ouvert{summary.open > 1 ? "s" : ""}</strong> ·{" "}
             {summary.closed} fermé{summary.closed > 1 ? "s" : ""} · {summary.filtered} sans réponse
-            {summary.cancelled && " · interrompu avant la fin"}
+            {summary.cancelled && t(" · interrompu avant la fin")}
           </p>
 
           <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
@@ -149,11 +149,11 @@ export function PortCheckTool(_props: ToolComponentProps) {
               <table className="ft-table">
                 <thead>
                   <tr>
-                    <th scope="col">Port</th>
-                    <th scope="col">État</th>
-                    <th scope="col">Service habituellement associé</th>
+                    <th scope="col">{t("Port")}</th>
+                    <th scope="col">{t("État")}</th>
+                    <th scope="col">{t("Service habituellement associé")}</th>
                     <th scope="col" className="text-right">
-                      Durée
+                      {t("Durée")}
                     </th>
                   </tr>
                 </thead>
@@ -165,7 +165,7 @@ export function PortCheckTool(_props: ToolComponentProps) {
                       </th>
                       <td
                         className={clsx("ft-value", STATUS_CLASS[result.status])}
-                        title={PORT_STATUS_EXPLANATIONS[result.status]}
+                        title={tx(PORT_STATUS_EXPLANATIONS[result.status])}
                       >
                         {PORT_STATUS_LABELS[result.status]}
                       </td>

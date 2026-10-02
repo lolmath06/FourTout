@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { fitAspect, type NormalizedRect, type Size } from "@/core/media/video/dimensions";
+import { t } from "@/i18n";
 
 /**
  * Sélection rectangulaire superposée à une image ou une vidéo.
@@ -109,7 +110,7 @@ export function CropOverlay({
       <div className="pointer-events-none absolute inset-0 bg-black/50" style={{ clipPath: mask }} />
       <div
         role="group"
-        aria-label="Zone de rognage"
+        aria-label={t("Zone de rognage")}
         className={`absolute border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.45)] ${disabled ? "" : "cursor-move"}`}
         style={{
           left: percent(rect.x),

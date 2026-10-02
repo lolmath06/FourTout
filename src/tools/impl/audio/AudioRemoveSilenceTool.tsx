@@ -6,6 +6,7 @@ import { removeSilenceAudio } from "@/core/media/operations/audio";
 import { sameFormatOf } from "./format";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 export function AudioRemoveSilenceTool({ tool }: ToolComponentProps) {
   const [threshold, setThreshold] = useState(-35);
@@ -13,23 +14,23 @@ export function AudioRemoveSilenceTool({ tool }: ToolComponentProps) {
   return (
     <MediaToolShell
       tool={tool}
-      actionLabel="Supprimer les silences"
-      hint="Les passages plus silencieux que le seuil et plus longs que la durée minimale sont retirés."
+      actionLabel={t("Supprimer les silences")}
+      hint={t("Les passages plus silencieux que le seuil et plus longs que la durée minimale sont retirés.")}
       run={async ({ files, infos, context }) => {
         const format = sameFormatOf(files[0]);
         const file = await runMedia(
           { files: [files[0]], operation: removeSilenceAudio(format, { thresholdDb: threshold, minSilenceMs: minMs }), outputName: outputName(files[0].name, "sans-silences", format), totalMs: infos[0]?.durationMs },
           context,
         );
-        return { files: [file], summary: "Silences supprimés." };
+        return { files: [file], summary: t("Silences supprimés.") };
       }}
     >
       {() => (
         <Fieldset columns={1}>
-          <Field label={`Seuil de silence (${threshold} dB)`} hint="Plus bas = seuls les passages très silencieux comptent.">
+          <Field label={t("Seuil de silence ({threshold} dB)", { threshold })} hint={t("Plus bas = seuls les passages très silencieux comptent.")}>
             <Slider value={threshold} onChange={setThreshold} min={-60} max={-10} />
           </Field>
-          <Field label={`Durée minimale d'un silence (${(minMs / 1000).toFixed(1)} s)`}>
+          <Field label={t("Durée minimale d'un silence ({value} s)", { value: (minMs / 1000).toFixed(1) })}>
             <Slider value={minMs} onChange={setMinMs} min={200} max={3000} step={100} />
           </Field>
         </Fieldset>

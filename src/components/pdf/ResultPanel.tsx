@@ -13,6 +13,7 @@ import {
 } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { OutputFile } from "@/core/pdf/types";
+import { t, tx } from "@/i18n";
 
 /**
  * Résultat d'une opération.
@@ -59,13 +60,13 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
       if (result.saved) {
         setSavedPath(result.path);
         notify.success(
-          result.count > 1 ? `${result.count} fichiers enregistrés` : "Fichier enregistré",
+          result.count > 1 ? t("{count} fichiers enregistrés", { count: result.count }) : t("Fichier enregistré"),
           result.path,
         );
       }
     } catch (error) {
       notify.error(
-        "Enregistrement impossible",
+        t("Enregistrement impossible"),
         error instanceof Error ? error.message : undefined,
       );
     } finally {
@@ -85,16 +86,16 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
         <div className="min-w-0 flex-1">
           <p className="text-[13px] font-medium leading-5">
             {empty
-              ? "Opération terminée"
+              ? t("Opération terminée")
               : many
-                ? `${outcome.files.length} fichiers produits`
-                : "Fichier produit"}
+                ? t("{count} fichiers produits", { count: outcome.files.length })
+                : t("Fichier produit")}
           </p>
-          {outcome.summary && <p className="ft-meta mt-0.5">{outcome.summary}</p>}
+          {outcome.summary && <p className="ft-meta mt-0.5">{tx(outcome.summary)}</p>}
           {outcome.warning && (
             <p className="mt-1 flex items-start gap-1.5 text-[11.5px] leading-4 text-[var(--ft-warn)]">
               <Icon name="TriangleAlert" size={12} className="mt-0.5 shrink-0" />
-              {outcome.warning}
+              {tx(outcome.warning)}
             </p>
           )}
         </div>
@@ -122,13 +123,13 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
       <div className="flex flex-wrap items-center gap-1.5 border-t border-[var(--ft-rule)] px-3 py-2">
         <Button size="sm" variant="primary" onClick={() => persist(false)} disabled={busy}>
           <Icon name="HardDrive" size={13} />
-          {many ? "Enregistrer dans un dossier" : "Enregistrer"}
+          {many ? t("Enregistrer dans un dossier") : t("Enregistrer")}
         </Button>
 
         {many && (
           <Button size="sm" onClick={() => persist(true)} disabled={busy}>
             <Icon name="FolderArchive" size={13} />
-            Enregistrer en ZIP
+            {t("Enregistrer en ZIP")}
           </Button>
         )}
 
@@ -140,12 +141,12 @@ export function ResultPanel({ outcome }: { outcome: OperationOutcome }) {
               onClick={() => (many ? openFolder(savedPath) : revealFile(savedPath))}
             >
               <Icon name="FolderTree" size={13} />
-              Ouvrir le dossier
+              {t("Ouvrir le dossier")}
             </Button>
             {!many && (
               <Button size="sm" variant="ghost" onClick={() => void openFile(savedPath)}>
                 <Icon name="Play" size={13} />
-                Ouvrir le fichier
+                {t("Ouvrir le fichier")}
               </Button>
             )}
           </>

@@ -13,6 +13,7 @@ import { PdfSourceList } from "./PdfSourceList";
 import { ResultPanel, type OperationOutcome } from "./ResultPanel";
 import { Callout, ProgressBar } from "@/components/ui/Callout";
 import { useHandoff } from "@/features/handoff/store";
+import { t, tx } from "@/i18n";
 
 /**
  * Ossature commune à tous les outils PDF.
@@ -121,8 +122,8 @@ export function PdfToolShell({
       setOutcome(result);
       notify.success(
         result.files.length > 1
-          ? `${result.files.length} fichiers prêts`
-          : "Fichier prêt",
+          ? t("{count} fichiers prêts", { count: result.files.length })
+          : t("Fichier prêt"),
         result.summary,
       );
     }
@@ -136,8 +137,8 @@ export function PdfToolShell({
         constraints={constraints}
         files={files}
         onChange={setFiles}
-        label={selection === "multiple" ? "Déposez vos PDF ici" : "Déposez votre PDF ici"}
-        hint={hint}
+        label={selection === "multiple" ? t("Déposez vos PDF ici") : t("Déposez votre PDF ici")}
+        hint={tx(hint)}
         disabled={job.isRunning}
         // `PdfSourceList` ci-dessous liste les mêmes fichiers, en plus détaillé.
         showFileList={false}
@@ -157,25 +158,24 @@ export function PdfToolShell({
       {usable.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ft-border)] pt-4">
           <p className="text-xs text-[var(--ft-text-muted)]">
-            {usable.length} document{usable.length > 1 ? "s" : ""} ·{" "}
-            {formatFileSize(usable.reduce((total, item) => total + item.source.bytes.length, 0))}
+            {t("{count} {count, plural, one {document} other {documents}} · {size}", { count: usable.length, size: formatFileSize(usable.reduce((total, item) => total + item.source.bytes.length, 0)) })}
           </p>
           <div className="flex items-center gap-2">
             {job.isRunning && (
               <Button size="sm" variant="ghost" onClick={job.cancel}>
-                Annuler
+                {t("Annuler")}
               </Button>
             )}
             <Button size="md" variant="primary" onClick={execute} disabled={!canRun || job.isRunning}>
               {job.isRunning ? (
                 <>
                   <Icon name="Loader" size={15} className="animate-spin" />
-                  {job.progress.label ?? "Traitement…"}
+                  {job.progress.label ?? t("Traitement…")}
                 </>
               ) : (
                 <>
                   <Icon name="Play" size={15} />
-                  {actionLabel}
+                  {tx(actionLabel)}
                 </>
               )}
             </Button>
@@ -183,10 +183,10 @@ export function PdfToolShell({
         </div>
       )}
 
-      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
+      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={tx(job.progress.label)} />}
 
       {errorMessage && job.status === "error" && (
-        <Callout tone="error" title="L'opération a échoué">
+        <Callout tone="error" title={t("L'opération a échoué")}>
           {errorMessage}
         </Callout>
       )}

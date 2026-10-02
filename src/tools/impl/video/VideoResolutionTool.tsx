@@ -14,6 +14,7 @@ import {
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { fallbackTracker, sizeOutcome } from "./shared";
+import { Trans, t } from "@/i18n";
 
 type PresetKey = "original" | "custom" | `${number}`;
 
@@ -43,16 +44,16 @@ export function VideoResolutionTool({ tool }: ToolComponentProps) {
   return (
     <VideoToolShell
       tool={tool}
-      actionLabel="Redimensionner"
-      hint="Les dimensions produites sont toujours paires : c'est ce qu'exigent les formats lisibles partout."
+      actionLabel={t("Redimensionner")}
+      hint={t("Les dimensions produites sont toujours paires : c'est ce qu'exigent les formats lisibles partout.")}
       run={async ({ files, infos, caps, context }) => {
         const info = infos[0];
         const source = { width: info?.width ?? 0, height: info?.height ?? 0 };
-        if (!source.width || !source.height) throw new Error("Ce fichier ne contient pas de piste vidéo lisible.");
+        if (!source.width || !source.height) throw new Error(t("Ce fichier ne contient pas de piste vidéo lisible."));
         const target = targetFor(source);
         if (isUpscale(source, target) && !allowUpscale) {
           throw new Error(
-            `La définition demandée (${target.width} × ${target.height}) est plus grande que la source ` +
+            t("La définition demandée ({width} × {height}) est plus grande que la source ", { width: target.width, height: target.height }) +
               `(${source.width} × ${source.height}). Cochez « Autoriser l'agrandissement » pour continuer.`,
           );
         }
@@ -70,7 +71,7 @@ export function VideoResolutionTool({ tool }: ToolComponentProps) {
             onFallback: tracker.onFallback,
             outputName: outputName(files[0].name, `${target.height}p`, pipeline.container),
             totalMs: info?.durationMs,
-            label: "Redimensionnement…",
+            label: t("Redimensionnement…"),
           },
           context,
         );
@@ -85,23 +86,23 @@ export function VideoResolutionTool({ tool }: ToolComponentProps) {
         return (
           <div className="space-y-3">
             <Fieldset columns={3}>
-              <Field label="Définition">
+              <Field label={t("Définition")}>
                 <Select
                   value={preset}
                   onChange={(value) => setPreset(value as PresetKey)}
                   options={[
-                    { value: "original", label: "Originale" },
+                    { value: "original", label: t("Originale") },
                     ...RESOLUTION_PRESETS.map((height) => ({
                       value: String(height) as PresetKey,
                       label: `${height}p`,
                     })),
-                    { value: "custom", label: "Personnalisée" },
+                    { value: "custom", label: t("Personnalisée") },
                   ]}
                 />
               </Field>
               {preset === "custom" && (
                 <>
-                  <Field label="Largeur (px)">
+                  <Field label={t("Largeur (px)")}>
                     <NumberInput
                       value={customWidth ?? ""}
                       min={16}
@@ -112,7 +113,7 @@ export function VideoResolutionTool({ tool }: ToolComponentProps) {
                       }
                     />
                   </Field>
-                  <Field label="Hauteur (px)">
+                  <Field label={t("Hauteur (px)")}>
                     <NumberInput
                       value={customHeight ?? ""}
                       min={16}
@@ -123,14 +124,14 @@ export function VideoResolutionTool({ tool }: ToolComponentProps) {
                       }
                     />
                   </Field>
-                  <Field label="Proportions" full>
+                  <Field label={t("Proportions")} full>
                     <label className="flex items-center gap-2 text-xs text-[var(--ft-text-muted)]">
                       <input
                         type="checkbox"
                         checked={keepRatio}
                         onChange={(event) => setKeepRatio(event.target.checked)}
                       />
-                      Conserver les proportions de la source
+                      {t("Conserver les proportions de la source")}
                     </label>
                   </Field>
                 </>
@@ -140,7 +141,7 @@ export function VideoResolutionTool({ tool }: ToolComponentProps) {
             <p className="text-xs text-[var(--ft-text-muted)]">
               {source.width
                 ? `${source.width} × ${source.height} → ${target.width} × ${target.height}`
-                : "Définition de la source inconnue."}
+                : t("Définition de la source inconnue.")}
             </p>
 
             {upscaling && (
@@ -148,8 +149,7 @@ export function VideoResolutionTool({ tool }: ToolComponentProps) {
                 <p className="flex items-start gap-2">
                   <Icon name="TriangleAlert" size={14} className="mt-px shrink-0" />
                   <span>
-                    Cette définition <strong>agrandit</strong> la vidéo : aucun détail ne sera ajouté et le
-                    fichier sera plus lourd.
+                    <Trans source={"Cette définition <0>agrandit</0> la vidéo : aucun détail ne sera ajouté et le fichier sera plus lourd."} components={[<strong />]} />
                   </span>
                 </p>
                 <label className="mt-1.5 flex items-center gap-2">
@@ -158,7 +158,7 @@ export function VideoResolutionTool({ tool }: ToolComponentProps) {
                     checked={allowUpscale}
                     onChange={(event) => setAllowUpscale(event.target.checked)}
                   />
-                  Autoriser l'agrandissement
+                  {t("Autoriser l'agrandissement")}
                 </label>
               </div>
             )}

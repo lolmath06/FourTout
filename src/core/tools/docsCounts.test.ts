@@ -31,8 +31,23 @@ const SPELLED: Record<number, string> = {
 };
 
 describe("les chiffres de la documentation suivent le registre", () => {
-  it("le README annonce le bon nombre d'outils", () => {
-    expect(read("README.md")).toContain(`${TOOLS} outils`);
+  it("le README annonce le bon nombre d'outils, dans chaque langue", () => {
+    // README.md est en anglais ; chaque traduction annonce le même total.
+    const readmes: Record<string, string> = {
+      "README.md": `${TOOLS} tools`,
+      "README.fr.md": `${TOOLS} outils`,
+      "README.es.md": `${TOOLS} herramientas`,
+      "README.pt-BR.md": `${TOOLS} ferramentas`,
+      "README.de.md": `${TOOLS} Werkzeuge`,
+      "README.it.md": `${TOOLS} strumenti`,
+      "README.zh-CN.md": `${TOOLS} 个工具`,
+      "README.ja.md": `${TOOLS} のツール`,
+      "README.ko.md": `${TOOLS}개 도구`,
+      "README.ru.md": `${TOOLS} инструментов`,
+    };
+    for (const [page, total] of Object.entries(readmes)) {
+      expect(read(page), page).toContain(total);
+    }
   });
 
   it("l'index de la documentation annonce le bon nombre d'outils", () => {
@@ -75,10 +90,11 @@ describe("les chiffres de la documentation suivent le registre", () => {
     // décrit le produit d'aujourd'hui. Le journal des versions, lui, a le droit
     // de raconter l'histoire — il n'est donc pas vérifié ici.
     const stale = [152, 160, 174, 181, 191].filter((count) => count !== TOOLS);
-    for (const page of ["README.md", "docs/README.md", "ROADMAP.md", "docs/guides/FEATURES.md"]) {
+    for (const page of ["README.md", "README.fr.md", "docs/README.md", "ROADMAP.md", "docs/guides/FEATURES.md"]) {
       const text = read(page);
       for (const count of stale) {
         expect(text.includes(`${count} outils`), `« ${count} outils » dans ${page}`).toBe(false);
+        expect(text.includes(`${count} tools`), `« ${count} tools » dans ${page}`).toBe(false);
       }
     }
   });

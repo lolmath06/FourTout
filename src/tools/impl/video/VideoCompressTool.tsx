@@ -9,12 +9,13 @@ import { formatTimecode } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { fallbackTracker, sizeOutcome } from "./shared";
+import { localized, t, tx } from "@/i18n";
 
-const MODES: { value: QualityLevel; label: string; hint: string }[] = [
-  { value: "high", label: COMPRESSION_LABEL.high, hint: "Presque invisible à l'œil, gain modéré." },
-  { value: "balanced", label: COMPRESSION_LABEL.balanced, hint: "Le meilleur compromis dans la plupart des cas." },
-  { value: "small", label: COMPRESSION_LABEL.small, hint: "Fichier nettement plus léger, qualité en retrait." },
-];
+const MODES: { value: QualityLevel; label: string; hint: string }[] = localized(() => [
+  { value: "high", label: COMPRESSION_LABEL.high, hint: t("Presque invisible à l'œil, gain modéré.") },
+  { value: "balanced", label: COMPRESSION_LABEL.balanced, hint: t("Le meilleur compromis dans la plupart des cas.") },
+  { value: "small", label: COMPRESSION_LABEL.small, hint: t("Fichier nettement plus léger, qualité en retrait.") },
+]);
 
 /**
  * Compression d'une vidéo.
@@ -30,8 +31,8 @@ export function VideoCompressTool({ tool }: ToolComponentProps) {
   return (
     <VideoToolShell
       tool={tool}
-      actionLabel="Compresser"
-      hint="La vidéo est réencodée localement ; le fichier d'origine n'est jamais modifié."
+      actionLabel={t("Compresser")}
+      hint={t("La vidéo est réencodée localement ; le fichier d'origine n'est jamais modifié.")}
       run={async ({ files, infos, caps, context }) => {
         const pipeline = compressPipeline(
           { caps, info: infos[0], extension: files[0].extension },
@@ -46,7 +47,7 @@ export function VideoCompressTool({ tool }: ToolComponentProps) {
             onFallback: tracker.onFallback,
             outputName: outputName(files[0].name, "compressee", pipeline.container),
             totalMs: infos[0]?.durationMs,
-            label: "Compression…",
+            label: t("Compression…"),
           },
           context,
         );
@@ -56,9 +57,9 @@ export function VideoCompressTool({ tool }: ToolComponentProps) {
       {({ files, infos }) => (
         <div className="space-y-3">
           <Fieldset columns={1}>
-            <Field label="Niveau de compression" hint={MODES.find((m) => m.value === mode)?.hint}>
+            <Field label={t("Niveau de compression")} hint={tx(MODES.find((m) => m.value === mode)?.hint)}>
               <OptionGroup
-                ariaLabel="Niveau de compression"
+                ariaLabel={t("Niveau de compression")}
                 value={mode}
                 onChange={setMode}
                 options={MODES.map((entry) => ({ value: entry.value, label: entry.label }))}
@@ -67,16 +68,16 @@ export function VideoCompressTool({ tool }: ToolComponentProps) {
           </Fieldset>
 
           <dl className="grid grid-cols-2 gap-x-4 gap-y-1 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-3 text-xs sm:grid-cols-3">
-            <Row label="Taille" value={formatFileSize(files[0].size)} />
-            <Row label="Durée" value={infos[0]?.durationMs ? formatTimecode(infos[0].durationMs) : "—"} />
+            <Row label={t("Taille")} value={formatFileSize(files[0].size)} />
+            <Row label={t("Durée")} value={infos[0]?.durationMs ? formatTimecode(infos[0].durationMs) : "—"} />
             <Row
-              label="Définition"
+              label={t("Définition")}
               value={infos[0]?.width ? `${infos[0].width} × ${infos[0].height}` : "—"}
             />
-            <Row label="Codec vidéo" value={infos[0]?.videoCodec ?? "—"} />
-            <Row label="Codec audio" value={infos[0]?.audioCodec ?? "aucun"} />
+            <Row label={t("Codec vidéo")} value={infos[0]?.videoCodec ?? "—"} />
+            <Row label={t("Codec audio")} value={infos[0]?.audioCodec ?? "aucun"} />
             <Row
-              label="Débit"
+              label={t("Débit")}
               value={infos[0]?.bitRate ? `${Math.round(infos[0].bitRate / 1000)} kb/s` : "inconnu"}
             />
           </dl>
@@ -89,7 +90,7 @@ export function VideoCompressTool({ tool }: ToolComponentProps) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col">
-      <dt className="text-[11px] text-[var(--ft-text-faint)]">{label}</dt>
+      <dt className="text-[11px] text-[var(--ft-text-faint)]">{tx(label)}</dt>
       <dd className="tabular-nums text-[var(--ft-text)]">{value}</dd>
     </div>
   );

@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { Icon } from "./Icon";
+import { localized, tx } from "@/i18n";
 
 /**
  * Message d'état : succès, avertissement, erreur, information.
@@ -12,13 +13,13 @@ import { Icon } from "./Icon";
  */
 export type CalloutTone = "success" | "warning" | "error" | "info" | "neutral";
 
-const ICONS: Record<CalloutTone, string> = {
+const ICONS: Record<CalloutTone, string> = localized(() => ({
   success: "CircleCheck",
   warning: "TriangleAlert",
   error: "CircleAlert",
   info: "Info",
   neutral: "Info",
-};
+}));
 
 const COLORS: Record<CalloutTone, string> = {
   success: "var(--ft-ok)",
@@ -60,9 +61,11 @@ export function Callout({
           <Icon name={icon ?? ICONS[tone]} size={15} />
         </span>
         <div className="min-w-0 flex-1">
-          {title && <p className="text-[13px] font-medium leading-5">{title}</p>}
+          {/* Un texte passé tel quel (constante, message d'erreur, message du
+              socle natif) est traduit ici ; un élément React l'est déjà. */}
+          {title && <p className="text-[13px] font-medium leading-5">{tx(title)}</p>}
           {children && (
-            <div className={clsx("ft-meta", title && "mt-0.5")}>{children}</div>
+            <div className={clsx("ft-meta", title && "mt-0.5")}>{tx(children)}</div>
           )}
         </div>
         {actions && <div className="flex shrink-0 items-center gap-1.5">{actions}</div>}
@@ -103,7 +106,7 @@ export function ProgressBar({
       </div>
       {label && (
         <p className="ft-meta ft-num flex items-center gap-2">
-          <span className="min-w-0 truncate">{label}</span>
+          <span className="min-w-0 truncate">{tx(label)}</span>
           {ratio !== undefined && (
             <span className="ml-auto shrink-0 text-[var(--ft-text-faint)]">{percent} %</span>
           )}

@@ -10,6 +10,7 @@ import { removeTransparency } from "@/core/image/operations";
 import type { Rgb } from "@/core/image/types";
 import type { SelectedFile } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 export function ImageRemoveTransparencyTool({ tool }: ToolComponentProps) {
   const [color, setColor] = useState<Rgb>({ r: 255, g: 255, b: 255 });
@@ -17,8 +18,8 @@ export function ImageRemoveTransparencyTool({ tool }: ToolComponentProps) {
   return (
     <ImageToolShell
       tool={tool}
-      actionLabel="Aplatir sur ce fond"
-      hint="Utile avant d'imprimer ou d'envoyer un PNG transparent."
+      actionLabel={t("Aplatir sur ce fond")}
+      hint={t("Utile avant d'imprimer ou d'envoyer un PNG transparent.")}
       run={async ({ files, context }) => {
         const outputs = await processImages(
           files,
@@ -28,7 +29,7 @@ export function ImageRemoveTransparencyTool({ tool }: ToolComponentProps) {
         );
         return {
           files: outputs,
-          summary: `${outputs.length} image${outputs.length > 1 ? "s" : ""} aplatie${outputs.length > 1 ? "s" : ""}.`,
+          summary: t("{count} {count, plural, one {image} other {images}} {count, plural, one {aplatie} other {aplaties}}.", { count: outputs.length }),
           zipName: "images-opaques.zip",
         };
       }}
@@ -36,7 +37,7 @@ export function ImageRemoveTransparencyTool({ tool }: ToolComponentProps) {
       {(files) => (
         <div className="space-y-3">
           <Fieldset columns={1}>
-            <Field label="Couleur de fond">
+            <Field label={t("Couleur de fond")}>
               <ColorField value={color} onChange={setColor} />
             </Field>
           </Fieldset>
@@ -52,7 +53,7 @@ function RemovePreview({ file, color }: { file: SelectedFile; color: Rgb }) {
   const url = useProcessedPreview(source.preview, (c) => removeTransparency(c, color), [color.r, color.g, color.b]);
   return (
     <PreviewFrame maxHeight={340}>
-      {url && <img src={url} alt="Aperçu" className="max-h-[300px] max-w-full object-contain" draggable={false} />}
+      {url && <img src={url} alt={t("Aperçu")} className="max-h-[300px] max-w-full object-contain" draggable={false} />}
     </PreviewFrame>
   );
 }

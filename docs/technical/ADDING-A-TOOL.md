@@ -8,6 +8,7 @@
 - [1. Déclarer l'outil au catalogue](#1-déclarer-loutil-au-catalogue)
 - [2. Écrire la logique métier](#2-écrire-la-logique-métier)
 - [3. Écrire l'interface et la brancher](#3-écrire-linterface-et-la-brancher)
+- [Traduire l'outil](#traduire-loutil)
 - [Ajouter une catégorie](#ajouter-une-catégorie)
 - [Tests](#tests)
 
@@ -140,6 +141,17 @@ contient que l'outil lui-même.
 | Persister un réglage | `appStore` (`@/core/storage`) |
 
 ---
+
+## Traduire l'outil
+
+La définition reste en français et n'est jamais dupliquée. Ajoutez l'entrée de
+l'outil (même `id`) dans chaque `src/i18n/catalog/<langue>.json` — au minimum
+`en.json`, que les tests exigent : `name`, `description`, `keywords` (écrits
+comme on les taperait dans cette langue), `aliases`, et `note` si l'outil en a
+une. Les textes de son interface s'écrivent avec `t("…")` ; lancez ensuite
+`pnpm i18n:extract`, traduisez les nouvelles clés dans `messages/en.json`
+(puis les autres langues) et vérifiez avec `pnpm i18n:status`. Voir
+[I18N.md](I18N.md).
 
 ## Ajouter une catégorie
 

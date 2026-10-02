@@ -7,6 +7,7 @@ import { singleResult } from "@/components/pdf/result";
 import { makeSearchablePdf, type SearchablePageReport } from "@/core/pdf/operations/searchablePdf";
 import { OCR_LANGUAGE_LABELS, type OcrLanguage } from "@/core/ocr";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t } from "@/i18n";
 
 /**
  * PDF scanné → PDF recherchable.
@@ -15,22 +16,22 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * tout le travail — rendu, reconnaissance, écriture de la couche texte — vit
  * dans `core/pdf/operations/searchablePdf`, appelable sans interface.
  */
-const LANGUAGES: { value: OcrLanguage; label: string }[] = [
+const LANGUAGES: { value: OcrLanguage; label: string }[] = localized(() => [
   { value: "fra", label: OCR_LANGUAGE_LABELS.fra },
   { value: "eng", label: OCR_LANGUAGE_LABELS.eng },
   { value: "fra+eng", label: OCR_LANGUAGE_LABELS["fra+eng"] },
-];
+]);
 
 /**
  * Résolutions de reconnaissance. En deçà de 150 ppp, les caractères d'un scan
  * ordinaire sont trop petits pour être lus de façon fiable ; au-delà de 300, on
  * paie du temps sans gagner en exactitude.
  */
-const RESOLUTIONS = [
-  { value: "150", label: "Rapide", hint: "150 ppp — scans nets, texte de bonne taille" },
-  { value: "200", label: "Équilibré", hint: "200 ppp — le bon choix dans la plupart des cas" },
-  { value: "300", label: "Minutieux", hint: "300 ppp — petits caractères, scans médiocres" },
-];
+const RESOLUTIONS = localized(() => [
+  { value: "150", label: t("Rapide"), hint: t("150 ppp — scans nets, texte de bonne taille") },
+  { value: "200", label: t("Équilibré"), hint: t("200 ppp — le bon choix dans la plupart des cas") },
+  { value: "300", label: t("Minutieux"), hint: t("300 ppp — petits caractères, scans médiocres") },
+]);
 
 export function PdfSearchableTool({ tool }: ToolComponentProps) {
   const [language, setLanguage] = useState<OcrLanguage>("fra");
@@ -42,16 +43,14 @@ export function PdfSearchableTool({ tool }: ToolComponentProps) {
     <div className="space-y-4">
       {/* L'explication précède la zone de dépôt : on doit savoir ce que l'outil
           va faire du document avant de le lui confier, pas après. */}
-      <Callout tone="info" title="Ce que fait exactement cet outil">
-        Les pages d'origine sont conservées telles quelles — ni rasterisées, ni recompressées.
-        FourTout y superpose le texte reconnu, invisible à l'affichage mais présent pour la
-        recherche, la sélection et le copier-coller. L'apparence du document ne change pas.
+      <Callout tone="info" title={t("Ce que fait exactement cet outil")}>
+        {t("Les pages d'origine sont conservées telles quelles — ni rasterisées, ni recompressées. FourTout y superpose le texte reconnu, invisible à l'affichage mais présent pour la recherche, la sélection et le copier-coller. L'apparence du document ne change pas.")}
       </Callout>
 
       <PdfToolShell
       tool={tool}
-      actionLabel="Rendre recherchable"
-      hint="La reconnaissance se fait page par page, sur votre machine. Un document long peut demander plusieurs minutes ; l'opération reste annulable."
+      actionLabel={t("Rendre recherchable")}
+      hint={t("La reconnaissance se fait page par page, sur votre machine. Un document long peut demander plusieurs minutes ; l'opération reste annulable.")}
       run={async ({ documents, context }) => {
         setPages([]);
         const result = await makeSearchablePdf(
@@ -63,26 +62,24 @@ export function PdfSearchableTool({ tool }: ToolComponentProps) {
         setHadText(result.hadNativeText);
         return singleResult(
           result.file,
-          `${result.totalWords} mot${result.totalWords > 1 ? "s" : ""} ajouté${
-            result.totalWords > 1 ? "s" : ""
-          } en couche invisible sur ${result.pages.length} page${result.pages.length > 1 ? "s" : ""}.`,
+          t("{totalWords} {totalWords, plural, one {mot} other {mots}} {totalWords, plural, one {ajouté} other {ajoutés}} en couche invisible sur {count} {count, plural, one {page} other {pages}}.", { totalWords: result.totalWords, count: result.pages.length }),
         );
       }}
     >
       {() => (
         <>
           <Fieldset columns={2}>
-            <Field label="Langue du document" hint="Choisir la bonne langue change nettement la qualité de lecture.">
+            <Field label={t("Langue du document")} hint={t("Choisir la bonne langue change nettement la qualité de lecture.")}>
               <OptionGroup
-                ariaLabel="Langue du document"
+                ariaLabel={t("Langue du document")}
                 value={language}
                 onChange={setLanguage}
                 options={LANGUAGES}
               />
             </Field>
-            <Field label="Finesse de lecture" hint="Plus la résolution est élevée, plus la lecture est lente.">
+            <Field label={t("Finesse de lecture")} hint={t("Plus la résolution est élevée, plus la lecture est lente.")}>
               <OptionGroup
-                ariaLabel="Finesse de lecture"
+                ariaLabel={t("Finesse de lecture")}
                 value={dpi}
                 onChange={setDpi}
                 options={RESOLUTIONS}
@@ -116,18 +113,17 @@ function SearchableReport({
   return (
     <div className="space-y-2">
       {hadNativeText && (
-        <Callout tone="warning" title="Ce PDF contenait déjà du texte">
-          Il ne s'agissait donc pas d'un scan intégral. La couche reconnue s'ajoute au texte
-          existant, qui reste intact.
+        <Callout tone="warning" title={t("Ce PDF contenait déjà du texte")}>
+          {t("Il ne s'agissait donc pas d'un scan intégral. La couche reconnue s'ajoute au texte existant, qui reste intact.")}
         </Callout>
       )}
       <div className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)]">
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="border-b border-[var(--ft-rule)] text-left">
-              <th className="px-3 py-1.5 font-medium">Page</th>
-              <th className="px-3 py-1.5 font-medium">Mots reconnus</th>
-              <th className="px-3 py-1.5 font-medium">Confiance</th>
+              <th className="px-3 py-1.5 font-medium">{t("Page")}</th>
+              <th className="px-3 py-1.5 font-medium">{t("Mots reconnus")}</th>
+              <th className="px-3 py-1.5 font-medium">{t("Confiance")}</th>
             </tr>
           </thead>
           <tbody>

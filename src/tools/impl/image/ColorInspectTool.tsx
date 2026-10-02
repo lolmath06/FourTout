@@ -21,6 +21,7 @@ import {
 import { rgbToHex, type Rgb } from "@/core/image/types";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t, tx } from "@/i18n";
 
 /**
  * Analyser et convertir une couleur.
@@ -33,11 +34,11 @@ import type { ToolComponentProps } from "@/tools/implementations";
 
 type Tab = "palette" | "picker" | "contrast";
 
-const TABS: { value: Tab; label: string }[] = [
-  { value: "palette", label: "Couleurs dominantes" },
-  { value: "picker", label: "Pipette" },
-  { value: "contrast", label: "Contraste" },
-];
+const TABS: { value: Tab; label: string }[] = localized(() => [
+  { value: "palette", label: t("Couleurs dominantes") },
+  { value: "picker", label: t("Pipette") },
+  { value: "contrast", label: t("Contraste") },
+]);
 
 export function ColorInspectTool({ tool }: ToolComponentProps) {
   const [tab, setTab] = useState<Tab>("palette");
@@ -57,9 +58,9 @@ export function ColorInspectTool({ tool }: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <Fieldset columns={1}>
-        <Field label="Que voulez-vous faire ?">
+        <Field label={t("Que voulez-vous faire ?")}>
           <OptionGroup
-            ariaLabel="Mode"
+            ariaLabel={t("Mode")}
             value={tab}
             onChange={(value) => setTab(value as Tab)}
             options={TABS}
@@ -72,13 +73,13 @@ export function ColorInspectTool({ tool }: ToolComponentProps) {
           constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
           files={files}
           onChange={setFiles}
-          label="Déposez une image"
+          label={t("Déposez une image")}
         />
       )}
 
       {source.error && (
-        <Callout tone="error" title="Image illisible">
-          {source.error}
+        <Callout tone="error" title={t("Image illisible")}>
+          {tx(source.error)}
         </Callout>
       )}
 
@@ -101,7 +102,7 @@ export function ColorInspectTool({ tool }: ToolComponentProps) {
 function copy(text: string) {
   navigator.clipboard
     .writeText(text)
-    .then(() => notify.success("Copié", text))
+    .then(() => notify.success(t("Copié"), text))
     .catch(() => {});
 }
 
@@ -121,15 +122,14 @@ function Readout({ color }: { color: ColorReadout }) {
           onClick={() => copy(value)}
           className="flex w-full items-center justify-between gap-2 rounded-md border border-[var(--ft-border)] px-2 py-1.5 text-left text-xs hover:border-[var(--ft-accent)]"
         >
-          <span className="text-[var(--ft-text-faint)]">{label}</span>
+          <span className="text-[var(--ft-text-faint)]">{tx(label)}</span>
           <span className="font-mono">{value}</span>
           <Icon name="Copy" size={12} className="text-[var(--ft-text-faint)]" />
         </button>
       ))}
       {color.alpha < 1 && (
         <p className="text-xs text-[var(--ft-text-muted)]">
-          Opacité : {Math.round(color.alpha * 100)} % — les conversions et le contraste portent sur
-          la couleur opaque.
+          {t("Opacité : {value} % — les conversions et le contraste portent sur la couleur opaque.", { value: Math.round(color.alpha * 100) })}
         </p>
       )}
     </div>
@@ -140,13 +140,13 @@ function SendButtons({ rgb, onSend }: { rgb: Rgb; onSend: (rgb: Rgb, slot: "text
   return (
     <div className="flex gap-2 text-xs">
       <button onClick={() => onSend(rgb, "text")} className="text-[var(--ft-accent-text)] underline">
-        Utiliser comme texte
+        {t("Utiliser comme texte")}
       </button>
       <button
         onClick={() => onSend(rgb, "background")}
         className="text-[var(--ft-accent-text)] underline"
       >
-        Utiliser comme fond
+        {t("Utiliser comme fond")}
       </button>
     </div>
   );
@@ -172,9 +172,9 @@ function PaletteTab({
   return (
     <div className="space-y-3">
       <Fieldset columns={1}>
-        <Field label="Nombre de couleurs">
+        <Field label={t("Nombre de couleurs")}>
           <OptionGroup
-            ariaLabel="Nombre"
+            ariaLabel={t("Nombre")}
             value={String(count)}
             onChange={(value) => setCount(Number(value))}
             options={[
@@ -194,10 +194,7 @@ function PaletteTab({
             className="flex flex-col overflow-hidden rounded-md border border-[var(--ft-border)] text-left hover:border-[var(--ft-accent)]"
           >
             <span className="h-16" style={{ background: color.hex }} />
-            <span className="px-2 py-1.5 font-mono text-xs">{color.hex}</span>
-            <span className="px-2 pb-1.5 font-mono text-[10px] text-[var(--ft-text-muted)]">
-              {Math.round(color.weight * 100)} % de l'image
-            </span>
+            <Trans source={"<0>{hex}</0><1>{value} % de l'image</1>"} values={{ hex: color.hex, value: Math.round(color.weight * 100) }} components={[<span className="px-2 py-1.5 font-mono text-xs" />, <span className="px-2 pb-1.5 font-mono text-[10px] text-[var(--ft-text-muted)]" />]} />
           </button>
         ))}
       </div>
@@ -206,7 +203,7 @@ function PaletteTab({
         onClick={() => copy(colors.map((color) => color.hex).join(", "))}
         className="text-xs text-[var(--ft-accent-text)] underline"
       >
-        Copier toute la palette
+        {t("Copier toute la palette")}
       </button>
 
       {selected && (
@@ -275,7 +272,7 @@ function PickerTab({
   return (
     <div className="space-y-3">
       <Fieldset columns={1}>
-        <Field label={`Zoom (${zoom} %)`} hint="Agrandit l'aperçu ; les coordonnées restent celles des pixels réels.">
+        <Field label={t("Zoom ({zoom} %)", { zoom })} hint={t("Agrandit l'aperçu ; les coordonnées restent celles des pixels réels.")}>
           <Slider value={zoom} onChange={setZoom} min={25} max={800} step={25} />
         </Field>
       </Fieldset>
@@ -285,7 +282,7 @@ function PickerTab({
           <img
             ref={imageRef}
             src={url}
-            alt="Image à échantillonner"
+            alt={t("Image à échantillonner")}
             onClick={pick}
             draggable={false}
             className="cursor-crosshair"
@@ -306,23 +303,21 @@ function PickerTab({
               className="h-10 w-10 rounded-md border border-[var(--ft-border)]"
               style={{ background: picked.color.hex }}
             />
-            <span className="font-mono text-xs text-[var(--ft-text-muted)]">
-              x = {picked.x}, y = {picked.y} sur {source.width} × {source.height}
-            </span>
+            <Trans source={"<0>x = {x}, y = {y} sur {width} × {height}</0>"} values={{ x: picked.x, y: picked.y, width: source.width, height: source.height }} components={[<span className="font-mono text-xs text-[var(--ft-text-muted)]" />]} />
           </div>
           <Readout color={picked.color} />
           <SendButtons rgb={picked.color.rgb} onSend={onSend} />
         </div>
       ) : (
         <p className="text-xs text-[var(--ft-text-muted)]">
-          Cliquez dans l'image pour relever la couleur exacte d'un pixel.
+          {t("Cliquez dans l'image pour relever la couleur exacte d'un pixel.")}
         </p>
       )}
 
       {history.length > 1 && (
         <div className="space-y-1">
           <p className="text-[10px] uppercase tracking-wide text-[var(--ft-text-faint)]">
-            Dernières couleurs relevées
+            {t("Dernières couleurs relevées")}
           </p>
           <div className="flex flex-wrap gap-1">
             {history.map((color) => (
@@ -356,19 +351,19 @@ function ContrastTab({
 }) {
   const verdict = wcagVerdict(text, background);
   const levels: { label: string; pass: boolean; threshold: number }[] = [
-    { label: "AA — texte normal", pass: verdict.aaNormal, threshold: WCAG_THRESHOLDS.aaNormal },
-    { label: "AA — grand texte", pass: verdict.aaLarge, threshold: WCAG_THRESHOLDS.aaLarge },
-    { label: "AAA — texte normal", pass: verdict.aaaNormal, threshold: WCAG_THRESHOLDS.aaaNormal },
-    { label: "AAA — grand texte", pass: verdict.aaaLarge, threshold: WCAG_THRESHOLDS.aaaLarge },
+    { label: t("AA — texte normal"), pass: verdict.aaNormal, threshold: WCAG_THRESHOLDS.aaNormal },
+    { label: t("AA — grand texte"), pass: verdict.aaLarge, threshold: WCAG_THRESHOLDS.aaLarge },
+    { label: t("AAA — texte normal"), pass: verdict.aaaNormal, threshold: WCAG_THRESHOLDS.aaaNormal },
+    { label: t("AAA — grand texte"), pass: verdict.aaaLarge, threshold: WCAG_THRESHOLDS.aaaLarge },
   ];
 
   return (
     <div className="space-y-3">
       <Fieldset columns={2}>
-        <Field label="Couleur du texte">
+        <Field label={t("Couleur du texte")}>
           <HexInput value={text} onChange={setText} />
         </Field>
-        <Field label="Couleur du fond">
+        <Field label={t("Couleur du fond")}>
           <HexInput value={background} onChange={setBackground} />
         </Field>
       </Fieldset>
@@ -379,15 +374,12 @@ function ContrastTab({
         className="space-y-2 rounded-[var(--radius-card)] border border-[var(--ft-border)] p-6"
         style={{ background: rgbToHex(background), color: rgbToHex(text) }}
       >
-        <p className="text-sm">Texte normal — 14 px. Portez ce vieux whisky au juge blond qui fume.</p>
-        <p className="text-2xl font-bold">Grand texte — 24 px gras.</p>
+        <p className="text-sm">{t("Texte normal — 14 px. Portez ce vieux whisky au juge blond qui fume.")}</p>
+        <p className="text-2xl font-bold">{t("Grand texte — 24 px gras.")}</p>
       </div>
 
       <div className="flex items-baseline gap-3">
-        <span className="font-mono text-2xl">{formatRatio(verdict.ratio)}</span>
-        <span className="text-xs text-[var(--ft-text-muted)]">
-          rapport de contraste (de 1:1 à 21:1)
-        </span>
+        <Trans source={"<0>{value}</0><1>rapport de contraste (de 1:1 à 21:1)</1>"} values={{ value: formatRatio(verdict.ratio) }} components={[<span className="font-mono text-2xl" />, <span className="text-xs text-[var(--ft-text-muted)]" />]} />
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2">
@@ -396,7 +388,7 @@ function ContrastTab({
             key={level.label}
             className="flex items-center justify-between gap-2 rounded-md border border-[var(--ft-border)] px-3 py-2 text-xs"
           >
-            <span>{level.label}</span>
+            <span>{tx(level.label)}</span>
             <span
               className="inline-flex items-center gap-1 font-mono"
               style={{ color: level.pass ? "var(--ft-ok)" : "var(--ft-danger)" }}
@@ -408,8 +400,7 @@ function ContrastTab({
       </div>
 
       <p className="text-xs text-[var(--ft-text-muted)]">
-        « Grand texte » signifie au moins 18 pt (24 px), ou 14 pt (18,66 px) en gras — c'est la
-        définition de la norme WCAG 2.1, pas un arrondi.
+        {t("« Grand texte » signifie au moins 18 pt (24 px), ou 14 pt (18,66 px) en gras — c'est la définition de la norme WCAG 2.1, pas un arrondi.")}
       </p>
     </div>
   );
@@ -427,7 +418,7 @@ function HexInput({ value, onChange }: { value: Rgb; onChange: (rgb: Rgb) => voi
     <div className="flex items-center gap-2">
       <input
         type="color"
-        aria-label="Choisir une couleur"
+        aria-label={t("Choisir une couleur")}
         value={rgbToHex(value)}
         onChange={(event) => {
           const parsed = parseColor(event.target.value);
@@ -438,7 +429,7 @@ function HexInput({ value, onChange }: { value: Rgb; onChange: (rgb: Rgb) => voi
       <TextInput
         value={draft}
         spellCheck={false}
-        aria-label="Code de la couleur"
+        aria-label={t("Code de la couleur")}
         onChange={(event) => {
           setDraft(event.target.value);
           const parsed = parseColor(event.target.value);

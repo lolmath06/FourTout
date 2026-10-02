@@ -3,6 +3,7 @@ import type { SelectedFile } from "@/core/files";
 import { inspectPdf } from "@/core/pdf/document";
 import { isPdfError, toPdfError } from "@/core/pdf/errors";
 import type { PdfInfo, PdfSource } from "@/core/pdf/types";
+import { t } from "@/i18n";
 
 /**
  * Charge les fichiers déposés en mémoire et les décrit.
@@ -112,5 +113,5 @@ async function describe(file: SelectedFile): Promise<LoadedPdf> {
 
 async function readBytes(file: SelectedFile): Promise<ArrayBuffer> {
   if (file.file) return file.file.arrayBuffer();
-  throw new Error("Fichier illisible");
+  throw new Error(t("Fichier illisible"));
 }

@@ -5,6 +5,7 @@
  * elle renvoie un message clair et laisse le texte intact.
  */
 
+import { t } from "@/i18n";
 export interface ReplaceOptions {
   search: string;
   replacement: string;
@@ -46,7 +47,7 @@ export function escapeRegExp(input: string): string {
 export function buildSearchRegExp(
   options: Pick<ReplaceOptions, "search" | "regex" | "caseSensitive" | "wholeWord">,
 ): { regexp: RegExp } | { error: string } {
-  if (options.search.length === 0) return { error: "Saisissez le texte à rechercher." };
+  if (options.search.length === 0) return { error: t("Saisissez le texte à rechercher.") };
   let source = options.regex ? options.search : escapeRegExp(options.search);
   if (!options.regex && options.wholeWord) {
     // `\b` ne fonctionne pas avec les lettres accentuées : on borne
@@ -62,7 +63,7 @@ export function buildSearchRegExp(
       return { regexp: new RegExp(source, flags.replace("u", "")) };
     } catch {
       return {
-        error: `Expression régulière invalide : ${error instanceof Error ? error.message : "motif incorrect"}`,
+        error: t("Expression régulière invalide : {value}", { value: error instanceof Error ? error.message : "motif incorrect" }),
       };
     }
   }

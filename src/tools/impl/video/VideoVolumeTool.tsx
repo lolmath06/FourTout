@@ -7,6 +7,7 @@ import { volumePipeline } from "@/core/media/video/pipelines";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { sizeOutcome } from "./shared";
+import { t } from "@/i18n";
 
 /**
  * Réglage du volume de la bande son, image recopiée telle quelle.
@@ -20,8 +21,8 @@ export function VideoVolumeTool({ tool }: ToolComponentProps) {
   return (
     <VideoToolShell
       tool={tool}
-      actionLabel="Appliquer le volume"
-      hint="Seule la piste audio est réencodée ; l'image reste intacte."
+      actionLabel={t("Appliquer le volume")}
+      hint={t("Seule la piste audio est réencodée ; l'image reste intacte.")}
       run={async ({ files, infos, caps, context }) => {
         const pipeline = volumePipeline(
           { caps, info: infos[0], extension: files[0].extension },
@@ -37,38 +38,38 @@ export function VideoVolumeTool({ tool }: ToolComponentProps) {
               pipeline.container,
             ),
             totalMs: infos[0]?.durationMs,
-            label: "Réglage du volume…",
+            label: t("Réglage du volume…"),
           },
           context,
         );
         return sizeOutcome(
           files[0].size,
           file,
-          percent === 0 ? "Piste audio supprimée :" : `Volume à ${percent} % :`,
+          percent === 0 ? t("Piste audio supprimée :") : t("Volume à {percent} % :", { percent }),
         );
       }}
     >
       {() => (
         <div className="space-y-2">
           <Fieldset columns={1}>
-            <Field label="Volume">
+            <Field label={t("Volume")}>
               <OptionGroup
-                ariaLabel="Volume"
+                ariaLabel={t("Volume")}
                 value={String(percent)}
                 onChange={(value) => setPercent(Number(value))}
                 options={VOLUME_PRESETS.map((value) => ({
                   value: String(value),
-                  label: value === 0 ? "Muet" : `${value} %`,
+                  label: value === 0 ? t("Muet") : `${value} %`,
                 }))}
               />
             </Field>
-            <Field label="Réglage fin" hint="100 % = niveau d'origine.">
+            <Field label={t("Réglage fin")} hint={t("100 % = niveau d'origine.")}>
               <Slider value={percent} onChange={setPercent} min={0} max={300} step={5} suffix=" %" />
             </Field>
           </Fieldset>
           {percent > 100 && (
             <p className="text-xs text-[var(--ft-text-muted)]">
-              Au-delà de 100 %, un limiteur évite la saturation des passages les plus forts.
+              {t("Au-delà de 100 %, un limiteur évite la saturation des passages les plus forts.")}
             </p>
           )}
         </div>

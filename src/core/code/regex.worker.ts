@@ -12,6 +12,7 @@
  * libre, et `terminate()` interrompt vraiment le calcul.
  */
 import { replaceAll, runRegex } from "./regex";
+import { t } from "@/i18n";
 
 export interface RegexWorkerRequest {
   id: number;
@@ -38,7 +39,7 @@ self.onmessage = (event: MessageEvent<RegexWorkerRequest>) => {
     self.postMessage({
       id,
       ok: false,
-      message: error instanceof Error ? error.message : "Expression invalide.",
+      message: error instanceof Error ? error.message : t("Expression invalide."),
     } satisfies RegexWorkerResponse);
   }
 };

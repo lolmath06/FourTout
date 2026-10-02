@@ -9,6 +9,7 @@ import { FLAGS, MAX_MATCHES, type RegexRun } from "@/core/code/regex";
 import { isIsolated, replaceAllIsolated, runRegexIsolated } from "@/core/code/regexRunner";
 import { buildCron, CRON_PRESETS, explainCron, type CronField } from "@/core/code/cron";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { formatDateTime, t, tx } from "@/i18n";
 
 const REGEX_SAMPLE = `Contact : marie.durand@exemple.fr
 Support : support@fourtout.test
@@ -53,7 +54,7 @@ export function RegexTesterTool(_props: ToolComponentProps) {
       .catch((failure: unknown) => {
         if (abandoned) return;
         setRun({
-          error: failure instanceof Error ? failure.message : "Expression invalide.",
+          error: failure instanceof Error ? failure.message : t("Expression invalide."),
         });
       })
       .finally(() => {
@@ -89,25 +90,25 @@ export function RegexTesterTool(_props: ToolComponentProps) {
 
   return (
     <div className="space-y-4">
-      <Fieldset columns={1} title="Expression">
-        <Field label="Motif">
+      <Fieldset columns={1} title={t("Expression")}>
+        <Field label={t("Motif")}>
           <TextInput
             value={pattern}
             autoFocus
             spellCheck={false}
             onChange={(event) => setPattern(event.target.value)}
-            aria-label="Expression régulière"
+            aria-label={t("Expression régulière")}
             data-testid="regex-pattern"
             className="font-mono"
           />
         </Field>
-        <Field label="Options">
+        <Field label={t("Options")}>
           <div className="flex flex-wrap gap-1.5">
             {FLAGS.map((flag) => (
               <button
                 key={flag.value}
                 type="button"
-                title={flag.hint}
+                title={tx(flag.hint)}
                 aria-pressed={flags.includes(flag.value)}
                 onClick={() => toggleFlag(flag.value)}
                 className={
@@ -116,7 +117,7 @@ export function RegexTesterTool(_props: ToolComponentProps) {
                     : "ft-value h-[var(--ft-control-sm)] rounded-[var(--radius-md)] border border-[var(--ft-border-strong)] px-2 text-[var(--ft-text-muted)] hover:bg-[var(--ft-hover)]"
                 }
               >
-                {flag.label}
+                {tx(flag.label)}
               </button>
             ))}
           </div>
@@ -124,24 +125,23 @@ export function RegexTesterTool(_props: ToolComponentProps) {
       </Fieldset>
 
       <TextPane
-        label="Texte de test"
+        label={t("Texte de test")}
         value={subject}
         onChange={setSubject}
-        placeholder="Collez le texte sur lequel tester l'expression…"
+        placeholder={t("Collez le texte sur lequel tester l'expression…")}
         minHeight="10rem"
       />
 
-      <InputError message={run?.error} />
+      <InputError message={tx(run?.error)} />
 
       {!isIsolated() && (
-        <Callout tone="warning" title="Protection réduite dans cet environnement">
-          Le fil d'exécution isolé n'est pas disponible ici : une expression à retour sur trace
-          catastrophique peut figer la fenêtre le temps de son calcul.
+        <Callout tone="warning" title={t("Protection réduite dans cet environnement")}>
+          {t("Le fil d'exécution isolé n'est pas disponible ici : une expression à retour sur trace catastrophique peut figer la fenêtre le temps de son calcul.")}
         </Callout>
       )}
 
       {running && !run && (
-        <p className="ft-value text-[var(--ft-text-muted)]">Recherche en cours…</p>
+        <p className="ft-value text-[var(--ft-text-muted)]">{t("Recherche en cours…")}</p>
       )}
 
       {run?.value && (
@@ -154,7 +154,7 @@ export function RegexTesterTool(_props: ToolComponentProps) {
           />
 
           {run.value.truncated && (
-            <Callout tone="warning" title="Recherche interrompue">
+            <Callout tone="warning" title={t("Recherche interrompue")}>
               {run.value.truncationReason}
             </Callout>
           )}
@@ -162,16 +162,16 @@ export function RegexTesterTool(_props: ToolComponentProps) {
           {run.value.matches.length > 0 && (
             <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
               <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-                Correspondances{run.value.matches.length > MAX_MATCHES ? ` (${MAX_MATCHES} premières)` : ""}
+                {t("Correspondances{value}", { value: run.value.matches.length > MAX_MATCHES ? ` (${MAX_MATCHES} premières)` : "" })}
               </h3>
               <div className="max-h-96 overflow-y-auto">
                 <table className="ft-table">
                   <thead>
                     <tr>
-                      <th className="w-16">Ligne</th>
-                      <th className="w-20">Index</th>
-                      <th>Correspondance</th>
-                      <th>Groupes</th>
+                      <th className="w-16">{t("Ligne")}</th>
+                      <th className="w-20">{t("Index")}</th>
+                      <th>{t("Correspondance")}</th>
+                      <th>{t("Groupes")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -199,20 +199,20 @@ export function RegexTesterTool(_props: ToolComponentProps) {
           )}
 
           <Fieldset columns={1}>
-            <Field label="Remplacement">
+            <Field label={t("Remplacement")}>
               <div className="space-y-2">
                 <CheckOption
                   checked={showReplace}
                   onChange={setShowReplace}
-                  label="Tester un remplacement"
-                  hint="Motifs acceptés : $1, $<nom>, $&. Aucune fonction n'est évaluée."
+                  label={t("Tester un remplacement")}
+                  hint={t("Motifs acceptés : $1, $<nom>, $&. Aucune fonction n'est évaluée.")}
                 />
                 {showReplace && (
                   <TextInput
                     value={replacement}
                     onChange={(event) => setReplacement(event.target.value)}
                     placeholder="[$1]"
-                    aria-label="Chaîne de remplacement"
+                    aria-label={t("Chaîne de remplacement")}
                     className="font-mono"
                   />
                 )}
@@ -221,7 +221,7 @@ export function RegexTesterTool(_props: ToolComponentProps) {
           </Fieldset>
 
           {showReplace && replaced !== undefined && (
-            <TextPane label="Résultat du remplacement" value={replaced} readOnly droppable={false} />
+            <TextPane label={t("Résultat du remplacement")} value={replaced} readOnly droppable={false} />
           )}
         </>
       )}
@@ -261,7 +261,7 @@ export function CronTool(_props: ToolComponentProps) {
     } catch (failure) {
       return {
         value: undefined,
-        error: failure instanceof Error ? failure.message : "Expression cron invalide.",
+        error: failure instanceof Error ? failure.message : t("Expression cron invalide."),
       };
     }
   }, [active]);
@@ -269,14 +269,14 @@ export function CronTool(_props: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <Fieldset columns={1}>
-        <Field label="Mode">
+        <Field label={t("Mode")}>
           <OptionGroup
-            ariaLabel="Mode"
+            ariaLabel={t("Mode")}
             value={mode}
             onChange={setMode}
             options={[
-              { value: "explain", label: "Expliquer" },
-              { value: "build", label: "Construire" },
+              { value: "explain", label: t("Expliquer") },
+              { value: "build", label: t("Construire") },
             ]}
           />
         </Field>
@@ -285,13 +285,13 @@ export function CronTool(_props: ToolComponentProps) {
       {mode === "explain" ? (
         <>
           <Fieldset columns={1}>
-            <Field label="Expression cron" hint="Cinq champs : minute, heure, jour du mois, mois, jour de la semaine.">
+            <Field label={t("Expression cron")} hint={t("Cinq champs : minute, heure, jour du mois, mois, jour de la semaine.")}>
               <TextInput
                 value={expression}
                 autoFocus
                 spellCheck={false}
                 onChange={(event) => setExpression(event.target.value)}
-                aria-label="Expression cron"
+                aria-label={t("Expression cron")}
                 data-testid="cron-expression"
                 className="font-mono"
               />
@@ -300,13 +300,13 @@ export function CronTool(_props: ToolComponentProps) {
           <div className="flex flex-wrap gap-1.5">
             {CRON_PRESETS.map((preset) => (
               <Button key={preset.expression} size="sm" onClick={() => setExpression(preset.expression)}>
-                {preset.label}
+                {tx(preset.label)}
               </Button>
             ))}
           </div>
         </>
       ) : (
-        <Fieldset columns={3} title="Champs">
+        <Fieldset columns={3} title={t("Champs")}>
           {FIELD_KEYS.map((key) => {
             const definition = result.value?.fields.find((field) => field.key === key);
             return (
@@ -330,7 +330,7 @@ export function CronTool(_props: ToolComponentProps) {
         </Fieldset>
       )}
 
-      <InputError message={result.error} />
+      <InputError message={tx(result.error)} />
 
       {result.value && (
         <>
@@ -338,12 +338,12 @@ export function CronTool(_props: ToolComponentProps) {
 
           {result.value.warnings.map((warning) => (
             <Callout key={warning} tone="warning">
-              {warning}
+              {tx(warning)}
             </Callout>
           ))}
 
           <ValueTable
-            caption="Champs"
+            caption={t("Champs")}
             rows={result.value.fields.map((field) => ({
               label: field.label,
               hint: field.range,
@@ -353,17 +353,17 @@ export function CronTool(_props: ToolComponentProps) {
 
           {result.value.occurrences.length > 0 && (
             <ValueTable
-              caption="Prochaines exécutions"
+              caption={t("Prochaines exécutions")}
               rows={result.value.occurrences.map((date, index) => ({
-                label: `Exécution ${index + 1}`,
-                value: date.toLocaleString("fr-FR", { dateStyle: "full", timeStyle: "short" }),
+                label: t("Exécution {value}", { value: index + 1 }),
+                value: formatDateTime(date, { dateStyle: "full", timeStyle: "short" }),
               }))}
             />
           )}
 
           <p className="ft-meta flex items-start gap-1.5">
             <Icon name="Info" size={12} className="mt-0.5 shrink-0" />
-            FourTout ne planifie et n'exécute rien : l'expression est seulement lue et expliquée.
+            {t("FourTout ne planifie et n'exécute rien : l'expression est seulement lue et expliquée.")}
           </p>
         </>
       )}

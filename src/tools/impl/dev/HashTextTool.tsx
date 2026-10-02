@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { hashText, isLegacyAlgorithm, TEXT_HASH_ALGORITHMS } from "@/core/hash";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 /**
  * Empreinte d'une chaîne de caractères.
@@ -34,19 +35,19 @@ export function HashTextTool(_props: ToolComponentProps) {
   const copy = async (value: string) => {
     try {
       await navigator.clipboard.writeText(value);
-      notify.success("Empreinte copiée");
+      notify.success(t("Empreinte copiée"));
     } catch {
-      notify.error("Copie impossible");
+      notify.error(t("Copie impossible"));
     }
   };
 
   return (
     <div className="space-y-4">
       <TextPane
-        label="Texte à hacher"
+        label={t("Texte à hacher")}
         value={input}
         onChange={setInput}
-        placeholder="Saisissez ou collez le texte…"
+        placeholder={t("Saisissez ou collez le texte…")}
         minHeight="10rem"
       />
 
@@ -59,7 +60,7 @@ export function HashTextTool(_props: ToolComponentProps) {
             <span className="w-20 shrink-0 text-xs font-medium">
               {algorithm}
               {isLegacyAlgorithm(algorithm) && (
-                <span className="block text-[10px] font-normal text-[var(--ft-warn)]">obsolète</span>
+                <span className="block text-[10px] font-normal text-[var(--ft-warn)]">{t("obsolète")}</span>
               )}
             </span>
             <code className="min-w-0 flex-1 break-all font-mono text-xs text-[var(--ft-text-muted)]">
@@ -70,7 +71,7 @@ export function HashTextTool(_props: ToolComponentProps) {
               variant="ghost"
               onClick={() => copy(digests[algorithm])}
               disabled={!digests[algorithm]}
-              aria-label={`Copier ${algorithm}`}
+              aria-label={t("Copier {algorithm}", { algorithm })}
             >
               <Icon name="Copy" size={14} />
             </Button>
@@ -80,8 +81,7 @@ export function HashTextTool(_props: ToolComponentProps) {
 
       <p className="flex items-start gap-2 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-xs text-[var(--ft-warn)]">
         <Icon name="TriangleAlert" size={14} className="mt-px shrink-0" />
-        MD5 et SHA-1 ne sont plus adaptés à un usage cryptographique : ils restent utiles comme
-        sommes de contrôle, jamais pour protéger un mot de passe ou signer un document.
+        {t("MD5 et SHA-1 ne sont plus adaptés à un usage cryptographique : ils restent utiles comme sommes de contrôle, jamais pour protéger un mot de passe ou signer un document.")}
       </p>
     </div>
   );

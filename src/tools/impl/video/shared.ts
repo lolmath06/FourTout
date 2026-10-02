@@ -14,6 +14,7 @@ import {
 import { compressionGain } from "@/core/media/video/presets";
 import type { VideoPipeline } from "@/core/media/video/pipelines";
 import type { MediaInfo } from "@/core/media/types";
+import { t } from "@/i18n";
 
 /**
  * Présentation partagée par les outils vidéo.
@@ -68,9 +69,9 @@ export function sizeOutcome(
   if (gain <= 0) {
     return {
       files: [file],
-      summary: `${prefix} ${sizes} (aucun gain).`,
+      summary: t("{prefix} {sizes} (aucun gain).", { prefix, sizes }),
       warning: join(
-        "Ce fichier était déjà suffisamment optimisé : le résultat est plus volumineux que l'original " +
+        t("Ce fichier était déjà suffisamment optimisé : le résultat est plus volumineux que l'original ") +
           `(+${formatFileSize(Math.abs(delta))}). Conservez plutôt la vidéo de départ, ou choisissez une compression plus forte.`,
         extraWarning,
       ),
@@ -78,7 +79,7 @@ export function sizeOutcome(
   }
   return {
     files: [file],
-    summary: `${prefix} ${sizes} — ${gain} % de gain (${formatFileSize(delta)} économisés).`,
+    summary: t("{prefix} {sizes} — {gain} % de gain ({size} économisés).", { prefix, sizes, gain, size: formatFileSize(delta) }),
     warning: extraWarning,
   };
 }
@@ -105,7 +106,7 @@ export function fallbackTracker(pipeline: VideoPipeline) {
       used === undefined
         ? undefined
         : pipeline.hardware
-          ? "L'accélération matérielle n'était pas disponible ; l'encodage a été refait en logiciel."
-          : "L'encodeur initial n'a pas pu démarrer ; un encodeur de repli a été utilisé.",
+          ? t("L'accélération matérielle n'était pas disponible ; l'encodage a été refait en logiciel.")
+          : t("L'encodeur initial n'a pas pu démarrer ; un encodeur de repli a été utilisé."),
   };
 }

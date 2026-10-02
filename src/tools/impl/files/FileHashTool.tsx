@@ -9,6 +9,7 @@ import { hashFiles, type FileHashes, type HashAlgorithm } from "@/core/files/nat
 import { notify } from "@/features/notifications/store";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Empreintes de fichiers, et vérification d'une empreinte annoncée.
@@ -46,14 +47,14 @@ export function FileHashTool({ tool }: ToolComponentProps) {
         paths,
         onChange: setPaths,
         multiple: !verifyMode,
-        label: verifyMode ? "Choisissez le fichier à vérifier" : "Choisissez un ou plusieurs fichiers",
+        label: verifyMode ? t("Choisissez le fichier à vérifier") : t("Choisissez un ou plusieurs fichiers"),
       }}
-      actionLabel={verifyMode ? "Vérifier l'empreinte" : "Calculer l'empreinte"}
+      actionLabel={verifyMode ? t("Vérifier l'empreinte") : t("Calculer l'empreinte")}
       actionIcon="Fingerprint"
       actionDisabled={selected.length === 0}
       run={(context) => hashFiles(paths, selected, context)}
       successMessage={(results) =>
-        results.length === 1 ? results[0].name : `${results.length} fichiers traités`
+        results.length === 1 ? results[0].name : t("{count} fichiers traités", { count: results.length })
       }
       renderResult={(results) => (
         <div className="space-y-3">
@@ -75,7 +76,7 @@ export function FileHashTool({ tool }: ToolComponentProps) {
                   const mismatches = normalizedExpected.length > 0 && !matches;
                   return (
                     <div key={label} className="flex flex-wrap items-center gap-2">
-                      <span className="w-20 shrink-0 text-xs font-medium">{label}</span>
+                      <span className="w-20 shrink-0 text-xs font-medium">{tx(label)}</span>
                       <code className="min-w-0 flex-1 break-all font-mono text-xs text-[var(--ft-text-muted)]">
                         {digest}
                       </code>
@@ -86,16 +87,16 @@ export function FileHashTool({ tool }: ToolComponentProps) {
                       )}
                       {mismatches && (
                         <span className="flex items-center gap-1 text-xs text-[var(--ft-danger)]">
-                          <Icon name="CircleAlert" size={14} /> diffère
+                          <Icon name="CircleAlert" size={14} />{" "}{t("diffère")}
                         </span>
                       )}
                       <Button
                         size="sm"
                         variant="ghost"
-                        aria-label={`Copier ${label}`}
+                        aria-label={t("Copier {label}", { label })}
                         onClick={async () => {
                           await navigator.clipboard.writeText(digest);
-                          notify.success("Empreinte copiée");
+                          notify.success(t("Empreinte copiée"));
                         }}
                       >
                         <Icon name="Copy" size={14} />
@@ -110,29 +111,29 @@ export function FileHashTool({ tool }: ToolComponentProps) {
       )}
     >
       <Fieldset columns={1}>
-        <Field label="Algorithmes" full>
+        <Field label={t("Algorithmes")} full>
           <div className="grid gap-0.5 sm:grid-cols-4">
             {ALGORITHMS.map((algorithm) => (
               <CheckOption
                 key={algorithm.value}
                 checked={selected.includes(algorithm.value)}
                 onChange={(on) => toggle(algorithm.value, on)}
-                label={algorithm.label}
-                hint={algorithm.legacy ? "somme de contrôle uniquement" : undefined}
+                label={tx(algorithm.label)}
+                hint={algorithm.legacy ? t("somme de contrôle uniquement") : undefined}
               />
             ))}
           </div>
         </Field>
         <Field
-          label="Empreinte attendue (facultatif)"
-          hint="Collez l'empreinte publiée par la source pour la comparer automatiquement."
+          label={t("Empreinte attendue (facultatif)")}
+          hint={t("Collez l'empreinte publiée par la source pour la comparer automatiquement.")}
           full
         >
           <TextInput
             value={expected}
             onChange={(event) => setExpected(event.target.value)}
             placeholder="ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
-            aria-label="Empreinte attendue"
+            aria-label={t("Empreinte attendue")}
             className="font-mono"
           />
         </Field>
@@ -141,9 +142,7 @@ export function FileHashTool({ tool }: ToolComponentProps) {
       {(selected.includes("md5") || selected.includes("sha1")) && (
         <p className="flex items-start gap-2 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-xs text-[var(--ft-warn)]">
           <Icon name="TriangleAlert" size={14} className="mt-px shrink-0" />
-          MD5 et SHA-1 ne sont pas adaptés à la sécurité cryptographique : deux fichiers différents
-          peuvent produire la même empreinte. Ils restent utiles pour vérifier qu'un téléchargement
-          n'est pas corrompu, pas pour prouver qu'un fichier n'a pas été modifié volontairement.
+          {t("MD5 et SHA-1 ne sont pas adaptés à la sécurité cryptographique : deux fichiers différents peuvent produire la même empreinte. Ils restent utiles pour vérifier qu'un téléchargement n'est pas corrompu, pas pour prouver qu'un fichier n'a pas été modifié volontairement.")}
         </p>
       )}
     </NativeToolShell>

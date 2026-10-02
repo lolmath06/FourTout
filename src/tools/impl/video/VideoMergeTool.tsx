@@ -10,6 +10,7 @@ import { formatTimecode, type MediaInfo } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { containerOptions, defaultContainer, fallbackTracker, totalDuration } from "./shared";
+import { t } from "@/i18n";
 
 type Strategy = "auto" | "reencode";
 
@@ -46,10 +47,10 @@ export function VideoMergeTool({ tool }: ToolComponentProps) {
       tool={tool}
       selection="multiple"
       reorderable
-      actionLabel="Fusionner"
-      hint="Déposez au moins deux vidéos, puis ordonnez-les par glisser-déposer."
+      actionLabel={t("Fusionner")}
+      hint={t("Déposez au moins deux vidéos, puis ordonnez-les par glisser-déposer.")}
       run={async ({ files, infos, caps, context }) => {
-        if (files.length < 2) throw new Error("Déposez au moins deux vidéos à assembler.");
+        if (files.length < 2) throw new Error(t("Déposez au moins deux vidéos à assembler."));
         const pipeline = mergePipeline(caps, {
           infos,
           extension: container ?? files[0].extension,
@@ -65,15 +66,15 @@ export function VideoMergeTool({ tool }: ToolComponentProps) {
             onFallback: tracker.onFallback,
             outputName: outputName(files[0].name, "fusion", pipeline.container),
             totalMs: totalDuration(infos),
-            label: pipeline.copied ? "Assemblage…" : "Normalisation et assemblage…",
+            label: pipeline.copied ? t("Assemblage…") : t("Normalisation et assemblage…"),
           },
           context,
         );
         return {
           files: [file],
           summary: pipeline.copied
-            ? `${files.length} vidéos assemblées sans réencodage (${formatTimecode(totalDuration(infos))}).`
-            : `${files.length} vidéos normalisées en ${pipeline.target.width} × ${pipeline.target.height} puis assemblées (${formatTimecode(totalDuration(infos))}).`,
+            ? t("{count} vidéos assemblées sans réencodage ({value}).", { count: files.length, value: formatTimecode(totalDuration(infos)) })
+            : t("{count} vidéos normalisées en {width} × {height} puis assemblées ({value}).", { count: files.length, width: pipeline.target.width, height: pipeline.target.height, value: formatTimecode(totalDuration(infos)) }),
           warning: tracker.warning(),
         };
       }}
@@ -86,24 +87,24 @@ export function VideoMergeTool({ tool }: ToolComponentProps) {
           <div className="space-y-2">
             <Fieldset columns={2}>
               <Field
-                label="Méthode"
+                label={t("Méthode")}
                 hint={
                   strategy === "auto"
-                    ? "Recopie les flux quand les vidéos sont identiques, normalise sinon."
-                    : "Réencode systématiquement, même si les sources sont compatibles."
+                    ? t("Recopie les flux quand les vidéos sont identiques, normalise sinon.")
+                    : t("Réencode systématiquement, même si les sources sont compatibles.")
                 }
               >
                 <OptionGroup
-                  ariaLabel="Méthode"
+                  ariaLabel={t("Méthode")}
                   value={strategy}
                   onChange={setStrategy}
                   options={[
-                    { value: "auto", label: "Automatique" },
-                    { value: "reencode", label: "Toujours réencoder" },
+                    { value: "auto", label: t("Automatique") },
+                    { value: "reencode", label: t("Toujours réencoder") },
                   ]}
                 />
               </Field>
-              <Field label="Format de sortie">
+              <Field label={t("Format de sortie")}>
                 <Select
                   value={container ?? defaultContainer(files[0]?.extension, caps)}
                   onChange={setContainer}
@@ -116,13 +117,13 @@ export function VideoMergeTool({ tool }: ToolComponentProps) {
               <p className="flex items-start gap-1.5 text-xs text-[var(--ft-text-muted)]">
                 <Icon name={compatible && strategy === "auto" ? "Zap" : "Info"} size={13} className="mt-px shrink-0" />
                 {compatible && strategy === "auto"
-                  ? "Sources identiques : assemblage sans réencodage, quasi instantané."
-                  : `Sources différentes : elles seront normalisées en ${target.width} × ${target.height} à ${target.frameRate} img/s avant assemblage.`}
+                  ? t("Sources identiques : assemblage sans réencodage, quasi instantané.")
+                  : t("Sources différentes : elles seront normalisées en {width} × {height} à {frameRate} img/s avant assemblage.", { width: target.width, height: target.height, frameRate: target.frameRate })}
               </p>
             )}
             {files.length < 2 && (
               <p className="text-xs text-[var(--ft-text-muted)]">
-                Ajoutez au moins une seconde vidéo. Sortie : {CONTAINER_LABEL[container ?? defaultContainer(files[0]?.extension, caps)]}.
+                {t("Ajoutez au moins une seconde vidéo. Sortie : {value}.", { value: CONTAINER_LABEL[container ?? defaultContainer(files[0]?.extension, caps)] })}
               </p>
             )}
           </div>

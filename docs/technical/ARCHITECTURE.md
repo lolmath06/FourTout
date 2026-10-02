@@ -13,6 +13,7 @@
 - [Fichiers](#fichiers)
 - [Confidentialité](#confidentialité)
 - [Échelle de l'interface](#échelle-de-linterface)
+- [Langues](#langues)
 - [Ce qui reste ouvert](#ce-qui-reste-ouvert)
 
 ---
@@ -232,6 +233,17 @@ page.
 
 Densité et animations se règlent par jetons CSS, commutés par un attribut sur
 la racine du document — pas par un second système de classes.
+
+## Langues
+
+L'interface est traduite en 16 langues, embarquées. Le texte source reste
+écrit en français dans le code (`t("…")`), et les traductions sont indexées
+par empreinte du texte (`src/i18n/messages/<langue>.json`). Le registre n'est
+pas dupliqué : les noms, descriptions et mots-clés traduits des outils vivent
+dans `src/i18n/catalog/<langue>.json`, indexés par identifiant, et l'interface
+les lit par `core/tools/localized.ts`. La recherche construit un index par
+langue, qui inclut l'anglais et le français à poids réduit. Repli : langue
+affichée → anglais → source. Détails : [I18N.md](I18N.md).
 
 ## Ce qui reste ouvert
 

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Callout } from "@/components/ui/Callout";
 import { notify } from "@/features/notifications/store";
+import { t, tx } from "@/i18n";
 
 /**
  * Ossature commune aux calculateurs et convertisseurs.
@@ -32,9 +33,9 @@ export function ResultBlock({
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(value);
-      notify.success("Résultat copié");
+      notify.success(t("Résultat copié"));
     } catch {
-      notify.error("Copie impossible", "Le presse-papiers n'est pas accessible.");
+      notify.error(t("Copie impossible"), t("Le presse-papiers n'est pas accessible."));
     }
   };
 
@@ -51,8 +52,8 @@ export function ResultBlock({
         </output>
         {unit && <span className="text-[15px] text-[var(--ft-text-muted)]">{unit}</span>}
         <div className="flex-1" />
-        <Button size="sm" variant="ghost" onClick={copy} aria-label="Copier le résultat">
-          <Icon name="Copy" size={13} /> Copier
+        <Button size="sm" variant="ghost" onClick={copy} aria-label={t("Copier le résultat")}>
+          <Icon name="Copy" size={13} />{" "}{t("Copier")}
         </Button>
       </div>
       {formula && (
@@ -63,7 +64,7 @@ export function ResultBlock({
       {secondary && secondary.length > 0 && (
         <dl className="ft-props border-t border-[var(--ft-rule)] px-3 py-2">
           {secondary.map((entry) => (
-            <Fragment key={entry.label} label={entry.label} value={entry.value} />
+            <Fragment key={entry.label} label={tx(entry.label)} value={entry.value} />
           ))}
         </dl>
       )}
@@ -74,7 +75,7 @@ export function ResultBlock({
 function Fragment({ label, value }: { label: string; value: string }) {
   return (
     <>
-      <dt>{label}</dt>
+      <dt>{tx(label)}</dt>
       <dd className="ft-value">{value}</dd>
     </>
   );
@@ -91,7 +92,7 @@ export function ValueTable({
   return (
     <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
       {caption && (
-        <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">{caption}</h3>
+        <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">{tx(caption)}</h3>
       )}
       <div className="overflow-x-auto">
         <table className="ft-table">
@@ -99,10 +100,10 @@ export function ValueTable({
             {rows.map((row) => (
               <tr key={row.label}>
                 <th scope="row" className="w-1/2 font-normal">
-                  {row.label}
+                  {tx(row.label)}
                   {row.hint && (
                     <span className="ml-1.5 text-[10.5px] text-[var(--ft-text-faint)]">
-                      {row.hint}
+                      {tx(row.hint)}
                     </span>
                   )}
                 </th>
@@ -125,7 +126,7 @@ export function ValueTable({
 /** Message d'erreur de saisie, dans la forme commune à toute l'application. */
 export function InputError({ message }: { message?: string }) {
   if (!message) return null;
-  return <Callout tone="error">{message}</Callout>;
+  return <Callout tone="error">{tx(message)}</Callout>;
 }
 
 /** Bouton « copier » discret, pour une valeur isolée. */
@@ -150,12 +151,12 @@ export function CopyButton({
           setDone(true);
           window.setTimeout(() => setDone(false), 1200);
         } catch {
-          notify.error("Copie impossible", "Le presse-papiers n'est pas accessible.");
+          notify.error(t("Copie impossible"), t("Le presse-papiers n'est pas accessible."));
         }
       }}
     >
       <Icon name={done ? "Check" : "Copy"} size={13} />
-      {done ? "Copié" : label}
+      {done ? t("Copié") : label}
     </Button>
   );
 }

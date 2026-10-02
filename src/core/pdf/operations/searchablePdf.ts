@@ -8,6 +8,7 @@ import { getDefaultEngine } from "@/core/ocr";
 import type { OcrEngine, OcrLanguage, OcrWord } from "@/core/ocr/types";
 import { toWinAnsi } from "./documentToPdf";
 import type { OperationContext, OutputFile, PdfSource } from "../types";
+import { t } from "@/i18n";
 
 /**
  * PDF scanné → PDF **recherchable**.
@@ -294,7 +295,7 @@ export async function makeSearchablePdf(
 
       const result = await engine.recognize(
         {
-          name: `page-${rendered.page}.png`,
+          name: t("page-{page}.png", { page: rendered.page }),
           bytes: rendered.bytes,
           width: rendered.widthPx,
           height: rendered.heightPx,
@@ -316,7 +317,7 @@ export async function makeSearchablePdf(
       report(
         context,
         index * step + step * 0.8,
-        `Page ${rendered.page} / ${total} — écriture couche texte`,
+        t("Page {page} / {total} — écriture couche texte", { page: rendered.page, total }),
       );
 
       const words = result.layout?.words ?? [];
@@ -343,11 +344,11 @@ export async function makeSearchablePdf(
   if (totalWords === 0) {
     throw new PdfError(
       "no-text-found",
-      "Aucun mot n'a été reconnu : vérifiez la langue choisie et la qualité du scan.",
+      t("Aucun mot n'a été reconnu : vérifiez la langue choisie et la qualité du scan."),
     );
   }
 
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   const file = await savePdf(document, outputName(source.name, "recherchable"));
   return { file, pages, totalWords, hadNativeText };
 }

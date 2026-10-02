@@ -13,6 +13,7 @@ import { comparePdfs, type CompareResult, type PageComparison } from "@/core/pdf
 import { toPdfError } from "@/core/pdf/errors";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 type ViewMode = "side" | "diff";
 
@@ -37,7 +38,7 @@ export function PdfCompareTool({ tool }: ToolComponentProps) {
     );
     if (res) {
       setResult(res);
-      notify.success("Comparaison terminée", `${Math.round(res.overallDiff * 100)}% de différence moyenne.`);
+      notify.success(t("Comparaison terminée"), t("{value}% de différence moyenne.", { value: Math.round(res.overallDiff * 100) }));
     }
   };
 
@@ -46,15 +47,15 @@ export function PdfCompareTool({ tool }: ToolComponentProps) {
 
   return (
     <div className="space-y-4">
-      <FileDropZone constraints={{ ...constraintsForTool(tool), maxFiles: 2 }} files={files} onChange={setFiles} label="Déposez deux PDF à comparer" disabled={job.isRunning} />
+      <FileDropZone constraints={{ ...constraintsForTool(tool), maxFiles: 2 }} files={files} onChange={setFiles} label={t("Déposez deux PDF à comparer")} disabled={job.isRunning} />
       {loaded.length > 0 && <PdfSourceList documents={loaded} />}
       {loaded.some((d) => d.needsPassword) && loaded.map((d) => d.needsPassword && <PdfSourceList key={d.id} documents={[d]} onUnlock={unlock} />)}
 
       {ready && !result && (
         <div className="flex items-center justify-end gap-2">
-          {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>Annuler</Button>}
+          {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>{t("Annuler")}</Button>}
           <Button size="md" variant="primary" onClick={run} disabled={job.isRunning}>
-            {job.isRunning ? (<><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? "Comparaison…"}</>) : (<><Icon name="GitCompare" size={15} />Comparer</>)}
+            {job.isRunning ? (<><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? t("Comparaison…")}</>) : (<><Icon name="GitCompare" size={15} />{t("Comparer")}</>)}
           </Button>
         </div>
       )}
@@ -70,15 +71,15 @@ export function PdfCompareTool({ tool }: ToolComponentProps) {
         <>
           <div className="rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface)] px-3 py-2 text-sm">
             {result.pageCountA === result.pageCountB
-              ? `${result.pageCountA} pages · ${Math.round(result.overallDiff * 100)}% de différence moyenne.`
-              : `Nombre de pages différent : ${result.pageCountA} contre ${result.pageCountB}.`}
+              ? t("{pageCountA} pages · {value}% de différence moyenne.", { pageCountA: result.pageCountA, value: Math.round(result.overallDiff * 100) })
+              : t("Nombre de pages différent : {pageCountA} contre {pageCountB}.", { pageCountA: result.pageCountA, pageCountB: result.pageCountB })}
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-2">
             <PageNav page={page} pageCount={result.pages.length} onPage={setPage} />
             <Fieldset columns={1}>
-              <Field label="Affichage">
-                <OptionGroup ariaLabel="Affichage" value={mode} onChange={setMode} options={[{ value: "diff", label: "Différences" }, { value: "side", label: "Côte à côte" }]} />
+              <Field label={t("Affichage")}>
+                <OptionGroup ariaLabel={t("Affichage")} value={mode} onChange={setMode} options={[{ value: "diff", label: t("Différences") }, { value: "side", label: t("Côte à côte") }]} />
               </Field>
             </Fieldset>
           </div>
@@ -96,20 +97,20 @@ function ComparisonView({ comparison, mode }: { comparison: PageComparison; mode
   const urlDiff = useObjectUrl(comparison.diffPng);
 
   const badge = {
-    identical: { label: "Identique", color: "var(--ft-ok)" },
-    different: { label: `${Math.round(comparison.diffRatio * 100)}% différent`, color: "var(--ft-warn)" },
-    "only-in-a": { label: "Seulement dans le 1er PDF", color: "var(--ft-danger)" },
-    "only-in-b": { label: "Seulement dans le 2e PDF", color: "var(--ft-danger)" },
+    identical: { label: t("Identique"), color: "var(--ft-ok)" },
+    different: { label: t("{value}% différent", { value: Math.round(comparison.diffRatio * 100) }), color: "var(--ft-warn)" },
+    "only-in-a": { label: t("Seulement dans le 1er PDF"), color: "var(--ft-danger)" },
+    "only-in-b": { label: t("Seulement dans le 2e PDF"), color: "var(--ft-danger)" },
   }[comparison.status];
 
   return (
     <div className="space-y-2">
       <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium" style={{ color: badge.color, background: `color-mix(in oklch, ${badge.color} 12%, transparent)` }}>
-        <Icon name="GitCompare" size={12} /> Page {comparison.page} · {badge.label}
+        <Icon name="GitCompare" size={12} />{" "}{t("Page {page} · {label}", { page: comparison.page, label: badge.label })}
       </span>
 
       {mode === "diff" && comparison.diffPng ? (
-        <PreviewFrame maxHeight={560}>{urlDiff && <img src={urlDiff} alt="Différences" className="max-h-[540px] max-w-full object-contain" />}</PreviewFrame>
+        <PreviewFrame maxHeight={560}>{urlDiff && <img src={urlDiff} alt={t("Différences")} className="max-h-[540px] max-w-full object-contain" />}</PreviewFrame>
       ) : (
         <div className="grid gap-2 sm:grid-cols-2">
           <PreviewFrame maxHeight={520}>{urlA ? <img src={urlA} alt="PDF 1" className="max-h-[500px] max-w-full object-contain" /> : <Absent />}</PreviewFrame>
@@ -121,7 +122,7 @@ function ComparisonView({ comparison, mode }: { comparison: PageComparison; mode
 }
 
 function Absent() {
-  return <div className="flex h-40 items-center justify-center text-sm text-[var(--ft-text-muted)]">Page absente</div>;
+  return <div className="flex h-40 items-center justify-center text-sm text-[var(--ft-text-muted)]">{t("Page absente")}</div>;
 }
 
 /**

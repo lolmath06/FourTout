@@ -9,31 +9,32 @@ import { MicrophoneError, openMicrophone, releaseStream, type MicFailure } from 
 import { notify } from "@/features/notifications/store";
 import type { SelectedFile } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t, tx } from "@/i18n";
 
 type State = "idle" | "recording" | "recorded";
 
 /** Message affiché et possibilité de relancer la demande, selon l'échec. */
-const FAILURES: Record<MicFailure, { message: string; hint?: string; retry: boolean }> = {
+const FAILURES: Record<MicFailure, { message: string; hint?: string; retry: boolean }> = localized(() => ({
   unsupported: {
-    message: "L'enregistrement audio n'est pas disponible dans cet environnement.",
+    message: t("L'enregistrement audio n'est pas disponible dans cet environnement."),
     retry: false,
   },
   denied: {
-    message: "L'accès au microphone a été refusé.",
-    hint: "Cliquez sur « Autoriser le microphone » pour redemander l'accès. Si le refus vient du système, vérifiez le périphérique d'entrée dans les réglages de son de votre session.",
+    message: t("L'accès au microphone a été refusé."),
+    hint: t("Cliquez sur « Autoriser le microphone » pour redemander l'accès. Si le refus vient du système, vérifiez le périphérique d'entrée dans les réglages de son de votre session."),
     retry: true,
   },
   "not-found": {
-    message: "Aucun microphone détecté.",
-    hint: "Branchez un micro, puis réessayez.",
+    message: t("Aucun microphone détecté."),
+    hint: t("Branchez un micro, puis réessayez."),
     retry: true,
   },
   failed: {
-    message: "Impossible d'accéder au microphone.",
-    hint: "Réessayez ; si le problème persiste, vérifiez qu'aucune autre application ne monopolise le micro.",
+    message: t("Impossible d'accéder au microphone."),
+    hint: t("Réessayez ; si le problème persiste, vérifiez qu'aucune autre application ne monopolise le micro."),
     retry: true,
   },
-};
+}));
 
 export function AudioRecordTool(_props: ToolComponentProps) {
   const [state, setState] = useState<State>("idle");
@@ -181,10 +182,10 @@ export function AudioRecordTool(_props: ToolComponentProps) {
         const file: SelectedFile = { id: "rec", name: "enregistrement.webm", size: bytes.length, extension: "webm", mimeType: blob.type, kind: "audio", file: new File([blob], "enregistrement.webm") };
         const out = await runMedia({ files: [file], operation: convertAudio("wav"), outputName: "enregistrement.wav" });
         const res = await saveFile({ name: out.name, bytes: out.bytes, mimeType: out.mimeType });
-        if (res.saved) notify.success("Enregistrement sauvegardé", res.path);
+        if (res.saved) notify.success(t("Enregistrement sauvegardé"), res.path);
       } else {
         const res = await saveFile({ name: "enregistrement.webm", bytes, mimeType: blob.type });
-        if (res.saved) notify.success("Enregistrement sauvegardé", res.path);
+        if (res.saved) notify.success(t("Enregistrement sauvegardé"), res.path);
       }
     } finally {
       setBusy(false);
@@ -198,11 +199,11 @@ export function AudioRecordTool(_props: ToolComponentProps) {
     <div className="space-y-4">
       {devices.length > 1 && (
         <Fieldset columns={1}>
-          <Field label="Microphone">
+          <Field label={t("Microphone")}>
             <Select
               value={deviceId}
               onChange={setDeviceId}
-              options={[{ value: "", label: "Micro par défaut" }, ...devices.map((d) => ({ value: d.deviceId, label: d.label || "Microphone" }))]}
+              options={[{ value: "", label: t("Micro par défaut") }, ...devices.map((d) => ({ value: d.deviceId, label: d.label || "Microphone" }))]}
             />
           </Field>
         </Fieldset>
@@ -216,10 +217,10 @@ export function AudioRecordTool(_props: ToolComponentProps) {
           <div className="h-full rounded-full bg-[var(--ft-accent)] transition-[width]" style={{ width: `${Math.round(level * 100)}%` }} />
         </div>
         {state === "recording" ? (
-          <Button variant="danger" onClick={stop}><Icon name="Square" size={15} /> Arrêter</Button>
+          <Button variant="danger" onClick={stop}><Icon name="Square" size={15} />{" "}{t("Arrêter")}</Button>
         ) : (
           <Button variant="primary" onClick={() => void start()} disabled={starting}>
-            <Icon name="Mic" size={15} /> {state === "recorded" ? "Réenregistrer" : "Démarrer"}
+            <Icon name="Mic" size={15} /> {state === "recorded" ? t("Réenregistrer") : t("Démarrer")}
           </Button>
         )}
       </div>
@@ -227,12 +228,12 @@ export function AudioRecordTool(_props: ToolComponentProps) {
       {problem && (
         <div className="space-y-2 rounded-md border border-[var(--ft-danger)] px-3 py-2 text-sm text-[var(--ft-danger)]">
           <p className="flex items-center gap-2">
-            <Icon name="CircleAlert" size={16} /> {problem.message}
+            <Icon name="CircleAlert" size={16} /> {tx(problem.message)}
           </p>
-          {problem.hint && <p className="text-xs text-[var(--ft-text-muted)]">{problem.hint}</p>}
+          {problem.hint && <p className="text-xs text-[var(--ft-text-muted)]">{tx(problem.hint)}</p>}
           {problem.retry && (
             <Button size="sm" onClick={() => void start()} disabled={starting}>
-              <Icon name="Mic" size={14} /> Autoriser le microphone
+              <Icon name="Mic" size={14} />{" "}{t("Autoriser le microphone")}
             </Button>
           )}
         </div>
@@ -242,8 +243,8 @@ export function AudioRecordTool(_props: ToolComponentProps) {
         <div className="space-y-3">
           <audio controls src={blobUrl} className="w-full" />
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant="primary" onClick={() => save(true)} disabled={busy}><Icon name="HardDrive" size={14} /> Enregistrer en WAV</Button>
-            <Button size="sm" onClick={() => save(false)} disabled={busy}><Icon name="HardDrive" size={14} /> Enregistrer (WebM)</Button>
+            <Button size="sm" variant="primary" onClick={() => save(true)} disabled={busy}><Icon name="HardDrive" size={14} />{" "}{t("Enregistrer en WAV")}</Button>
+            <Button size="sm" onClick={() => save(false)} disabled={busy}><Icon name="HardDrive" size={14} />{" "}{t("Enregistrer (WebM)")}</Button>
           </div>
         </div>
       )}

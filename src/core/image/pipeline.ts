@@ -6,6 +6,7 @@ import { JobCancelledError } from "@/core/jobs/types";
 import { ImageError } from "./errors";
 import { decodeOriented, encodeCanvas, readSelectedFile } from "./codec";
 import { EXTENSION_BY_FORMAT, MIME_BY_FORMAT, extensionToFormat, type ImageFormat, type Rgb } from "./types";
+import { t } from "@/i18n";
 
 /**
  * Chaînage de haut niveau : lit un fichier, le décode (redressé EXIF), applique
@@ -96,14 +97,14 @@ export async function processImages(
     throwIfCancelled(context);
     context?.report?.({
       ratio: index / files.length,
-      label: `Image ${index + 1} sur ${files.length}`,
+      label: t("Image {value} sur {count}", { value: index + 1, count: files.length }),
     });
     const output = await processImage(file, transform, options, context);
     output.name = dedupe(output.name, used);
     outputs.push(output);
   }
 
-  context?.report?.({ ratio: 1, label: "Terminé" });
+  context?.report?.({ ratio: 1, label: t("Terminé") });
   return outputs;
 }
 

@@ -1,5 +1,6 @@
 import { isTauri } from "@/core/platform";
 import { appStore, type KeyValueStore } from "@/core/storage";
+import { localized, t } from "@/i18n";
 
 /**
  * Taux de change.
@@ -51,39 +52,39 @@ export class CurrencyError extends Error {
 }
 
 /** Noms français des devises publiées par la BCE. */
-export const CURRENCY_NAMES: Record<string, string> = {
+export const CURRENCY_NAMES: Record<string, string> = localized(() => ({
   EUR: "euro",
-  USD: "dollar américain",
+  USD: t("dollar américain"),
   JPY: "yen japonais",
   BGN: "lev bulgare",
-  CZK: "couronne tchèque",
+  CZK: t("couronne tchèque"),
   DKK: "couronne danoise",
   GBP: "livre sterling",
   HUF: "forint hongrois",
   PLN: "zloty polonais",
   RON: "leu roumain",
-  SEK: "couronne suédoise",
+  SEK: t("couronne suédoise"),
   CHF: "franc suisse",
   ISK: "couronne islandaise",
-  NOK: "couronne norvégienne",
+  NOK: t("couronne norvégienne"),
   TRY: "livre turque",
   AUD: "dollar australien",
-  BRL: "réal brésilien",
+  BRL: t("réal brésilien"),
   CAD: "dollar canadien",
   CNY: "yuan chinois",
-  HKD: "dollar de Hong Kong",
-  IDR: "roupie indonésienne",
-  ILS: "shekel israélien",
+  HKD: t("dollar de Hong Kong"),
+  IDR: t("roupie indonésienne"),
+  ILS: t("shekel israélien"),
   INR: "roupie indienne",
-  KRW: "won sud-coréen",
+  KRW: t("won sud-coréen"),
   MXN: "peso mexicain",
   MYR: "ringgit malaisien",
-  NZD: "dollar néo-zélandais",
+  NZD: t("dollar néo-zélandais"),
   PHP: "peso philippin",
-  SGD: "dollar de Singapour",
-  THB: "baht thaïlandais",
+  SGD: t("dollar de Singapour"),
+  THB: t("baht thaïlandais"),
   ZAR: "rand sud-africain",
-};
+}));
 
 export function currencyLabel(code: string): string {
   const name = CURRENCY_NAMES[code];
@@ -108,8 +109,7 @@ export function clearRates(store: KeyValueStore = appStore): void {
 async function fetchFromNetwork(): Promise<RateSnapshot> {
   if (!isTauri()) {
     throw new CurrencyError(
-      "Les taux de change sont téléchargés par l'application installée : l'aperçu navigateur " +
-        "ne peut pas les récupérer.",
+      t("Les taux de change sont téléchargés par l'application installée : l'aperçu navigateur ne peut pas les récupérer."),
     );
   }
   const { invoke } = await import("@tauri-apps/api/core");
@@ -138,18 +138,17 @@ export async function loadRates(
     storeRates(snapshot, store);
     return { snapshot, origin: "network" };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Téléchargement impossible.";
+    const message = error instanceof Error ? error.message : t("Téléchargement impossible.");
     if (cached) {
       return {
         snapshot: cached,
         origin: "cache",
-        warning: `Taux non actualisés (${message}) — affichage du dernier relevé connu.`,
+        warning: t("Taux non actualisés ({message}) — affichage du dernier relevé connu.", { message }),
       };
     }
     // Aucun relevé n'a jamais été téléchargé : on ne montre aucun chiffre.
     throw new CurrencyError(
-      `${message} Aucun taux n'a jamais été téléchargé sur cet appareil : FourTout ne peut ` +
-        "afficher aucune conversion tant qu'une connexion n'a pas été possible au moins une fois.",
+      t("{message} Aucun taux n'a jamais été téléchargé sur cet appareil : FourTout ne peut afficher aucune conversion tant qu'une connexion n'a pas été possible au moins une fois.", { message }),
     );
   }
 }
@@ -169,8 +168,8 @@ export function convertCurrency(
   const table = new Map(snapshot.rates);
   const fromRate = table.get(from);
   const toRate = table.get(to);
-  if (fromRate === undefined) throw new CurrencyError(`Devise inconnue dans ce relevé : ${from}.`);
-  if (toRate === undefined) throw new CurrencyError(`Devise inconnue dans ce relevé : ${to}.`);
+  if (fromRate === undefined) throw new CurrencyError(t("Devise inconnue dans ce relevé : {from}.", { from }));
+  if (toRate === undefined) throw new CurrencyError(t("Devise inconnue dans ce relevé : {to}.", { to }));
   return (amount / fromRate) * toRate;
 }
 
@@ -182,10 +181,10 @@ export function unitRate(from: string, to: string, snapshot: RateSnapshot): numb
 /** Âge d'un relevé, en français. */
 export function describeAge(snapshot: RateSnapshot, now: Date = new Date()): string {
   const days = Math.floor((now.getTime() - new Date(`${snapshot.date}T00:00:00`).getTime()) / 86_400_000);
-  if (Number.isNaN(days)) return `relevé du ${snapshot.date}`;
-  if (days <= 0) return `relevé du jour (${snapshot.date})`;
-  if (days === 1) return `relevé d'hier (${snapshot.date})`;
-  return `relevé du ${snapshot.date}, il y a ${days} jours`;
+  if (Number.isNaN(days)) return t("relevé du {date}", { date: snapshot.date });
+  if (days <= 0) return t("relevé du jour ({date})", { date: snapshot.date });
+  if (days === 1) return t("relevé d'hier ({date})", { date: snapshot.date });
+  return t("relevé du {date}, il y a {days} jours", { date: snapshot.date, days });
 }
 
 export const CURRENCY_NOTE =

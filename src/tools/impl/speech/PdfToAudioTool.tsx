@@ -13,6 +13,7 @@ import { TTS_ENGINE } from "@/core/speech/tts";
 import { notify } from "@/features/notifications/store";
 import type { PdfSource } from "@/core/pdf/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Lecture à voix haute d'un PDF.
@@ -65,7 +66,7 @@ export function PdfToAudioTool({ tool }: ToolComponentProps) {
       } catch (error) {
         if (cancelled) return;
         setExtraction({ state: "idle" });
-        notify.error("Lecture impossible", cleanMessage(error));
+        notify.error(t("Lecture impossible"), cleanMessage(error));
       }
     })();
 
@@ -77,22 +78,22 @@ export function PdfToAudioTool({ tool }: ToolComponentProps) {
   const runOcr = async () => {
     const file = files[0];
     if (!file?.file) return;
-    setExtraction({ state: "ocr", label: "Préparation…" });
+    setExtraction({ state: "ocr", label: t("Préparation…") });
     try {
       const bytes = new Uint8Array(await file.file.arrayBuffer());
       const source: PdfSource = { name: file.name, bytes };
       const pages = await recognizePdf(source, { language: "fra" }, {
-        report: ({ label }) => setExtraction({ state: "ocr", label: label ?? "Reconnaissance…" }),
+        report: ({ label }) => setExtraction({ state: "ocr", label: label ?? t("Reconnaissance…") }),
       });
       const cleaned = cleanPdfText(pages.map((page) => ({ page: page.page, text: page.text })));
       if (cleaned.text.trim().length === 0) {
         setExtraction({ state: "empty", pages: pages.length });
-        notify.warning("Aucun texte reconnu", "L'OCR n'a rien trouvé dans ce document.");
+        notify.warning(t("Aucun texte reconnu"), t("L'OCR n'a rien trouvé dans ce document."));
         return;
       }
       setText(cleaned.text);
       setExtraction({ state: "ready", removedLines: cleaned.removedLines, pages: pages.length });
-      notify.success("Texte reconnu", `${pages.length} page${pages.length > 1 ? "s" : ""} océrisée${pages.length > 1 ? "s" : ""}.`);
+      notify.success(t("Texte reconnu"), t("{count} {count, plural, one {page} other {pages}} {count, plural, one {océrisée} other {océrisées}}.", { count: pages.length }));
     } catch (error) {
       setExtraction({ state: "empty", pages: 0 });
       notify.error("OCR impossible", cleanMessage(error));
@@ -107,42 +108,38 @@ export function PdfToAudioTool({ tool }: ToolComponentProps) {
         constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
         files={files}
         onChange={setFiles}
-        label="Déposez le PDF à écouter"
+        label={t("Déposez le PDF à écouter")}
       />
 
       {extraction.state === "reading" && (
         <p className="flex items-center gap-2 text-sm text-[var(--ft-text-muted)]">
-          <Icon name="Loader" size={15} className="animate-spin" /> Extraction du texte…
+          <Icon name="Loader" size={15} className="animate-spin" />{" "}{t("Extraction du texte…")}
         </p>
       )}
 
       {extraction.state === "ocr" && (
         <p className="flex items-center gap-2 text-sm text-[var(--ft-text-muted)]">
-          <Icon name="Loader" size={15} className="animate-spin" /> {extraction.label}
+          <Icon name="Loader" size={15} className="animate-spin" /> {tx(extraction.label)}
         </p>
       )}
 
       {extraction.state === "ready" && (
         <p className="text-[11px] text-[var(--ft-text-faint)]">
-          {extraction.pages} page{extraction.pages > 1 ? "s" : ""} lue
-          {extraction.pages > 1 ? "s" : ""}
-          {extraction.removedLines > 0 &&
-            ` — ${extraction.removedLines} ligne${extraction.removedLines > 1 ? "s" : ""} d'en-tête ou de numérotation écartée${extraction.removedLines > 1 ? "s" : ""}`}
-          .
+          {t("{pages} {pages, plural, one {page} other {pages}} {pages, plural, one {lue} other {lues}}{value}.", { pages: extraction.pages, value: extraction.removedLines > 0 &&
+            t(" — {removedLines} {removedLines, plural, one {ligne} other {lignes}} d'en-tête ou de numérotation {removedLines, plural, one {écartée} other {écartées}}", { removedLines: extraction.removedLines }) })}
         </p>
       )}
 
       {extraction.state === "empty" && (
         <div className="space-y-2 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2.5 text-sm">
           <p className="flex items-center gap-2 text-[var(--ft-text)]">
-            <Icon name="Info" size={15} /> Aucun texte extractible détecté dans ce PDF.
+            <Icon name="Info" size={15} />{" "}{t("Aucun texte extractible détecté dans ce PDF.")}
           </p>
           <p className="text-xs text-[var(--ft-text-muted)]">
-            Ce document est probablement un scan. La reconnaissance de caractères peut en tirer le
-            texte, puis la lecture reprendra normalement.
+            {t("Ce document est probablement un scan. La reconnaissance de caractères peut en tirer le texte, puis la lecture reprendra normalement.")}
           </p>
           <Button size="sm" variant="primary" onClick={() => void runOcr()}>
-            <Icon name="ScanText" size={14} /> OCR puis générer l'audio
+            <Icon name="ScanText" size={14} />{" "}{t("OCR puis générer l'audio")}
           </Button>
         </div>
       )}
@@ -158,8 +155,8 @@ export function PdfToAudioTool({ tool }: ToolComponentProps) {
           text={text}
           onTextChange={setText}
           baseName={baseName}
-          textLabel="Texte du document"
-          readOnlyNote="Vous pouvez corriger le texte avant de lancer la lecture."
+          textLabel={t("Texte du document")}
+          readOnlyNote={t("Vous pouvez corriger le texte avant de lancer la lecture.")}
           header={header}
         />
       )}

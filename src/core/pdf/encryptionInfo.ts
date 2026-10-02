@@ -2,6 +2,7 @@ import { PDFArray, PDFDocument, PDFHexString, PDFName, PDFNumber, PDFString } fr
 import { looksLikePdf } from "./document";
 import { PdfError, toPdfError } from "./errors";
 import type { PdfSource } from "./types";
+import { t } from "@/i18n";
 
 /**
  * Extraction des paramètres de chiffrement d'un PDF.
@@ -49,7 +50,7 @@ function stringBytes(value: unknown): Uint8Array | undefined {
  * l'est pas. Lève une `PdfError` si le fichier n'est pas un PDF exploitable.
  */
 export async function readEncryptionInfo(source: PdfSource): Promise<EncryptionInfo | undefined> {
-  if (source.bytes.length === 0) throw new PdfError("corrupted", "Le fichier est vide.");
+  if (source.bytes.length === 0) throw new PdfError("corrupted", t("Le fichier est vide."));
   if (!looksLikePdf(source.bytes)) throw new PdfError("not-a-pdf");
 
   let document: PDFDocument;
@@ -81,7 +82,7 @@ export async function readEncryptionInfo(source: PdfSource): Promise<EncryptionI
 
   const o = stringBytes(get("O"));
   const u = stringBytes(get("U"));
-  if (!o || !u) throw new PdfError("corrupted", "Dictionnaire de chiffrement incomplet.");
+  if (!o || !u) throw new PdfError("corrupted", t("Dictionnaire de chiffrement incomplet."));
 
   // Premier élément de /ID (requis pour R2–R4).
   let id0 = new Uint8Array(0);
@@ -102,7 +103,7 @@ export async function readEncryptionInfo(source: PdfSource): Promise<EncryptionI
   if (handler === "inconnu") {
     throw new PdfError(
       "encrypted",
-      "Ce type de chiffrement n'est pas pris en charge par la récupération.",
+      t("Ce type de chiffrement n'est pas pris en charge par la récupération."),
     );
   }
 
@@ -123,8 +124,8 @@ export async function readEncryptionInfo(source: PdfSource): Promise<EncryptionI
 }
 
 function classify(version: number, revision: number): { handler: EncryptionHandler; label: string } {
-  if (revision >= 5) return { handler: "AES-256", label: "AES-256 (moderne, robuste)" };
+  if (revision >= 5) return { handler: "AES-256", label: t("AES-256 (moderne, robuste)") };
   if (version === 4) return { handler: "AES-128", label: "AES-128" };
-  if (version === 2 || version === 1) return { handler: "RC4", label: "RC4 (ancien)" };
-  return { handler: "inconnu", label: "chiffrement non reconnu" };
+  if (version === 2 || version === 1) return { handler: "RC4", label: t("RC4 (ancien)") };
+  return { handler: "inconnu", label: t("chiffrement non reconnu") };
 }

@@ -25,6 +25,7 @@ import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import { revealFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t, tx } from "@/i18n";
 
 /**
  * Manifestes d'empreintes : création et vérification.
@@ -37,41 +38,41 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * Le format texte produit est celui de `sha256sum` : il se relit avec les
  * outils du système, sur n'importe quelle machine, même sans FourTout.
  */
-const ALGORITHMS: { value: HashAlgorithm; label: string; hint: string }[] = [
-  { value: "sha256", label: "SHA-256", hint: "Le choix par défaut, sûr et universellement lisible." },
-  { value: "sha512", label: "SHA-512", hint: "Plus long, aussi sûr ; utile si votre source le publie ainsi." },
+const ALGORITHMS: { value: HashAlgorithm; label: string; hint: string }[] = localized(() => [
+  { value: "sha256", label: "SHA-256", hint: t("Le choix par défaut, sûr et universellement lisible.") },
+  { value: "sha512", label: "SHA-512", hint: t("Plus long, aussi sûr ; utile si votre source le publie ainsi.") },
   {
     value: "sha1",
     label: "SHA-1",
-    hint: "Hérité : cassé depuis 2017. Utile pour vérifier une empreinte publiée autrefois, pas pour prouver qu'un fichier n'a pas été modifié volontairement.",
+    hint: t("Hérité : cassé depuis 2017. Utile pour vérifier une empreinte publiée autrefois, pas pour prouver qu'un fichier n'a pas été modifié volontairement."),
   },
   {
     value: "md5",
     label: "MD5",
-    hint: "Hérité : cassé depuis 2004. Même usage limité que SHA-1.",
+    hint: t("Hérité : cassé depuis 2004. Même usage limité que SHA-1."),
   },
-];
+]);
 
-const FORMATS: { value: ManifestFormat; label: string; hint: string }[] = [
+const FORMATS: { value: ManifestFormat; label: string; hint: string }[] = localized(() => [
   {
     value: "text",
-    label: "Texte (.sha256)",
-    hint: "Format de sha256sum : « empreinte  chemin ». Relisible par les outils du système.",
+    label: t("Texte (.sha256)"),
+    hint: t("Format de sha256sum : « empreinte  chemin ». Relisible par les outils du système."),
   },
   {
     value: "json",
-    label: "JSON FourTout",
-    hint: "Mêmes empreintes, plus les tailles. Pratique pour un traitement automatisé.",
+    label: t("JSON FourTout"),
+    hint: t("Mêmes empreintes, plus les tailles. Pratique pour un traitement automatisé."),
   },
-];
+]);
 
-const STATUS_LABEL: Record<ChecksumStatus, string> = {
+const STATUS_LABEL: Record<ChecksumStatus, string> = localized(() => ({
   ok: "Intact",
-  mismatch: "Empreinte différente",
+  mismatch: t("Empreinte différente"),
   missing: "Manquant",
   unreadable: "Illisible",
-  refused: "Refusé — sortirait du dossier vérifié",
-};
+  refused: t("Refusé — sortirait du dossier vérifié"),
+}));
 
 export function ChecksumManifestTool({ tool }: ToolComponentProps) {
   const received = useHandoffPaths(tool.id);
@@ -93,12 +94,12 @@ export function ChecksumManifestTool({ tool }: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <OptionGroup
-        ariaLabel="Créer ou vérifier un manifeste"
+        ariaLabel={t("Créer ou vérifier un manifeste")}
         value={mode}
         onChange={setMode}
         options={[
-          { value: "create", label: "Créer un manifeste" },
-          { value: "verify", label: "Vérifier un manifeste" },
+          { value: "create", label: t("Créer un manifeste") },
+          { value: "verify", label: t("Vérifier un manifeste") },
         ]}
       />
       {mode === "create" ? (
@@ -152,7 +153,7 @@ function CreatePanel({ onVerify }: { onVerify: (manifest: string, root: string) 
       ),
     );
     if (summary) {
-      notify.success("Manifeste créé", `${summary.files} fichier(s) · ${summary.algorithm}`);
+      notify.success(t("Manifeste créé"), `${summary.files} fichier(s) · ${summary.algorithm}`);
     }
   };
 
@@ -165,64 +166,59 @@ function CreatePanel({ onVerify }: { onVerify: (manifest: string, root: string) 
           setRoot(next);
           action.setResult(null);
         }}
-        label="1. Dossier à inventorier"
-        hint="chaque fichier qu'il contient sera listé, avec un chemin relatif à ce dossier"
+        label={t("1. Dossier à inventorier")}
+        hint={t("chaque fichier qu'il contient sera listé, avec un chemin relatif à ce dossier")}
         disabled={action.job.isRunning}
       />
 
       {root.length > 0 && (
         <>
-          <Fieldset columns={2} title="Manifeste">
+          <Fieldset columns={2} title={t("Manifeste")}>
             <Field
-              label="Algorithme"
-              hint={ALGORITHMS.find((entry) => entry.value === algorithm)?.hint}
+              label={t("Algorithme")}
+              hint={tx(ALGORITHMS.find((entry) => entry.value === algorithm)?.hint)}
             >
               <OptionGroup
-                ariaLabel="Algorithme d'empreinte"
+                ariaLabel={t("Algorithme d'empreinte")}
                 value={algorithm}
                 onChange={setAlgorithm}
                 options={ALGORITHMS}
               />
             </Field>
-            <Field label="Format" hint={FORMATS.find((entry) => entry.value === format)?.hint}>
+            <Field label={t("Format")} hint={tx(FORMATS.find((entry) => entry.value === format)?.hint)}>
               <OptionGroup
-                ariaLabel="Format du manifeste"
+                ariaLabel={t("Format du manifeste")}
                 value={format}
                 onChange={setFormat}
                 options={FORMATS}
               />
             </Field>
-            <Field label="Portée" full>
+            <Field label={t("Portée")} full>
               <CheckOption
                 checked={includeHidden}
                 onChange={setIncludeHidden}
-                label="Inclure les fichiers cachés"
+                label={t("Inclure les fichiers cachés")}
               />
             </Field>
           </Fieldset>
 
           {legacy && (
-            <Callout tone="warning" title={`${legacy.label} n'est plus un algorithme de sécurité`}>
-              {legacy.hint}
+            <Callout tone="warning" title={t("{label} n'est plus un algorithme de sécurité", { label: legacy.label })}>
+              {tx(legacy.hint)}
             </Callout>
           )}
 
-          <Callout tone="neutral" title="Ce que FourTout va écrire">
-            Un fichier texte, une ligne par fichier :
-            <code className="mt-1 block font-mono text-[11px]">
-              e3b0c442…  documents/rapport.txt
-            </code>
-            À l'étape suivante, la boîte de dialogue du système vous demandera{" "}
-            <strong>où enregistrer ce fichier</strong>.
+          <Callout tone="neutral" title={t("Ce que FourTout va écrire")}>
+            <Trans source={"Un fichier texte, une ligne par fichier :<0>e3b0c442…  documents/rapport.txt</0>À l'étape suivante, la boîte de dialogue du système vous demandera <1>où enregistrer ce fichier</1>."} components={[<code className="mt-1 block font-mono text-[11px]" />, <strong />]} />
           </Callout>
 
           <RunBar
-            label="Créer le manifeste…"
+            label={t("Créer le manifeste…")}
             icon="ListChecks"
             running={action.job.isRunning}
             progress={action.job.progress}
             status={action.job.status}
-            error={action.error}
+            error={tx(action.error)}
             cancel={action.job.cancel}
             onRun={() => void run()}
           />
@@ -234,11 +230,11 @@ function CreatePanel({ onVerify }: { onVerify: (manifest: string, root: string) 
           <StatGrid
             columns={4}
             stats={[
-              { label: "Fichiers", value: action.result.files },
-              { label: "Volume", value: formatFileSize(action.result.bytes) },
-              { label: "Algorithme", value: action.result.algorithm },
+              { label: t("Fichiers"), value: action.result.files },
+              { label: t("Volume"), value: formatFileSize(action.result.bytes) },
+              { label: t("Algorithme"), value: action.result.algorithm },
               {
-                label: "Erreurs",
+                label: t("Erreurs"),
                 value: action.result.errors.length,
                 tone: action.result.errors.length > 0 ? "danger" : "neutral",
               },
@@ -246,36 +242,35 @@ function CreatePanel({ onVerify }: { onVerify: (manifest: string, root: string) 
           />
           <Callout
             tone="success"
-            title="Manifeste enregistré"
+            title={t("Manifeste enregistré")}
             actions={
               <Button size="sm" onClick={() => revealFile(action.result!.output)}>
-                <Icon name="FolderTree" size={13} /> Ouvrir l'emplacement
+                <Icon name="FolderTree" size={13} />{" "}{t("Ouvrir l'emplacement")}
               </Button>
             }
           >
             <span className="block">
-              Emplacement : <code className="font-mono">{action.result.output}</code>
+              <Trans source={"Emplacement : <0>{output}</0>"} values={{ output: action.result.output }} components={[<code className="font-mono" />]} />
             </span>
             <span className="mt-0.5 block">
-              Il décrit {action.result.files} fichier(s) du dossier{" "}
-              <code className="font-mono">{root[0]}</code>.
+              <Trans source={"Il décrit {files} fichier(s) du dossier <0>{value}</0>."} values={{ files: action.result.files, value: root[0] }} components={[<code className="font-mono" />]} />
             </span>
           </Callout>
 
           {/* La suite logique, sans resélection : on vient d'écrire ce
               manifeste, et on sait déjà à quelle racine il se rapporte. */}
           <div className="flex flex-wrap items-center gap-2" data-testid="manifest-handoff">
-            <span className="ft-label">Et maintenant</span>
+            <Trans source={"<0>Et maintenant</0>"} components={[<span className="ft-label" />]} />
             <Button
               size="sm"
               variant="primary"
               onClick={() => onVerify(action.result!.output, root[0])}
             >
-              <Icon name="ShieldCheck" size={13} /> Vérifier ce manifeste
+              <Icon name="ShieldCheck" size={13} />{" "}{t("Vérifier ce manifeste")}
             </Button>
           </div>
           {action.result.legacyWarning && (
-            <Callout tone="warning" title="Algorithme hérité">
+            <Callout tone="warning" title={t("Algorithme hérité")}>
               {action.result.legacyWarning}
             </Callout>
           )}
@@ -312,16 +307,13 @@ function VerifyPanel({
         combinent — c'est la seule façon de rendre la mécanique évidente sans
         demander à l'utilisateur de la deviner.
       */}
-      <Callout tone="neutral" title="Comment ces deux champs se combinent">
+      <Callout tone="neutral" title={t("Comment ces deux champs se combinent")}>
         <span className="block">
-          Un manifeste contient des chemins <strong>relatifs</strong> :
+          <Trans source={"Un manifeste contient des chemins <0>relatifs</0> :"} components={[<strong />]} />
         </span>
-        <code className="mt-1 block font-mono text-[11px]">
-          e3b0c442…&nbsp;&nbsp;docs/readme.txt
-        </code>
+        <Trans source={"<0>e3b0c442…&nbsp;&nbsp;docs/readme.txt</0>"} components={[<code className="mt-1 block font-mono text-[11px]" />]} />
         <span className="mt-1 block">
-          Avec la racine <code className="font-mono">/home/vous/projet/</code>, FourTout vérifiera
-          donc <code className="font-mono">/home/vous/projet/docs/readme.txt</code>.
+          <Trans source={"Avec la racine <0>/home/vous/projet/</0>, FourTout vérifiera donc <1>/home/vous/projet/docs/readme.txt</1>."} components={[<code className="font-mono" />, <code className="font-mono" />]} />
         </span>
       </Callout>
 
@@ -333,11 +325,11 @@ function VerifyPanel({
             setManifest(next);
             action.setResult(null);
           }}
-          label="1. Le fichier de checksums"
-          hint="un .sha256, .sha512, .sha1, .md5 — ou le JSON écrit par FourTout"
+          label={t("1. Le fichier de checksums")}
+          hint={t("un .sha256, .sha512, .sha1, .md5 — ou le JSON écrit par FourTout")}
           filters={[
             {
-              name: "Manifestes d'empreintes",
+              name: t("Manifestes d'empreintes"),
               extensions: ["sha256", "sha512", "sha1", "md5", "txt", "json", "sum"],
             },
           ]}
@@ -349,19 +341,19 @@ function VerifyPanel({
             setRoot(next);
             action.setResult(null);
           }}
-          label="2. Le dossier contenant les fichiers"
-          hint="la racine à laquelle les chemins du manifeste se rapportent"
+          label={t("2. Le dossier contenant les fichiers")}
+          hint={t("la racine à laquelle les chemins du manifeste se rapportent")}
         />
       </div>
 
       {ready && (
         <RunBar
-          label="Vérifier"
+          label={t("Vérifier")}
           icon="ShieldCheck"
           running={action.job.isRunning}
           progress={action.job.progress}
           status={action.job.status}
-          error={action.error}
+          error={tx(action.error)}
           cancel={action.job.cancel}
           onRun={() =>
             void action.execute((context) => verifyManifest(manifest[0], root[0], context))
@@ -374,40 +366,38 @@ function VerifyPanel({
           <StatGrid
             columns={5}
             stats={[
-              { label: "Intacts", value: report.ok, tone: "ok" },
-              { label: "Modifiés", value: report.mismatched, tone: report.mismatched > 0 ? "danger" : "neutral" },
-              { label: "Manquants", value: report.missing, tone: report.missing > 0 ? "danger" : "neutral" },
-              { label: "Illisibles", value: report.unreadable, tone: report.unreadable > 0 ? "warn" : "neutral" },
-              { label: "Refusés", value: report.refused, tone: report.refused > 0 ? "danger" : "neutral" },
+              { label: t("Intacts"), value: report.ok, tone: "ok" },
+              { label: t("Modifiés"), value: report.mismatched, tone: report.mismatched > 0 ? "danger" : "neutral" },
+              { label: t("Manquants"), value: report.missing, tone: report.missing > 0 ? "danger" : "neutral" },
+              { label: t("Illisibles"), value: report.unreadable, tone: report.unreadable > 0 ? "warn" : "neutral" },
+              { label: t("Refusés"), value: report.refused, tone: report.refused > 0 ? "danger" : "neutral" },
             ]}
           />
 
           {checksumsAreValid(report) ? (
-            <Callout tone="success" title={`Tout correspond — ${report.algorithm}`}>
-              Les {report.ok} fichiers du manifeste sont présents et inchangés.
+            <Callout tone="success" title={t("Tout correspond — {algorithm}", { algorithm: report.algorithm })}>
+              {t("Les {ok} fichiers du manifeste sont présents et inchangés.", { ok: report.ok })}
             </Callout>
           ) : (
-            <Callout tone="error" title="Le dossier ne correspond plus au manifeste">
-              Le détail figure ci-dessous, fichier par fichier.
+            <Callout tone="error" title={t("Le dossier ne correspond plus au manifeste")}>
+              {t("Le détail figure ci-dessous, fichier par fichier.")}
             </Callout>
           )}
 
           {report.refused > 0 && (
-            <Callout tone="error" title="Entrées refusées pour raison de sécurité">
-              Ce manifeste contient des chemins qui sortiraient du dossier vérifié (« ../ » ou
-              chemin absolu). FourTout ne les a pas suivis : un fichier de checksums reçu de
-              l'extérieur est une donnée, pas une instruction.
+            <Callout tone="error" title={t("Entrées refusées pour raison de sécurité")}>
+              {t("Ce manifeste contient des chemins qui sortiraient du dossier vérifié (« ../ » ou chemin absolu). FourTout ne les a pas suivis : un fichier de checksums reçu de l'extérieur est une donnée, pas une instruction.")}
             </Callout>
           )}
 
           {report.legacyWarning && (
-            <Callout tone="warning" title="Algorithme hérité">
+            <Callout tone="warning" title={t("Algorithme hérité")}>
               {report.legacyWarning}
             </Callout>
           )}
 
           {problems.length > 0 && (
-            <Panel title="Fichiers en défaut" count={problems.length}>
+            <Panel title={t("Fichiers en défaut")} count={problems.length}>
               <ul className="max-h-96 divide-y divide-[var(--ft-rule)] overflow-y-auto text-xs">
                 {problems.slice(0, 500).map((entry) => (
                   <li key={entry.relative} className="flex items-start gap-2 px-3 py-1">
@@ -419,7 +409,7 @@ function VerifyPanel({
                         {entry.relative}
                       </span>
                       <span className="block text-[11px] text-[var(--ft-text-muted)]">
-                        {STATUS_LABEL[entry.status]}
+                        {tx(STATUS_LABEL[entry.status])}
                         {entry.detail && ` — ${entry.detail}`}
                       </span>
                     </span>

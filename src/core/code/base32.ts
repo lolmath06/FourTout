@@ -16,6 +16,7 @@
  * ferait croire qu'un décodeur RFC 4648 saura les lire.
  */
 
+import { localized, t } from "@/i18n";
 export type Base32Alphabet = "rfc4648" | "rfc4648-hex";
 
 const ALPHABETS: Record<Base32Alphabet, string> = {
@@ -23,10 +24,10 @@ const ALPHABETS: Record<Base32Alphabet, string> = {
   "rfc4648-hex": "0123456789ABCDEFGHIJKLMNOPQRSTUV",
 };
 
-export const BASE32_ALPHABET_LABELS: Record<Base32Alphabet, string> = {
+export const BASE32_ALPHABET_LABELS: Record<Base32Alphabet, string> = localized(() => ({
   rfc4648: "Standard (A–Z, 2–7)",
-  "rfc4648-hex": "Hexadécimal étendu (0–9, A–V)",
-};
+  "rfc4648-hex": t("Hexadécimal étendu (0–9, A–V)"),
+}));
 
 export class Base32Error extends Error {
   constructor(message: string) {
@@ -92,7 +93,7 @@ export function decodeBase32(input: string, options: Base32DecodeOptions = {}): 
   // 8 caractères. On le retire après avoir vérifié qu'il est bien en fin.
   const withoutPadding = cleaned.replace(/=+$/, "");
   if (withoutPadding.includes("=")) {
-    throw new Base32Error("Le caractère « = » ne peut apparaître qu'à la fin.");
+    throw new Base32Error(t("Le caractère « = » ne peut apparaître qu'à la fin."));
   }
   cleaned = withoutPadding.toUpperCase();
   if (cleaned.length === 0) return new Uint8Array(0);
@@ -102,7 +103,7 @@ export function decodeBase32(input: string, options: Base32DecodeOptions = {}): 
   const remainder = cleaned.length % 8;
   if (remainder === 1 || remainder === 3 || remainder === 6) {
     throw new Base32Error(
-      `Longueur impossible : ${cleaned.length} caractères utiles ne correspondent à aucun nombre entier d'octets.`,
+      t("Longueur impossible : {count} caractères utiles ne correspondent à aucun nombre entier d'octets.", { count: cleaned.length }),
     );
   }
 
@@ -113,7 +114,7 @@ export function decodeBase32(input: string, options: Base32DecodeOptions = {}): 
     const value = alphabet.indexOf(char);
     if (value === -1) {
       throw new Base32Error(
-        `« ${char} » n'appartient pas à l'alphabet Base32 choisi (${alphabet}).`,
+        t("« {char} » n'appartient pas à l'alphabet Base32 choisi ({alphabet}).", { char, alphabet }),
       );
     }
     buffer = (buffer << 5) | value;
@@ -127,7 +128,7 @@ export function decodeBase32(input: string, options: Base32DecodeOptions = {}): 
   // portent une valeur, l'entrée n'a pas été produite par un encodeur conforme.
   if (bits > 0 && (buffer & ((1 << bits) - 1)) !== 0) {
     throw new Base32Error(
-      "Les derniers bits ne sont pas nuls : cette chaîne n'a pas été produite par un encodeur RFC 4648.",
+      t("Les derniers bits ne sont pas nuls : cette chaîne n'a pas été produite par un encodeur RFC 4648."),
     );
   }
   return Uint8Array.from(out);
@@ -151,7 +152,7 @@ export function decodeBase32Text(input: string, options?: Base32DecodeOptions): 
     return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
   } catch {
     throw new Base32Error(
-      "Les octets décodés ne sont pas du texte UTF-8 : ce Base32 encode probablement des données binaires.",
+      t("Les octets décodés ne sont pas du texte UTF-8 : ce Base32 encode probablement des données binaires."),
     );
   }
 }

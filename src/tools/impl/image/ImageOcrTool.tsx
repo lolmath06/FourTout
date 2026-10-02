@@ -11,12 +11,13 @@ import { saveFile } from "@/core/output/save";
 import { outputName } from "@/core/pdf/filenames";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t } from "@/i18n";
 
-const LANGS: { value: OcrLanguage; label: string }[] = [
+const LANGS: { value: OcrLanguage; label: string }[] = localized(() => [
   { value: "fra", label: OCR_LANGUAGE_LABELS.fra },
   { value: "eng", label: OCR_LANGUAGE_LABELS.eng },
   { value: "fra+eng", label: OCR_LANGUAGE_LABELS["fra+eng"] },
-];
+]);
 
 export function ImageOcrTool({ tool }: ToolComponentProps) {
   const [files, setFiles] = useState<SelectedFile[]>([]);
@@ -36,7 +37,7 @@ export function ImageOcrTool({ tool }: ToolComponentProps) {
       const map: Record<string, string> = {};
       result.forEach((item, index) => (map[key(item, index)] = item.text));
       setEdited(map);
-      notify.success("Texte extrait", `${result.length} image${result.length > 1 ? "s" : ""} analysée${result.length > 1 ? "s" : ""}.`);
+      notify.success(t("Texte extrait"), t("{count} {count, plural, one {image} other {images}} {count, plural, one {analysée} other {analysées}}.", { count: result.length }));
     }
   };
 
@@ -48,15 +49,15 @@ export function ImageOcrTool({ tool }: ToolComponentProps) {
         constraints={constraintsForTool(tool)}
         files={files}
         onChange={setFiles}
-        label="Déposez une ou plusieurs images"
-        hint="Reconnaissance 100 % locale. Formats : PNG, JPG, WebP, BMP, TIFF."
+        label={t("Déposez une ou plusieurs images")}
+        hint={t("Reconnaissance 100 % locale. Formats : PNG, JPG, WebP, BMP, TIFF.")}
         disabled={job.isRunning}
       />
 
       {files.length > 0 && (
         <Fieldset columns={1}>
-          <Field label="Langue" hint="Modèles français et anglais embarqués dans l'application.">
-            <OptionGroup ariaLabel="Langue" value={language} onChange={setLanguage} options={LANGS} disabled={job.isRunning} />
+          <Field label={t("Langue")} hint={t("Modèles français et anglais embarqués dans l'application.")}>
+            <OptionGroup ariaLabel={t("Langue")} value={language} onChange={setLanguage} options={LANGS} disabled={job.isRunning} />
           </Field>
         </Fieldset>
       )}
@@ -64,13 +65,13 @@ export function ImageOcrTool({ tool }: ToolComponentProps) {
       {files.length > 0 && (
         <div className="flex items-center justify-end gap-2">
           {job.isRunning && (
-            <Button size="sm" variant="ghost" onClick={job.cancel}>Annuler</Button>
+            <Button size="sm" variant="ghost" onClick={job.cancel}>{t("Annuler")}</Button>
           )}
           <Button size="md" variant="primary" onClick={run} disabled={job.isRunning}>
             {job.isRunning ? (
-              <><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? "Analyse…"}</>
+              <><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? t("Analyse…")}</>
             ) : (
-              <><Icon name="ScanText" size={15} />Extraire le texte</>
+              <><Icon name="ScanText" size={15} />{t("Extraire le texte")}</>
             )}
           </Button>
         </div>
@@ -125,16 +126,16 @@ function OcrResultCard({
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(value);
-      notify.success("Texte copié");
+      notify.success(t("Texte copié"));
     } catch {
-      notify.error("Copie impossible");
+      notify.error(t("Copie impossible"));
     }
   };
 
   const save = async () => {
     const bytes = new TextEncoder().encode(value);
     const result = await saveFile({ name: outputName(item.name, "ocr", "txt"), bytes, mimeType: "text/plain" });
-    if (result.saved) notify.success("Fichier enregistré", result.path);
+    if (result.saved) notify.success(t("Fichier enregistré"), result.path);
   };
 
   return (
@@ -142,7 +143,7 @@ function OcrResultCard({
       {multi && (
         <p className="mb-2 flex items-center gap-2 text-sm font-medium">
           <Icon name="Image" size={14} className="text-[var(--ft-text-faint)]" />
-          Image {index + 1} · <span className="truncate text-[var(--ft-text-muted)]">{item.name}</span>
+          <Trans source={"Image {value} · <0>{name}</0>"} values={{ value: index + 1, name: item.name }} components={[<span className="truncate text-[var(--ft-text-muted)]" />]} />
         </p>
       )}
       <textarea
@@ -150,14 +151,12 @@ function OcrResultCard({
         onChange={(event) => onChange(event.target.value)}
         rows={Math.min(16, Math.max(4, value.split("\n").length + 1))}
         className="w-full resize-y rounded-md border border-[var(--ft-border)] bg-[var(--ft-bg)] p-2.5 font-mono text-sm outline-none focus:border-[var(--ft-accent)]"
-        placeholder="Aucun texte détecté."
+        placeholder={t("Aucun texte détecté.")}
       />
       <div className="mt-2 flex flex-wrap items-center gap-2">
-        <Button size="sm" onClick={copy}><Icon name="Copy" size={14} />Copier</Button>
-        <Button size="sm" onClick={save}><Icon name="HardDrive" size={14} />Enregistrer .txt</Button>
-        <span className="ml-auto text-xs tabular-nums text-[var(--ft-text-muted)]">
-          {words} mot{words > 1 ? "s" : ""} · {chars} caractère{chars > 1 ? "s" : ""} · confiance {item.confidence} %
-        </span>
+        <Button size="sm" onClick={copy}><Icon name="Copy" size={14} />{t("Copier")}</Button>
+        <Button size="sm" onClick={save}><Icon name="HardDrive" size={14} />{t("Enregistrer .txt")}</Button>
+        <Trans source={"<0>{words} {words, plural, one {mot} other {mots}} · {chars} {chars, plural, one {caractère} other {caractères}} · confiance {confidence} %</0>"} values={{ words, chars, confidence: item.confidence }} components={[<span className="ml-auto text-xs tabular-nums text-[var(--ft-text-muted)]" />]} />
       </div>
     </div>
   );

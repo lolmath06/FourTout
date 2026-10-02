@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { toolName } from "@/core/tools/localized";
 import type { ToolDefinition } from "@/core/tools/types";
 import { constraintsForTool, type SelectedFile } from "@/core/files";
 import { FileDropZone } from "@/components/files/FileDropZone";
@@ -22,6 +23,7 @@ import { useHandoff } from "@/features/handoff/store";
 import { VideoInfoList } from "./VideoInfoList";
 import { OutputVideoPreview } from "./VideoPreview";
 import { AudioPreview } from "./AudioPreview";
+import { t, tx } from "@/i18n";
 
 /**
  * Ossature commune aux outils de la suite Vidéo.
@@ -158,15 +160,15 @@ export function VideoToolShell({
       if (job && !running) clearMediaJob(job.id);
       await startMediaJob({
         toolId: tool.id,
-        title: files[0]?.name ?? tool.name,
+        title: files[0]?.name ?? toolName(tool),
         run: async (context) => {
           const result = await run({ files, infos, caps, context });
-          notify.success("Fichier prêt", result.summary);
+          notify.success(t("Fichier prêt"), result.summary);
           return result;
         },
       });
     } catch (error) {
-      notify.error("Lancement impossible", describeMediaError(error).message);
+      notify.error(t("Lancement impossible"), describeMediaError(error).message);
     } finally {
       startingRef.current = false;
     }
@@ -174,9 +176,8 @@ export function VideoToolShell({
 
   if (available === false) {
     return (
-      <Callout tone="info" title="Traitement local requis">
-        Cet outil s'appuie sur le moteur média local (FFmpeg) et nécessite l'application FourTout
-        installée. Il n'est pas disponible dans l'aperçu navigateur.
+      <Callout tone="info" title={t("Traitement local requis")}>
+        {t("Cet outil s'appuie sur le moteur média local (FFmpeg) et nécessite l'application FourTout installée. Il n'est pas disponible dans l'aperçu navigateur.")}
       </Callout>
     );
   }
@@ -195,8 +196,8 @@ export function VideoToolShell({
         constraints={constraints}
         files={files}
         onChange={setFiles}
-        label={selection === "multiple" ? "Déposez vos vidéos ici" : "Déposez votre vidéo ici"}
-        hint={hint}
+        label={selection === "multiple" ? t("Déposez vos vidéos ici") : t("Déposez votre vidéo ici")}
+        hint={tx(hint)}
         disabled={running}
       />
 
@@ -214,7 +215,7 @@ export function VideoToolShell({
       {files.length > 0 && (probing || !caps) && (
         <p className="flex items-center gap-2 text-xs text-[var(--ft-text-muted)]">
           <Icon name="Loader" size={13} className="animate-spin" />
-          {probing ? "Analyse du fichier…" : "Vérification des encodeurs disponibles sur cette machine…"}
+          {probing ? t("Analyse du fichier…") : t("Vérification des encodeurs disponibles sur cette machine…")}
         </p>
       )}
 
@@ -225,7 +226,7 @@ export function VideoToolShell({
         <div className="flex items-center justify-end gap-2 border-t border-[var(--ft-border)] pt-4">
           {running && (
             <Button size="sm" variant="ghost" onClick={() => job && cancelMediaJob(job.id)}>
-              Annuler
+              {t("Annuler")}
             </Button>
           )}
           <Button
@@ -237,12 +238,12 @@ export function VideoToolShell({
             {running ? (
               <>
                 <Icon name="Loader" size={15} className="animate-spin" />
-                {job?.step ?? "Traitement…"}
+                {job?.step ?? t("Traitement…")}
               </>
             ) : (
               <>
                 <Icon name="Play" size={15} />
-                {actionLabel}
+                {tx(actionLabel)}
               </>
             )}
           </Button>
@@ -255,8 +256,7 @@ export function VideoToolShell({
         <div className="space-y-1">
           <ProgressBar ratio={job?.ratio} />
           <p className="text-[11px] text-[var(--ft-text-faint)]">
-            {job?.step ?? "Traitement en cours"} — vous pouvez quitter cet outil, le traitement
-            continue.
+            {t("{value} — vous pouvez quitter cet outil, le traitement continue.", { value: job?.step ?? t("Traitement en cours") })}
           </p>
         </div>
       )}
@@ -264,7 +264,7 @@ export function VideoToolShell({
       {failed &&
         (cancelledByUser ? (
           <p className="flex items-center gap-2 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-sm text-[var(--ft-text-muted)]">
-            <Icon name="Info" size={15} /> {failed}
+            <Icon name="Info" size={15} /> {tx(failed)}
           </p>
         ) : (
           <div className="rounded-md border border-[var(--ft-danger)] px-3 py-2 text-sm text-[var(--ft-danger)]">
@@ -279,11 +279,11 @@ export function VideoToolShell({
                   onClick={() => setShowDetail((v) => !v)}
                   className="mt-1 text-[11px] underline opacity-80"
                 >
-                  {showDetail ? "Masquer le détail technique" : "Détail technique"}
+                  {showDetail ? t("Masquer le détail technique") : t("Détail technique")}
                 </button>
                 {showDetail && (
                   <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-all rounded bg-[var(--ft-surface-2)] p-2 text-[11px] text-[var(--ft-text-muted)]">
-                    {failed}
+                    {tx(failed)}
                   </pre>
                 )}
               </>
@@ -307,10 +307,10 @@ function ResultMedia({ outcome }: { outcome: OperationOutcome }) {
   const preview = useMemo(() => file, [file]);
   if (!preview || outcome.files.length > 1) return null;
   if (preview.mimeType.startsWith("video/")) {
-    return <OutputVideoPreview bytes={preview.bytes} mimeType={preview.mimeType} label="Aperçu du résultat" />;
+    return <OutputVideoPreview bytes={preview.bytes} mimeType={preview.mimeType} label={t("Aperçu du résultat")} />;
   }
   if (preview.mimeType.startsWith("audio/")) {
-    return <AudioPreview bytes={preview.bytes} mimeType={preview.mimeType} label="Écouter le résultat" />;
+    return <AudioPreview bytes={preview.bytes} mimeType={preview.mimeType} label={t("Écouter le résultat")} />;
   }
   return null;
 }

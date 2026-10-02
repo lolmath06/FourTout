@@ -1,4 +1,5 @@
 import { splitLines } from "./lines";
+import { t } from "@/i18n";
 
 /**
  * Comparaison de deux textes.
@@ -223,7 +224,7 @@ function naiveOps(a: readonly string[], b: readonly string[]): RawOp[] {
 }
 
 /** Diff au format unifié (utile pour l'export et les tests). */
-export function toUnifiedDiff(result: DiffResult, leftName = "avant", rightName = "après"): string {
+export function toUnifiedDiff(result: DiffResult, leftName = "avant", rightName = t("après")): string {
   const lines: string[] = [`--- ${leftName}`, `+++ ${rightName}`];
   for (const row of result.rows) {
     if (row.op === "equal") lines.push(` ${row.leftText ?? ""}`);

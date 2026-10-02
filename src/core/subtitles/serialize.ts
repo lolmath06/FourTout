@@ -1,4 +1,5 @@
 import type { SubtitleCue, SubtitleFormat, SubtitleIssue } from "./types";
+import { t } from "@/i18n";
 
 /**
  * Écriture des fichiers SRT et WebVTT.
@@ -94,8 +95,8 @@ export function conversionWarnings(
       kind: "dropped-settings",
       message:
         withSettings === 1
-          ? "1 réplique porte un réglage de placement WebVTT (position, alignement) : le format SRT ne sait pas le représenter, il ne sera pas repris."
-          : `${withSettings} répliques portent un réglage de placement WebVTT (position, alignement) : le format SRT ne sait pas le représenter, ils ne seront pas repris.`,
+          ? t("1 réplique porte un réglage de placement WebVTT (position, alignement) : le format SRT ne sait pas le représenter, il ne sera pas repris.")
+          : t("{withSettings} répliques portent un réglage de placement WebVTT (position, alignement) : le format SRT ne sait pas le représenter, ils ne seront pas repris.", { withSettings }),
     },
   ];
 }

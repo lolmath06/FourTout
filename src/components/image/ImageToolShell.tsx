@@ -11,6 +11,7 @@ import { notify } from "@/features/notifications/store";
 import { ResultPanel, type OperationOutcome } from "@/components/pdf/ResultPanel";
 import { Callout, ProgressBar } from "@/components/ui/Callout";
 import { useHandoff } from "@/features/handoff/store";
+import { t, tx } from "@/i18n";
 
 /**
  * Ossature commune aux outils Image « par lot » (conversion, compression,
@@ -65,7 +66,7 @@ export function ImageToolShell({
     if (result) {
       setOutcome(result);
       notify.success(
-        result.files.length > 1 ? `${result.files.length} fichiers prêts` : "Fichier prêt",
+        result.files.length > 1 ? t("{count} fichiers prêts", { count: result.files.length }) : t("Fichier prêt"),
         result.summary,
       );
     }
@@ -80,8 +81,8 @@ export function ImageToolShell({
         constraints={constraints}
         files={files}
         onChange={setFiles}
-        label={selection === "multiple" ? "Déposez vos images ici" : "Déposez votre image ici"}
-        hint={hint}
+        label={selection === "multiple" ? t("Déposez vos images ici") : t("Déposez votre image ici")}
+        hint={tx(hint)}
         disabled={job.isRunning}
       />
 
@@ -90,24 +91,24 @@ export function ImageToolShell({
       {files.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ft-border)] pt-4">
           <p className="text-xs text-[var(--ft-text-muted)]">
-            {files.length} image{files.length > 1 ? "s" : ""} · {formatFileSize(totalBytes)}
+            {t("{count} {count, plural, one {image} other {images}} · {size}", { count: files.length, size: formatFileSize(totalBytes) })}
           </p>
           <div className="flex items-center gap-2">
             {job.isRunning && (
               <Button size="sm" variant="ghost" onClick={job.cancel}>
-                Annuler
+                {t("Annuler")}
               </Button>
             )}
             <Button size="md" variant="primary" onClick={execute} disabled={!canRun}>
               {job.isRunning ? (
                 <>
                   <Icon name="Loader" size={15} className="animate-spin" />
-                  {job.progress.label ?? "Traitement…"}
+                  {job.progress.label ?? t("Traitement…")}
                 </>
               ) : (
                 <>
                   <Icon name="Play" size={15} />
-                  {actionLabel}
+                  {tx(actionLabel)}
                 </>
               )}
             </Button>
@@ -115,10 +116,10 @@ export function ImageToolShell({
         </div>
       )}
 
-      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
+      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={tx(job.progress.label)} />}
 
       {errorMessage && job.status === "error" && (
-        <Callout tone="error" title="L'opération a échoué">
+        <Callout tone="error" title={t("L'opération a échoué")}>
           {errorMessage}
         </Callout>
       )}

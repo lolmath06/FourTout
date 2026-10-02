@@ -32,6 +32,7 @@ import {
   sizeOutcome,
   videoCodecOptions,
 } from "./shared";
+import { t, tx } from "@/i18n";
 
 /**
  * Conversion d'une vidéo vers un autre format.
@@ -65,8 +66,8 @@ export function VideoConvertTool({ tool }: ToolComponentProps) {
   return (
     <VideoToolShell
       tool={tool}
-      actionLabel="Convertir"
-      hint="Les formats proposés sont ceux que le moteur installé sait réellement produire."
+      actionLabel={t("Convertir")}
+      hint={t("Les formats proposés sont ceux que le moteur installé sait réellement produire.")}
       run={async ({ files, infos, caps, context }) => {
         const choice = resolveChoice({ preset, container, videoCodec, audioCodec, crf, caps, file: files[0] });
         const pipeline = convertPipeline(
@@ -84,7 +85,7 @@ export function VideoConvertTool({ tool }: ToolComponentProps) {
             onFallback: tracker.onFallback,
             outputName: outputName(files[0].name, "", pipeline.container),
             totalMs: infos[0]?.durationMs,
-            label: "Conversion…",
+            label: t("Conversion…"),
           },
           context,
         );
@@ -138,7 +139,7 @@ function resolveChoice(input: ResolveInput) {
   const { preset, caps } = input;
   if (preset !== "custom") {
     const compatible = mostCompatible(caps);
-    if (!compatible) throw new Error("Aucun encodeur vidéo n'est disponible dans le moteur installé.");
+    if (!compatible) throw new Error(t("Aucun encodeur vidéo n'est disponible dans le moteur installé."));
     return { ...compatible, level: levelOfPreset(preset) };
   }
   const container = input.container ?? defaultContainer(input.file?.extension, caps);
@@ -188,11 +189,11 @@ function Settings({
     <div className="space-y-3">
       <Fieldset columns={1}>
         <Field
-          label="Préréglage"
-          hint={CONVERSION_PRESETS.find((entry) => entry.value === preset)?.hint}
+          label={t("Préréglage")}
+          hint={tx(CONVERSION_PRESETS.find((entry) => entry.value === preset)?.hint)}
         >
           <OptionGroup
-            ariaLabel="Préréglage"
+            ariaLabel={t("Préréglage")}
             value={preset}
             onChange={setPreset}
             options={CONVERSION_PRESETS.map((entry) => ({ value: entry.value, label: entry.label }))}
@@ -202,28 +203,28 @@ function Settings({
 
       {preset === "custom" ? (
         <Fieldset columns={3}>
-          <Field label="Format">
+          <Field label={t("Format")}>
             <Select value={container} onChange={setContainer} options={containerOptions(caps)} />
           </Field>
-          <Field label="Codec vidéo">
+          <Field label={t("Codec vidéo")}>
             <Select
               value={videoCodec}
               onChange={setVideoCodec}
               options={videoCodecOptions(container, caps)}
             />
           </Field>
-          <Field label="Codec audio">
+          <Field label={t("Codec audio")}>
             <Select
               value={audioCodec}
               onChange={setAudioCodec}
-              options={[...audioCodecOptions(container, caps), { value: "none" as const, label: "Aucun (muet)" }]}
+              options={[...audioCodecOptions(container, caps), { value: "none" as const, label: t("Aucun (muet)") }]}
             />
           </Field>
           {encoder && supportsCrf(encoder) && range ? (
             <Field
-              label="Qualité (CRF)"
+              label={t("Qualité (CRF)")}
               full
-              hint="Plus la valeur est basse, meilleure est la qualité — et plus le fichier est lourd."
+              hint={t("Plus la valeur est basse, meilleure est la qualité — et plus le fichier est lourd.")}
             >
               <Slider
                 value={crf ?? fallbackCrf ?? 25}
@@ -233,16 +234,14 @@ function Settings({
               />
             </Field>
           ) : (
-            <Field label="Qualité" full hint={`L'encodeur ${encoder ?? "sélectionné"} travaille à débit cible : la qualité suit le préréglage.`}>
-              <p className="text-xs text-[var(--ft-text-muted)]">Débit calculé d'après la source.</p>
+            <Field label={t("Qualité")} full hint={t("L'encodeur {value} travaille à débit cible : la qualité suit le préréglage.", { value: encoder ?? t("sélectionné") })}>
+              <p className="text-xs text-[var(--ft-text-muted)]">{t("Débit calculé d'après la source.")}</p>
             </Field>
           )}
         </Fieldset>
       ) : (
         <p className="text-xs text-[var(--ft-text-muted)]">
-          Sortie : {CONTAINER_LABEL[resolved.container]} · vidéo {resolved.video.toUpperCase()}
-          {resolved.audio ? ` · audio ${resolved.audio.toUpperCase()}` : " · sans audio"} ·{" "}
-          {caps.video[resolved.video]} (testé sur cette machine)
+          {t("Sortie : {value} · vidéo {value2}{value3} · {value4} (testé sur cette machine)", { value: CONTAINER_LABEL[resolved.container], value2: resolved.video.toUpperCase(), value3: resolved.audio ? ` · audio ${resolved.audio.toUpperCase()}` : t(" · sans audio"), value4: caps.video[resolved.video] })}
         </p>
       )}
     </div>

@@ -1,5 +1,6 @@
 import { crc32 } from "./zip";
 import { InflateError, inflateRaw } from "./inflate";
+import { t } from "@/i18n";
 
 /**
  * Lecture d'archives ZIP, en mémoire.
@@ -52,7 +53,7 @@ function findEndOfCentralDirectory(view: DataView, length: number): number {
   for (let offset = length - 22; offset >= earliest; offset -= 1) {
     if (view.getUint32(offset, true) === END_OF_CENTRAL_DIRECTORY) return offset;
   }
-  throw new ZipReadError("Ce fichier n'est pas une archive ZIP exploitable.");
+  throw new ZipReadError(t("Ce fichier n'est pas une archive ZIP exploitable."));
 }
 
 /**
@@ -61,7 +62,7 @@ function findEndOfCentralDirectory(view: DataView, length: number): number {
  * que la lecture de son index.
  */
 export function readZip(bytes: Uint8Array): ZipFileEntry[] {
-  if (bytes.length < 22) throw new ZipReadError("Ce fichier est trop court pour être une archive ZIP.");
+  if (bytes.length < 22) throw new ZipReadError(t("Ce fichier est trop court pour être une archive ZIP."));
 
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const end = findEndOfCentralDirectory(view, bytes.length);
@@ -73,7 +74,7 @@ export function readZip(bytes: Uint8Array): ZipFileEntry[] {
 
   for (let index = 0; index < count; index += 1) {
     if (offset + 46 > bytes.length || view.getUint32(offset, true) !== CENTRAL_FILE_HEADER) {
-      throw new ZipReadError("Répertoire central de l'archive endommagé.");
+      throw new ZipReadError(t("Répertoire central de l'archive endommagé."));
     }
     const method = view.getUint16(offset + 10, true);
     const crc = view.getUint32(offset + 16, true);
@@ -110,7 +111,7 @@ function readEntry(
   name: string,
 ): Uint8Array {
   if (view.getUint32(localOffset, true) !== LOCAL_FILE_HEADER) {
-    throw new ZipReadError(`Entrée « ${name} » introuvable dans l'archive.`);
+    throw new ZipReadError(t("Entrée « {name} » introuvable dans l'archive.", { name }));
   }
   // Les longueurs de nom et d'extra de l'en-tête local diffèrent légitimement
   // de celles du répertoire central : ce sont celles-ci qui donnent l'adresse
@@ -128,16 +129,16 @@ function readEntry(
       data = inflateRaw(raw, size);
     } catch (error) {
       const detail = error instanceof InflateError ? ` ${error.message}` : "";
-      throw new ZipReadError(`Entrée « ${name} » illisible.${detail}`);
+      throw new ZipReadError(t("Entrée « {name} » illisible.{detail}", { name, detail }));
     }
   } else {
     throw new ZipReadError(
-      `Entrée « ${name} » compressée dans un format non pris en charge (méthode ${method}).`,
+      t("Entrée « {name} » compressée dans un format non pris en charge (méthode {method}).", { name, method }),
     );
   }
 
   if (crc !== 0 && crc32(data) !== crc) {
-    throw new ZipReadError(`Entrée « ${name} » endommagée (empreinte incorrecte).`);
+    throw new ZipReadError(t("Entrée « {name} » endommagée (empreinte incorrecte).", { name }));
   }
   return data;
 }

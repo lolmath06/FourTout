@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/Icon";
 import { reorderPages } from "@/core/pdf/operations/pages";
 import type { PdfSource } from "@/core/pdf/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 export function PdfReorderTool({ tool }: ToolComponentProps) {
   const [order, setOrder] = useState<number[]>([]);
@@ -14,11 +15,11 @@ export function PdfReorderTool({ tool }: ToolComponentProps) {
   return (
     <PdfToolShell
       tool={tool}
-      actionLabel="Appliquer le nouvel ordre"
+      actionLabel={t("Appliquer le nouvel ordre")}
       actionDisabled={order.length === 0 || isIdentity(order)}
       run={async ({ documents, context }) => {
         const output = await reorderPages(documents[0].source, order, context);
-        return singleResult(output, `${order.length} pages réorganisées.`);
+        return singleResult(output, t("{count} pages réorganisées.", { count: order.length }));
       }}
     >
       {(documents) => (
@@ -57,11 +58,11 @@ function ReorderBoard({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="flex items-center gap-1.5 text-xs text-[var(--ft-text-muted)]">
           <Icon name="Info" size={13} />
-          Faites glisser les pages pour les réordonner.
+          {t("Faites glisser les pages pour les réordonner.")}
         </p>
         <div className="flex gap-1.5">
           <Button size="sm" variant="ghost" onClick={() => onOrder([...order].reverse())}>
-            Inverser
+            {t("Inverser")}
           </Button>
           <Button
             size="sm"
@@ -69,7 +70,7 @@ function ReorderBoard({
             onClick={() => onOrder(Array.from({ length: pageCount }, (_, i) => i + 1))}
             disabled={isIdentity(order)}
           >
-            Réinitialiser
+            {t("Réinitialiser")}
           </Button>
         </div>
       </div>

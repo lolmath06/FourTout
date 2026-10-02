@@ -1,4 +1,5 @@
 import type { AudioCodecId, MediaCapabilities, VideoCodecId } from "../capabilities";
+import { localized, t } from "@/i18n";
 
 /**
  * Traduction d'une intention (« qualité élevée », « fichier plus léger ») en
@@ -16,18 +17,18 @@ import type { AudioCodecId, MediaCapabilities, VideoCodecId } from "../capabilit
 /** Intention de qualité, commune à tous les outils. */
 export type QualityLevel = "high" | "balanced" | "small";
 
-export const QUALITY_LABEL: Record<QualityLevel, string> = {
-  high: "Qualité élevée",
-  balanced: "Équilibrée",
-  small: "Fichier plus léger",
-};
+export const QUALITY_LABEL: Record<QualityLevel, string> = localized(() => ({
+  high: t("Qualité élevée"),
+  balanced: t("Équilibrée"),
+  small: t("Fichier plus léger"),
+}));
 
 /** Modes de compression (mêmes moteurs, vocabulaire de l'outil « Compresser »). */
-export const COMPRESSION_LABEL: Record<QualityLevel, string> = {
-  high: "Légère",
-  balanced: "Équilibrée",
+export const COMPRESSION_LABEL: Record<QualityLevel, string> = localized(() => ({
+  high: t("Légère"),
+  balanced: t("Équilibrée"),
   small: "Forte",
-};
+}));
 
 /** Facteur de qualité constante par encodeur, du plus fin au plus léger. */
 const CRF_TABLE: Record<string, Record<QualityLevel, number>> = {
@@ -133,16 +134,16 @@ export function audioEncodeArgs(
 /** Préréglages proposés dans « Convertir une vidéo ». */
 export type ConversionPreset = "compatible" | "high" | "small" | "custom";
 
-export const CONVERSION_PRESETS: { value: ConversionPreset; label: string; hint: string }[] = [
+export const CONVERSION_PRESETS: { value: ConversionPreset; label: string; hint: string }[] = localized(() => [
   {
     value: "compatible",
-    label: "Compatibilité maximale",
-    hint: "Le format qui se lit partout, selon ce que sait faire le moteur installé.",
+    label: t("Compatibilité maximale"),
+    hint: t("Le format qui se lit partout, selon ce que sait faire le moteur installé."),
   },
-  { value: "high", label: "Qualité élevée", hint: "Fidèle à la source, fichier plus lourd." },
-  { value: "small", label: "Fichier plus léger", hint: "Compression marquée, qualité en retrait." },
-  { value: "custom", label: "Personnalisé", hint: "Conteneur, codecs et qualité au choix." },
-];
+  { value: "high", label: t("Qualité élevée"), hint: t("Fidèle à la source, fichier plus lourd.") },
+  { value: "small", label: t("Fichier plus léger"), hint: t("Compression marquée, qualité en retrait.") },
+  { value: "custom", label: t("Personnalisé"), hint: t("Conteneur, codecs et qualité au choix.") },
+]);
 
 /** Niveau de qualité associé à un préréglage de conversion. */
 export function levelOfPreset(preset: ConversionPreset): QualityLevel {

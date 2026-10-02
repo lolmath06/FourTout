@@ -4,6 +4,7 @@ import { InputError, ResultBlock } from "@/components/calc/CalcShell";
 import { percentChange, percentOf, percentShare, ruleOfThree } from "@/core/calc/arithmetic";
 import { formatWithGrouping, parseNumber } from "@/core/units";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t } from "@/i18n";
 
 /** Lecture d'un champ numérique, avec le message d'erreur qui va avec. */
 function useNumber(initial: string) {
@@ -43,29 +44,29 @@ export function PercentageTool(_props: ToolComponentProps) {
             ? percentShare(first.value, second.value)
             : percentChange(first.value, second.value);
     } catch (failure) {
-      error = failure instanceof Error ? failure.message : "Calcul impossible.";
+      error = failure instanceof Error ? failure.message : t("Calcul impossible.");
     }
   }
 
   const labels: Record<PercentageMode, [string, string, string]> = {
-    of: ["Pourcentage", "Valeur totale", "Résultat"],
+    of: ["Pourcentage", t("Valeur totale"), t("Résultat")],
     share: ["Partie", "Total", "Proportion"],
-    change: ["Valeur de départ", "Valeur d'arrivée", "Variation"],
+    change: [t("Valeur de départ"), t("Valeur d'arrivée"), "Variation"],
   };
   const [firstLabel, secondLabel] = labels[mode];
 
   return (
     <div className="space-y-4">
       <Fieldset columns={1}>
-        <Field label="Que voulez-vous calculer ?">
+        <Field label={t("Que voulez-vous calculer ?")}>
           <OptionGroup
-            ariaLabel="Type de calcul"
+            ariaLabel={t("Type de calcul")}
             value={mode}
             onChange={setMode}
             options={[
-              { value: "of", label: "X % de Y" },
-              { value: "share", label: "X est quel % de Y" },
-              { value: "change", label: "Variation de A à B" },
+              { value: "of", label: t("X % de Y") },
+              { value: "share", label: t("X est quel % de Y") },
+              { value: "change", label: t("Variation de A à B") },
             ]}
           />
         </Field>
@@ -94,7 +95,7 @@ export function PercentageTool(_props: ToolComponentProps) {
       <InputError
         message={
           first.invalid || second.invalid
-            ? "Les deux champs doivent contenir un nombre."
+            ? t("Les deux champs doivent contenir un nombre.")
             : error
         }
       />
@@ -108,16 +109,16 @@ export function PercentageTool(_props: ToolComponentProps) {
             mode === "of"
               ? [
                   {
-                    label: "Total augmenté",
+                    label: t("Total augmenté"),
                     value: formatWithGrouping((second.value ?? 0) + output.value),
                   },
                   {
-                    label: "Total diminué",
+                    label: t("Total diminué"),
                     value: formatWithGrouping((second.value ?? 0) - output.value),
                   },
                 ]
               : output.note
-                ? [{ label: "Lecture", value: output.note }]
+                ? [{ label: t("Lecture"), value: output.note }]
                 : undefined
           }
         />
@@ -144,16 +145,14 @@ export function ProportionTool(_props: ToolComponentProps) {
     try {
       output = ruleOfThree(a.value, b.value, c.value);
     } catch (failure) {
-      error = failure instanceof Error ? failure.message : "Calcul impossible.";
+      error = failure instanceof Error ? failure.message : t("Calcul impossible.");
     }
   }
 
   return (
     <div className="space-y-4">
       <p className="ft-meta">
-        Si <strong className="text-[var(--ft-text)]">A</strong> correspond à{" "}
-        <strong className="text-[var(--ft-text)]">B</strong>, alors{" "}
-        <strong className="text-[var(--ft-text)]">C</strong> correspond à combien ?
+        <Trans source={"Si <0>A</0> correspond à <1>B</1>, alors <2>C</2> correspond à combien ?"} components={[<strong className="text-[var(--ft-text)]" />, <strong className="text-[var(--ft-text)]" />, <strong className="text-[var(--ft-text)]" />]} />
       </p>
 
       <Fieldset columns={3}>
@@ -166,7 +165,7 @@ export function ProportionTool(_props: ToolComponentProps) {
             aria-label="A"
           />
         </Field>
-        <Field label="correspond à B">
+        <Field label={t("correspond à B")}>
           <TextInput
             value={b.raw}
             inputMode="decimal"
@@ -186,14 +185,14 @@ export function ProportionTool(_props: ToolComponentProps) {
 
       <InputError
         message={
-          a.invalid || b.invalid || c.invalid ? "Les trois champs doivent contenir un nombre." : error
+          a.invalid || b.invalid || c.invalid ? t("Les trois champs doivent contenir un nombre.") : error
         }
       />
 
       {output && (
         <ResultBlock
           value={formatWithGrouping(output.value)}
-          formula={`${output.formula}   —   ${a.raw} → ${b.raw}, donc ${c.raw} → ${formatWithGrouping(output.value)}`}
+          formula={t("{formula}   —   {raw} → {raw2}, donc {raw3} → {value}", { formula: output.formula, raw: a.raw, raw2: b.raw, raw3: c.raw, value: formatWithGrouping(output.value) })}
         />
       )}
     </div>

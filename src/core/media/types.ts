@@ -1,5 +1,6 @@
 /** Types du socle média (FFmpeg/ffprobe). */
 
+import { t } from "@/i18n";
 export interface MediaStream {
   index: number;
   codecType: "audio" | "video" | "subtitle" | "data" | string;
@@ -105,16 +106,14 @@ export interface MediaOperation {
 export function readProbeJson(json: string): unknown {
   if (json.trim().length === 0) {
     throw new Error(
-      "FFprobe n'a rien renvoyé sur ce fichier. Il est peut-être vide, tronqué, ou d'un format " +
-        "que le moteur installé ne reconnaît pas.",
+      t("FFprobe n'a rien renvoyé sur ce fichier. Il est peut-être vide, tronqué, ou d'un format que le moteur installé ne reconnaît pas."),
     );
   }
   try {
     return JSON.parse(json);
   } catch {
     throw new Error(
-      "La réponse de FFprobe n'a pas pu être lue : elle ne contient pas les informations " +
-        "attendues. Le fichier est probablement abîmé ou d'un format non pris en charge.",
+      t("La réponse de FFprobe n'a pas pu être lue : elle ne contient pas les informations attendues. Le fichier est probablement abîmé ou d'un format non pris en charge."),
     );
   }
 }

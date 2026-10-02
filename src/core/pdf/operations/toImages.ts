@@ -4,6 +4,7 @@ import { PdfError } from "../errors";
 import { numberedName } from "../filenames";
 import { getRasterBackend, type RasterPixels } from "../raster/types";
 import type { OperationContext, OutputFile, PdfSource } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Rendu des pages en images.
@@ -98,7 +99,7 @@ export async function renderPagesStream(
 
     for (const [index, pageNumber] of targets.entries()) {
       throwIfCancelled(context);
-      report(context, index / targets.length, `Page ${pageNumber} sur ${targets.length}`);
+      report(context, index / targets.length, t("Page {pageNumber} sur {count}", { pageNumber, count: targets.length }));
 
       const page = await document.getPage(pageNumber);
       const base = page.getViewport({ scale: 1 });
@@ -145,7 +146,7 @@ export async function renderPagesStream(
     await document.loadingTask?.destroy();
   }
 
-  report(context, 1, "Terminé");
+  report(context, 1, t("Terminé"));
 }
 
 /** Variante « tout en mémoire » de `renderPagesStream`. */

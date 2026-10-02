@@ -327,6 +327,6 @@ describe("gestionnaire de modèles", () => {
   it("affiche des tailles lisibles", () => {
     expect(formatSize(63_201_294)).toBe("63 Mo");
     expect(formatSize(487_601_967)).toBe("488 Mo");
-    expect(formatSize(1_500_000_000)).toBe("1.5 Go");
+    expect(formatSize(1_500_000_000)).toBe("1,5 Go");
   });
 });

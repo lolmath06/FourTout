@@ -3,6 +3,7 @@ import { toolRegistry } from "../tools/registry";
 import type { ToolSearchEngine } from "../tools/search";
 import { toolSearch } from "../tools/search";
 import type { IntentCandidate, IntentResolver, IntentResult } from "./types";
+import { t } from "@/i18n";
 
 /**
  * Résolveur par défaut : 100 % déterministe, hors ligne, instantané.
@@ -35,7 +36,7 @@ export class DeterministicIntentResolver implements IntentResolver {
         outcome: "no-match",
         candidates: [],
         resolver: this.id,
-        message: "Décrivez ce que vous voulez faire.",
+        message: t("Décrivez ce que vous voulez faire."),
       };
     }
 
@@ -46,7 +47,7 @@ export class DeterministicIntentResolver implements IntentResolver {
         outcome: "no-match",
         candidates: [],
         resolver: this.id,
-        message: `Aucun outil de FourTout ne correspond à « ${trimmed} ».`,
+        message: t("Aucun outil de FourTout ne correspond à « {trimmed} ».", { trimmed }),
       };
     }
 
@@ -72,11 +73,11 @@ export class DeterministicIntentResolver implements IntentResolver {
 }
 
 function describeMatch(matchedOn: string[]): string {
-  if (matchedOn.includes("phrase")) return "Correspondance exacte";
-  if (matchedOn.includes("direction")) return "Conversion correspondante";
-  if (matchedOn.includes("name")) return "Nom de l'outil";
-  if (matchedOn.includes("alias")) return "Autre nom de l'outil";
-  if (matchedOn.includes("keyword")) return "Mot-clé associé";
-  if (matchedOn.includes("category")) return "Catégorie correspondante";
-  return "Description";
+  if (matchedOn.includes("phrase")) return t("Correspondance exacte");
+  if (matchedOn.includes("direction")) return t("Conversion correspondante");
+  if (matchedOn.includes("name")) return t("Nom de l'outil");
+  if (matchedOn.includes("alias")) return t("Autre nom de l'outil");
+  if (matchedOn.includes("keyword")) return t("Mot-clé associé");
+  if (matchedOn.includes("category")) return t("Catégorie correspondante");
+  return t("Description");
 }

@@ -14,6 +14,7 @@
  * Fonctions pures : aucune dépendance à FFmpeg ni au DOM.
  */
 
+import { localized, t } from "@/i18n";
 export interface Size {
   width: number;
   height: number;
@@ -146,12 +147,12 @@ export function centeredRect(source: Size, ratio: number): NormalizedRect {
 }
 
 /** Rapports proposés dans les outils de rognage. */
-export const CROP_RATIOS = [
-  { value: "free", label: "Libre", ratio: 0 },
+export const CROP_RATIOS = localized(() => [
+  { value: "free", label: t("Libre"), ratio: 0 },
   { value: "1:1", label: "1:1", ratio: 1 },
   { value: "4:3", label: "4:3", ratio: 4 / 3 },
   { value: "16:9", label: "16:9", ratio: 16 / 9 },
-  { value: "9:16", label: "9:16 — Vertical", ratio: 9 / 16 },
-] as const;
+  { value: "9:16", label: t("9:16 — Vertical"), ratio: 9 / 16 },
+] as const);
 
 export type CropRatioKey = (typeof CROP_RATIOS)[number]["value"];

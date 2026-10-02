@@ -10,6 +10,7 @@ import { colorToTransparent } from "@/core/image/operations";
 import { rgbToHex, type Rgb } from "@/core/image/types";
 import type { SelectedFile } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 export function ImageColorTransparentTool({ tool }: ToolComponentProps) {
   const [color, setColor] = useState<Rgb>({ r: 255, g: 255, b: 255 });
@@ -19,8 +20,8 @@ export function ImageColorTransparentTool({ tool }: ToolComponentProps) {
     <ImageToolShell
       tool={tool}
       selection="single"
-      actionLabel="Rendre transparent"
-      hint="La sortie est en PNG pour préserver la transparence."
+      actionLabel={t("Rendre transparent")}
+      hint={t("La sortie est en PNG pour préserver la transparence.")}
       run={async ({ files, context }) => {
         const output = await processImage(
           files[0],
@@ -28,7 +29,7 @@ export function ImageColorTransparentTool({ tool }: ToolComponentProps) {
           { format: "png", suffix: "transparent" },
           context,
         );
-        return { files: [output], summary: `Couleur ${rgbToHex(color)} rendue transparente (tolérance ${tolerance} %).` };
+        return { files: [output], summary: t("Couleur {value} rendue transparente (tolérance {tolerance} %).", { value: rgbToHex(color), tolerance }) };
       }}
     >
       {(files) => (
@@ -82,10 +83,10 @@ function ColorTransparentStage({
   return (
     <div className="space-y-3">
       <Fieldset columns={1}>
-        <Field label="Couleur à effacer" hint="Cliquez dans l'image pour piocher une couleur.">
+        <Field label={t("Couleur à effacer")} hint={t("Cliquez dans l'image pour piocher une couleur.")}>
           <ColorField value={color} onChange={setColor} />
         </Field>
-        <Field label={`Tolérance (${tolerance} %)`}>
+        <Field label={t("Tolérance ({tolerance} %)", { tolerance })}>
           <Slider value={tolerance} onChange={setTolerance} min={0} max={80} />
         </Field>
       </Fieldset>
@@ -93,7 +94,7 @@ function ColorTransparentStage({
         {url && (
           <img
             src={url}
-            alt="Aperçu"
+            alt={t("Aperçu")}
             onClick={pick}
             className="max-h-[400px] max-w-full cursor-crosshair object-contain"
             draggable={false}

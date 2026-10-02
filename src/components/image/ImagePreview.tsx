@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { formatFileSize } from "@/core/files";
 import type { SelectedFile } from "@/core/files";
 import { useImagePreview } from "./useImagePreview";
+import { t, tx } from "@/i18n";
 
 /**
  * Aperçu d'image partagé : fond en damier (pour voir la transparence),
@@ -47,11 +48,11 @@ export function ImagePreview({
         <span className="truncate font-medium text-[var(--ft-text)]">{file.name}</span>
         {preview.width > 0 && (
           <span className="tabular-nums">
-            {preview.width} × {preview.height} px
+            {t("{width} × {height} px", { width: preview.width, height: preview.height })}
           </span>
         )}
         <span className="tabular-nums">{formatFileSize(file.size)}</span>
-        {preview.error && <span className="text-[var(--ft-warn)]">{preview.error}</span>}
+        {preview.error && <span className="text-[var(--ft-warn)]">{tx(preview.error)}</span>}
       </p>
     </div>
   );

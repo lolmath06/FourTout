@@ -17,6 +17,7 @@
  */
 
 /** Au-delà, on refuse : ce n'est plus un test de regex, c'est un traitement. */
+import { formatNumber, localized, t } from "@/i18n";
 export const MAX_SUBJECT_LENGTH = 200_000;
 /** Au-delà, la liste n'est plus lisible et le rendu devient le goulot. */
 export const MAX_MATCHES = 1000;
@@ -59,24 +60,24 @@ export class RegexError extends Error {
   }
 }
 
-export const FLAGS: { value: string; label: string; hint: string }[] = [
-  { value: "g", label: "g", hint: "global — toutes les correspondances, pas seulement la première" },
-  { value: "i", label: "i", hint: "insensible à la casse" },
-  { value: "m", label: "m", hint: "multiligne — ^ et $ encadrent chaque ligne" },
-  { value: "s", label: "s", hint: "dotAll — le point accepte aussi les retours à la ligne" },
+export const FLAGS: { value: string; label: string; hint: string }[] = localized(() => [
+  { value: "g", label: "g", hint: t("global — toutes les correspondances, pas seulement la première") },
+  { value: "i", label: "i", hint: t("insensible à la casse") },
+  { value: "m", label: "m", hint: t("multiligne — ^ et $ encadrent chaque ligne") },
+  { value: "s", label: "s", hint: t("dotAll — le point accepte aussi les retours à la ligne") },
   { value: "u", label: "u", hint: "unicode — les échappements \\u{…} et les propriétés \\p{…}" },
-  { value: "y", label: "y", hint: "sticky — la recherche démarre exactement à lastIndex" },
-];
+  { value: "y", label: "y", hint: t("sticky — la recherche démarre exactement à lastIndex") },
+]);
 
 export function compileRegex(pattern: string, flags: string): RegExp {
-  if (pattern.length === 0) throw new RegexError("L'expression est vide.");
+  if (pattern.length === 0) throw new RegexError(t("L'expression est vide."));
   try {
     return new RegExp(pattern, flags);
   } catch (error) {
     throw new RegexError(
       error instanceof Error
         ? error.message.replace(/^Invalid regular expression: /, "Expression invalide : ")
-        : "Expression invalide.",
+        : t("Expression invalide."),
     );
   }
 }
@@ -124,8 +125,7 @@ function describeGroups(regex: RegExp): { count: number; names: string[] } {
 export function runRegex(pattern: string, flags: string, subject: string): RegexRun {
   if (subject.length > MAX_SUBJECT_LENGTH) {
     throw new RegexError(
-      `Le texte dépasse ${MAX_SUBJECT_LENGTH.toLocaleString("fr-FR")} caractères. ` +
-        "Au-delà, une expression mal écrite peut bloquer l'interface : réduisez l'échantillon.",
+      t("Le texte dépasse {value} caractères. Au-delà, une expression mal écrite peut bloquer l'interface : réduisez l'échantillon.", { value: formatNumber(MAX_SUBJECT_LENGTH) }),
     );
   }
   const regex = compileRegex(pattern, flags.includes("g") ? flags : `${flags}g`);
@@ -174,14 +174,13 @@ export function runRegex(pattern: string, flags: string, subject: string): Regex
 
     if (matches.length >= MAX_MATCHES) {
       truncated = true;
-      truncationReason = `Affichage limité aux ${MAX_MATCHES} premières correspondances.`;
+      truncationReason = t("Affichage limité aux {MAX_MATCHES} premières correspondances.", { MAX_MATCHES });
       break;
     }
     if (performance.now() - started > TIME_BUDGET_MS) {
       truncated = true;
       truncationReason =
-        `Recherche arrêtée après ${TIME_BUDGET_MS} ms : cette expression est trop coûteuse ` +
-        "pour ce texte. Les correspondances suivantes n'ont pas été cherchées.";
+        t("Recherche arrêtée après {TIME_BUDGET_MS} ms : cette expression est trop coûteuse pour ce texte. Les correspondances suivantes n'ont pas été cherchées.", { TIME_BUDGET_MS });
       break;
     }
   }
@@ -209,7 +208,7 @@ export function replaceAll(
   replacement: string,
 ): string {
   if (subject.length > MAX_SUBJECT_LENGTH) {
-    throw new RegexError(`Le texte dépasse ${MAX_SUBJECT_LENGTH.toLocaleString("fr-FR")} caractères.`);
+    throw new RegexError(t("Le texte dépasse {value} caractères.", { value: formatNumber(MAX_SUBJECT_LENGTH) }));
   }
   const regex = compileRegex(pattern, flags.includes("g") ? flags : `${flags}g`);
   return subject.replace(regex, replacement);

@@ -1,6 +1,7 @@
 import { isTauri } from "@/core/platform";
 import type { OperationContext } from "@/core/pdf/types";
 import { JobCancelledError } from "@/core/jobs/types";
+import { msg, t } from "@/i18n";
 
 /**
  * Client du socle « Fichiers » natif.
@@ -280,7 +281,7 @@ export function isFilesEngineAvailable(): boolean {
 }
 
 export const NATIVE_REQUIRED =
-  "Cet outil travaille directement sur vos fichiers et nécessite l'application FourTout installée. Il n'est pas disponible dans l'aperçu navigateur.";
+  msg("Cet outil travaille directement sur vos fichiers et nécessite l'application FourTout installée. Il n'est pas disponible dans l'aperçu navigateur.");
 
 let sequence = 0;
 function nextJobId(prefix: string): string {
@@ -299,7 +300,7 @@ async function runJob<T, TPartial = unknown>(
   context?: OperationContext,
   onPartial?: (payload: TPartial) => void,
 ): Promise<T> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   const { listen } = await import("@tauri-apps/api/event");
 
@@ -331,7 +332,7 @@ async function runJob<T, TPartial = unknown>(
   } catch (error) {
     const message = typeof error === "string" ? error : error instanceof Error ? error.message : "";
     if (message === NATIVE_CANCELLED || context?.signal?.aborted) throw new JobCancelledError();
-    throw new Error(message || "L'opération a échoué.");
+    throw new Error(message || t("L'opération a échoué."));
   } finally {
     unlisten();
     unlistenPartial?.();
@@ -393,7 +394,7 @@ export function compareFiles(
 }
 
 export async function fileInfo(path: string): Promise<FileInfo> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<FileInfo>("files_info", { path });
 }
@@ -416,7 +417,7 @@ export function createArchive(
 }
 
 export async function listArchive(path: string): Promise<ArchiveListing> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<ArchiveListing>("files_archive_list", { path });
 }
@@ -653,13 +654,13 @@ export function joinFile(
 /* ------------------------------------------------------------- renommage */
 
 export async function renamePlan(paths: string[], rules: RenameRules): Promise<RenamePlan> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<RenamePlan>("files_rename_plan", { paths, rules });
 }
 
 export async function renameApply(paths: string[], rules: RenameRules): Promise<RenameOutcome> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<RenameOutcome>("files_rename_apply", { paths, rules });
 }
@@ -667,7 +668,7 @@ export async function renameApply(paths: string[], rules: RenameRules): Promise<
 /* ------------------------------------------------------------------ DOCX */
 
 export async function readDocx(path: string): Promise<DocxResult> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<DocxResult>("files_docx_read", { path });
 }
@@ -680,20 +681,20 @@ export async function readDocx(path: string): Promise<DocxResult> {
  * instantané plutôt qu'insupportable.
  */
 export async function readBytes(path: string, maxBytes = 0): Promise<Uint8Array> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   const buffer = await invoke<ArrayBuffer>("files_read_bytes", { path, maxBytes });
   return new Uint8Array(buffer);
 }
 
 export async function readTextFile(path: string, maxBytes = 0): Promise<string> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<string>("files_read_text", { path, maxBytes });
 }
 
 export async function writeTextFile(path: string, content: string): Promise<void> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   await invoke("files_write_text", { path, content });
 }
@@ -706,7 +707,7 @@ export async function pickFiles(options?: {
   title?: string;
   filters?: { name: string; extensions: string[] }[];
 }): Promise<string[]> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { open } = await import("@tauri-apps/plugin-dialog");
   const selection = await open({
     multiple: options?.multiple ?? false,
@@ -720,7 +721,7 @@ export async function pickFiles(options?: {
 
 /** Sélection d'un dossier via la boîte de dialogue native. */
 export async function pickDirectory(title?: string): Promise<string | undefined> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { open } = await import("@tauri-apps/plugin-dialog");
   const selection = await open({ directory: true, multiple: false, title });
   return typeof selection === "string" ? selection : undefined;
@@ -731,7 +732,7 @@ export async function pickSavePath(
   defaultName: string,
   filters?: { name: string; extensions: string[] }[],
 ): Promise<string | undefined> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { save } = await import("@tauri-apps/plugin-dialog");
   const path = await save({ defaultPath: defaultName, filters });
   return path ?? undefined;
@@ -1006,7 +1007,7 @@ export interface HexWriteSummary {
 export const HEX_MAX_WINDOW = 64 * 1024;
 
 export async function readHex(path: string, offset: number, length: number): Promise<HexWindow> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<HexWindow>("files_hex_read", { path, offset, length });
 }
@@ -1280,7 +1281,7 @@ export async function hmacText(
   key: string,
   text: string,
 ): Promise<HmacResult> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<HmacResult>("files_hmac_text", { algorithm, key, text });
 }
@@ -1355,7 +1356,7 @@ export async function suggestStreamOutput(
   format: StreamFormat,
   compressing: boolean,
 ): Promise<string> {
-  if (!isTauri()) throw new Error(NATIVE_REQUIRED);
+  if (!isTauri()) throw new Error(t(NATIVE_REQUIRED));
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<string>("files_stream_suggest", { input, format, compressing });
 }

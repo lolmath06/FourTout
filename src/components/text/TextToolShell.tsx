@@ -6,6 +6,7 @@ import { notify } from "@/features/notifications/store";
 import { measureText } from "@/core/text/clean";
 import { saveFile } from "@/core/output/save";
 import { Callout } from "@/components/ui/Callout";
+import { Trans, t, tx } from "@/i18n";
 
 /**
  * Ossature commune aux outils Texte.
@@ -55,16 +56,16 @@ export function TextPane({
       if (!onChange) return;
       if (file.size > MAX_TEXT_BYTES) {
         notify.error(
-          "Fichier trop volumineux",
-          "Cette zone accepte jusqu'à 8 Mo de texte. Pour un fichier plus gros, utilisez les outils Fichiers.",
+          t("Fichier trop volumineux"),
+          t("Cette zone accepte jusqu'à 8 Mo de texte. Pour un fichier plus gros, utilisez les outils Fichiers."),
         );
         return;
       }
       try {
         onChange(await file.text());
-        notify.success("Fichier chargé", file.name);
+        notify.success(t("Fichier chargé"), file.name);
       } catch {
-        notify.error("Lecture impossible", "Ce fichier ne peut pas être lu comme du texte.");
+        notify.error(t("Lecture impossible"), t("Ce fichier ne peut pas être lu comme du texte."));
       }
     },
     [onChange],
@@ -74,18 +75,16 @@ export function TextPane({
     <div className="flex min-w-0 flex-1 flex-col gap-1.5">
       <div className="flex items-baseline justify-between gap-2">
         <label htmlFor={id} className="ft-label">
-          {label}
+          {tx(label)}
         </label>
-        <span className="ft-value shrink-0 text-[var(--ft-text-faint)]">
-          {size.characters} car. · {size.words} mots · {size.lines} lignes
-        </span>
+        <Trans source={"<0>{characters} car. · {words} mots · {lines} lignes</0>"} values={{ characters: size.characters, words: size.words, lines: size.lines }} components={[<span className="ft-value shrink-0 text-[var(--ft-text-faint)]" />]} />
       </div>
       <textarea
         id={id}
         value={value}
         readOnly={readOnly}
         onChange={(event) => onChange?.(event.target.value)}
-        placeholder={placeholder}
+        placeholder={tx(placeholder)}
         spellCheck={false}
         onDragOver={(event) => {
           if (!droppable || readOnly) return;
@@ -146,8 +145,8 @@ export function TextToolShell({
   onInputChange,
   output,
   inputLabel = "Texte",
-  outputLabel = "Résultat",
-  placeholder = "Collez votre texte, ou déposez un fichier .txt / .md ici…",
+  outputLabel = t("Résultat"),
+  placeholder = t("Collez votre texte, ou déposez un fichier .txt / .md ici…"),
   children,
   summary,
   error,
@@ -163,9 +162,9 @@ export function TextToolShell({
   const copy = async (value: string) => {
     try {
       await navigator.clipboard.writeText(value);
-      notify.success("Copié dans le presse-papiers");
+      notify.success(t("Copié dans le presse-papiers"));
     } catch {
-      notify.error("Copie impossible", "Le presse-papiers n'est pas accessible.");
+      notify.error(t("Copie impossible"), t("Le presse-papiers n'est pas accessible."));
     }
   };
 
@@ -173,18 +172,18 @@ export function TextToolShell({
     try {
       const bytes = new TextEncoder().encode(value);
       const result = await saveFile({ name: downloadName, bytes, mimeType: "text/plain" });
-      if (result.saved) notify.success("Fichier enregistré", result.path);
+      if (result.saved) notify.success(t("Fichier enregistré"), result.path);
     } catch (error_) {
-      notify.error("Enregistrement impossible", error_ instanceof Error ? error_.message : undefined);
+      notify.error(t("Enregistrement impossible"), error_ instanceof Error ? error_.message : undefined);
     }
   };
 
   return (
     <div className="space-y-4">
       <div className={clsx("flex gap-4", layout === "side-by-side" ? "flex-col lg:flex-row" : "flex-col")}>
-        <TextPane label={inputLabel} value={input} onChange={onInputChange} placeholder={placeholder} />
+        <TextPane label={tx(inputLabel)} value={input} onChange={onInputChange} placeholder={tx(placeholder)} />
         {layout === "side-by-side" && output !== undefined && (
-          <TextPane label={outputLabel} value={output} readOnly droppable={false} />
+          <TextPane label={tx(outputLabel)} value={output} readOnly droppable={false} />
         )}
       </div>
 
@@ -199,22 +198,22 @@ export function TextToolShell({
             event.target.value = "";
             if (!file) return;
             if (file.size > MAX_TEXT_BYTES) {
-              notify.error("Fichier trop volumineux", "Cette zone accepte jusqu'à 8 Mo de texte.");
+              notify.error(t("Fichier trop volumineux"), t("Cette zone accepte jusqu'à 8 Mo de texte."));
               return;
             }
             onInputChange(await file.text());
           }}
         />
         <Button size="sm" onClick={() => inputRef.current?.click()}>
-          <Icon name="UploadCloud" size={14} /> Ouvrir un fichier
+          <Icon name="UploadCloud" size={14} />{" "}{t("Ouvrir un fichier")}
         </Button>
         {sample && (
-          <Button size="sm" variant="ghost" onClick={() => onInputChange(sample)}>
-            <Icon name="Sparkles" size={14} /> Exemple
+          <Button size="sm" variant="ghost" onClick={() => onInputChange(tx(sample))}>
+            <Icon name="Sparkles" size={14} />{" "}{t("Exemple")}
           </Button>
         )}
         <Button size="sm" variant="ghost" onClick={() => onInputChange("")} disabled={input.length === 0}>
-          <Icon name="Eraser" size={14} /> Effacer
+          <Icon name="Eraser" size={14} />{" "}{t("Effacer")}
         </Button>
         <div className="flex-1" />
         {actions}
@@ -222,7 +221,7 @@ export function TextToolShell({
 
       {children && <div className="space-y-3">{children}</div>}
 
-      {error && <Callout tone="error">{error}</Callout>}
+      {error && <Callout tone="error">{tx(error)}</Callout>}
 
       {summary && (
         <div className="ft-num rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-1.5 text-[12.5px]">
@@ -233,19 +232,19 @@ export function TextToolShell({
       {outputSlot}
 
       {layout === "stacked" && output !== undefined && (
-        <TextPane label={outputLabel} value={output} readOnly droppable={false} />
+        <TextPane label={tx(outputLabel)} value={output} readOnly droppable={false} />
       )}
 
       {hasOutput && output !== undefined && (
         <div className="flex flex-wrap justify-end gap-2">
           <Button size="sm" variant="ghost" onClick={() => onInputChange(output)} disabled={!output}>
-            <Icon name="Undo2" size={14} /> Reprendre comme entrée
+            <Icon name="Undo2" size={14} />{" "}{t("Reprendre comme entrée")}
           </Button>
           <Button size="sm" onClick={() => download(output)} disabled={!output}>
-            <Icon name="Download" size={14} /> Télécharger
+            <Icon name="Download" size={14} />{" "}{t("Télécharger")}
           </Button>
           <Button size="sm" variant="primary" onClick={() => copy(output)} disabled={!output}>
-            <Icon name="Copy" size={14} /> Copier
+            <Icon name="Copy" size={14} />{" "}{t("Copier")}
           </Button>
         </div>
       )}
@@ -282,8 +281,8 @@ export function CheckOption({
         className="mt-0.5 size-3.5 shrink-0 accent-[var(--ft-accent)]"
       />
       <span className="min-w-0">
-        <span className="block leading-tight">{label}</span>
-        {hint && <span className="block text-[11px] text-[var(--ft-text-faint)]">{hint}</span>}
+        <span className="block leading-tight">{tx(label)}</span>
+        {hint && <span className="block text-[11px] text-[var(--ft-text-faint)]">{tx(hint)}</span>}
       </span>
     </label>
   );

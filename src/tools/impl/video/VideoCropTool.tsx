@@ -18,6 +18,7 @@ import {
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { fallbackTracker, sizeOutcome } from "./shared";
+import { t } from "@/i18n";
 
 const DEFAULT_RECT: NormalizedRect = { x: 0.1, y: 0.1, w: 0.8, h: 0.8 };
 
@@ -39,9 +40,9 @@ export function VideoCropTool({ tool }: ToolComponentProps) {
   return (
     <VideoToolShell
       tool={tool}
-      actionLabel="Rogner"
+      actionLabel={t("Rogner")}
       showFileList={false}
-      hint="Faites glisser la zone ou ses poignées ; le résultat correspond exactement à la sélection."
+      hint={t("Faites glisser la zone ou ses poignées ; le résultat correspond exactement à la sélection.")}
       run={async ({ files, infos, caps, context }) => {
         const pipeline = cropPipeline(
           { caps, info: infos[0], extension: files[0].extension },
@@ -56,7 +57,7 @@ export function VideoCropTool({ tool }: ToolComponentProps) {
             onFallback: tracker.onFallback,
             outputName: outputName(files[0].name, "rognee", pipeline.container),
             totalMs: infos[0]?.durationMs,
-            label: "Rognage…",
+            label: t("Rognage…"),
           },
           context,
         );
@@ -74,9 +75,9 @@ export function VideoCropTool({ tool }: ToolComponentProps) {
         return (
           <div className="space-y-3">
             <Fieldset columns={1}>
-              <Field label="Proportions">
+              <Field label={t("Proportions")}>
                 <OptionGroup
-                  ariaLabel="Proportions"
+                  ariaLabel={t("Proportions")}
                   value={ratioKey}
                   onChange={(key) => {
                     setRatioKey(key);
@@ -102,15 +103,14 @@ export function VideoCropTool({ tool }: ToolComponentProps) {
                 size="sm"
                 onClick={() => setRect(source.width ? centeredRect(source, ratio) : DEFAULT_RECT)}
               >
-                <Icon name="Crop" size={13} /> Centrer la sélection
+                <Icon name="Crop" size={13} />{" "}{t("Centrer la sélection")}
               </Button>
               <Button size="sm" variant="ghost" onClick={() => setRect(DEFAULT_RECT)}>
-                Réinitialiser
+                {t("Réinitialiser")}
               </Button>
               {pixels && (
                 <span className="tabular-nums">
-                  Sélection : {pixels.width} × {pixels.height} px, à ({pixels.x}, {pixels.y}) — source{" "}
-                  {source.width} × {source.height}
+                  {t("Sélection : {width} × {height} px, à ({x}, {y}) — source {width2} × {height2}", { width: pixels.width, height: pixels.height, x: pixels.x, y: pixels.y, width2: source.width, height2: source.height })}
                 </span>
               )}
             </div>

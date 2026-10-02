@@ -29,6 +29,7 @@ import { formatTimecode } from "@/core/media/types";
 import { presetString, useHandoff } from "@/features/handoff/store";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t, tx } from "@/i18n";
 
 /**
  * Modifier des sous-titres : convertir, décaler, fusionner, vérifier.
@@ -43,12 +44,12 @@ import type { ToolComponentProps } from "@/tools/implementations";
 
 type Mode = "convert" | "shift" | "merge" | "check";
 
-const MODES: { value: Mode; label: string }[] = [
-  { value: "convert", label: "Convertir" },
-  { value: "shift", label: "Décaler" },
-  { value: "merge", label: "Fusionner" },
-  { value: "check", label: "Vérifier" },
-];
+const MODES: { value: Mode; label: string }[] = localized(() => [
+  { value: "convert", label: t("Convertir") },
+  { value: "shift", label: t("Décaler") },
+  { value: "merge", label: t("Fusionner") },
+  { value: "check", label: t("Vérifier") },
+]);
 
 export function SubtitleEditTool({ tool }: ToolComponentProps) {
   const handoff = useHandoff(tool.id);
@@ -152,20 +153,18 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
           mimeType: SUBTITLE_MIME[outputFormat],
         },
       ],
-      summary: `${resulting.length} réplique${resulting.length > 1 ? "s" : ""} écrite${
-        resulting.length > 1 ? "s" : ""
-      } en ${outputFormat.toUpperCase()}.`,
+      summary: t("{count} {count, plural, one {réplique} other {répliques}} {count, plural, one {écrite} other {écrites}} en {value}.", { count: resulting.length, value: outputFormat.toUpperCase() }),
       warning: warnings[0]?.message,
     });
-    notify.success("Sous-titres prêts", "Enregistrez le fichier depuis le panneau de résultat.");
+    notify.success(t("Sous-titres prêts"), t("Enregistrez le fichier depuis le panneau de résultat."));
   };
 
   return (
     <div className="space-y-4">
       <Fieldset columns={1}>
-        <Field label="Que voulez-vous faire ?">
+        <Field label={t("Que voulez-vous faire ?")}>
           <OptionGroup
-            ariaLabel="Action"
+            ariaLabel={t("Action")}
             value={mode}
             onChange={(value) => setMode(value as Mode)}
             options={MODES}
@@ -177,34 +176,31 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
         constraints={{ ...constraintsForTool(tool), maxFiles: mode === "merge" ? 2 : 1 }}
         files={files}
         onChange={setFiles}
-        label={mode === "merge" ? "Déposez les deux fichiers à fusionner" : "Déposez un fichier SRT ou WebVTT"}
-        hint={mode === "merge" ? "Le premier fichier est A, le second B." : undefined}
+        label={mode === "merge" ? t("Déposez les deux fichiers à fusionner") : t("Déposez un fichier SRT ou WebVTT")}
+        hint={mode === "merge" ? t("Le premier fichier est A, le second B.") : undefined}
       />
 
       {error && (
-        <Callout tone="error" title="Fichier illisible">
-          {error}
+        <Callout tone="error" title={t("Fichier illisible")}>
+          {tx(error)}
         </Callout>
       )}
 
       {primary && (
         <>
           <p className="text-xs text-[var(--ft-text-muted)]">
-            {files[0].name} — {primary.format.toUpperCase()}, {primary.cues.length} réplique
-            {primary.cues.length > 1 ? "s" : ""}
-            {encodings[0] && encodings[0] !== "utf-8" &&
-              ` · lu en ${ENCODING_LABELS[encodings[0] as keyof typeof ENCODING_LABELS] ?? encodings[0]}, réécrit en UTF-8`}
-            {secondary &&
-              ` · ${files[1].name} — ${secondary.format.toUpperCase()}, ${secondary.cues.length} répliques`}
+            {t("{name} — {value}, {count} {count, plural, one {réplique} other {répliques}}{value2}{value3}", { name: files[0].name, value: primary.format.toUpperCase(), count: primary.cues.length, value2: encodings[0] && encodings[0] !== "utf-8" &&
+              t(" · lu en {value}, réécrit en UTF-8", { value: ENCODING_LABELS[encodings[0] as keyof typeof ENCODING_LABELS] ?? encodings[0] }), value3: secondary &&
+              t(" · {name} — {value}, {count} répliques", { name: files[1].name, value: secondary.format.toUpperCase(), count: secondary.cues.length }) })}
           </p>
 
           {primary.warnings.length > 0 && (
-            <Callout tone="warning" title="Anomalies relevées à la lecture">
+            <Callout tone="warning" title={t("Anomalies relevées à la lecture")}>
               <ul className="ml-4 list-disc space-y-0.5">
                 {primary.warnings.slice(0, 6).map((warning, index) => (
                   <li key={index}>
                     {warning.line ? `Ligne ${warning.line} : ` : ""}
-                    {warning.message}
+                    {tx(warning.message)}
                   </li>
                 ))}
               </ul>
@@ -213,14 +209,14 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
 
           {mode === "convert" && (
             <Fieldset columns={1}>
-              <Field label="Format de sortie">
+              <Field label={t("Format de sortie")}>
                 <OptionGroup
-                  ariaLabel="Format"
+                  ariaLabel={t("Format")}
                   value={format}
                   onChange={(value) => setFormat(value as SubtitleFormat)}
                   options={[
-                    { value: "srt", label: "SubRip (.srt)" },
-                    { value: "vtt", label: "WebVTT (.vtt)" },
+                    { value: "srt", label: t("SubRip (.srt)") },
+                    { value: "vtt", label: t("WebVTT (.vtt)") },
                   ]}
                 />
               </Field>
@@ -231,8 +227,8 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
             <>
               <Fieldset columns={2}>
                 <Field
-                  label="Décalage (millisecondes)"
-                  hint="Positif pour retarder les sous-titres, négatif pour les avancer."
+                  label={t("Décalage (millisecondes)")}
+                  hint={t("Positif pour retarder les sous-titres, négatif pour les avancer.")}
                 >
                   <NumberInput
                     value={offsetMs}
@@ -240,7 +236,7 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
                     onChange={(event) => setOffsetMs(Number(event.target.value) || 0)}
                   />
                 </Field>
-                <Field label="Raccourcis">
+                <Field label={t("Raccourcis")}>
                   <div className="flex flex-wrap gap-1">
                     {[-5000, -1000, -500, 500, 1000, 5000].map((step) => (
                       <button
@@ -256,17 +252,11 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
                 </Field>
               </Fieldset>
               {shifted && (shifted.clamped > 0 || shifted.dropped > 0) && (
-                <Callout tone="warning" title="Bornes atteintes">
+                <Callout tone="warning" title={t("Bornes atteintes")}>
                   {shifted.clamped > 0 &&
-                    `${shifted.clamped} réplique${shifted.clamped > 1 ? "s" : ""} commencerai${
-                      shifted.clamped > 1 ? "ent" : "t"
-                    } avant zéro : ramenée${shifted.clamped > 1 ? "s" : ""} à 0 en conservant sa durée. `}
+                    t("{clamped} {clamped, plural, one {réplique} other {répliques}} {clamped, plural, one {commencerait} other {commenceraient}} avant zéro : {clamped, plural, one {ramenée} other {ramenées}} à 0 en conservant sa durée. ", { clamped: shifted.clamped })}
                   {shifted.dropped > 0 &&
-                    `${shifted.dropped} réplique${shifted.dropped > 1 ? "s" : ""} tomberai${
-                      shifted.dropped > 1 ? "ent" : "t"
-                    } entièrement avant zéro et ne peu${shifted.dropped > 1 ? "vent" : "t"} pas être conservée${
-                      shifted.dropped > 1 ? "s" : ""
-                    }.`}
+                    t("{dropped} {dropped, plural, one {réplique} other {répliques}} {dropped, plural, one {tomberait} other {tomberaient}} entièrement avant zéro et ne {dropped, plural, one {peut} other {peuvent}} pas être {dropped, plural, one {conservée} other {conservées}}.", { dropped: shifted.dropped })}
                 </Callout>
               )}
             </>
@@ -276,11 +266,11 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
             <>
               <Fieldset columns={1}>
                 <Field
-                  label="Ordre"
-                  hint={MERGE_ORDERS.find((entry) => entry.value === mergeOrder)?.hint}
+                  label={t("Ordre")}
+                  hint={tx(MERGE_ORDERS.find((entry) => entry.value === mergeOrder)?.hint)}
                 >
                   <OptionGroup
-                    ariaLabel="Ordre"
+                    ariaLabel={t("Ordre")}
                     value={mergeOrder}
                     onChange={(value) => setMergeOrder(value as MergeOrder)}
                     options={MERGE_ORDERS.map((entry) => ({ value: entry.value, label: entry.label }))}
@@ -288,14 +278,12 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
                 </Field>
               </Fieldset>
               {!secondary && (
-                <Callout tone="info" title="Il manque le second fichier">
-                  Déposez un deuxième fichier de sous-titres pour la fusion.
+                <Callout tone="info" title={t("Il manque le second fichier")}>
+                  {t("Déposez un deuxième fichier de sous-titres pour la fusion.")}
                 </Callout>
               )}
-              <Callout tone="neutral" title="Ce que « fusionner » veut dire ici">
-                Les répliques des deux fichiers sont réunies sur une seule ligne de temps. Deux
-                répliques qui se chevauchent restent deux répliques : rien n'est recollé ni
-                supprimé.
+              <Callout tone="neutral" title={t("Ce que « fusionner » veut dire ici")}>
+                {t("Les répliques des deux fichiers sont réunies sur une seule ligne de temps. Deux répliques qui se chevauchent restent deux répliques : rien n'est recollé ni supprimé.")}
               </Callout>
             </>
           )}
@@ -305,22 +293,22 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
               <Fieldset columns={2}>
                 {(
                   [
-                    ["sort", "Trier chronologiquement"],
-                    ["removeEmpty", "Retirer les répliques vides"],
-                    ["removeDuplicates", "Retirer les doublons exacts"],
-                    ["removeInvalid", "Retirer les répliques inaffichables"],
+                    ["sort", t("Trier chronologiquement")],
+                    ["removeEmpty", t("Retirer les répliques vides")],
+                    ["removeDuplicates", t("Retirer les doublons exacts")],
+                    ["removeInvalid", t("Retirer les répliques inaffichables")],
                   ] as const
                 ).map(([key, label]) => (
-                  <Field key={key} label={label}>
+                  <Field key={key} label={tx(label)}>
                     <OptionGroup
-                      ariaLabel={label}
+                      ariaLabel={tx(label)}
                       value={normalizeOptions[key] ? "yes" : "no"}
                       onChange={(value) =>
                         setNormalizeOptions((current) => ({ ...current, [key]: value === "yes" }))
                       }
                       options={[
-                        { value: "yes", label: "Oui" },
-                        { value: "no", label: "Non" },
+                        { value: "yes", label: t("Oui") },
+                        { value: "no", label: t("Non") },
                       ]}
                     />
                   </Field>
@@ -328,8 +316,8 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
               </Fieldset>
               <Reports before={normalized.before} after={normalized.after} />
               {normalized.remaining.map((issue, index) => (
-                <Callout key={index} tone="warning" title="Signalé, mais pas corrigé">
-                  {issue.message}
+                <Callout key={index} tone="warning" title={t("Signalé, mais pas corrigé")}>
+                  {tx(issue.message)}
                 </Callout>
               ))}
             </>
@@ -337,8 +325,7 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
 
           <div className="flex items-center justify-between gap-3 border-t border-[var(--ft-border)] pt-4">
             <p className="text-xs text-[var(--ft-text-muted)]">
-              Résultat : {resulting.length} réplique{resulting.length > 1 ? "s" : ""} en{" "}
-              {outputFormat.toUpperCase()}
+              {t("Résultat : {count} {count, plural, one {réplique} other {répliques}} en {value}", { count: resulting.length, value: outputFormat.toUpperCase() })}
             </p>
             <Button
               size="md"
@@ -347,7 +334,7 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
               disabled={resulting.length === 0 || (mode === "merge" && !secondary)}
             >
               <Icon name="Play" size={15} />
-              Produire le fichier
+              {t("Produire le fichier")}
             </Button>
           </div>
 
@@ -364,14 +351,14 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
 
 function Reports({ before, after }: { before: SubtitleReport; after: SubtitleReport }) {
   const rows: [string, number | string, number | string][] = [
-    ["Répliques", before.cues, after.cues],
+    [t("Répliques"), before.cues, after.cues],
     ["Vides", before.empty, after.empty],
-    ["Doublons exacts", before.duplicates, after.duplicates],
-    ["Hors ordre", before.outOfOrder, after.outOfOrder],
+    [t("Doublons exacts"), before.duplicates, after.duplicates],
+    [t("Hors ordre"), before.outOfOrder, after.outOfOrder],
     ["Chevauchements", before.overlaps, after.overlaps],
-    ["Fin avant début", before.endBeforeStart, after.endBeforeStart],
+    [t("Fin avant début"), before.endBeforeStart, after.endBeforeStart],
     [
-      "Première / dernière",
+      t("Première / dernière"),
       before.firstStartMs === undefined ? "—" : formatTimecode(before.firstStartMs),
       after.lastEndMs === undefined ? "—" : formatTimecode(after.lastEndMs),
     ],
@@ -382,15 +369,15 @@ function Reports({ before, after }: { before: SubtitleReport; after: SubtitleRep
       <table className="w-full text-xs">
         <thead>
           <tr className="text-[10px] uppercase tracking-wide text-[var(--ft-text-faint)]">
-            <th className="px-3 py-1.5 text-left font-normal">Constat</th>
-            <th className="px-3 py-1.5 text-right font-normal">Avant</th>
-            <th className="px-3 py-1.5 text-right font-normal">Après</th>
+            <th className="px-3 py-1.5 text-left font-normal">{t("Constat")}</th>
+            <th className="px-3 py-1.5 text-right font-normal">{t("Avant")}</th>
+            <th className="px-3 py-1.5 text-right font-normal">{t("Après")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--ft-border)]">
           {rows.map(([label, a, b]) => (
             <tr key={label}>
-              <td className="px-3 py-1.5">{label}</td>
+              <td className="px-3 py-1.5">{tx(label)}</td>
               <td className="px-3 py-1.5 text-right font-mono">{a}</td>
               <td className="px-3 py-1.5 text-right font-mono">{b}</td>
             </tr>
@@ -415,10 +402,10 @@ function CueTable({ cues }: { cues: readonly SubtitleCue[] }) {
           <thead className="sticky top-0 bg-[var(--ft-surface)]">
             <tr className="text-[10px] uppercase tracking-wide text-[var(--ft-text-faint)]">
               <th className="px-2 py-1.5 text-left font-normal">#</th>
-              <th className="px-2 py-1.5 text-left font-normal">Début</th>
-              <th className="px-2 py-1.5 text-left font-normal">Fin</th>
-              <th className="px-2 py-1.5 text-left font-normal">Durée</th>
-              <th className="px-2 py-1.5 text-left font-normal">Texte</th>
+              <th className="px-2 py-1.5 text-left font-normal">{t("Début")}</th>
+              <th className="px-2 py-1.5 text-left font-normal">{t("Fin")}</th>
+              <th className="px-2 py-1.5 text-left font-normal">{t("Durée")}</th>
+              <th className="px-2 py-1.5 text-left font-normal">{t("Texte")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--ft-border)]">
@@ -430,7 +417,7 @@ function CueTable({ cues }: { cues: readonly SubtitleCue[] }) {
                 <td className="px-2 py-1 font-mono text-[var(--ft-text-muted)]">
                   {(cueDuration(cue) / 1000).toFixed(1)} s
                 </td>
-                <td className="px-2 py-1 whitespace-pre-wrap">{cue.text}</td>
+                <td className="px-2 py-1 whitespace-pre-wrap">{tx(cue.text)}</td>
               </tr>
             ))}
           </tbody>
@@ -438,8 +425,7 @@ function CueTable({ cues }: { cues: readonly SubtitleCue[] }) {
       </div>
       {cues.length > shown.length && (
         <p className="text-xs text-[var(--ft-text-muted)]">
-          {shown.length} premières répliques affichées sur {cues.length}. Le fichier produit les
-          contient toutes.
+          {t("{count} premières répliques affichées sur {cuesCount}. Le fichier produit les contient toutes.", { count: shown.length, cuesCount: cues.length })}
         </p>
       )}
     </div>

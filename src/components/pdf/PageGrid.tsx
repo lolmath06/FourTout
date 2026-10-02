@@ -3,6 +3,7 @@ import { renderThumbnail } from "@/core/pdf/operations/toImages";
 import { Icon } from "@/components/ui/Icon";
 import type { PdfSource } from "@/core/pdf/types";
 import { reorderByInsertion } from "./pageReorder";
+import { Trans, t } from "@/i18n";
 
 /**
  * Grille des pages d'un document, avec miniatures.
@@ -163,7 +164,7 @@ export function PageGrid({
             onClick={interactive ? () => onToggle(page) : undefined}
             role={interactive ? "checkbox" : reorderable ? "button" : undefined}
             aria-checked={interactive ? isSelected : undefined}
-            aria-label={`Page ${page}`}
+            aria-label={t("Page {page}", { page })}
             tabIndex={interactive || reorderable ? 0 : undefined}
             onKeyDown={
               interactive
@@ -195,7 +196,7 @@ export function PageGrid({
               {thumbnails[page] ? (
                 <img
                   src={thumbnails[page]}
-                  alt={`Aperçu de la page ${page}`}
+                  alt={t("Aperçu de la page {page}", { page })}
                   draggable={false}
                   className="max-h-full max-w-full object-contain"
                 />
@@ -205,9 +206,7 @@ export function PageGrid({
             </div>
 
             <div className="flex items-center justify-between gap-1 border-t border-[var(--ft-border)] px-1.5 py-1">
-              <span className="text-[11px] tabular-nums text-[var(--ft-text-muted)]">
-                Page {page}
-              </span>
+              <Trans source={"<0>Page {page}</0>"} values={{ page }} components={[<span className="text-[11px] tabular-nums text-[var(--ft-text-muted)]" />]} />
               {isSelected && <Icon name="Check" size={12} className="text-[var(--ft-accent-text)]" />}
               {reorderable && index !== page - 1 && (
                 <span className="text-[10px] text-[var(--ft-accent-text)]">→ {index + 1}</span>

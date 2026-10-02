@@ -14,6 +14,7 @@
 import { isTauri } from "@/core/platform";
 import type { OperationContext } from "@/core/pdf/types";
 import { JobCancelledError } from "@/core/jobs/types";
+import { localized, t } from "@/i18n";
 
 export const NETWORK_NATIVE_REQUIRED =
   "Les outils réseau ouvrent de vraies connexions : ils nécessitent l'application FourTout " +
@@ -92,12 +93,12 @@ export const PORT_STATUS_LABELS: Record<PortStatus, string> = {
   filtered: "AUCUNE RÉPONSE",
 };
 
-export const PORT_STATUS_EXPLANATIONS: Record<PortStatus, string> = {
-  open: "La connexion a abouti : un service écoute sur ce port.",
-  closed: "La machine a refusé la connexion : rien n'écoute sur ce port.",
+export const PORT_STATUS_EXPLANATIONS: Record<PortStatus, string> = localized(() => ({
+  open: t("La connexion a abouti : un service écoute sur ce port."),
+  closed: t("La machine a refusé la connexion : rien n'écoute sur ce port."),
   filtered:
-    "Aucune réponse avant le délai : le port est filtré par un pare-feu, ou l'hôte est injoignable.",
-};
+    t("Aucune réponse avant le délai : le port est filtré par un pare-feu, ou l'hôte est injoignable."),
+}));
 
 export const SERVICE_DISCLAIMER =
   "« Service habituellement associé » vient d'une table de numéros, pas d'une détection : " +
@@ -194,7 +195,7 @@ async function runProbe<T>(
     const message =
       typeof error === "string" ? error : error instanceof Error ? error.message : "";
     if (message === NATIVE_CANCELLED || context?.signal?.aborted) throw new JobCancelledError();
-    throw new Error(message || "La sonde réseau a échoué.");
+    throw new Error(message || t("La sonde réseau a échoué."));
   } finally {
     unlisten();
     context?.signal?.removeEventListener("abort", onAbort);
@@ -247,7 +248,7 @@ export async function parsePorts(spec: string): Promise<number[]> {
   try {
     return await invoke<number[]>("network_parse_ports", { spec });
   } catch (error) {
-    throw new Error(typeof error === "string" ? error : "Liste de ports illisible.");
+    throw new Error(typeof error === "string" ? error : t("Liste de ports illisible."));
   }
 }
 
@@ -258,7 +259,7 @@ export async function listInterfaces(): Promise<NetworkInterface[]> {
   try {
     return await invoke<NetworkInterface[]>("network_interfaces", {});
   } catch (error) {
-    throw new Error(typeof error === "string" ? error : "Interfaces réseau illisibles.");
+    throw new Error(typeof error === "string" ? error : t("Interfaces réseau illisibles."));
   }
 }
 
@@ -273,7 +274,7 @@ export async function planDiscovery(target: NetworkInterface): Promise<Discovery
       netmask: target.netmask,
     });
   } catch (error) {
-    throw new Error(typeof error === "string" ? error : "Plage de découverte incalculable.");
+    throw new Error(typeof error === "string" ? error : t("Plage de découverte incalculable."));
   }
 }
 

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { applyZoom, formatZoom, stepZoom, ZOOM_DEFAULT } from "@/core/ui/zoom";
 import { useNotifications } from "@/features/notifications/store";
 import { applyDensity, applyMotion, applyTheme, useSettings } from "./store";
+import { t } from "@/i18n";
 
 /**
  * Raccourcis de taille d'interface, montés une seule fois par l'ossature.
@@ -48,7 +49,7 @@ export function useUiScale(): void {
       if (lastNotice) store.dismiss(lastNotice);
       lastNotice = store.push({
         kind: "info",
-        title: `Interface : ${formatZoom(value)}`,
+        title: t("Interface : {value}", { value: formatZoom(value) }),
         duration: 1200,
       });
     };

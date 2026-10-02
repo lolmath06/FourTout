@@ -10,6 +10,7 @@ import {
   type Base32Alphabet,
 } from "@/core/code/base32";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 type Direction = "encode" | "decode";
 
@@ -39,7 +40,7 @@ export function Base32Tool(_props: ToolComponentProps) {
     } catch (failure) {
       return {
         output: "",
-        error: failure instanceof Error ? failure.message : "Conversion impossible.",
+        error: failure instanceof Error ? failure.message : t("Conversion impossible."),
       };
     }
   }, [input, direction, alphabet, padding, wrap]);
@@ -49,42 +50,40 @@ export function Base32Tool(_props: ToolComponentProps) {
       input={input}
       onInputChange={setInput}
       output={result.output}
-      inputLabel={direction === "encode" ? "Texte" : "Base32"}
-      outputLabel={direction === "encode" ? "Base32" : "Texte"}
+      inputLabel={direction === "encode" ? t("Texte") : "Base32"}
+      outputLabel={direction === "encode" ? "Base32" : t("Texte")}
       placeholder={
-        direction === "encode" ? "Texte à encoder…" : "MZXW6YTBOI======"
+        direction === "encode" ? t("Texte à encoder…") : "MZXW6YTBOI======"
       }
       downloadName={direction === "encode" ? "base32.txt" : "decode.txt"}
-      error={result.error}
+      error={tx(result.error)}
       sample={direction === "encode" ? "foobar" : "MZXW6YTBOI======"}
       layout="side-by-side"
       summary={
         result.output.length > 0 ? (
           <>
-            {input.length} caractère{input.length > 1 ? "s" : ""} en entrée ·{" "}
-            {result.output.replace(/\n/g, "").length} en sortie
-            {direction === "encode" && " (le Base32 allonge d'environ 60 %)"}
+            {t("{count} {count, plural, one {caractère} other {caractères}} en entrée · {countCount} en sortie{value}", { count: input.length, countCount: result.output.replace(/\n/g, "").length, value: direction === "encode" && " (le Base32 allonge d'environ 60 %)" })}
           </>
         ) : undefined
       }
     >
       <Fieldset columns={2}>
-        <Field label="Sens">
+        <Field label={t("Sens")}>
           <OptionGroup
-            ariaLabel="Sens de conversion"
+            ariaLabel={t("Sens de conversion")}
             value={direction}
             onChange={setDirection}
             options={[
-              { value: "encode", label: "Texte → Base32" },
-              { value: "decode", label: "Base32 → Texte" },
+              { value: "encode", label: t("Texte → Base32") },
+              { value: "decode", label: t("Base32 → Texte") },
             ]}
           />
         </Field>
-        <Field label="Alphabet">
+        <Field label={t("Alphabet")}>
           <Select
             value={alphabet}
             onChange={setAlphabet}
-            aria-label="Alphabet Base32"
+            aria-label={t("Alphabet Base32")}
             options={[
               { value: "rfc4648", label: BASE32_ALPHABET_LABELS.rfc4648 },
               { value: "rfc4648-hex", label: BASE32_ALPHABET_LABELS["rfc4648-hex"] },
@@ -98,20 +97,19 @@ export function Base32Tool(_props: ToolComponentProps) {
           <CheckOption
             checked={padding}
             onChange={setPadding}
-            label="Compléter avec des « = »"
-            hint="Ce que la RFC impose et ce qu'attendent la plupart des décodeurs. Les secrets TOTP, eux, s'écrivent souvent sans."
+            label={t("Compléter avec des « = »")}
+            hint={t("Ce que la RFC impose et ce qu'attendent la plupart des décodeurs. Les secrets TOTP, eux, s'écrivent souvent sans.")}
           />
           <CheckOption
             checked={wrap}
             onChange={setWrap}
-            label="Couper en lignes de 64 caractères"
-            hint="Pour recopier une longue sortie dans un courriel ou un fichier de configuration."
+            label={t("Couper en lignes de 64 caractères")}
+            hint={t("Pour recopier une longue sortie dans un courriel ou un fichier de configuration.")}
           />
         </div>
       ) : (
         <Callout tone="info">
-          Les espaces et les retours à la ligne sont ignorés, et les minuscules acceptées : un
-          Base32 recopié depuis un terminal se décode tel quel.
+          {t("Les espaces et les retours à la ligne sont ignorés, et les minuscules acceptées : un Base32 recopié depuis un terminal se décode tel quel.")}
         </Callout>
       )}
     </TextToolShell>

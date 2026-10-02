@@ -12,6 +12,7 @@ import {
   type DimensionId,
 } from "@/core/units";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 /**
  * Convertisseur d'unités, unique pour les dix cartes du catalogue.
@@ -53,32 +54,32 @@ export function UnitConverterTool({ dimensionId }: { dimensionId: DimensionId })
   return (
     <div className="space-y-4">
       <Fieldset columns={3} title={definition.name}>
-        <Field label="Valeur" hint="La virgule et les espaces sont acceptés.">
+        <Field label={t("Valeur")} hint={t("La virgule et les espaces sont acceptés.")}>
           <TextInput
             value={raw}
             inputMode="decimal"
             autoFocus
             onChange={(event) => setRaw(event.target.value)}
-            aria-label="Valeur à convertir"
+            aria-label={t("Valeur à convertir")}
             data-testid="unit-input"
           />
         </Field>
-        <Field label="De">
+        <Field label={t("De")}>
           <Select
             value={from}
             onChange={setFrom}
-            aria-label="Unité de départ"
+            aria-label={t("Unité de départ")}
             options={definition.units.map((unit) => ({
               value: unit.id,
               label: `${unit.symbol} — ${unit.name}`,
             }))}
           />
         </Field>
-        <Field label="Vers">
+        <Field label={t("Vers")}>
           <Select
             value={to}
             onChange={setTo}
-            aria-label="Unité d'arrivée"
+            aria-label={t("Unité d'arrivée")}
             options={definition.units.map((unit) => ({
               value: unit.id,
               label: `${unit.symbol} — ${unit.name}`,
@@ -89,13 +90,13 @@ export function UnitConverterTool({ dimensionId }: { dimensionId: DimensionId })
 
       <div className="flex justify-end">
         <Button size="sm" onClick={swap} disabled={result === undefined}>
-          <Icon name="ArrowUpDown" size={13} /> Inverser
+          <Icon name="ArrowUpDown" size={13} />{" "}{t("Inverser")}
         </Button>
       </div>
 
       <InputError
         message={
-          invalid ? `« ${raw} » n'est pas un nombre. Utilisez des chiffres, avec une virgule ou un point.` : undefined
+          invalid ? t("« {raw} » n'est pas un nombre. Utilisez des chiffres, avec une virgule ou un point.", { raw }) : undefined
         }
       />
 
@@ -109,7 +110,7 @@ export function UnitConverterTool({ dimensionId }: { dimensionId: DimensionId })
         />
       )}
 
-      <ValueTable rows={rows} caption="Toutes les unités" />
+      <ValueTable rows={rows} caption={t("Toutes les unités")} />
     </div>
   );
 }

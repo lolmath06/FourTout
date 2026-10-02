@@ -4,6 +4,7 @@ import { readSelectedFile } from "@/core/image/codec";
 import { JobCancelledError } from "@/core/jobs/types";
 import { TesseractEngine } from "./engine";
 import type { OcrEngine, OcrLanguage, OcrResult } from "./types";
+import { t } from "@/i18n";
 
 export * from "./types";
 export { TesseractEngine, normalizeResult } from "./engine";
@@ -47,20 +48,20 @@ export async function recognizeImages(
     const span = 1 / files.length;
     context?.report?.({
       ratio: base,
-      label: files.length > 1 ? `Image ${index + 1} sur ${files.length}` : "Reconnaissance du texte…",
+      label: files.length > 1 ? t("Image {value} sur {count}", { value: index + 1, count: files.length }) : t("Reconnaissance du texte…"),
     });
     const bytes = await readSelectedFile(file);
     const result = await engine.recognize({ name: file.name, bytes }, options.language, {
       report: (progress) =>
         context?.report?.({
           ratio: base + (progress.ratio ?? 0) * span,
-          label: files.length > 1 ? `Image ${index + 1} sur ${files.length}` : progress.label,
+          label: files.length > 1 ? t("Image {value} sur {count}", { value: index + 1, count: files.length }) : progress.label,
         }),
       signal: context?.signal,
     });
     items.push({ name: file.name, ...result });
   }
 
-  context?.report?.({ ratio: 1, label: "Terminé" });
+  context?.report?.({ ratio: 1, label: t("Terminé") });
   return items;
 }

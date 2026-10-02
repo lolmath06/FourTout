@@ -9,6 +9,7 @@ import {
 } from "@/core/files";
 import { notify } from "@/features/notifications/store";
 import { Icon } from "@/components/ui/Icon";
+import { Trans, t, tx } from "@/i18n";
 
 interface FileDropZoneProps {
   /** Contraintes issues de la définition de l'outil (`constraintsForTool`). */
@@ -45,7 +46,7 @@ export function FileDropZone({
   constraints,
   files,
   onChange,
-  label = "Déposez vos fichiers ici",
+  label = t("Déposez vos fichiers ici"),
   hint,
   disabled = false,
   className,
@@ -71,8 +72,8 @@ export function FileDropZone({
       if (rejected.length > 0) {
         notify.warning(
           rejected.length === 1
-            ? `« ${rejected[0].name} » n'a pas été ajouté`
-            : `${rejected.length} fichiers ignorés`,
+            ? t("« {name} » n'a pas été ajouté", { name: rejected[0].name })
+            : t("{count} fichiers ignorés", { count: rejected.length }),
           rejected[0].reason,
         );
       }
@@ -113,14 +114,14 @@ export function FileDropZone({
           <Icon name="UploadCloud" size={compact ? 15 : 18} />
         </span>
         <span className={compact ? "min-w-0 flex-1" : "contents"}>
-          <span className="block text-[13px] font-medium text-[var(--ft-text)]">{label}</span>
+          <span className="block text-[13px] font-medium text-[var(--ft-text)]">{tx(label)}</span>
           <span className="ft-meta block">
-            ou <span className="text-[var(--ft-accent-text)]">parcourir vos fichiers</span>
-            {compact && hint && <span className="text-[var(--ft-text-faint)]"> · {hint}</span>}
+            <Trans source={"ou <0>parcourir vos fichiers</0>"} components={[<span className="text-[var(--ft-accent-text)]" />]} />
+            {compact && hint && <span className="text-[var(--ft-text-faint)]"> · {tx(hint)}</span>}
           </span>
         </span>
         {!compact && hint && (
-          <span className="text-[11.5px] text-[var(--ft-text-faint)]">{hint}</span>
+          <span className="text-[11.5px] text-[var(--ft-text-faint)]">{tx(hint)}</span>
         )}
         <input
           id={inputId}
@@ -150,7 +151,7 @@ export function FileDropZone({
               </span>
               <button
                 type="button"
-                aria-label={`Retirer ${file.name}`}
+                aria-label={t("Retirer {name}", { name: file.name })}
                 onClick={() => removeAt(file.id)}
                 className="shrink-0 rounded-[var(--radius-sm)] p-0.5 text-[var(--ft-text-faint)] hover:text-[var(--ft-danger)]"
               >

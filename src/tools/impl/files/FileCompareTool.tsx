@@ -10,6 +10,7 @@ import { setHandoff } from "@/features/handoff/store";
 import { toolRoute } from "@/core/tools/types";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { formatNumber, t } from "@/i18n";
 
 /**
  * Comparaison de deux fichiers.
@@ -33,8 +34,8 @@ export function FileCompareTool(_props: ToolComponentProps) {
       navigate(toolRoute("text-compare"));
     } catch (error) {
       notify.error(
-        "Ouverture impossible",
-        error instanceof Error ? error.message : "Ces fichiers ne peuvent pas être lus comme du texte.",
+        t("Ouverture impossible"),
+        error instanceof Error ? error.message : t("Ces fichiers ne peuvent pas être lus comme du texte."),
       );
     }
   };
@@ -46,10 +47,10 @@ export function FileCompareTool(_props: ToolComponentProps) {
         paths,
         onChange: (next) => setPaths(next.slice(-2)),
         multiple: true,
-        label: "Choisissez les deux fichiers à comparer",
-        hint: "Sélectionnez-les ensemble, ou l'un après l'autre",
+        label: t("Choisissez les deux fichiers à comparer"),
+        hint: t("Sélectionnez-les ensemble, ou l'un après l'autre"),
       }}
-      actionLabel="Comparer"
+      actionLabel={t("Comparer")}
       actionIcon="GitCompare"
       actionDisabled={paths.length !== 2}
       run={(context) => compareFiles(paths[0], paths[1], context)}
@@ -68,14 +69,14 @@ export function FileCompareTool(_props: ToolComponentProps) {
               size={17}
               className={result.identical ? "text-[var(--ft-ok)]" : "text-[var(--ft-warn)]"}
             />
-            {result.identical ? "Fichiers identiques" : "Fichiers différents"}
+            {result.identical ? t("Fichiers identiques") : t("Fichiers différents")}
           </p>
 
           <dl className="mt-3 grid gap-x-4 gap-y-1 text-xs sm:grid-cols-[14rem_1fr]">
-            <dt className="text-[var(--ft-text-muted)]">Tailles</dt>
+            <dt className="text-[var(--ft-text-muted)]">{t("Tailles")}</dt>
             <dd className="tabular-nums">
               {formatFileSize(result.sizeA)} · {formatFileSize(result.sizeB)}
-              {result.sizeA !== result.sizeB && " — différentes"}
+              {result.sizeA !== result.sizeB && t(" — différentes")}
             </dd>
             <dt className="text-[var(--ft-text-muted)]">SHA-256 — {baseName(paths[0] ?? "")}</dt>
             <dd className="break-all font-mono">{result.sha256A}</dd>
@@ -83,10 +84,9 @@ export function FileCompareTool(_props: ToolComponentProps) {
             <dd className="break-all font-mono">{result.sha256B}</dd>
             {result.firstDifference !== null && (
               <>
-                <dt className="text-[var(--ft-text-muted)]">Premier octet différent</dt>
+                <dt className="text-[var(--ft-text-muted)]">{t("Premier octet différent")}</dt>
                 <dd className="tabular-nums">
-                  position {result.firstDifference.toLocaleString("fr-FR")} (0x
-                  {result.firstDifference.toString(16)})
+                  {t("position {value} (0x{value2})", { value: formatNumber(result.firstDifference), value2: result.firstDifference.toString(16) })}
                 </dd>
               </>
             )}
@@ -95,7 +95,7 @@ export function FileCompareTool(_props: ToolComponentProps) {
           {!result.identical && result.bothText && (
             <div className="mt-3">
               <Button size="sm" variant="primary" onClick={openTextDiff}>
-                <Icon name="GitCompare" size={14} /> Voir les différences ligne par ligne
+                <Icon name="GitCompare" size={14} />{" "}{t("Voir les différences ligne par ligne")}
               </Button>
             </div>
           )}

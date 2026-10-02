@@ -11,6 +11,7 @@ import {
   type ImageFormat,
   type Rgb,
 } from "./types";
+import { t } from "@/i18n";
 
 /**
  * Décodage et encodage des images, au-dessus du backend bitmap partagé
@@ -37,7 +38,7 @@ export async function readSelectedFile(file: SelectedFile): Promise<Uint8Array> 
     const { readFile } = await import("@tauri-apps/plugin-fs");
     return await readFile(file.path);
   }
-  throw new ImageError("not-an-image", "Fichier illisible.");
+  throw new ImageError("not-an-image", t("Fichier illisible."));
 }
 
 function guessMime(bytes: Uint8Array, extension?: string): string {
@@ -137,7 +138,7 @@ async function decodeSvg(bytes: Uint8Array): Promise<RasterCanvas> {
   try {
     return await backend.decode(safeBytes, "image/svg+xml");
   } catch (error) {
-    throw new ImageError("decode-failed", "SVG non pris en charge.", { cause: error });
+    throw new ImageError("decode-failed", t("SVG non pris en charge."), { cause: error });
   }
 }
 

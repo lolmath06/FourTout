@@ -27,6 +27,7 @@ import {
   type QueryResult,
 } from "@/core/sqlite/native";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t, tx } from "@/i18n";
 
 type Pane = "data" | "schema" | "query";
 
@@ -35,7 +36,7 @@ const ROW_LIMITS = [100, 500, 1000, 5000];
 /** Tableau de résultats. Un BLOB y est nommé, jamais rendu comme du texte. */
 function ResultTable({ result }: { result: QueryResult }) {
   if (result.columns.length === 0) {
-    return <Callout tone="info">Cette requête ne renvoie aucune colonne.</Callout>;
+    return <Callout tone="info">{t("Cette requête ne renvoie aucune colonne.")}</Callout>;
   }
   return (
     <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
@@ -73,8 +74,7 @@ function ResultTable({ result }: { result: QueryResult }) {
         </table>
       </div>
       <p className="ft-meta border-t border-[var(--ft-rule)] px-3 py-1.5">
-        {result.rowCount} ligne{result.rowCount > 1 ? "s" : ""} · {result.elapsedMs} ms
-        {result.truncated && ` · affichage limité à ${result.limit} lignes`}
+        {t("{rowCount} {rowCount, plural, one {ligne} other {lignes}} · {elapsedMs} ms{value}", { rowCount: result.rowCount, elapsedMs: result.elapsedMs, value: result.truncated && t(" · affichage limité à {limit} lignes", { limit: result.limit }) })}
       </p>
     </section>
   );
@@ -85,15 +85,15 @@ function SchemaView({ object }: { object: ObjectInfo }) {
   return (
     <div className="space-y-3">
       <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
-        <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">Colonnes</h3>
+        <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">{t("Colonnes")}</h3>
         <div className="overflow-x-auto">
           <table className="ft-table">
             <thead>
               <tr>
-                <th scope="col">Nom</th>
-                <th scope="col">Type déclaré</th>
-                <th scope="col">Contraintes</th>
-                <th scope="col">Défaut</th>
+                <th scope="col">{t("Nom")}</th>
+                <th scope="col">{t("Type déclaré")}</th>
+                <th scope="col">{t("Contraintes")}</th>
+                <th scope="col">{t("Défaut")}</th>
               </tr>
             </thead>
             <tbody>
@@ -105,7 +105,7 @@ function SchemaView({ object }: { object: ObjectInfo }) {
                   <td className="ft-value">{column.declaredType || "—"}</td>
                   <td className="ft-value">
                     {[
-                      column.primaryKey ? "clé primaire" : undefined,
+                      column.primaryKey ? t("clé primaire") : undefined,
                       column.notNull ? "NOT NULL" : "facultative",
                     ]
                       .filter(Boolean)
@@ -118,14 +118,13 @@ function SchemaView({ object }: { object: ObjectInfo }) {
           </table>
         </div>
         <p className="ft-meta border-t border-[var(--ft-rule)] px-3 py-1.5">
-          SQLite n'impose pas les types : une colonne déclarée <code>INTEGER</code> peut contenir
-          du texte. Le type est une intention, pas une garantie.
+          <Trans source={"SQLite n'impose pas les types : une colonne déclarée <0>INTEGER</0> peut contenir du texte. Le type est une intention, pas une garantie."} components={[<code />]} />
         </p>
       </section>
 
       {object.indexes.length > 0 && (
         <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
-          <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">Index</h3>
+          <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">{t("Index")}</h3>
           <ul className="divide-y divide-[var(--ft-rule)]">
             {object.indexes.map((index) => (
               <li key={index.name} className="ft-row-py px-3">
@@ -134,8 +133,8 @@ function SchemaView({ object }: { object: ObjectInfo }) {
                   {index.columns.join(", ") || "—"}
                   {index.unique && " · unique"}
                   {index.partial && " · partiel"}
-                  {index.origin === "pk" && " · issu de la clé primaire"}
-                  {index.origin === "u" && " · issu d'une contrainte UNIQUE"}
+                  {index.origin === "pk" && t(" · issu de la clé primaire")}
+                  {index.origin === "u" && t(" · issu d'une contrainte UNIQUE")}
                 </p>
               </li>
             ))}
@@ -146,7 +145,7 @@ function SchemaView({ object }: { object: ObjectInfo }) {
       {object.foreignKeys.length > 0 && (
         <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
           <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-            Clés étrangères
+            {t("Clés étrangères")}
           </h3>
           <ul className="divide-y divide-[var(--ft-rule)]">
             {object.foreignKeys.map((key) => (
@@ -155,8 +154,7 @@ function SchemaView({ object }: { object: ObjectInfo }) {
                   {key.column} → {key.referencesTable}.{key.referencesColumn}
                 </span>
                 <p className="ft-meta">
-                  À la suppression : {key.onDelete || "NO ACTION"} · à la mise à jour :{" "}
-                  {key.onUpdate || "NO ACTION"}
+                  {t("À la suppression : {value} · à la mise à jour : {value2}", { value: key.onDelete || "NO ACTION", value2: key.onUpdate || "NO ACTION" })}
                 </p>
               </li>
             ))}
@@ -164,7 +162,7 @@ function SchemaView({ object }: { object: ObjectInfo }) {
         </section>
       )}
 
-      {object.sql && <TextPane label="Instruction de création" value={object.sql} readOnly droppable={false} minHeight="7rem" />}
+      {object.sql && <TextPane label={t("Instruction de création")} value={object.sql} readOnly droppable={false} minHeight="7rem" />}
     </div>
   );
 }
@@ -229,7 +227,7 @@ export function SqliteExplorerTool({ tool }: ToolComponentProps) {
       .catch((failure: unknown) => {
         if (cancelled) return;
         setOverview(undefined);
-        setError(failure instanceof Error ? failure.message : "Ouverture impossible.");
+        setError(failure instanceof Error ? failure.message : t("Ouverture impossible."));
       })
       .finally(() => {
         if (!cancelled) setBusy(false);
@@ -249,7 +247,7 @@ export function SqliteExplorerTool({ tool }: ToolComponentProps) {
         setOffset(nextOffset);
       } catch (failure) {
         setRows(undefined);
-        setError(failure instanceof Error ? failure.message : "Lecture impossible.");
+        setError(failure instanceof Error ? failure.message : t("Lecture impossible."));
       } finally {
         setBusy(false);
       }
@@ -275,7 +273,7 @@ export function SqliteExplorerTool({ tool }: ToolComponentProps) {
       setQueryResult(await runQuery(path, sql, limit));
     } catch (failure) {
       setQueryResult(undefined);
-      setQueryError(failure instanceof Error ? failure.message : "Requête impossible.");
+      setQueryError(failure instanceof Error ? failure.message : t("Requête impossible."));
     } finally {
       setBusy(false);
     }
@@ -285,10 +283,10 @@ export function SqliteExplorerTool({ tool }: ToolComponentProps) {
     try {
       const bytes = new TextEncoder().encode(queryToCsv(result));
       const saved = await saveFile({ name, bytes, mimeType: "text/csv" });
-      if (saved.saved) notify.success("Export enregistré", saved.path);
+      if (saved.saved) notify.success(t("Export enregistré"), saved.path);
     } catch (failure) {
       notify.error(
-        "Export impossible",
+        t("Export impossible"),
         failure instanceof Error ? failure.message : undefined,
       );
     }
@@ -298,7 +296,7 @@ export function SqliteExplorerTool({ tool }: ToolComponentProps) {
 
   return (
     <div className="space-y-4">
-      <Callout tone="info" title="Lecture seule, garantie par le moteur">
+      <Callout tone="info" title={t("Lecture seule, garantie par le moteur")}>
         {SQLITE_READ_ONLY_NOTE}
       </Callout>
 
@@ -308,31 +306,27 @@ export function SqliteExplorerTool({ tool }: ToolComponentProps) {
         mode="files"
         paths={paths}
         onChange={setPaths}
-        label="Base SQLite"
-        hint="Fichier .sqlite, .sqlite3 ou .db. Il est ouvert en lecture seule."
-        filters={[{ name: "Bases SQLite", extensions: ["sqlite", "sqlite3", "db"] }]}
+        label={t("Base SQLite")}
+        hint={t("Fichier .sqlite, .sqlite3 ou .db. Il est ouvert en lecture seule.")}
+        filters={[{ name: t("Bases SQLite"), extensions: ["sqlite", "sqlite3", "db"] }]}
       />
 
-      {error && <Callout tone="error">{error}</Callout>}
+      {error && <Callout tone="error">{tx(error)}</Callout>}
 
       {overview && (
         <>
           <section className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2">
             <p className="ft-value">
-              <strong>{baseName(overview.path)}</strong> · {formatBytes(overview.fileSize)} ·{" "}
-              {overview.tables} table{overview.tables > 1 ? "s" : ""} · {overview.views} vue
-              {overview.views > 1 ? "s" : ""}
+              <Trans source={"<0>{value}</0> · {size} · {tables} {tables, plural, one {table} other {tables}} · {views} {views, plural, one {vue} other {vues}}"} values={{ value: baseName(overview.path), size: formatBytes(overview.fileSize), tables: overview.tables, views: overview.views }} components={[<strong />]} />
             </p>
             <p className="ft-meta">
-              SQLite {overview.sqliteVersion} · encodage {overview.encoding} · {overview.pageCount}{" "}
-              pages de {overview.pageSize} octets · intégrité :{" "}
-              {overview.integrity === "ok" ? "aucune anomalie" : overview.integrity}
+              {t("SQLite {sqliteVersion} · encodage {encoding} · {pageCount} pages de {pageSize} octets · intégrité : {value}", { sqliteVersion: overview.sqliteVersion, encoding: overview.encoding, pageCount: overview.pageCount, pageSize: overview.pageSize, value: overview.integrity === "ok" ? t("aucune anomalie") : overview.integrity })}
             </p>
           </section>
 
           <div className="flex flex-col gap-4 lg:flex-row">
             <nav className="lg:w-56 lg:shrink-0">
-              <h3 className="ft-section mb-1.5">Tables et vues</h3>
+              <h3 className="ft-section mb-1.5">{t("Tables et vues")}</h3>
               <ul className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
                 {overview.objects.map((object) => (
                   <li key={object.name}>
@@ -359,26 +353,26 @@ export function SqliteExplorerTool({ tool }: ToolComponentProps) {
 
             <div className="min-w-0 flex-1 space-y-3">
               <Fieldset columns={2}>
-                <Field label="Affichage">
+                <Field label={t("Affichage")}>
                   <OptionGroup
-                    ariaLabel="Panneau"
+                    ariaLabel={t("Panneau")}
                     value={pane}
                     onChange={setPane}
                     options={[
-                      { value: "data", label: "Données" },
-                      { value: "schema", label: "Schéma" },
-                      { value: "query", label: "Requête" },
+                      { value: "data", label: t("Données") },
+                      { value: "schema", label: t("Schéma") },
+                      { value: "query", label: t("Requête") },
                     ]}
                   />
                 </Field>
-                <Field label="Lignes affichées au maximum">
+                <Field label={t("Lignes affichées au maximum")}>
                   <Select
                     value={String(limit)}
                     onChange={(value) => setLimit(Number(value))}
-                    aria-label="Limite de lignes"
+                    aria-label={t("Limite de lignes")}
                     options={ROW_LIMITS.map((value) => ({
                       value: String(value),
-                      label: `${value} lignes`,
+                      label: t("{value} lignes", { value }),
                     }))}
                   />
                 </Field>
@@ -389,19 +383,17 @@ export function SqliteExplorerTool({ tool }: ToolComponentProps) {
               {pane === "query" && (
                 <div className="space-y-2">
                   <TextPane
-                    label="Requête SQL (lecture seule)"
+                    label={t("Requête SQL (lecture seule)")}
                     value={sql}
                     onChange={setSql}
                     minHeight="7rem"
                     droppable={false}
                   />
                   <p className="ft-meta">
-                    Autorisés : <code>SELECT</code>, <code>WITH … SELECT</code>,{" "}
-                    <code>VALUES</code>, <code>EXPLAIN</code> et les <code>PRAGMA</code>{" "}
-                    d'information. Une seule requête à la fois.
+                    <Trans source={"Autorisés : <0>SELECT</0>, <1>WITH … SELECT</1>, <2>VALUES</2>, <3>EXPLAIN</3> et les <4>PRAGMA</4> d'information. Une seule requête à la fois."} components={[<code />, <code />, <code />, <code />, <code />]} />
                   </p>
                   <Button variant="primary" onClick={execute} disabled={busy || !path}>
-                    <Icon name="Play" size={14} /> Exécuter
+                    <Icon name="Play" size={14} />{" "}{t("Exécuter")}
                   </Button>
                   {queryError && <Callout tone="error">{queryError}</Callout>}
                 </div>
@@ -414,19 +406,16 @@ export function SqliteExplorerTool({ tool }: ToolComponentProps) {
                     onClick={() => void loadRows(current.name, Math.max(0, offset - limit))}
                     disabled={busy || offset === 0}
                   >
-                    <Icon name="ArrowLeft" size={13} /> Page précédente
+                    <Icon name="ArrowLeft" size={13} />{" "}{t("Page précédente")}
                   </Button>
                   <Button
                     size="sm"
                     onClick={() => void loadRows(current.name, offset + limit)}
                     disabled={busy || !rows?.truncated}
                   >
-                    Page suivante <Icon name="ArrowRight" size={13} />
+                    {t("Page suivante")}{" "}<Icon name="ArrowRight" size={13} />
                   </Button>
-                  <span className="ft-meta">
-                    Lignes {offset + 1} à {offset + (rows?.rowCount ?? 0)}
-                    {current.rows !== null && ` sur ${current.rows}`}
-                  </span>
+                  <Trans source={"<0>Lignes {value} à {value2}{value3}</0>"} values={{ value: offset + 1, value2: offset + (rows?.rowCount ?? 0), value3: current.rows !== null && t(" sur {rows}", { rows: current.rows }) }} components={[<span className="ft-meta" />]} />
                 </div>
               )}
 
@@ -444,14 +433,12 @@ export function SqliteExplorerTool({ tool }: ToolComponentProps) {
                       }
                       disabled={shown.rowCount === 0}
                     >
-                      <Icon name="Download" size={13} /> Exporter en CSV
+                      <Icon name="Download" size={13} />{" "}{t("Exporter en CSV")}
                     </Button>
                   </div>
                   {shown.truncated && (
                     <Callout tone="info">
-                      L'affichage s'arrête à {shown.limit} lignes : au-delà, un tableau cesse d'être
-                      lisible et l'interface cesse d'être fluide. L'export CSV porte sur ce qui est
-                      affiché — pour tout obtenir, augmentez la limite ou paginez.
+                      {t("L'affichage s'arrête à {limit} lignes : au-delà, un tableau cesse d'être lisible et l'interface cesse d'être fluide. L'export CSV porte sur ce qui est affiché — pour tout obtenir, augmentez la limite ou paginez.", { limit: shown.limit })}
                     </Callout>
                   )}
                 </>

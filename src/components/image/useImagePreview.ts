@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { SelectedFile } from "@/core/files";
+import { t } from "@/i18n";
 
 /**
  * Charge un fichier image en URL objet et renvoie ses dimensions naturelles.
@@ -38,7 +39,7 @@ export function useImagePreview(file: SelectedFile | undefined): ImagePreviewSta
       setState({ url, width: image.naturalWidth, height: image.naturalHeight, loading: false });
     };
     image.onerror = () => {
-      setState({ url, width: 0, height: 0, loading: false, error: "Aperçu indisponible" });
+      setState({ url, width: 0, height: 0, loading: false, error: t("Aperçu indisponible") });
     };
     image.src = url;
 

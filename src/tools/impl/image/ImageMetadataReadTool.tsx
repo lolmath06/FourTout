@@ -6,6 +6,7 @@ import { readSelectedFile, decodeImage } from "@/core/image/codec";
 import { parseExif, type ExifData } from "@/core/image/exif";
 import { toImageError } from "@/core/image/errors";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 interface Meta {
   format: string;
@@ -46,11 +47,11 @@ export function ImageMetadataReadTool({ tool }: ToolComponentProps) {
         constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
         files={files}
         onChange={setFiles}
-        label="Déposez votre image ici"
+        label={t("Déposez votre image ici")}
       />
       {error && (
         <p className="flex items-center gap-2 rounded-md border border-[var(--ft-danger)] px-3 py-2 text-sm text-[var(--ft-danger)]">
-          <Icon name="CircleAlert" size={16} /> {error}
+          <Icon name="CircleAlert" size={16} /> {tx(error)}
         </p>
       )}
       {file && meta && <MetaTable file={file} meta={meta} />}
@@ -63,11 +64,11 @@ function MetaTable({ file, meta }: { file: SelectedFile; meta: Meta }) {
   const rows: [string, string | undefined][] = [
     ["Format", meta.format],
     ["Dimensions", `${meta.width} × ${meta.height} px`],
-    ["Taille du fichier", formatFileSize(file.size)],
+    [t("Taille du fichier"), formatFileSize(file.size)],
     ["Orientation", e?.orientation ? `EXIF ${e.orientation}` : undefined],
     ["Appareil", [e?.make, e?.model].filter(Boolean).join(" ") || undefined],
     ["Logiciel", e?.software],
-    ["Date de prise de vue", e?.dateTimeOriginal ?? e?.dateTime],
+    [t("Date de prise de vue"), e?.dateTimeOriginal ?? e?.dateTime],
     ["Exposition", e?.exposureTime],
     ["Ouverture", e?.fNumber ? `f/${e.fNumber}` : undefined],
     ["ISO", e?.iso ? String(e.iso) : undefined],
@@ -82,7 +83,7 @@ function MetaTable({ file, meta }: { file: SelectedFile; meta: Meta }) {
       <dl className="grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-border)] sm:grid-cols-2">
         {rows.filter(([, value]) => value).map(([label, value]) => (
           <div key={label} className="flex flex-col gap-0.5 bg-[var(--ft-surface)] px-3 py-2">
-            <dt className="text-[11px] uppercase tracking-wide text-[var(--ft-text-faint)]">{label}</dt>
+            <dt className="text-[11px] uppercase tracking-wide text-[var(--ft-text-faint)]">{tx(label)}</dt>
             <dd className="text-sm">{value}</dd>
           </div>
         ))}
@@ -96,14 +97,14 @@ function MetaTable({ file, meta }: { file: SelectedFile; meta: Meta }) {
           className="inline-flex items-center gap-2 rounded-md border border-[var(--ft-border)] px-3 py-2 text-sm text-[var(--ft-accent-text)] hover:bg-[var(--ft-surface-2)]"
         >
           <Icon name="MapPin" size={15} />
-          {e.gpsLatitude.toFixed(6)}, {e.gpsLongitude.toFixed(6)} — voir sur la carte
+          {t("{value}, {value2} — voir sur la carte", { value: e.gpsLatitude.toFixed(6), value2: e.gpsLongitude.toFixed(6) })}
         </a>
       )}
 
       {!hasExif && (
         <p className="flex items-center gap-2 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-xs text-[var(--ft-text-muted)]">
           <Icon name="Info" size={14} />
-          Aucune métadonnée EXIF détectée dans cette image.
+          {t("Aucune métadonnée EXIF détectée dans cette image.")}
         </p>
       )}
     </div>

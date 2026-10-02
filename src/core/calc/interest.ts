@@ -12,6 +12,8 @@
  * précision jusqu'au bout, et la mise en forme vient après.
  */
 
+import { currentIntlLocale, localized } from "@/i18n";
+import { t } from "@/i18n";
 export type InterestMode = "simple" | "compound";
 
 /** Nombre de capitalisations par an. */
@@ -28,13 +30,13 @@ export const FREQUENCY_PER_YEAR: Record<CompoundFrequency, number> = {
   daily: 365,
 };
 
-export const FREQUENCY_LABELS: Record<CompoundFrequency, string> = {
-  annual: "Annuelle (1 fois par an)",
-  semiannual: "Semestrielle (2 fois par an)",
-  quarterly: "Trimestrielle (4 fois par an)",
-  monthly: "Mensuelle (12 fois par an)",
-  daily: "Quotidienne (365 fois par an)",
-};
+export const FREQUENCY_LABELS: Record<CompoundFrequency, string> = localized(() => ({
+  annual: t("Annuelle (1 fois par an)"),
+  semiannual: t("Semestrielle (2 fois par an)"),
+  quarterly: t("Trimestrielle (4 fois par an)"),
+  monthly: t("Mensuelle (12 fois par an)"),
+  daily: t("Quotidienne (365 fois par an)"),
+}));
 
 export class InterestError extends Error {
   constructor(message: string) {
@@ -99,27 +101,27 @@ const MAX_SCHEDULE_ROWS = 100;
 
 function check(input: InterestInput): void {
   if (!Number.isFinite(input.principal) || input.principal < 0) {
-    throw new InterestError("Le capital initial doit être un nombre positif ou nul.");
+    throw new InterestError(t("Le capital initial doit être un nombre positif ou nul."));
   }
   if (!Number.isFinite(input.annualRatePercent)) {
-    throw new InterestError("Le taux annuel doit être un nombre.");
+    throw new InterestError(t("Le taux annuel doit être un nombre."));
   }
   if (input.annualRatePercent < -100) {
-    throw new InterestError("Un taux annuel inférieur à −100 % n'a pas de sens.");
+    throw new InterestError(t("Un taux annuel inférieur à −100 % n'a pas de sens."));
   }
   if (!Number.isFinite(input.years) || input.years < 0) {
-    throw new InterestError("La durée doit être un nombre d'années positif ou nul.");
+    throw new InterestError(t("La durée doit être un nombre d'années positif ou nul."));
   }
   if (input.years > 200) {
-    throw new InterestError("La durée est limitée à 200 ans.");
+    throw new InterestError(t("La durée est limitée à 200 ans."));
   }
   if (input.contribution !== undefined) {
     if (!Number.isFinite(input.contribution) || input.contribution < 0) {
-      throw new InterestError("Le versement régulier doit être positif ou nul.");
+      throw new InterestError(t("Le versement régulier doit être positif ou nul."));
     }
   }
   if (input.principal === 0 && !input.contribution) {
-    throw new InterestError("Sans capital initial ni versement, il n'y a rien à faire fructifier.");
+    throw new InterestError(t("Sans capital initial ni versement, il n'y a rien à faire fructifier."));
   }
 }
 
@@ -254,7 +256,7 @@ export function computeInterest(input: InterestInput): InterestResult {
 
 /** Mise en forme monétaire : c'est **ici**, et nulle part avant, qu'on arrondit. */
 export function formatMoney(value: number, currency = "EUR"): string {
-  return new Intl.NumberFormat("fr-FR", {
+  return new Intl.NumberFormat(currentIntlLocale(), {
     style: "currency",
     currency,
     maximumFractionDigits: 2,

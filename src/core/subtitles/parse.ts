@@ -1,4 +1,5 @@
 import type { SubtitleCue, SubtitleDocument, SubtitleFormat, SubtitleIssue } from "./types";
+import { t } from "@/i18n";
 
 /**
  * Lecture des fichiers SRT et WebVTT.
@@ -106,8 +107,8 @@ function readBlocks(
         kind: lines[0]?.includes("-->") ? "invalid-timestamp" : "unparsable-block",
         line: block.line,
         message: lines[0]?.includes("-->")
-          ? `Horodatage illisible : « ${lines[0].trim()} »`
-          : `Bloc ignoré, aucun horodatage : « ${(lines[0] ?? "").trim()} »`,
+          ? t("Horodatage illisible : « {value} »", { value: lines[0].trim() })
+          : t("Bloc ignoré, aucun horodatage : « {value} »", { value: (lines[0] ?? "").trim() }),
       });
       continue;
     }
@@ -126,11 +127,11 @@ function readBlocks(
         kind: "end-before-start",
         cue: position,
         line: block.line,
-        message: "La fin précède le début.",
+        message: t("La fin précède le début."),
       });
     }
     if (cue.text === "") {
-      warnings.push({ kind: "empty-text", cue: position, line: block.line, message: "Réplique sans texte." });
+      warnings.push({ kind: "empty-text", cue: position, line: block.line, message: t("Réplique sans texte.") });
     }
     cues.push(cue);
   }
@@ -157,7 +158,7 @@ export function parseVtt(input: string): SubtitleDocument {
     warnings.push({
       kind: "missing-header",
       line: 1,
-      message: "En-tête WEBVTT absent : le fichier a été lu quand même.",
+      message: t("En-tête WEBVTT absent : le fichier a été lu quand même."),
     });
   }
 

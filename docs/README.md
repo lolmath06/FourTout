@@ -27,6 +27,7 @@
 | [Développement](technical/DEVELOPMENT.md) | Prérequis, commandes, organisation du dépôt, conventions, pièges d'environnement. |
 | [Architecture](technical/ARCHITECTURE.md) | Structure et décisions de conception. |
 | [Ajouter un outil](technical/ADDING-A-TOOL.md) | La procédure, en trois fichiers. |
+| [Internationalisation](technical/I18N.md) | 16 langues : messages, catalogue traduit, repli, recherche multilingue. |
 | [Travaux longs](technical/JOBS.md) | Progression, annulation, notifications. |
 | [Modèles](technical/MODELS.md) | Moteurs et modèles installés à la demande. |
 

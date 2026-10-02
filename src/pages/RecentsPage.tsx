@@ -5,6 +5,7 @@ import { Page, PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { ToolRow } from "@/components/tools/ToolRow";
+import { t } from "@/i18n";
 
 const relative = new Intl.RelativeTimeFormat("fr", { numeric: "auto" });
 
@@ -34,12 +35,12 @@ export function RecentsPage() {
     <Page width="wide">
       <PageHeader
         icon="Clock3"
-        title="Récents"
-        description={`Les ${MAX_RECENTS} derniers outils ouverts, conservés entre deux sessions.`}
+        title={t("Récents")}
+        description={t("Les {MAX_RECENTS} derniers outils ouverts, conservés entre deux sessions.", { MAX_RECENTS })}
         actions={
           entries.length > 0 ? (
             <Button size="sm" variant="ghost" onClick={clear}>
-              Effacer l'historique
+              {t("Effacer l'historique")}
             </Button>
           ) : undefined
         }
@@ -67,12 +68,12 @@ export function RecentsPage() {
       ) : (
         <EmptyState
           icon="Clock3"
-          title="Aucun outil récent"
-          description="Les outils que vous ouvrez apparaîtront ici automatiquement."
+          title={t("Aucun outil récent")}
+          description={t("Les outils que vous ouvrez apparaîtront ici automatiquement.")}
           action={
             <Link to="/tools">
               <Button size="sm" variant="primary">
-                Parcourir les outils
+                {t("Parcourir les outils")}
               </Button>
             </Link>
           }

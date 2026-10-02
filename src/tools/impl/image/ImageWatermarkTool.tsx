@@ -9,16 +9,17 @@ import { rgbToHex, type Rgb } from "@/core/image/types";
 import type { RasterCanvas } from "@/core/pdf/raster/types";
 import type { SelectedFile } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t } from "@/i18n";
 
 type Position = "center" | "bottom-right" | "bottom-left" | "top-right" | "top-left";
 
-const POSITIONS: { value: Position; label: string }[] = [
-  { value: "bottom-right", label: "Bas droite" },
-  { value: "bottom-left", label: "Bas gauche" },
-  { value: "center", label: "Centre" },
-  { value: "top-right", label: "Haut droite" },
-  { value: "top-left", label: "Haut gauche" },
-];
+const POSITIONS: { value: Position; label: string }[] = localized(() => [
+  { value: "bottom-right", label: t("Bas droite") },
+  { value: "bottom-left", label: t("Bas gauche") },
+  { value: "center", label: t("Centre") },
+  { value: "top-right", label: t("Haut droite") },
+  { value: "top-left", label: t("Haut gauche") },
+]);
 
 function anchor(position: Position, w: number, h: number, margin: number): { x: number; y: number; align: CanvasTextAlign; baseline: CanvasTextBaseline } {
   const right = w - margin, bottom = h - margin;
@@ -43,8 +44,8 @@ export function ImageWatermarkTool({ tool }: ToolComponentProps) {
   return (
     <ImageToolShell
       tool={tool}
-      actionLabel="Appliquer le filigrane"
-      hint="Filigrane texte et/ou logo (PNG transparent), à l'unité ou par lot."
+      actionLabel={t("Appliquer le filigrane")}
+      hint={t("Filigrane texte et/ou logo (PNG transparent), à l'unité ou par lot.")}
       actionDisabled={text.trim().length === 0 && logoFiles.length === 0}
       run={async ({ files, context }) => {
         let logo: RasterCanvas | undefined;
@@ -79,22 +80,22 @@ export function ImageWatermarkTool({ tool }: ToolComponentProps) {
         };
 
         const outputs = await processImages(files, transform, { format: "same", suffix: "filigrane" }, context);
-        return { files: outputs, summary: `Filigrane appliqué à ${outputs.length} image${outputs.length > 1 ? "s" : ""}.`, zipName: "images-filigranees.zip" };
+        return { files: outputs, summary: t("Filigrane appliqué à {count} {count, plural, one {image} other {images}}.", { count: outputs.length }), zipName: "images-filigranees.zip" };
       }}
     >
       {() => (
         <div className="space-y-3">
           <Fieldset>
-            <Field label="Texte" full><TextInput value={text} onChange={(e) => setText(e.target.value)} placeholder="Texte du filigrane (facultatif)" /></Field>
-            <Field label={`Taille (${size} %)`}><Slider value={size} onChange={setSize} min={2} max={20} /></Field>
-            <Field label={`Opacité (${opacity} %)`}><Slider value={opacity} onChange={setOpacity} min={10} max={100} /></Field>
-            <Field label="Couleur du texte"><ColorField value={color} onChange={setColor} /></Field>
-            <Field label={`Rotation (${rotation}°)`}><Slider value={rotation} onChange={setRotation} min={-90} max={90} /></Field>
-            <Field label="Position"><OptionGroup ariaLabel="Position" value={position} onChange={setPosition} options={POSITIONS} /></Field>
+            <Field label={t("Texte")} full><TextInput value={text} onChange={(e) => setText(e.target.value)} placeholder={t("Texte du filigrane (facultatif)")} /></Field>
+            <Field label={t("Taille ({size} %)", { size })}><Slider value={size} onChange={setSize} min={2} max={20} /></Field>
+            <Field label={t("Opacité ({opacity} %)", { opacity })}><Slider value={opacity} onChange={setOpacity} min={10} max={100} /></Field>
+            <Field label={t("Couleur du texte")}><ColorField value={color} onChange={setColor} /></Field>
+            <Field label={t("Rotation ({rotation}°)", { rotation })}><Slider value={rotation} onChange={setRotation} min={-90} max={90} /></Field>
+            <Field label={t("Position")}><OptionGroup ariaLabel={t("Position")} value={position} onChange={setPosition} options={POSITIONS} /></Field>
           </Fieldset>
           <div>
-            <p className="mb-1 text-xs font-medium text-[var(--ft-text-muted)]">Logo (facultatif, PNG transparent)</p>
-            <FileDropZone constraints={{ inputs: [{ kind: "image", extensions: ["png", "webp", "jpg", "jpeg"] }], maxFiles: 1 }} files={logoFiles} onChange={setLogoFiles} label="Déposez un logo" />
+            <p className="mb-1 text-xs font-medium text-[var(--ft-text-muted)]">{t("Logo (facultatif, PNG transparent)")}</p>
+            <FileDropZone constraints={{ inputs: [{ kind: "image", extensions: ["png", "webp", "jpg", "jpeg"] }], maxFiles: 1 }} files={logoFiles} onChange={setLogoFiles} label={t("Déposez un logo")} />
           </div>
         </div>
       )}

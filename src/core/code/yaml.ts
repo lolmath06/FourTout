@@ -1,5 +1,6 @@
 import { dump, load, CORE_SCHEMA } from "js-yaml";
 import { DataError, indentUnit, parseJson, sortJsonKeys, type Indentation } from "./data";
+import { msg, t } from "@/i18n";
 
 /**
  * YAML : formatage et conversion depuis ou vers JSON.
@@ -25,7 +26,7 @@ function toDataError(error: unknown, fallback: string): DataError {
 }
 
 export function parseYaml(source: string): unknown {
-  if (source.trim().length === 0) throw new DataError("Le document est vide.");
+  if (source.trim().length === 0) throw new DataError(t("Le document est vide."));
   try {
     return load(source, { schema: SCHEMA });
   } catch (error) {
@@ -52,7 +53,7 @@ function dumpYaml(value: unknown, options: YamlFormatOptions): string {
       noRefs: true,
     });
   } catch (error) {
-    throw toDataError(error, "Ce document ne peut pas être écrit en YAML.");
+    throw toDataError(error, t("Ce document ne peut pas être écrit en YAML."));
   }
 }
 
@@ -72,4 +73,4 @@ export function jsonToYaml(source: string, options: YamlFormatOptions = {}): str
 
 /** L'indentation par tabulation est refusée par la spécification YAML. */
 export const YAML_TAB_NOTE =
-  "Le YAML interdit la tabulation comme indentation : deux espaces sont utilisés à la place.";
+  msg("Le YAML interdit la tabulation comme indentation : deux espaces sont utilisés à la place.");

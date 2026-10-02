@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import clsx from "clsx";
 import { Icon } from "./Icon";
+import { tx } from "@/i18n";
 
 /**
  * En-tête de page.
@@ -28,9 +29,9 @@ export function PageHeader({
         </span>
       )}
       <div className="flex min-w-0 flex-1 items-baseline gap-2.5">
-        <h1 className="ft-page-title shrink-0">{title}</h1>
+        <h1 className="ft-page-title shrink-0">{tx(title)}</h1>
         {description && (
-          <p className="ft-meta min-w-0 truncate">{description}</p>
+          <p className="ft-meta min-w-0 truncate">{tx(description)}</p>
         )}
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}

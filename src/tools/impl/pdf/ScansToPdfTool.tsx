@@ -15,6 +15,7 @@ import { imagesToPdf, type ImagePageMode } from "@/core/pdf/operations/imagesToP
 import { notify } from "@/features/notifications/store";
 import { useHandoff } from "@/features/handoff/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { localized, t, tx } from "@/i18n";
 
 /**
  * Scans et photos → un seul PDF.
@@ -25,17 +26,17 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * de la même façon — qui demanderait sinon de passer par trois outils et de
  * gérer soi-même les fichiers intermédiaires.
  */
-const PAGE_MODES: { value: ImagePageMode; label: string; hint: string }[] = [
-  { value: "a4-portrait", label: "A4 portrait", hint: "Chaque image est centrée sur une page A4" },
-  { value: "a4-landscape", label: "A4 paysage", hint: "Pages A4 à l'italienne" },
-  { value: "fit-image", label: "Taille de l'image", hint: "La page épouse exactement l'image" },
-];
+const PAGE_MODES: { value: ImagePageMode; label: string; hint: string }[] = localized(() => [
+  { value: "a4-portrait", label: t("A4 portrait"), hint: t("Chaque image est centrée sur une page A4") },
+  { value: "a4-landscape", label: t("A4 paysage"), hint: t("Pages A4 à l'italienne") },
+  { value: "fit-image", label: t("Taille de l'image"), hint: t("La page épouse exactement l'image") },
+]);
 
-const RENDERINGS: { value: ScanRendering; label: string; hint: string }[] = [
-  { value: "color", label: "Couleur", hint: "Conserve les couleurs d'origine" },
-  { value: "grayscale", label: "Niveaux de gris", hint: "Allège le fichier, garde les nuances" },
-  { value: "bw", label: "Noir et blanc", hint: "Texte très contrasté, fichier le plus léger" },
-];
+const RENDERINGS: { value: ScanRendering; label: string; hint: string }[] = localized(() => [
+  { value: "color", label: t("Couleur"), hint: t("Conserve les couleurs d'origine") },
+  { value: "grayscale", label: t("Niveaux de gris"), hint: t("Allège le fichier, garde les nuances") },
+  { value: "bw", label: t("Noir et blanc"), hint: t("Texte très contrasté, fichier le plus léger") },
+]);
 
 export function ScansToPdfTool({ tool }: ToolComponentProps) {
   const handoff = useHandoff(tool.id);
@@ -68,7 +69,7 @@ export function ScansToPdfTool({ tool }: ToolComponentProps) {
         if (context.signal.aborted) throw new JobCancelledError();
         context.report({
           ratio: (index / files.length) * 0.8,
-          label: `Page ${index + 1} sur ${files.length} — préparation`,
+          label: t("Page {value} sur {count} — préparation", { value: index + 1, count: files.length }),
         });
 
         const bytes = await readSelectedFile(file);
@@ -91,19 +92,17 @@ export function ScansToPdfTool({ tool }: ToolComponentProps) {
         });
       }
 
-      context.report({ ratio: 0.85, label: "Assemblage du PDF" });
+      context.report({ ratio: 0.85, label: t("Assemblage du PDF") });
       const file = await imagesToPdf(pages, { mode }, { signal: context.signal });
       return {
         files: [file],
-        summary: `${files.length} page${files.length > 1 ? "s" : ""} assemblée${
-          files.length > 1 ? "s" : ""
-        } dans un seul PDF.`,
+        summary: t("{count} {count, plural, one {page} other {pages}} {count, plural, one {assemblée} other {assemblées}} dans un seul PDF.", { count: files.length }),
       };
     });
 
     if (result) {
       setOutcome(result);
-      notify.success("PDF prêt", result.summary);
+      notify.success(t("PDF prêt"), result.summary);
     }
   };
 
@@ -115,8 +114,8 @@ export function ScansToPdfTool({ tool }: ToolComponentProps) {
         constraints={constraintsForTool(tool)}
         files={files}
         onChange={setFiles}
-        label="Déposez vos pages numérisées ou photographiées"
-        hint="L'ordre de la liste est celui des pages du PDF."
+        label={t("Déposez vos pages numérisées ou photographiées")}
+        hint={t("L'ordre de la liste est celui des pages du PDF.")}
         disabled={job.isRunning}
         showFileList={false}
       />
@@ -127,52 +126,50 @@ export function ScansToPdfTool({ tool }: ToolComponentProps) {
 
       {files.length > 0 && (
         <>
-          <Fieldset columns={2} title="Mise en page">
-            <Field label="Format des pages">
-              <OptionGroup ariaLabel="Format des pages" value={mode} onChange={setMode} options={PAGE_MODES} disabled={job.isRunning} />
+          <Fieldset columns={2} title={t("Mise en page")}>
+            <Field label={t("Format des pages")}>
+              <OptionGroup ariaLabel={t("Format des pages")} value={mode} onChange={setMode} options={PAGE_MODES} disabled={job.isRunning} />
             </Field>
-            <Field label="Rendu">
-              <OptionGroup ariaLabel="Rendu" value={rendering} onChange={setRendering} options={RENDERINGS} disabled={job.isRunning} />
+            <Field label={t("Rendu")}>
+              <OptionGroup ariaLabel={t("Rendu")} value={rendering} onChange={setRendering} options={RENDERINGS} disabled={job.isRunning} />
             </Field>
           </Fieldset>
 
-          <Fieldset columns={2} title="Nettoyage (facultatif)">
-            <Field label="Contraste" hint="Relève un scan pâle ou une photo terne.">
+          <Fieldset columns={2} title={t("Nettoyage (facultatif)")}>
+            <Field label={t("Contraste")} hint={t("Relève un scan pâle ou une photo terne.")}>
               <Slider value={contrast} onChange={setContrast} min={-50} max={80} suffix="" />
             </Field>
-            <Field label="Blanchir le fond" hint="Efface un fond gris ou jauni sans toucher au texte.">
+            <Field label={t("Blanchir le fond")} hint={t("Efface un fond gris ou jauni sans toucher au texte.")}>
               <Slider value={whiten} onChange={setWhiten} min={0} max={100} suffix=" %" />
             </Field>
           </Fieldset>
 
           {!cleaning && (
             <Callout tone="info">
-              Aucun traitement n'est demandé : vos images seront intégrées telles quelles, sans
-              réencodage ni perte de qualité.
+              {t("Aucun traitement n'est demandé : vos images seront intégrées telles quelles, sans réencodage ni perte de qualité.")}
             </Callout>
           )}
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ft-border)] pt-4">
             <p className="text-xs text-[var(--ft-text-muted)]">
-              {files.length} page{files.length > 1 ? "s" : ""} ·{" "}
-              {formatFileSize(files.reduce((total, file) => total + file.size, 0))}
+              {t("{count} {count, plural, one {page} other {pages}} · {size}", { count: files.length, size: formatFileSize(files.reduce((total, file) => total + file.size, 0)) })}
             </p>
             <div className="flex items-center gap-2">
               {job.isRunning && (
                 <Button size="sm" variant="ghost" onClick={job.cancel}>
-                  Annuler
+                  {t("Annuler")}
                 </Button>
               )}
               <Button size="md" variant="primary" onClick={run} disabled={job.isRunning}>
                 {job.isRunning ? (
                   <>
                     <Icon name="Loader" size={15} className="animate-spin" />
-                    {job.progress.label ?? "Traitement…"}
+                    {job.progress.label ?? t("Traitement…")}
                   </>
                 ) : (
                   <>
                     <Icon name="Play" size={15} />
-                    Créer le PDF
+                    {t("Créer le PDF")}
                   </>
                 )}
               </Button>
@@ -181,10 +178,10 @@ export function ScansToPdfTool({ tool }: ToolComponentProps) {
         </>
       )}
 
-      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
+      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={tx(job.progress.label)} />}
 
       {errorMessage && job.status === "error" && (
-        <Callout tone="error" title="L'opération a échoué">
+        <Callout tone="error" title={t("L'opération a échoué")}>
           {errorMessage}
         </Callout>
       )}
@@ -221,7 +218,7 @@ function PageList({
           <Button
             size="sm"
             variant="ghost"
-            aria-label={`Monter ${file.name}`}
+            aria-label={t("Monter {name}", { name: file.name })}
             disabled={disabled || index === 0}
             onClick={() => onMove(index, -1)}
           >
@@ -230,7 +227,7 @@ function PageList({
           <Button
             size="sm"
             variant="ghost"
-            aria-label={`Descendre ${file.name}`}
+            aria-label={t("Descendre {name}", { name: file.name })}
             disabled={disabled || index === files.length - 1}
             onClick={() => onMove(index, 1)}
           >
@@ -239,7 +236,7 @@ function PageList({
           <Button
             size="sm"
             variant="ghost"
-            aria-label={`Retirer ${file.name}`}
+            aria-label={t("Retirer {name}", { name: file.name })}
             disabled={disabled}
             onClick={() => onRemove(index)}
           >

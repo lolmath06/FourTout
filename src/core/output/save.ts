@@ -1,6 +1,7 @@
 import { isTauri } from "@/core/platform";
 import { createZip } from "@/core/archive/zip";
 import type { OutputFile } from "@/core/pdf/types";
+import { localized, t } from "@/i18n";
 
 /**
  * Enregistrement des fichiers produits.
@@ -23,13 +24,13 @@ export interface SaveResult {
 }
 
 /** Types de fichiers proposés par la boîte de dialogue, selon l'extension. */
-const FILTERS: Record<string, { name: string; extensions: string[] }> = {
-  pdf: { name: "Document PDF", extensions: ["pdf"] },
-  png: { name: "Image PNG", extensions: ["png"] },
-  jpg: { name: "Image JPEG", extensions: ["jpg", "jpeg"] },
-  txt: { name: "Fichier texte", extensions: ["txt"] },
-  zip: { name: "Archive ZIP", extensions: ["zip"] },
-};
+const FILTERS: Record<string, { name: string; extensions: string[] }> = localized(() => ({
+  pdf: { name: t("Document PDF"), extensions: ["pdf"] },
+  png: { name: t("Image PNG"), extensions: ["png"] },
+  jpg: { name: t("Image JPEG"), extensions: ["jpg", "jpeg"] },
+  txt: { name: t("Fichier texte"), extensions: ["txt"] },
+  zip: { name: t("Archive ZIP"), extensions: ["zip"] },
+}));
 
 function extensionOf(name: string): string {
   const index = name.lastIndexOf(".");
@@ -72,7 +73,7 @@ export async function saveFilesToFolder(files: readonly OutputFile[]): Promise<S
   }
 
   const { open } = await import("@tauri-apps/plugin-dialog");
-  const directory = await open({ directory: true, multiple: false, title: "Dossier de destination" });
+  const directory = await open({ directory: true, multiple: false, title: t("Dossier de destination") });
   if (typeof directory !== "string") return { saved: false, count: 0 };
 
   const { writeFile, exists } = await import("@tauri-apps/plugin-fs");

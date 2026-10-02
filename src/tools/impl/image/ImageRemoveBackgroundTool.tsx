@@ -10,6 +10,7 @@ import { removeBackground } from "@/core/image/background";
 import { loadSegmentation, SEGMENTATION_MODELS, type SegmentationModelId } from "@/core/image/segmentation";
 import type { SelectedFile } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t } from "@/i18n";
 
 /**
  * Retirer l'arrière-plan d'une image.
@@ -24,11 +25,11 @@ import type { ToolComponentProps } from "@/tools/implementations";
  */
 
 /** Réglages exposés : deux, pas dix. L'outil n'est pas un logiciel de retouche. */
-const PRECISION_OPTIONS = SEGMENTATION_MODELS.map((model) => ({
+const PRECISION_OPTIONS = localized(() => SEGMENTATION_MODELS.map((model) => ({
   value: model.id,
   label: model.label,
   hint: model.detail,
-}));
+})));
 
 export function ImageRemoveBackgroundTool({ tool }: ToolComponentProps) {
   const [model, setModel] = useState<SegmentationModelId>("seg-u2netp");
@@ -39,15 +40,15 @@ export function ImageRemoveBackgroundTool({ tool }: ToolComponentProps) {
     <ModelRequirements
       required={[model]}
       optional={SEGMENTATION_MODELS.map((entry) => entry.id)}
-      what="Le détourage automatique"
-      manageLabel="Gérer les modèles de détourage"
+      what={t("Le détourage automatique")}
+      manageLabel={t("Gérer les modèles de détourage")}
     >
       {() => (
         <ImageToolShell
           tool={tool}
           selection="single"
-          actionLabel="Retirer l'arrière-plan"
-          hint="La sortie est en PNG : c'est le seul format courant qui conserve la transparence."
+          actionLabel={t("Retirer l'arrière-plan")}
+          hint={t("La sortie est en PNG : c'est le seul format courant qui conserve la transparence.")}
           run={async ({ files, context }) => {
             const { session, tensor } = await loadSegmentation(model);
             let kept = 0;
@@ -69,7 +70,7 @@ export function ImageRemoveBackgroundTool({ tool }: ToolComponentProps) {
             );
             return {
               files: [output],
-              summary: `Sujet conservé sur ${Math.round(kept * 100)} % de l'image ; le reste est transparent.`,
+              summary: t("Sujet conservé sur {value} % de l'image ; le reste est transparent.", { value: Math.round(kept * 100) }),
             };
           }}
         >
@@ -132,24 +133,24 @@ function BackgroundStage({
 
   return (
     <div className="space-y-3">
-      <Fieldset columns={1} title="Réglages">
-        <Field label="Précision" hint="Le modèle précis demande son propre téléchargement.">
+      <Fieldset columns={1} title={t("Réglages")}>
+        <Field label={t("Précision")} hint={t("Le modèle précis demande son propre téléchargement.")}>
           <OptionGroup
             value={model}
             onChange={setModel}
             options={PRECISION_OPTIONS}
-            ariaLabel="Précision du détourage"
+            ariaLabel={t("Précision du détourage")}
           />
         </Field>
         <Field
-          label={`Adoucir le bord (${feather} px)`}
-          hint="Atténue le liseré de la couleur du fond le long du contour."
+          label={t("Adoucir le bord ({feather} px)", { feather })}
+          hint={t("Atténue le liseré de la couleur du fond le long du contour.")}
         >
           <Slider value={feather} onChange={setFeather} min={0} max={12} />
         </Field>
         <Field
-          label={`Correction (${threshold > 0 ? "+" : ""}${threshold.toFixed(2)})`}
-          hint="Vers la droite : garde moins, si du fond est resté. Vers la gauche : garde plus, si un bout du sujet a disparu."
+          label={t("Correction ({value}{value2})", { value: threshold > 0 ? "+" : "", value2: threshold.toFixed(2) })}
+          hint={t("Vers la droite : garde moins, si du fond est resté. Vers la gauche : garde plus, si un bout du sujet a disparu.")}
         >
           <Slider
             value={threshold}
@@ -165,26 +166,18 @@ function BackgroundStage({
         {preview && (
           <img
             src={preview}
-            alt="Image d'origine"
+            alt={t("Image d'origine")}
             className="max-h-[400px] max-w-full object-contain"
             draggable={false}
           />
         )}
       </PreviewFrame>
       <p className="ft-meta text-center">
-        Image d'origine{source.width > 0 ? ` · ${source.width} × ${source.height} px` : ""}. Le
-        résultat s'affiche après traitement, sur un damier de transparence.
+        {t("Image d'origine{value}. Le résultat s'affiche après traitement, sur un damier de transparence.", { value: source.width > 0 ? ` · ${source.width} × ${source.height} px` : "" })}
       </p>
 
-      <Callout tone="info" title="Ce que l'outil sait faire, et ce qu'il ne sait pas">
-        Le modèle cherche le <em>sujet principal</em> : une personne, un animal, un objet posé
-        devant un fond. Il fonctionne bien quand le sujet est net et se détache ; il se trompe sur
-        les scènes sans sujet évident, les fonds de la même couleur que le sujet, et les détails
-        très fins comme une mèche de cheveux isolée. La correction ci-dessus rattrape les petits
-        écarts ; au-delà, mieux vaut un détourage à la main.
-        <br />
-        <br />
-        Tout se passe sur votre machine : l'image n'est envoyée nulle part.
+      <Callout tone="info" title={t("Ce que l'outil sait faire, et ce qu'il ne sait pas")}>
+        <Trans source={"Le modèle cherche le <0>sujet principal</0> : une personne, un animal, un objet posé devant un fond. Il fonctionne bien quand le sujet est net et se détache ; il se trompe sur les scènes sans sujet évident, les fonds de la même couleur que le sujet, et les détails très fins comme une mèche de cheveux isolée. La correction ci-dessus rattrape les petits écarts ; au-delà, mieux vaut un détourage à la main.<1/><2/>Tout se passe sur votre machine : l'image n'est envoyée nulle part."} components={[<em />, <br />, <br />]} />
       </Callout>
     </div>
   );

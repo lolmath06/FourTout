@@ -7,6 +7,7 @@ import { usePageRange } from "@/components/pdf/usePageRange";
 import { extractPages } from "@/core/pdf/operations/pages";
 import { parsePageRange } from "@/core/pdf/pageRange";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 export function PdfExtractPagesTool({ tool }: ToolComponentProps) {
   const [input, setInput] = useState("");
@@ -14,7 +15,7 @@ export function PdfExtractPagesTool({ tool }: ToolComponentProps) {
   return (
     <PdfToolShell
       tool={tool}
-      actionLabel="Extraire"
+      actionLabel={t("Extraire")}
       actionDisabled={input.trim().length === 0}
       run={async ({ documents, context }) => {
         const [document] = documents;
@@ -24,7 +25,7 @@ export function PdfExtractPagesTool({ tool }: ToolComponentProps) {
         const output = await extractPages(document.source, ordered, context);
         return singleResult(
           output,
-          `${ordered.length} page${ordered.length > 1 ? "s" : ""} extraite${ordered.length > 1 ? "s" : ""} sur ${pageCount}.`,
+          t("{count} {count, plural, one {page} other {pages}} {count, plural, one {extraite} other {extraites}} sur {pageCount}.", { count: ordered.length, pageCount }),
         );
       }}
     >
@@ -47,7 +48,7 @@ function RangeFields({
   return (
     <Fieldset columns={1}>
       <PageRangeInput
-        label="Pages à conserver"
+        label={t("Pages à conserver")}
         value={value}
         onChange={onChange}
         pageCount={pageCount}

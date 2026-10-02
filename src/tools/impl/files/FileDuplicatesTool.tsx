@@ -9,6 +9,7 @@ import { findDuplicates, type DuplicateReport } from "@/core/files/native";
 import { directoryName, shortenPath } from "@/core/files/paths";
 import { revealFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t } from "@/i18n";
 
 /**
  * Détection des fichiers en double.
@@ -19,13 +20,13 @@ import type { ToolComponentProps } from "@/tools/implementations";
  * explorateur — c'est la seule façon honnête de traiter des données qu'on ne
  * peut pas restaurer.
  */
-const MIN_SIZES = [
-  { value: "1", label: "Tous les fichiers" },
-  { value: "1024", label: "À partir de 1 Ko" },
-  { value: "102400", label: "À partir de 100 Ko" },
-  { value: "1048576", label: "À partir de 1 Mo" },
-  { value: "10485760", label: "À partir de 10 Mo" },
-];
+const MIN_SIZES = localized(() => [
+  { value: "1", label: t("Tous les fichiers") },
+  { value: "1024", label: t("À partir de 1 Ko") },
+  { value: "102400", label: t("À partir de 100 Ko") },
+  { value: "1048576", label: t("À partir de 1 Mo") },
+  { value: "10485760", label: t("À partir de 10 Mo") },
+]);
 
 export function FileDuplicatesTool(_props: ToolComponentProps) {
   const [paths, setPaths] = useState<string[]>([]);
@@ -38,32 +39,29 @@ export function FileDuplicatesTool(_props: ToolComponentProps) {
         mode: "directory",
         paths,
         onChange: setPaths,
-        label: "Choisissez le dossier à analyser",
-        hint: "L'analyse est récursive ; les liens symboliques ne sont pas suivis.",
+        label: t("Choisissez le dossier à analyser"),
+        hint: t("L'analyse est récursive ; les liens symboliques ne sont pas suivis."),
       }}
-      actionLabel="Chercher les doublons"
+      actionLabel={t("Chercher les doublons")}
       actionIcon="CopyMinus"
       run={(context) =>
         findDuplicates(paths[0], { minSize: Number(minSize), includeHidden }, context)
       }
       successMessage={(report) =>
         report.groups.length === 0
-          ? "Aucun doublon trouvé"
-          : `${report.groups.length} groupe(s), ${formatFileSize(report.reclaimable)} récupérables`
+          ? t("Aucun doublon trouvé")
+          : t("{count} groupe(s), {size} récupérables", { count: report.groups.length, size: formatFileSize(report.reclaimable) })
       }
       renderResult={(report) => (
         <div className="space-y-3" data-testid="duplicates-report">
           <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-3 text-sm">
             <p className="tabular-nums">
-              {report.scanned} fichiers analysés · <strong>{report.groups.length}</strong> groupe(s)
-              de doublons · {report.duplicateFiles} fichier(s) en trop ·{" "}
-              <strong>{formatFileSize(report.reclaimable)}</strong> récupérables
+              <Trans source={"{scanned} fichiers analysés · <0>{count}</0> groupe(s) de doublons · {duplicateFiles} fichier(s) en trop · <1>{size}</1> récupérables"} values={{ scanned: report.scanned, count: report.groups.length, duplicateFiles: report.duplicateFiles, size: formatFileSize(report.reclaimable) }} components={[<strong />, <strong />]} />
             </p>
             {report.groups.length > 0 && (
               <p className="mt-1 flex items-start gap-1.5 text-xs text-[var(--ft-text-muted)]">
                 <Icon name="ShieldCheck" size={13} className="mt-px shrink-0" />
-                FourTout ne supprime aucun fichier : utilisez « Ouvrir l'emplacement » pour décider
-                vous-même de ce qui doit rester.
+                {t("FourTout ne supprime aucun fichier : utilisez « Ouvrir l'emplacement » pour décider vous-même de ce qui doit rester.")}
               </p>
             )}
           </div>
@@ -74,8 +72,7 @@ export function FileDuplicatesTool(_props: ToolComponentProps) {
               className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-3"
             >
               <p className="text-sm font-medium tabular-nums">
-                {group.files.length} fichiers identiques — {formatFileSize(group.size)} chacun ·{" "}
-                {formatFileSize(group.reclaimable)} récupérables
+                {t("{count} fichiers identiques — {size} chacun · {size2} récupérables", { count: group.files.length, size: formatFileSize(group.size), size2: formatFileSize(group.reclaimable) })}
               </p>
               <ul className="mt-2 flex flex-col gap-1">
                 {group.files.map((file, index) => (
@@ -95,9 +92,9 @@ export function FileDuplicatesTool(_props: ToolComponentProps) {
                       size="sm"
                       variant="ghost"
                       onClick={() => revealFile(file.path)}
-                      aria-label={`Ouvrir l'emplacement de ${file.name}`}
+                      aria-label={t("Ouvrir l'emplacement de {name}", { name: file.name })}
                     >
-                      <Icon name="FolderTree" size={14} /> Ouvrir l'emplacement
+                      <Icon name="FolderTree" size={14} />{" "}{t("Ouvrir l'emplacement")}
                     </Button>
                   </li>
                 ))}
@@ -108,19 +105,19 @@ export function FileDuplicatesTool(_props: ToolComponentProps) {
       )}
     >
       <Fieldset columns={2}>
-        <Field label="Taille minimale" hint="Ignorer les petits fichiers accélère beaucoup l'analyse.">
+        <Field label={t("Taille minimale")} hint={t("Ignorer les petits fichiers accélère beaucoup l'analyse.")}>
           <Select
-            aria-label="Taille minimale"
+            aria-label={t("Taille minimale")}
             value={minSize}
             onChange={setMinSize}
             options={MIN_SIZES}
           />
         </Field>
-        <Field label="Options">
+        <Field label={t("Options")}>
           <CheckOption
             checked={includeHidden}
             onChange={setIncludeHidden}
-            label="Inclure les fichiers et dossiers cachés"
+            label={t("Inclure les fichiers et dossiers cachés")}
           />
         </Field>
       </Fieldset>

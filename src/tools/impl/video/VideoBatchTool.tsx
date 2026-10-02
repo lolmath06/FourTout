@@ -13,16 +13,17 @@ import { AUDIO_FORMATS, type AudioFormat } from "@/core/media/types";
 import { outputName } from "@/core/pdf/filenames";
 import type { ToolComponentProps } from "@/tools/implementations";
 import { containerOptions, totalDuration } from "./shared";
+import { localized, t } from "@/i18n";
 
 type Operation = BatchOperation;
 
-const OPERATIONS: { value: Operation; label: string }[] = [
-  { value: "convert", label: "Convertir" },
-  { value: "compress", label: "Compresser" },
-  { value: "resize", label: "Redimensionner" },
-  { value: "rotate", label: "Pivoter" },
-  { value: "extract-audio", label: "Extraire l'audio" },
-];
+const OPERATIONS: { value: Operation; label: string }[] = localized(() => [
+  { value: "convert", label: t("Convertir") },
+  { value: "compress", label: t("Compresser") },
+  { value: "resize", label: t("Redimensionner") },
+  { value: "rotate", label: t("Pivoter") },
+  { value: "extract-audio", label: t("Extraire l'audio") },
+]);
 
 /**
  * Même opération appliquée à plusieurs vidéos.
@@ -48,8 +49,8 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
     <VideoToolShell
       tool={tool}
       selection="multiple"
-      actionLabel="Traiter le lot"
-      hint="Déposez plusieurs vidéos : la même opération leur est appliquée l'une après l'autre."
+      actionLabel={t("Traiter le lot")}
+      hint={t("Déposez plusieurs vidéos : la même opération leur est appliquée l'une après l'autre.")}
       run={async ({ files, infos, caps, context }) => {
         const outputs: OutputFile[] = [];
         // Le lot écrit un seul format, celui affiché : sans cela, des sources
@@ -75,7 +76,7 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
           const report = (progress: { ratio?: number; label?: string }) =>
             context.report({
               ratio: (done + (progress.ratio ?? 0) * info.durationMs) / total,
-              label: `Fichier ${index + 1} sur ${files.length} — ${file.name}`,
+              label: t("Fichier {value} sur {count} — {name}", { value: index + 1, count: files.length, name: file.name }),
             });
 
           const produced = await runMedia(
@@ -88,7 +89,7 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
               },
               outputName: outputName(file.name, pipeline.suffix, pipeline.outputExt),
               totalMs: info?.durationMs,
-              label: "Traitement…",
+              label: t("Traitement…"),
             },
             { report, signal: context.signal },
           );
@@ -102,23 +103,23 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
           files: outputs,
           zipName: "fourtout-videos.zip",
           summary:
-            `${outputs.length} fichier(s) traité(s) — ${label.toLowerCase()}.` +
+            t("{count} fichier(s) traité(s) — {value}.", { count: outputs.length, value: label.toLowerCase() }) +
             (operation === "extract-audio"
               ? ""
               : savedBytes > 0
-                ? ` ${formatFileSize(savedBytes)} économisés au total.`
-                : " Le lot n'a pas gagné en poids ; les sources étaient déjà optimisées."),
+                ? t(" {size} économisés au total.", { size: formatFileSize(savedBytes) })
+                : t(" Le lot n'a pas gagné en poids ; les sources étaient déjà optimisées.")),
           warning: fellBack
-            ? "L'encodeur initial n'a pas pu démarrer sur au moins un fichier ; un encodeur logiciel a pris le relais."
+            ? t("L'encodeur initial n'a pas pu démarrer sur au moins un fichier ; un encodeur logiciel a pris le relais.")
             : undefined,
         };
       }}
     >
       {({ caps }) => (
         <Fieldset columns={2}>
-          <Field label="Opération">
+          <Field label={t("Opération")}>
             <OptionGroup
-              ariaLabel="Opération"
+              ariaLabel={t("Opération")}
               value={operation}
               onChange={setOperation}
               options={OPERATIONS}
@@ -126,7 +127,7 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
           </Field>
 
           {operation === "extract-audio" ? (
-            <Field label="Format audio">
+            <Field label={t("Format audio")}>
               <Select
                 value={audioFormat}
                 onChange={setAudioFormat}
@@ -134,7 +135,7 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
               />
             </Field>
           ) : (
-            <Field label="Format de sortie">
+            <Field label={t("Format de sortie")}>
               <Select
                 value={container ?? containerOptions(caps)[0]?.value ?? "mp4"}
                 onChange={setContainer}
@@ -144,9 +145,9 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
           )}
 
           {operation === "compress" && (
-            <Field label="Niveau" full>
+            <Field label={t("Niveau")} full>
               <OptionGroup
-                ariaLabel="Niveau"
+                ariaLabel={t("Niveau")}
                 value={level}
                 onChange={setLevel}
                 options={(["high", "balanced", "small"] as QualityLevel[]).map((value) => ({
@@ -158,7 +159,7 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
           )}
 
           {operation === "resize" && (
-            <Field label="Définition" full>
+            <Field label={t("Définition")} full>
               <Select
                 value={String(height)}
                 onChange={(value) => setHeight(Number(value))}
@@ -168,9 +169,9 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
           )}
 
           {operation === "rotate" && (
-            <Field label="Transformation" full>
+            <Field label={t("Transformation")} full>
               <OptionGroup
-                ariaLabel="Transformation"
+                ariaLabel={t("Transformation")}
                 value={transform}
                 onChange={setTransform}
                 options={VIDEO_TRANSFORMS.map((entry) => ({ value: entry.value, label: entry.label }))}

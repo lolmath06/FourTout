@@ -5,6 +5,7 @@ import { JobCancelledError, type JobContext } from "@/core/jobs/types";
 import { segmentText, previewText } from "./segment";
 import type { SelectedFile } from "@/core/files";
 import type { OutputFile } from "@/core/pdf/types";
+import { localized, t } from "@/i18n";
 
 /**
  * Synthèse vocale locale (Piper).
@@ -19,10 +20,10 @@ import type { OutputFile } from "@/core/pdf/types";
 export const TTS_ENGINE = "engine-piper";
 
 /** Voix livrées par le catalogue, dans l'ordre d'affichage. */
-export const TTS_VOICES = [
-  { id: "voice-fr-siwis", language: "fr", label: "Français — Siwis" },
-  { id: "voice-en-lessac", language: "en", label: "Anglais — Lessac" },
-] as const;
+export const TTS_VOICES = localized(() => [
+  { id: "voice-fr-siwis", language: "fr", label: t("Français — Siwis") },
+  { id: "voice-en-lessac", language: "en", label: t("Anglais — Lessac") },
+] as const);
 
 export type VoiceId = (typeof TTS_VOICES)[number]["id"];
 
@@ -68,10 +69,10 @@ export async function synthesize(
   options: SynthesizeOptions,
   context?: Pick<JobContext, "report" | "signal">,
 ): Promise<SynthesisResult> {
-  if (!isTauri()) throw new Error("La synthèse vocale nécessite l'application FourTout installée.");
+  if (!isTauri()) throw new Error(t("La synthèse vocale nécessite l'application FourTout installée."));
 
   const segments = segmentText(options.text, { maxChars: options.maxChars });
-  if (segments.length === 0) throw new Error("Le texte à lire est vide.");
+  if (segments.length === 0) throw new Error(t("Le texte à lire est vide."));
 
   const { invoke } = await import("@tauri-apps/api/core");
   const jobId = `tts-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -89,7 +90,7 @@ export async function synthesize(
       if (context?.signal?.aborted) throw new JobCancelledError();
       context?.report?.({
         ratio: index / segments.length,
-        label: `Segment ${index + 1} sur ${segments.length}`,
+        label: t("Segment {value} sur {count}", { value: index + 1, count: segments.length }),
       });
 
       try {
@@ -101,14 +102,14 @@ export async function synthesize(
     }
 
     if (context?.signal?.aborted) throw new JobCancelledError();
-    context?.report?.({ ratio: 0.99, label: "Assemblage…" });
+    context?.report?.({ ratio: 0.99, label: t("Assemblage…") });
 
     const joined = await invoke<{ path: string; durationMs: number; bytes: number }>("tts_concat", {
       paths: parts,
     });
     try {
       const audio = await invoke<ArrayBuffer>("media_read", { path: joined.path });
-      context?.report?.({ ratio: 1, label: "Terminé" });
+      context?.report?.({ ratio: 1, label: t("Terminé") });
       return {
         bytes: new Uint8Array(audio),
         durationMs: joined.durationMs,
@@ -132,7 +133,7 @@ export async function synthesizePreview(
   speed = 1,
 ): Promise<SynthesisResult> {
   const preview = previewText(text);
-  if (!preview) throw new Error("Le texte à lire est vide.");
+  if (!preview) throw new Error(t("Le texte à lire est vide."));
   return synthesize({ text: preview, voiceId, speed });
 }
 
@@ -145,12 +146,12 @@ export async function toAudioFile(
   baseName: string,
 ): Promise<OutputFile> {
   if (format === "wav") {
-    return { name: `${baseName}.wav`, bytes: result.bytes, mimeType: "audio/wav" };
+    return { name: t("{baseName}.wav", { baseName }), bytes: result.bytes, mimeType: "audio/wav" };
   }
 
   const file: SelectedFile = {
     id: "tts",
-    name: `${baseName}.wav`,
+    name: t("{baseName}.wav", { baseName }),
     size: result.bytes.length,
     extension: "wav",
     mimeType: "audio/wav",

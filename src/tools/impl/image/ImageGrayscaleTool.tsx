@@ -8,6 +8,7 @@ import { processImages } from "@/core/image/pipeline";
 import { grayscale, type GrayscaleMode } from "@/core/image/operations";
 import type { SelectedFile } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 export function ImageGrayscaleTool({ tool }: ToolComponentProps) {
   const [mode, setMode] = useState<GrayscaleMode>("grayscale");
@@ -16,7 +17,7 @@ export function ImageGrayscaleTool({ tool }: ToolComponentProps) {
   return (
     <ImageToolShell
       tool={tool}
-      actionLabel="Convertir"
+      actionLabel={t("Convertir")}
       run={async ({ files, context }) => {
         const outputs = await processImages(
           files,
@@ -26,7 +27,7 @@ export function ImageGrayscaleTool({ tool }: ToolComponentProps) {
         );
         return {
           files: outputs,
-          summary: `${outputs.length} image${outputs.length > 1 ? "s" : ""} en ${mode === "threshold" ? "noir et blanc" : "niveaux de gris"}.`,
+          summary: t("{count} {count, plural, one {image} other {images}} en {value}.", { count: outputs.length, value: mode === "threshold" ? t("noir et blanc") : t("niveaux de gris") }),
           zipName: "images-nb.zip",
         };
       }}
@@ -34,19 +35,19 @@ export function ImageGrayscaleTool({ tool }: ToolComponentProps) {
       {(files) => (
         <div className="space-y-3">
           <Fieldset columns={1}>
-            <Field label="Rendu">
+            <Field label={t("Rendu")}>
               <OptionGroup
-                ariaLabel="Rendu"
+                ariaLabel={t("Rendu")}
                 value={mode}
                 onChange={setMode}
                 options={[
-                  { value: "grayscale", label: "Niveaux de gris" },
-                  { value: "threshold", label: "Noir et blanc (seuil)" },
+                  { value: "grayscale", label: t("Niveaux de gris") },
+                  { value: "threshold", label: t("Noir et blanc (seuil)") },
                 ]}
               />
             </Field>
             {mode === "threshold" && (
-              <Field label="Seuil">
+              <Field label={t("Seuil")}>
                 <Slider value={threshold} onChange={setThreshold} min={1} max={254} />
               </Field>
             )}
@@ -63,7 +64,7 @@ function GrayscalePreview({ file, mode, threshold }: { file: SelectedFile; mode:
   const url = useProcessedPreview(source.preview, (c) => grayscale(c, { mode, threshold }), [mode, threshold]);
   return (
     <PreviewFrame maxHeight={340}>
-      {url && <img src={url} alt="Aperçu" className="max-h-[300px] max-w-full object-contain" draggable={false} />}
+      {url && <img src={url} alt={t("Aperçu")} className="max-h-[300px] max-w-full object-contain" draggable={false} />}
     </PreviewFrame>
   );
 }

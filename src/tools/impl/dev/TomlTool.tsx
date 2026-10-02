@@ -11,20 +11,11 @@ import {
   type TomlProblem,
 } from "@/core/code/toml";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, msg, t, tx } from "@/i18n";
 
 type Mode = "validate" | "format";
 
-const SAMPLE = `# Configuration d'exemple
-titre = "FourTout"
-version = 3
-
-[serveur]
-hote = "127.0.0.1"
-port = 8080
-
-[[journal]]
-niveau = "info"
-`;
+const SAMPLE = msg("# Configuration d'exemple\ntitre = \"FourTout\"\nversion = 3\n\n[serveur]\nhote = \"127.0.0.1\"\nport = 8080\n\n[[journal]]\nniveau = \"info\"\n");
 
 /** Rend un problème de syntaxe lisible : la phrase, puis l'endroit. */
 function problemText(problem: TomlProblem): string {
@@ -61,7 +52,7 @@ export function TomlTool(_props: ToolComponentProps) {
         error:
           failure instanceof TomlFormatError
             ? problemText(failure.problem)
-            : "Reformatage impossible.",
+            : t("Reformatage impossible."),
       };
     }
   }, [input, mode]);
@@ -75,47 +66,41 @@ export function TomlTool(_props: ToolComponentProps) {
         input={input}
         onInputChange={setInput}
         output={analysis?.output}
-        inputLabel="Document TOML"
-        outputLabel="TOML reformaté"
-        placeholder="Collez votre TOML, ou déposez un fichier .toml ici…"
+        inputLabel={t("Document TOML")}
+        outputLabel={t("TOML reformaté")}
+        placeholder={t("Collez votre TOML, ou déposez un fichier .toml ici…")}
         downloadName="fourtout.toml"
-        error={analysis?.error}
+        error={tx(analysis?.error)}
         sample={SAMPLE}
         layout={mode === "format" ? "side-by-side" : "stacked"}
         summary={
           analysis && !analysis.error && summary ? (
             <>
-              Document valide · {summary.topLevelKeys} clé
-              {summary.topLevelKeys > 1 ? "s" : ""} à la racine · {summary.tables} table
-              {summary.tables > 1 ? "s" : ""} · {summary.arraysOfTables} tableau
-              {summary.arraysOfTables > 1 ? "x" : ""} de tables · profondeur {summary.depth}
-              {summary.dates > 0 && ` · ${summary.dates} date${summary.dates > 1 ? "s" : ""}`}
+              {t("Document valide · {topLevelKeys} {topLevelKeys, plural, one {clé} other {clés}} à la racine · {tables} {tables, plural, one {table} other {tables}} · {arraysOfTables} {arraysOfTables, plural, one {tableau} other {tableaux}} de tables · profondeur {depth}{value}", { topLevelKeys: summary.topLevelKeys, tables: summary.tables, arraysOfTables: summary.arraysOfTables, depth: summary.depth, value: summary.dates > 0 && ` · ${summary.dates} date${summary.dates > 1 ? "s" : ""}` })}
             </>
           ) : undefined
         }
       >
         <Fieldset columns={1}>
-          <Field label="Que voulez-vous faire ?">
+          <Field label={t("Que voulez-vous faire ?")}>
             <OptionGroup
-              ariaLabel="Mode"
+              ariaLabel={t("Mode")}
               value={mode}
               onChange={setMode}
               options={[
-                { value: "validate", label: "Valider seulement" },
-                { value: "format", label: "Reformater" },
+                { value: "validate", label: t("Valider seulement") },
+                { value: "format", label: t("Reformater") },
               ]}
             />
           </Field>
         </Fieldset>
 
         {mode === "format" && (
-          <Callout tone="warning" title="Le reformatage perd les commentaires">
+          <Callout tone="warning" title={t("Le reformatage perd les commentaires")}>
             {TOML_COMMENT_NOTE}
             {comments > 0 && (
               <>
-                {" "}
-                Ce document en contient <strong>{comments}</strong> ligne
-                {comments > 1 ? "s" : ""}.
+                {" "}<Trans source={"Ce document en contient <0>{comments}</0> {comments, plural, one {ligne} other {lignes}}."} values={{ comments }} components={[<strong />]} />
               </>
             )}
           </Callout>

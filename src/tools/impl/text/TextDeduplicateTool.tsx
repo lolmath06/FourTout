@@ -3,6 +3,7 @@ import { CheckOption, TextToolShell } from "@/components/text/TextToolShell";
 import { Field, Fieldset, OptionGroup } from "@/components/pdf/Field";
 import { deduplicateLines, DEFAULT_DEDUPE_OPTIONS, type DedupeOptions } from "@/core/text/lines";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t } from "@/i18n";
 
 const SAMPLE = `pomme
 poire
@@ -26,48 +27,46 @@ export function TextDeduplicateTool(_props: ToolComponentProps) {
       input={input}
       onInputChange={setInput}
       output={result.text}
-      outputLabel="Lignes uniques"
+      outputLabel={t("Lignes uniques")}
       downloadName="lignes-uniques.txt"
       sample={SAMPLE}
       summary={
         input.length > 0 ? (
           <span className="tabular-nums">
-            {result.linesBefore} lignes → {result.linesAfter} lignes ·{" "}
-            <strong>{result.removed}</strong> doublon{result.removed > 1 ? "s" : ""} supprimé
-            {result.removed > 1 ? "s" : ""}
+            <Trans source={"{linesBefore} lignes → {linesAfter} lignes · <0>{removed}</0> {removed, plural, one {doublon} other {doublons}} {removed, plural, one {supprimé} other {supprimés}}"} values={{ linesBefore: result.linesBefore, linesAfter: result.linesAfter, removed: result.removed }} components={[<strong />]} />
           </span>
         ) : undefined
       }
     >
       <Fieldset columns={2}>
-        <Field label="Occurrence conservée">
+        <Field label={t("Occurrence conservée")}>
           <OptionGroup
-            ariaLabel="Occurrence conservée"
+            ariaLabel={t("Occurrence conservée")}
             value={options.keep}
             onChange={(v) => set("keep", v)}
             options={[
-              { value: "first", label: "La première" },
-              { value: "last", label: "La dernière" },
+              { value: "first", label: t("La première") },
+              { value: "last", label: t("La dernière") },
             ]}
           />
         </Field>
-        <Field label="Comparaison" full>
+        <Field label={t("Comparaison")} full>
           <div className="grid gap-0.5 sm:grid-cols-3">
             <CheckOption
               checked={options.caseSensitive}
               onChange={(v) => set("caseSensitive", v)}
-              label="Sensible à la casse"
-              hint="« Pomme » ≠ « pomme »"
+              label={t("Sensible à la casse")}
+              hint={t("« Pomme » ≠ « pomme »")}
             />
             <CheckOption
               checked={options.trimComparison}
               onChange={(v) => set("trimComparison", v)}
-              label="Ignorer les espaces de bord"
+              label={t("Ignorer les espaces de bord")}
             />
             <CheckOption
               checked={options.ignoreBlank}
               onChange={(v) => set("ignoreBlank", v)}
-              label="Conserver les lignes vides"
+              label={t("Conserver les lignes vides")}
             />
           </div>
         </Field>

@@ -9,6 +9,7 @@ import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import { useOpenTool } from "@/features/handoff/useOpenTool";
 import { DIAGNOSTIC_SPECIALISTS } from "@/features/handoff/targets";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Diagnostic universel.
@@ -28,16 +29,15 @@ export function FileDiagnoseTool({ tool }: ToolComponentProps) {
   const run = useCallback(
     async (action: RepairAction, report: DiagnosticReport): Promise<ActionOutcome> => {
       if (action.id !== "fix-extension") {
-        throw new Error("Cette action appartient à un outil spécialisé.");
+        throw new Error(t("Cette action appartient à un outil spécialisé."));
       }
       const output = await fixExtension(report.path);
       return {
-        title: "Copie créée avec la bonne extension",
+        title: t("Copie créée avec la bonne extension"),
         tone: "success",
         summary:
-          "Le contenu n'a pas été touché : c'est une copie octet pour octet, sous un nom qui " +
-          "dit enfin ce qu'elle contient. L'original reste à sa place, avec son nom d'origine.",
-        kept: ["Tous les octets du fichier, à l'identique"],
+          t("Le contenu n'a pas été touché : c'est une copie octet pour octet, sous un nom qui dit enfin ce qu'elle contient. L'original reste à sa place, avec son nom d'origine."),
+        kept: [t("Tous les octets du fichier, à l'identique")],
         lost: [],
         output,
       };
@@ -47,40 +47,40 @@ export function FileDiagnoseTool({ tool }: ToolComponentProps) {
 
   return (
     <DiagnosticShell
-      label="Fichier à diagnostiquer"
-      hint="N'importe quel fichier. Le type est déterminé par sa signature, pas par son nom."
+      label={t("Fichier à diagnostiquer")}
+      hint={t("N'importe quel fichier. Le type est déterminé par sa signature, pas par son nom.")}
       initialPath={handed[0]}
       onAction={run}
       structure={(report) => (
         <>
           <StructureTable
-            caption="Identité"
+            caption={t("Identité")}
             rows={[
-              { label: "Taille", value: formatSize(report.size) },
-              { label: "Extension du nom", value: report.extension ? `.${report.extension}` : "aucune" },
-              { label: "Type détecté par signature", value: report.detectedLabel },
+              { label: t("Taille"), value: formatSize(report.size) },
+              { label: t("Extension du nom"), value: report.extension ? `.${report.extension}` : t("aucune") },
+              { label: t("Type détecté par signature"), value: tx(report.detectedLabel) },
               {
-                label: "Le nom correspond-il au contenu ?",
-                value: report.extensionMatches ? "oui" : "non",
+                label: t("Le nom correspond-il au contenu ?"),
+                value: report.extensionMatches ? t("oui") : t("non"),
               },
               {
-                label: "Premiers octets",
+                label: t("Premiers octets"),
                 value: report.details.generic?.headHex ?? "—",
               },
               {
-                label: "Derniers octets",
+                label: t("Derniers octets"),
                 value: report.details.generic?.tailHex ?? "—",
               },
               {
-                label: "Marque de fin attendue",
+                label: t("Marque de fin attendue"),
                 value: report.details.generic?.endMarker
                   ? `${report.details.generic.endMarker} — ${
-                      report.details.generic.endMarkerFound ? "présente" : "absente"
+                      report.details.generic.endMarkerFound ? t("présente") : t("absente")
                     }`
-                  : "ce format n'en porte pas",
+                  : t("ce format n'en porte pas"),
               },
               {
-                label: "Octets après la fin du fichier",
+                label: t("Octets après la fin du fichier"),
                 value: report.details.generic?.trailingBytes
                   ? formatSize(report.details.generic.trailingBytes)
                   : "aucun",
@@ -106,23 +106,20 @@ function Specialist({
   const target = DIAGNOSTIC_SPECIALISTS[report.detected];
   if (!target) {
     return (
-      <Callout tone="neutral" title="Pas d'analyse plus poussée pour ce format">
-        FourTout examine la structure interne des archives ZIP, des PDF, des PNG et des JPEG. Pour
-        « {report.detectedLabel} », le diagnostic s'arrête à ce qui est affiché ci-dessus — et il
-        vaut mieux le dire que de simuler une expertise.
+      <Callout tone="neutral" title={t("Pas d'analyse plus poussée pour ce format")}>
+        {t("FourTout examine la structure interne des archives ZIP, des PDF, des PNG et des JPEG. Pour « {detectedLabel} », le diagnostic s'arrête à ce qui est affiché ci-dessus — et il vaut mieux le dire que de simuler une expertise.", { detectedLabel: report.detectedLabel })}
       </Callout>
     );
   }
 
   return (
-    <Callout tone="info" title="Un outil connaît ce format en profondeur">
+    <Callout tone="info" title={t("Un outil connaît ce format en profondeur")}>
       <p>
-        Le diagnostic détaillé de {report.detectedLabel} — structure interne, entrées, possibilités
-        de récupération — vit dans un outil dédié.
+        {t("Le diagnostic détaillé de {detectedLabel} — structure interne, entrées, possibilités de récupération — vit dans un outil dédié.", { detectedLabel: report.detectedLabel })}
       </p>
       <div className="mt-2">
         <Button size="sm" onClick={() => onOpen(target.tool, { paths: [report.path] })}>
-          <Icon name="ArrowRight" size={13} /> {target.label}
+          <Icon name="ArrowRight" size={13} /> {tx(target.label)}
         </Button>
       </div>
     </Callout>

@@ -6,6 +6,7 @@
  * message, pas `Infinity`.
  */
 
+import { t } from "@/i18n";
 export type PercentageMode = "of" | "share" | "change";
 
 export interface PercentageResult {
@@ -28,7 +29,7 @@ export function percentOf(percent: number, total: number): PercentageResult {
 /** « X représente quel pourcentage de Y ? ». */
 export function percentShare(part: number, total: number): PercentageResult {
   if (total === 0) {
-    throw new RangeError("Un pourcentage d'un total nul n'a pas de sens : le total doit être non nul.");
+    throw new RangeError(t("Un pourcentage d'un total nul n'a pas de sens : le total doit être non nul."));
   }
   return {
     value: (part / total) * 100,
@@ -40,7 +41,7 @@ export function percentShare(part: number, total: number): PercentageResult {
 export function percentChange(from: number, to: number): PercentageResult {
   if (from === 0) {
     throw new RangeError(
-      "Une variation depuis zéro n'a pas de pourcentage : toute augmentation serait infinie.",
+      t("Une variation depuis zéro n'a pas de pourcentage : toute augmentation serait infinie."),
     );
   }
   const value = ((to - from) / Math.abs(from)) * 100;
@@ -49,8 +50,8 @@ export function percentChange(from: number, to: number): PercentageResult {
     formula: `(${format(to)} − ${format(from)}) ÷ |${format(from)}| × 100`,
     note:
       value >= 0
-        ? `Augmentation de ${format(Math.abs(value))} %`
-        : `Diminution de ${format(Math.abs(value))} %`,
+        ? t("Augmentation de {value} %", { value: format(Math.abs(value)) })
+        : t("Diminution de {value} %", { value: format(Math.abs(value)) }),
   };
 }
 
@@ -68,7 +69,7 @@ export interface ProportionResult {
 export function ruleOfThree(a: number, b: number, c: number): ProportionResult {
   if (a === 0) {
     throw new RangeError(
-      "La première valeur ne peut pas être nulle : sans elle, aucune proportion n'est définie.",
+      t("La première valeur ne peut pas être nulle : sans elle, aucune proportion n'est définie."),
     );
   }
   return {

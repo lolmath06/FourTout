@@ -5,6 +5,7 @@ import { PdfError } from "../errors";
 import { pdfToImages } from "./toImages";
 import { decodeImage } from "@/core/image/codec";
 import type { OperationContext, OutputFile, PdfSource } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Caviardage réel d'un PDF.
@@ -47,7 +48,7 @@ export async function redactPdf(
 ): Promise<OutputFile> {
   const withRects = redactions.filter((r) => r.rects.length > 0);
   if (withRects.length === 0) {
-    throw new PdfError("no-pages-selected", "Aucune zone à masquer n'a été définie.");
+    throw new PdfError("no-pages-selected", t("Aucune zone à masquer n'a été définie."));
   }
 
   const original = await loadPdf(source);
@@ -59,7 +60,7 @@ export async function redactPdf(
 
   for (let index = 0; index < pageCount; index += 1) {
     throwIfCancelled(context);
-    report(context, index / pageCount, `Page ${index + 1} sur ${pageCount}`);
+    report(context, index / pageCount, t("Page {value} sur {pageCount}", { value: index + 1, pageCount }));
     const rects = byPage.get(index + 1);
     const { width, height } = original.getPage(index).getSize();
 
@@ -87,7 +88,7 @@ export async function redactPdf(
     }
   }
 
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   const bytes = await output.save();
   return { name: outputName(source.name, "caviarde"), bytes, mimeType: "application/pdf" };
 }

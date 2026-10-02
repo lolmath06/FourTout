@@ -13,6 +13,7 @@ import {
 } from "@/core/calc/expression";
 import { formatWithGrouping } from "@/core/units";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t, tx } from "@/i18n";
 
 interface HistoryEntry {
   expression: string;
@@ -20,12 +21,12 @@ interface HistoryEntry {
 }
 
 /** Touches proposées : celles qui se tapent mal au clavier. */
-const KEYS: { label: string; insert: string }[] = [
+const KEYS: { label: string; insert: string }[] = localized(() => [
   { label: "π", insert: "pi" },
   { label: "e", insert: "e" },
   { label: "√", insert: "sqrt(" },
   { label: "x²", insert: "^2" },
-  { label: "xʸ", insert: "^" },
+  { label: t("xʸ"), insert: "^" },
   { label: "n!", insert: "!" },
   { label: "sin", insert: "sin(" },
   { label: "cos", insert: "cos(" },
@@ -33,7 +34,7 @@ const KEYS: { label: string; insert: string }[] = [
   { label: "ln", insert: "ln(" },
   { label: "log", insert: "log(" },
   { label: "( )", insert: "()" },
-];
+]);
 
 /**
  * Calculatrice scientifique.
@@ -54,7 +55,7 @@ export function ScientificCalculatorTool(_props: ToolComponentProps) {
     try {
       value = evaluateExpression(expression, mode).value;
     } catch (failure) {
-      error = failure instanceof Error ? failure.message : "Expression invalide.";
+      error = failure instanceof Error ? failure.message : t("Expression invalide.");
       position = failure instanceof ExpressionError ? failure.position : undefined;
     }
   }
@@ -70,19 +71,19 @@ export function ScientificCalculatorTool(_props: ToolComponentProps) {
     <div className="space-y-4">
       <Fieldset columns={1}>
         <Field
-          label="Expression"
-          hint="Entrée pour mémoriser le calcul. Les fonctions à deux arguments s'écrivent f(a ; b)."
+          label={t("Expression")}
+          hint={t("Entrée pour mémoriser le calcul. Les fonctions à deux arguments s'écrivent f(a ; b).")}
         >
           <TextInput
             value={expression}
             autoFocus
             spellCheck={false}
-            placeholder="ex. : (2 + 3) × sqrt(16) - 5!"
+            placeholder={t("ex. : (2 + 3) × sqrt(16) - 5!")}
             onChange={(event) => setExpression(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter") remember();
             }}
-            aria-label="Expression à calculer"
+            aria-label={t("Expression à calculer")}
             data-testid="calc-expression"
             className="font-mono"
           />
@@ -92,17 +93,17 @@ export function ScientificCalculatorTool(_props: ToolComponentProps) {
       <div className="flex flex-wrap items-center gap-1.5">
         {KEYS.map((key) => (
           <Button key={key.label} size="sm" onClick={() => append(key.insert)}>
-            {key.label}
+            {tx(key.label)}
           </Button>
         ))}
         <div className="flex-1" />
         <OptionGroup
-          ariaLabel="Unité d'angle"
+          ariaLabel={t("Unité d'angle")}
           value={mode}
           onChange={setMode}
           options={[
-            { value: "deg", label: "Degrés" },
-            { value: "rad", label: "Radians" },
+            { value: "deg", label: t("Degrés") },
+            { value: "rad", label: t("Radians") },
           ]}
         />
         <Button
@@ -111,7 +112,7 @@ export function ScientificCalculatorTool(_props: ToolComponentProps) {
           onClick={() => setExpression("")}
           disabled={expression.length === 0}
         >
-          <Icon name="Eraser" size={13} /> Effacer
+          <Icon name="Eraser" size={13} />{" "}{t("Effacer")}
         </Button>
       </div>
 
@@ -119,7 +120,7 @@ export function ScientificCalculatorTool(_props: ToolComponentProps) {
         message={
           error
             ? position !== undefined
-              ? `${error} (caractère ${position + 1})`
+              ? t("{error} (caractère {value})", { error, value: position + 1 })
               : error
             : undefined
         }
@@ -130,9 +131,9 @@ export function ScientificCalculatorTool(_props: ToolComponentProps) {
           value={formatWithGrouping(value, 14)}
           formula={expression}
           secondary={[
-            { label: "Valeur brute", value: String(value) },
+            { label: t("Valeur brute"), value: String(value) },
             {
-              label: "Notation scientifique",
+              label: t("Notation scientifique"),
               value: value === 0 ? "0" : value.toExponential(6),
             },
           ]}
@@ -142,9 +143,9 @@ export function ScientificCalculatorTool(_props: ToolComponentProps) {
       {history.length > 0 && (
         <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
           <div className="flex items-center gap-2 border-b border-[var(--ft-rule)] px-3 py-1.5">
-            <h3 className="ft-section flex-1">Historique de la session</h3>
+            <h3 className="ft-section flex-1">{t("Historique de la session")}</h3>
             <Button size="sm" variant="ghost" onClick={() => setHistory([])}>
-              Vider
+              {t("Vider")}
             </Button>
           </div>
           <ul className="divide-y divide-[var(--ft-rule)]">
@@ -154,7 +155,7 @@ export function ScientificCalculatorTool(_props: ToolComponentProps) {
                   type="button"
                   onClick={() => setExpression(entry.expression)}
                   className="ft-value min-w-0 flex-1 truncate text-left text-[var(--ft-text-muted)] hover:text-[var(--ft-text)]"
-                  title="Reprendre cette expression"
+                  title={t("Reprendre cette expression")}
                 >
                   {entry.expression}
                 </button>
@@ -167,11 +168,10 @@ export function ScientificCalculatorTool(_props: ToolComponentProps) {
         </section>
       )}
 
-      <Callout tone="neutral" title="Fonctions disponibles">
+      <Callout tone="neutral" title={t("Fonctions disponibles")}>
         <p className="ft-value">{FUNCTION_NAMES.join(", ")}</p>
         <p className="mt-1">
-          Constantes : <span className="ft-value">{CONSTANT_NAMES.join(", ")}</span>. L'expression
-          est analysée par FourTout, jamais exécutée comme du code.
+          <Trans source={"Constantes : <0>{value}</0>. L'expression est analysée par FourTout, jamais exécutée comme du code."} values={{ value: CONSTANT_NAMES.join(", ") }} components={[<span className="ft-value" />]} />
         </p>
       </Callout>
     </div>

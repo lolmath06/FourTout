@@ -4,6 +4,7 @@ import { decodeRawImage, listEmbeddedImages, type EmbeddedImage } from "../image
 import { numberedName } from "../filenames";
 import { getRasterBackend } from "../raster/types";
 import type { OperationContext, OutputFile, PdfSource } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Extraction des images réellement embarquées dans le document.
@@ -42,7 +43,7 @@ export async function extractImages(
 
   for (const [index, image] of images.entries()) {
     throwIfCancelled(context);
-    report(context, index / images.length, `Image ${index + 1} sur ${images.length}`);
+    report(context, index / images.length, t("Image {value} sur {count}", { value: index + 1, count: images.length }));
 
     const position = index + 1;
 
@@ -65,22 +66,22 @@ export async function extractImages(
           mimeType: "image/png",
         });
       } else {
-        skipped.push({ index: position, reason: "pixels illisibles" });
+        skipped.push({ index: position, reason: t("pixels illisibles") });
       }
       continue;
     }
 
-    skipped.push({ index: position, reason: image.reason ?? "encodage non pris en charge" });
+    skipped.push({ index: position, reason: image.reason ?? t("encodage non pris en charge") });
   }
 
   if (files.length === 0) {
     throw new PdfError(
       "no-images-found",
-      `${images.length} image(s) trouvée(s), mais aucune dans un format exploitable.`,
+      t("{count} image(s) trouvée(s), mais aucune dans un format exploitable.", { count: images.length }),
     );
   }
 
-  report(context, 1, "Terminé");
+  report(context, 1, t("Terminé"));
   return { files, skipped, found: images.length };
 }
 

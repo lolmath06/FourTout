@@ -10,6 +10,7 @@ import {
   type UrlMode,
 } from "@/core/text/url";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 export function UrlEncodeTool(_props: ToolComponentProps) {
   const [input, setInput] = useState("");
@@ -27,11 +28,11 @@ export function UrlEncodeTool(_props: ToolComponentProps) {
       input={input}
       onInputChange={setInput}
       output={result.text}
-      inputLabel={action === "encode" ? "Texte ou URL" : "URL encodée"}
-      outputLabel={action === "encode" ? "Résultat encodé" : "Résultat décodé"}
+      inputLabel={action === "encode" ? t("Texte ou URL") : t("URL encodée")}
+      outputLabel={action === "encode" ? t("Résultat encodé") : t("Résultat décodé")}
       downloadName="url.txt"
       layout="side-by-side"
-      error={result.error}
+      error={tx(result.error)}
       sample={
         action === "encode"
           ? "https://example.com/recherche?q=café & thé&page=2"
@@ -39,25 +40,25 @@ export function UrlEncodeTool(_props: ToolComponentProps) {
       }
     >
       <Fieldset columns={2}>
-        <Field label="Opération">
+        <Field label={t("Opération")}>
           <OptionGroup
-            ariaLabel="Opération"
+            ariaLabel={t("Opération")}
             value={action}
             onChange={setAction}
             options={[
-              { value: "encode", label: "Encoder" },
-              { value: "decode", label: "Décoder" },
+              { value: "encode", label: t("Encoder") },
+              { value: "decode", label: t("Décoder") },
             ]}
           />
         </Field>
-        <Field label="Portée">
+        <Field label={t("Portée")}>
           <OptionGroup
-            ariaLabel="Portée"
+            ariaLabel={t("Portée")}
             value={mode}
             onChange={setMode}
             options={(Object.keys(URL_MODE_LABELS) as UrlMode[]).map((value) => ({
               value,
-              label: value === "component" ? "Valeur" : value === "uri" ? "URL complète" : "Formulaire",
+              label: value === "component" ? t("Valeur") : value === "uri" ? t("URL complète") : t("Formulaire"),
               hint: URL_MODE_LABELS[value],
             }))}
           />
@@ -67,14 +68,14 @@ export function UrlEncodeTool(_props: ToolComponentProps) {
       {parts && (
         <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-3 text-sm">
           <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-[var(--ft-text-muted)]">
-            <Icon name="Link2" size={13} /> Décomposition de l'URL
+            <Icon name="Link2" size={13} />{" "}{t("Décomposition de l'URL")}
           </p>
           <dl className="grid gap-x-4 gap-y-1 sm:grid-cols-[8rem_1fr]">
-            <dt className="text-xs text-[var(--ft-text-faint)]">Protocole</dt>
+            <dt className="text-xs text-[var(--ft-text-faint)]">{t("Protocole")}</dt>
             <dd className="font-mono text-xs">{parts.protocol}</dd>
-            <dt className="text-xs text-[var(--ft-text-faint)]">Hôte</dt>
+            <dt className="text-xs text-[var(--ft-text-faint)]">{t("Hôte")}</dt>
             <dd className="font-mono text-xs">{parts.host}</dd>
-            <dt className="text-xs text-[var(--ft-text-faint)]">Chemin</dt>
+            <dt className="text-xs text-[var(--ft-text-faint)]">{t("Chemin")}</dt>
             <dd className="break-all font-mono text-xs">{parts.path}</dd>
             {parts.params.map((param) => (
               <div key={param.key} className="contents">

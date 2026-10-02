@@ -1,0 +1,3726 @@
+{
+  "categories": {
+    "pdf": {
+      "name": "PDF",
+      "description": "Gabungkan, pisahkan, kompres, konversi, dan amankan PDF.",
+      "keywords": [
+        "pdf",
+        "dokumen",
+        "acrobat"
+      ]
+    },
+    "images": {
+      "name": "Gambar",
+      "description": "Konversi, kompres, ubah ukuran, dan bersihkan gambar.",
+      "keywords": [
+        "gambar",
+        "foto",
+        "png",
+        "jpg",
+        "jpeg",
+        "webp"
+      ]
+    },
+    "audio": {
+      "name": "Audio",
+      "description": "Konversi, potong, normalkan, transkripsikan, dan sintesis suara.",
+      "keywords": [
+        "audio",
+        "suara",
+        "musik",
+        "mp3",
+        "vokal"
+      ]
+    },
+    "video": {
+      "name": "Video",
+      "description": "Konversi, kompres, potong, dan beri subtitle pada video.",
+      "keywords": [
+        "video",
+        "film",
+        "mp4",
+        "klip"
+      ]
+    },
+    "text": {
+      "name": "Teks & dokumen",
+      "description": "Analisis, bersihkan, bandingkan, dan ubah teks.",
+      "keywords": [
+        "teks",
+        "dokumen",
+        "markdown",
+        "kata"
+      ]
+    },
+    "files": {
+      "name": "Berkas & arsip",
+      "description": "Kompres, ekstrak, bandingkan, ganti nama, dan atur berkas.",
+      "keywords": [
+        "berkas",
+        "file",
+        "arsip",
+        "zip",
+        "folder"
+      ]
+    },
+    "converters": {
+      "name": "Konverter",
+      "description": "Ubah dari satu format ke format lain, apa pun jenis berkasnya.",
+      "keywords": [
+        "konversi",
+        "ubah",
+        "konverter",
+        "format",
+        "convert"
+      ]
+    },
+    "developer": {
+      "name": "Pengembang",
+      "description": "Format, enkode, buat, dan periksa format teknis.",
+      "keywords": [
+        "dev",
+        "pengembang",
+        "developer",
+        "json",
+        "kode",
+        "pemrograman"
+      ]
+    },
+    "calculators": {
+      "name": "Kalkulator",
+      "description": "Satuan, persentase, tanggal, durasi, dan perhitungan sehari-hari.",
+      "keywords": [
+        "hitung",
+        "kalkulator",
+        "satuan",
+        "konversi",
+        "ukuran",
+        "matematika"
+      ]
+    },
+    "network": {
+      "name": "Jaringan",
+      "description": "Diagnosis koneksi, uji port, lihat apa yang terhubung di rumah.",
+      "keywords": [
+        "jaringan",
+        "network",
+        "lan",
+        "ip",
+        "ping",
+        "port",
+        "koneksi",
+        "wifi"
+      ]
+    },
+    "diagnostics": {
+      "name": "Diagnosis & pemulihan",
+      "description": "Pahami apa yang rusak pada berkas yang rusak, dan selamatkan yang masih bisa.",
+      "keywords": [
+        "diagnosis",
+        "rusak",
+        "korup",
+        "perbaiki",
+        "pulihkan",
+        "disk",
+        "partisi",
+        "smart"
+      ]
+    },
+    "security": {
+      "name": "Keamanan & privasi",
+      "description": "Kata sandi, enkripsi, hash, dan penghapusan data.",
+      "keywords": [
+        "keamanan",
+        "privasi",
+        "enkripsi",
+        "kata sandi",
+        "password",
+        "hash"
+      ]
+    }
+  },
+  "tools": {
+    "pdf-merge": {
+      "name": "Gabungkan PDF",
+      "description": "Satukan beberapa PDF menjadi satu dokumen, sesuai urutan pilihan Anda.",
+      "keywords": [
+        "gabungkan",
+        "gabung",
+        "satukan",
+        "beberapa pdf",
+        "satu pdf",
+        "gabungkan dua pdf"
+      ],
+      "aliases": [
+        "merge pdf",
+        "combine pdf",
+        "gabung pdf"
+      ]
+    },
+    "pdf-split": {
+      "name": "Pisahkan PDF",
+      "description": "Potong PDF menjadi beberapa berkas berdasarkan rentang halaman.",
+      "keywords": [
+        "pisahkan",
+        "pisah",
+        "potong",
+        "bagi",
+        "jadi dua"
+      ],
+      "aliases": [
+        "split pdf",
+        "pisah pdf"
+      ]
+    },
+    "pdf-extract-pages": {
+      "name": "Ekstrak halaman",
+      "description": "Buat PDF baru dari halaman yang dipilih.",
+      "keywords": [
+        "ekstrak",
+        "pilih",
+        "ambil halaman",
+        "simpan beberapa halaman"
+      ],
+      "aliases": [
+        "extract pages",
+        "ekstrak halaman pdf"
+      ]
+    },
+    "pdf-remove-pages": {
+      "name": "Hapus halaman",
+      "description": "Hapus permanen beberapa halaman dari PDF.",
+      "keywords": [
+        "hapus",
+        "buang",
+        "hapus halaman",
+        "hapus satu halaman",
+        "hapus halaman terakhir"
+      ],
+      "aliases": [
+        "delete pages",
+        "remove pages pdf"
+      ]
+    },
+    "pdf-reorder-pages": {
+      "name": "Atur ulang halaman",
+      "description": "Ubah urutan halaman dengan seret dan lepas.",
+      "keywords": [
+        "atur ulang",
+        "urutan",
+        "urutkan halaman",
+        "pindahkan halaman",
+        "balik"
+      ],
+      "aliases": [
+        "reorder pages",
+        "organize pdf"
+      ]
+    },
+    "pdf-rotate": {
+      "name": "Putar halaman",
+      "description": "Putar semua atau sebagian halaman 90, 180, atau 270 derajat.",
+      "keywords": [
+        "putar",
+        "rotasi",
+        "luruskan",
+        "halaman terbalik",
+        "orientasi"
+      ],
+      "aliases": [
+        "rotate pdf",
+        "putar pdf"
+      ]
+    },
+    "pdf-compress": {
+      "name": "Kompres PDF",
+      "description": "Perkecil ukuran PDF dengan tetap mudah dibaca.",
+      "keywords": [
+        "kompres",
+        "perkecil",
+        "kurangi ukuran",
+        "perkecil ukuran",
+        "optimalkan",
+        "terlalu besar",
+        "berkas besar",
+        "lebih sedikit mb"
+      ],
+      "aliases": [
+        "compress pdf",
+        "reduce pdf size",
+        "perkecil pdf",
+        "pdf terlalu besar"
+      ]
+    },
+    "images-to-pdf": {
+      "name": "Gambar ke PDF",
+      "description": "Ubah serangkaian gambar menjadi dokumen PDF berhalaman.",
+      "keywords": [
+        "gambar ke pdf",
+        "foto ke pdf",
+        "jpg ke pdf",
+        "png ke pdf",
+        "pemindai"
+      ],
+      "aliases": [
+        "image to pdf",
+        "jpg to pdf",
+        "png to pdf"
+      ]
+    },
+    "pdf-to-images": {
+      "name": "PDF ke gambar",
+      "description": "Ekspor setiap halaman PDF sebagai PNG atau JPEG, dengan resolusi yang Anda inginkan.",
+      "keywords": [
+        "pdf ke gambar",
+        "pdf ke png",
+        "pdf ke jpg",
+        "pdf ke jpeg",
+        "ekspor halaman",
+        "ubah pdf ke png"
+      ],
+      "aliases": [
+        "pdf to image",
+        "pdf to jpg",
+        "pdf to png"
+      ]
+    },
+    "document-to-pdf": {
+      "name": "Dokumen ke PDF",
+      "description": "Konversi berkas teks, Markdown, atau HTML ke PDF.",
+      "keywords": [
+        "teks ke pdf",
+        "markdown ke pdf",
+        "html ke pdf",
+        "txt ke pdf",
+        "docx ke pdf"
+      ],
+      "aliases": [
+        "text to pdf",
+        "markdown to pdf",
+        "html to pdf"
+      ]
+    },
+    "pdf-add-text": {
+      "name": "Tambahkan teks",
+      "description": "Tulis teks pada PDF untuk mengisi formulir atau memberi catatan.",
+      "keywords": [
+        "tulis",
+        "anotasi",
+        "isi",
+        "formulir",
+        "komentar",
+        "teks di pdf"
+      ],
+      "aliases": [
+        "add text to pdf",
+        "isi pdf"
+      ]
+    },
+    "pdf-add-image": {
+      "name": "Tambahkan gambar atau tanda tangan",
+      "description": "Sisipkan gambar, stempel, atau tanda tangan tepat di tempat yang Anda mau.",
+      "keywords": [
+        "tanda tangani",
+        "tanda tangan",
+        "stempel",
+        "cap",
+        "logo",
+        "tempel gambar",
+        "paraf"
+      ],
+      "aliases": [
+        "sign pdf",
+        "add signature",
+        "tanda tangan pdf"
+      ]
+    },
+    "pdf-watermark": {
+      "name": "Tambahkan watermark",
+      "description": "Bubuhkan watermark teks pada semua atau sebagian halaman.",
+      "keywords": [
+        "watermark",
+        "tanda air",
+        "rahasia",
+        "tandai",
+        "draf"
+      ],
+      "aliases": [
+        "watermark pdf"
+      ]
+    },
+    "pdf-page-numbers": {
+      "name": "Beri nomor halaman",
+      "description": "Tambahkan nomor halaman yang dapat diatur di header atau footer.",
+      "keywords": [
+        "nomor halaman",
+        "penomoran",
+        "paginasi",
+        "beri nomor"
+      ],
+      "aliases": [
+        "page numbers",
+        "nomori pdf"
+      ]
+    },
+    "pdf-protect": {
+      "name": "Lindungi dengan kata sandi",
+      "description": "Enkripsi PDF agar hanya terbuka dengan kata sandi.",
+      "keywords": [
+        "lindungi",
+        "kata sandi",
+        "password",
+        "enkripsi",
+        "kunci",
+        "beri kata sandi pdf",
+        "pdf rahasia"
+      ],
+      "aliases": [
+        "protect pdf",
+        "encrypt pdf",
+        "password pdf"
+      ]
+    },
+    "pdf-unlock": {
+      "name": "Buka kunci PDF",
+      "description": "Hapus perlindungan PDF yang kata sandinya Anda ketahui.",
+      "keywords": [
+        "buka kunci",
+        "hapus kata sandi",
+        "hapus proteksi",
+        "dekripsi"
+      ],
+      "aliases": [
+        "unlock pdf",
+        "remove pdf password",
+        "decrypt pdf"
+      ],
+      "note": "FourTout tidak membobol perlindungan: Anda harus mengetahui kata sandinya. Untuk kata sandi yang terlupa, lihat “Pulihkan kata sandi PDF”."
+    },
+    "pdf-recover-password": {
+      "name": "Pulihkan kata sandi PDF",
+      "description": "Coba kata sandi yang mungkin untuk membuka kembali PDF yang kata sandinya Anda lupakan.",
+      "keywords": [
+        "lupa kata sandi",
+        "pulihkan kata sandi",
+        "pemulihan",
+        "pdf terkunci",
+        "kata sandi hilang",
+        "buka pdf terkunci",
+        "kamus"
+      ],
+      "aliases": [
+        "recover pdf password",
+        "forgot pdf password",
+        "pdf password recovery"
+      ],
+      "note": "Pemulihan lokal dengan kamus dan aturan, untuk dokumen yang berhak Anda buka. Ini bukan pencarian menyeluruh: kata sandi yang tidak ada dalam daftar tidak akan ditemukan."
+    },
+    "pdf-metadata": {
+      "name": "Metadata PDF",
+      "description": "Baca dan ubah judul, penulis, subjek, dan kata kunci PDF.",
+      "keywords": [
+        "metadata",
+        "properti",
+        "penulis",
+        "judul",
+        "info dokumen"
+      ],
+      "aliases": [
+        "pdf metadata",
+        "edit pdf properties"
+      ]
+    },
+    "pdf-extract-images": {
+      "name": "Ekstrak gambar dari PDF",
+      "description": "Ambil semua gambar yang tertanam dalam PDF.",
+      "keywords": [
+        "ekstrak gambar",
+        "ambil foto",
+        "simpan gambar"
+      ],
+      "aliases": [
+        "extract images from pdf"
+      ]
+    },
+    "pdf-extract-text": {
+      "name": "Ekstrak teks dari PDF",
+      "description": "Ambil teks PDF yang dapat dipilih, halaman demi halaman.",
+      "keywords": [
+        "ekstrak teks",
+        "salin teks",
+        "pdf ke teks",
+        "ambil isi"
+      ],
+      "aliases": [
+        "pdf to text",
+        "extract text"
+      ]
+    },
+    "pdf-edit-text": {
+      "name": "Edit teks PDF",
+      "description": "Perbaiki teks langsung di halaman: klik dua kali sebuah kata lalu ganti.",
+      "keywords": [
+        "edit teks pdf",
+        "ubah teks pdf",
+        "perbaiki teks di pdf",
+        "ganti teks",
+        "edit pdf",
+        "perbaiki salah ketik",
+        "ubah tanggal",
+        "ubah nominal"
+      ],
+      "aliases": [
+        "edit pdf text",
+        "modify pdf text",
+        "change text pdf",
+        "edit text in pdf"
+      ],
+      "note": "Penyuntingan visual dengan penggantian: teks asli ditutup dengan warna latar yang diambil sampelnya, lalu digambar ulang. Ideal untuk teks horizontal di latar polos (dokumen, faktur, laporan). Area dengan latar tidak polos atau teks yang diputar ditandai dan tidak diubah."
+    },
+    "ocr-document": {
+      "name": "OCR PDF hasil pindai",
+      "description": "Kenali teks pada PDF hasil pindai, halaman demi halaman, dalam bahasa Prancis atau Inggris.",
+      "keywords": [
+        "ocr",
+        "pengenalan teks",
+        "pindai",
+        "hasil pindai",
+        "foto ke teks",
+        "baca hasil pindai",
+        "pdf tidak bisa dipilih",
+        "gambar ke teks"
+      ],
+      "aliases": [
+        "ocr",
+        "optical character recognition",
+        "image to text",
+        "scan to text"
+      ],
+      "note": "Mesin OCR lokal (tesseract.js) bawaan: tidak ada data yang dikirim lewat jaringan. Untuk satu gambar, lihat “Ekstrak teks dari gambar”."
+    },
+    "pdf-compare": {
+      "name": "Bandingkan dua PDF",
+      "description": "Sorot perbedaan antara dua versi dokumen.",
+      "keywords": [
+        "bandingkan",
+        "perbedaan",
+        "diff",
+        "dua versi",
+        "perubahan"
+      ],
+      "aliases": [
+        "compare pdf",
+        "pdf diff"
+      ]
+    },
+    "pdf-redact": {
+      "name": "Sensor PDF",
+      "description": "Sembunyikan area sensitif secara permanen: isinya dihapus, bukan sekadar ditutup.",
+      "keywords": [
+        "sensor",
+        "redaksi",
+        "sembunyikan",
+        "anonimkan",
+        "hitamkan",
+        "data sensitif"
+      ],
+      "aliases": [
+        "redact pdf",
+        "redaksi"
+      ]
+    },
+    "pdf-searchable": {
+      "name": "PDF pindaian ke PDF yang dapat dicari",
+      "description": "Kenali teks PDF hasil pindai dan tambahkan sebagai lapisan tak terlihat: Ctrl+F, seleksi, dan salin berfungsi, tampilannya tidak berubah.",
+      "keywords": [
+        "pdf dapat dicari",
+        "ocr pdf",
+        "pindai pdf",
+        "pdf hasil pindai",
+        "jadikan pdf dapat dicari",
+        "pengenalan teks pdf",
+        "lapisan teks",
+        "pdf tidak bisa dipilih"
+      ],
+      "aliases": [
+        "searchable pdf",
+        "ocr pdf",
+        "make pdf searchable",
+        "scanned pdf"
+      ],
+      "note": "Pengenalan sepenuhnya lokal. Halaman asli tidak dirasterisasi atau dikompres ulang: hanya lapisan teks tak terlihat yang ditambahkan. Kualitas hasil bergantung pada kualitas pindaian."
+    },
+    "pdf-extract-tables": {
+      "name": "Ekstrak tabel dari PDF",
+      "description": "Susun ulang baris dan kolom dari posisi teks, lalu ekspor ke CSV atau buku kerja XLSX.",
+      "keywords": [
+        "ekstrak tabel pdf",
+        "tabel pdf",
+        "pdf ke excel",
+        "pdf ke csv",
+        "ambil tabel",
+        "pdf xlsx",
+        "spreadsheet",
+        "kolom",
+        "baris"
+      ],
+      "aliases": [
+        "pdf to excel",
+        "extract tables",
+        "pdf table to csv",
+        "pdf to csv"
+      ],
+      "note": "PDF tidak berisi tabel, hanya teks yang diposisikan: FourTout menyusun ulang baris dan kolom dari posisi tersebut. Tabel rumit — sel gabungan, teks beberapa baris — mungkin perlu dikoreksi sebelum diekspor."
+    },
+    "scans-to-pdf": {
+      "name": "Pindaian dan foto ke PDF",
+      "description": "Gabungkan halaman hasil pindai atau foto menjadi satu PDF, dengan pembersihan dan pengurutan halaman.",
+      "keywords": [
+        "pindaian ke pdf",
+        "foto ke pdf",
+        "scan ke pdf",
+        "gabungkan pindaian",
+        "jilid halaman",
+        "foto dokumen pdf",
+        "bersihkan dan gabungkan"
+      ],
+      "aliases": [
+        "scans to pdf",
+        "photos to pdf",
+        "scan to pdf"
+      ],
+      "note": "Pembersihan berlaku untuk semua halaman dengan pengaturan yang sama; penggabungan memakai mesin “Gambar ke PDF”."
+    },
+    "image-convert": {
+      "name": "Konversi gambar",
+      "description": "Ubah dari satu format ke format lain: PNG, JPG, WebP. Juga membaca GIF, BMP, TIFF, dan SVG.",
+      "keywords": [
+        "konversi",
+        "ubah format",
+        "png ke jpg",
+        "jpg ke png",
+        "png ke webp",
+        "jpg ke webp",
+        "webp ke png",
+        "webp ke jpg",
+        "webp",
+        "svg ke png",
+        "gif ke png",
+        "bmp",
+        "tiff",
+        "heic",
+        "avif"
+      ],
+      "aliases": [
+        "convert image",
+        "png to jpg",
+        "jpg to png",
+        "jpg to webp",
+        "webp to png",
+        "image converter"
+      ]
+    },
+    "image-compress": {
+      "name": "Kompres gambar",
+      "description": "Perkecil ukuran gambar dengan mengendalikan penurunan kualitas.",
+      "keywords": [
+        "kompres",
+        "kompres foto",
+        "perkecil ukuran",
+        "optimalkan",
+        "foto terlalu besar",
+        "lebih sedikit kb"
+      ],
+      "aliases": [
+        "compress image",
+        "optimize image",
+        "reduce image size"
+      ]
+    },
+    "image-resize": {
+      "name": "Ubah ukuran gambar",
+      "description": "Ubah dimensi dalam piksel atau persen, dengan atau tanpa menjaga rasio.",
+      "keywords": [
+        "ubah ukuran",
+        "resize",
+        "ukuran foto",
+        "perbesar",
+        "perkecil",
+        "piksel",
+        "lebar",
+        "tinggi",
+        "1920",
+        "1080"
+      ],
+      "aliases": [
+        "resize image",
+        "scale image"
+      ]
+    },
+    "image-crop": {
+      "name": "Pangkas gambar",
+      "description": "Pangkas gambar secara visual, bebas atau mengikuti rasio (1:1, 4:3, 16:9, 3:2).",
+      "keywords": [
+        "pangkas",
+        "crop",
+        "potong foto",
+        "potong",
+        "bingkai",
+        "rasio",
+        "persegi"
+      ],
+      "aliases": [
+        "crop image"
+      ]
+    },
+    "image-rotate": {
+      "name": "Putar dan cermin",
+      "description": "Putar per seperempat putaran dan balik seperti cermin, dengan pratinjau langsung.",
+      "keywords": [
+        "putar",
+        "rotasi",
+        "luruskan",
+        "foto miring",
+        "cermin",
+        "balik",
+        "90 derajat"
+      ],
+      "aliases": [
+        "rotate image",
+        "rotate and flip"
+      ]
+    },
+    "image-flip": {
+      "name": "Cermin horizontal atau vertikal",
+      "description": "Balik gambar seperti di cermin.",
+      "keywords": [
+        "cermin",
+        "balik",
+        "simetri",
+        "flip",
+        "membalik"
+      ],
+      "aliases": [
+        "flip image",
+        "mirror image"
+      ]
+    },
+    "image-grayscale": {
+      "name": "Hitam putih",
+      "description": "Ubah ke skala abu-abu, atau ke hitam putih murni dengan ambang yang dapat diatur.",
+      "keywords": [
+        "hitam putih",
+        "skala abu-abu",
+        "grayscale",
+        "monokrom",
+        "ambang",
+        "hilangkan warna"
+      ],
+      "aliases": [
+        "grayscale",
+        "black and white"
+      ]
+    },
+    "image-adjust": {
+      "name": "Sesuaikan gambar",
+      "description": "Atur kecerahan, kontras, saturasi, dan gamma dengan pratinjau langsung.",
+      "keywords": [
+        "sesuaikan",
+        "kecerahan",
+        "kontras",
+        "saturasi",
+        "gamma",
+        "cerahkan",
+        "gelapkan",
+        "perbaiki"
+      ],
+      "aliases": [
+        "adjust image",
+        "brightness contrast"
+      ]
+    },
+    "image-blur": {
+      "name": "Buramkan atau pikselkan",
+      "description": "Sembunyikan informasi: buram atau mosaik, di seluruh gambar atau area yang digambar.",
+      "keywords": [
+        "buramkan",
+        "blur",
+        "buram",
+        "pikselkan",
+        "mosaik",
+        "sembunyikan",
+        "sensor"
+      ],
+      "aliases": [
+        "blur image",
+        "pixelate"
+      ]
+    },
+    "image-remove-transparency": {
+      "name": "Hapus transparansi",
+      "description": "Ratakan PNG atau WebP transparan ke latar polos (putih, hitam, atau berwarna).",
+      "keywords": [
+        "hapus transparansi",
+        "ratakan",
+        "latar putih",
+        "latar polos",
+        "hapus alfa",
+        "buram penuh"
+      ],
+      "aliases": [
+        "remove transparency",
+        "flatten image"
+      ]
+    },
+    "image-remove-background": {
+      "name": "Hapus latar belakang",
+      "description": "Potong subjek foto secara otomatis dan jadikan latarnya transparan.",
+      "keywords": [
+        "hapus latar",
+        "hapus background",
+        "latar transparan",
+        "potong foto",
+        "cutout",
+        "pisahkan subjek",
+        "foto profil",
+        "png transparan"
+      ],
+      "aliases": [
+        "remove background",
+        "background remover",
+        "cutout"
+      ],
+      "note": "Model pemotongan dipasang sekali dari Pengaturan → Model, lalu bekerja tanpa internet: gambar tidak pernah dikirim ke server. Model mengenali subjek utama yang tajam dan terpisah jelas; ia keliru pada adegan tanpa subjek yang jelas dan pada detail yang sangat halus."
+    },
+    "image-color-transparent": {
+      "name": "Jadikan warna transparan",
+      "description": "Hapus warna polos (latar) dan ganti dengan transparansi.",
+      "keywords": [
+        "jadikan transparan",
+        "potong",
+        "hapus latar",
+        "warna transparan",
+        "latar transparan",
+        "chroma key"
+      ],
+      "aliases": [
+        "color to transparent",
+        "remove background color"
+      ]
+    },
+    "image-ocr": {
+      "name": "Ekstrak teks dari gambar (OCR)",
+      "description": "Kenali teks dalam gambar, bahasa Prancis atau Inggris, 100% lokal.",
+      "keywords": [
+        "ocr",
+        "ekstrak teks",
+        "teks dari foto",
+        "gambar ke teks",
+        "baca teks",
+        "pengenalan teks",
+        "digitalkan",
+        "teks dari gambar"
+      ],
+      "aliases": [
+        "ocr",
+        "image to text",
+        "extract text"
+      ]
+    },
+    "image-add-text": {
+      "name": "Teks pada gambar",
+      "description": "Tulis teks di gambar — keterangan, meme, catatan — dan letakkan secara manual.",
+      "keywords": [
+        "teks di gambar",
+        "keterangan",
+        "caption",
+        "meme",
+        "tulis",
+        "beri catatan foto"
+      ],
+      "aliases": [
+        "add text to image",
+        "meme generator"
+      ]
+    },
+    "image-metadata-read": {
+      "name": "Baca metadata gambar",
+      "description": "Tampilkan EXIF, GPS, kamera, dan tanggal pengambilan.",
+      "keywords": [
+        "exif",
+        "metadata",
+        "gps",
+        "di mana foto diambil",
+        "kamera",
+        "tanggal foto"
+      ],
+      "aliases": [
+        "exif viewer",
+        "image metadata"
+      ]
+    },
+    "image-metadata-strip": {
+      "name": "Hapus metadata gambar",
+      "description": "Hapus data EXIF dan GPS sebelum membagikan foto.",
+      "keywords": [
+        "hapus exif",
+        "buang exif",
+        "hapus metadata",
+        "anonimkan foto",
+        "hapus gps",
+        "sebelum berbagi",
+        "privasi"
+      ],
+      "aliases": [
+        "strip exif",
+        "remove metadata",
+        "anonymize image"
+      ]
+    },
+    "image-batch-convert": {
+      "name": "Konversi gambar massal",
+      "description": "Terapkan konversi yang sama ke seluruh folder gambar.",
+      "keywords": [
+        "massal",
+        "sekaligus",
+        "banyak gambar",
+        "folder gambar",
+        "batch",
+        "semua foto saya"
+      ],
+      "aliases": [
+        "batch convert",
+        "bulk image convert"
+      ]
+    },
+    "image-watermark": {
+      "name": "Watermark pada gambar",
+      "description": "Tambahkan logo atau teks sebagai watermark, satu per satu atau massal.",
+      "keywords": [
+        "watermark",
+        "tanda air",
+        "logo",
+        "tanda tangan",
+        "lindungi foto saya"
+      ],
+      "aliases": [
+        "watermark image"
+      ]
+    },
+    "image-favicon": {
+      "name": "Buat favicon",
+      "description": "Buat favicon multi-ukuran dan berkas .ico dari sebuah gambar.",
+      "keywords": [
+        "favicon",
+        "ikon situs",
+        "ico",
+        "tab browser",
+        "logo situs web"
+      ],
+      "aliases": [
+        "favicon generator",
+        "ico"
+      ]
+    },
+    "image-icon-sizes": {
+      "name": "Buat beberapa ukuran",
+      "description": "Ekspor sekaligus semua ukuran ikon atau thumbnail yang berguna.",
+      "keywords": [
+        "ukuran",
+        "ikon",
+        "ikon aplikasi",
+        "thumbnail",
+        "gambar mini",
+        "semua resolusi"
+      ],
+      "aliases": [
+        "icon generator",
+        "app icon sizes"
+      ]
+    },
+    "color-picker": {
+      "name": "Analisis dan konversi warna",
+      "description": "Warna dominan gambar, pipet akurat per piksel, notasi HEX / RGB / HSL / HSV, dan kontras WCAG antara teks dan latarnya.",
+      "keywords": [
+        "palet",
+        "warna dominan",
+        "warna",
+        "hex",
+        "rgb",
+        "hsl",
+        "hsv",
+        "ekstrak warna",
+        "contoh warna",
+        "pipet",
+        "rgb ke hex",
+        "hex ke rgb",
+        "konversi warna",
+        "kode warna",
+        "kontras wcag",
+        "kontras",
+        "aksesibilitas",
+        "rasio kontras",
+        "keterbacaan"
+      ],
+      "aliases": [
+        "color picker",
+        "hex to rgb",
+        "color converter",
+        "eyedropper",
+        "wcag contrast",
+        "contrast checker"
+      ]
+    },
+    "document-perspective": {
+      "name": "Perbaiki perspektif dokumen",
+      "description": "Luruskan foto kertas yang diambil miring: tempatkan empat sudut, dan FourTout mengubahnya menjadi persegi panjang yang terlihat dari depan.",
+      "keywords": [
+        "perbaiki perspektif",
+        "luruskan dokumen",
+        "foto dokumen",
+        "kertas miring",
+        "foto miring",
+        "empat sudut",
+        "pindai dengan ponsel",
+        "luruskan",
+        "distorsi"
+      ],
+      "aliases": [
+        "perspective correction",
+        "dewarp",
+        "document scanner",
+        "deskew photo"
+      ],
+      "note": "Empat sudut ditempatkan secara manual: hasilnya selalu tepat, di mana deteksi otomatis sering keliru. Proporsi yang dihitung dari sudut bersifat perkiraan — pilih A4 atau Letter untuk hasil yang tepat."
+    },
+    "scan-clean": {
+      "name": "Bersihkan hasil pindai",
+      "description": "Luruskan dokumen yang sedikit miring, tingkatkan kontras, putihkan latar abu-abu atau menguning, ubah ke skala abu-abu atau hitam putih.",
+      "keywords": [
+        "bersihkan pindaian",
+        "bersihkan dokumen hasil pindai",
+        "luruskan pindaian",
+        "deskew",
+        "pindaian miring",
+        "latar abu-abu",
+        "kertas menguning",
+        "kontras dokumen",
+        "pindaian tidak terbaca",
+        "perbaiki pindaian"
+      ],
+      "aliases": [
+        "clean scan",
+        "deskew",
+        "enhance scan",
+        "document cleanup"
+      ],
+      "note": "Setiap pengaturan bersifat opsional dan terlihat di pratinjau sebelum/sesudah. Pemutihan tidak pernah menyentuh piksel gelap: teks tipis tetap pekat."
+    },
+    "image-compare": {
+      "name": "Bandingkan dua gambar",
+      "description": "Lihat dan ukur apa yang berubah antara dua gambar: berdampingan, bertumpuk, atau sebagai selisih, dengan piksel yang berbeda, PSNR, dan SSIM.",
+      "keywords": [
+        "bandingkan gambar",
+        "bandingkan dua gambar",
+        "perbedaan gambar",
+        "image diff",
+        "selisih piksel",
+        "psnr",
+        "ssim",
+        "perbedaan dua foto",
+        "sebelum sesudah",
+        "kualitas kompresi",
+        "tumpuk",
+        "cari perbedaan"
+      ],
+      "aliases": [
+        "compare images",
+        "image diff",
+        "pixel diff",
+        "psnr",
+        "ssim",
+        "image comparison"
+      ],
+      "note": "Dua gambar dengan ukuran berbeda tidak pernah diubah ukurannya tanpa persetujuan Anda: pengambilan sampel ulang akan menciptakan perbedaan yang tidak ada di berkasnya."
+    },
+    "image-contact-sheet": {
+      "name": "Buat lembar kontak",
+      "description": "Susun beberapa gambar dalam kisi pada satu lembar, dengan nama tiap berkas.",
+      "keywords": [
+        "lembar kontak",
+        "contact sheet",
+        "kisi gambar",
+        "mosaik",
+        "thumbnail",
+        "gabungkan gambar",
+        "montase foto",
+        "katalog gambar",
+        "beberapa gambar dalam satu halaman"
+      ],
+      "aliases": [
+        "contact sheet",
+        "photo grid",
+        "thumbnail sheet"
+      ]
+    },
+    "audio-record": {
+      "name": "Rekam dari mikrofon",
+      "description": "Rekam suara dari mikrofon dan simpan secara lokal.",
+      "keywords": [
+        "rekam",
+        "mikrofon",
+        "perekam suara",
+        "rekam suara saya",
+        "memo suara"
+      ],
+      "aliases": [
+        "record audio",
+        "voice recorder"
+      ]
+    },
+    "audio-trim": {
+      "name": "Potong audio",
+      "description": "Simpan cuplikan tepat dari berkas audio.",
+      "keywords": [
+        "potong",
+        "pangkas",
+        "cuplikan",
+        "perpendek",
+        "simpan sebagian"
+      ],
+      "aliases": [
+        "trim audio",
+        "cut audio",
+        "split audio"
+      ]
+    },
+    "audio-merge": {
+      "name": "Gabungkan audio",
+      "description": "Sambungkan beberapa trek berurutan menjadi satu berkas.",
+      "keywords": [
+        "gabungkan",
+        "sambung",
+        "satukan",
+        "berurutan",
+        "gabungkan trek"
+      ],
+      "aliases": [
+        "merge audio",
+        "join audio",
+        "concat audio"
+      ]
+    },
+    "audio-convert": {
+      "name": "Konversi audio",
+      "description": "Ubah dari satu format ke format lain: MP3, WAV, FLAC, OGG, M4A, OPUS.",
+      "keywords": [
+        "konversi",
+        "ubah format",
+        "wav ke mp3",
+        "mp3 ke wav",
+        "flac",
+        "ogg",
+        "m4a",
+        "opus",
+        "aac"
+      ],
+      "aliases": [
+        "convert audio",
+        "wav to mp3",
+        "audio converter"
+      ]
+    },
+    "audio-compress": {
+      "name": "Kompres audio",
+      "description": "Perkecil ukuran berkas audio dengan mengatur bitrate.",
+      "keywords": [
+        "kompres",
+        "perkecil ukuran",
+        "bitrate",
+        "laju bit",
+        "terlalu besar"
+      ],
+      "aliases": [
+        "compress audio",
+        "reduce audio size"
+      ]
+    },
+    "audio-volume": {
+      "name": "Atur volume",
+      "description": "Naikkan atau turunkan volume keseluruhan berkas audio.",
+      "keywords": [
+        "volume",
+        "lebih keras",
+        "lebih pelan",
+        "perkuat",
+        "kecilkan suara",
+        "terlalu pelan"
+      ],
+      "aliases": [
+        "change volume",
+        "amplify audio"
+      ]
+    },
+    "audio-normalize": {
+      "name": "Normalkan audio",
+      "description": "Samakan tingkat kenyaringan beberapa berkas (loudness).",
+      "keywords": [
+        "normalkan",
+        "samakan",
+        "loudness",
+        "volume sama",
+        "lufs"
+      ],
+      "aliases": [
+        "normalize audio",
+        "loudness"
+      ]
+    },
+    "audio-speed": {
+      "name": "Ubah kecepatan",
+      "description": "Percepat atau perlambat audio, dengan atau tanpa koreksi nada.",
+      "keywords": [
+        "kecepatan",
+        "percepat",
+        "perlambat",
+        "tempo",
+        "nada",
+        "lebih cepat"
+      ],
+      "aliases": [
+        "audio speed",
+        "speed up audio",
+        "slow down audio"
+      ]
+    },
+    "audio-remove-silence": {
+      "name": "Hapus keheningan",
+      "description": "Deteksi dan potong jeda dalam rekaman secara otomatis.",
+      "keywords": [
+        "keheningan",
+        "jeda",
+        "potong jeda",
+        "bersihkan rekaman",
+        "podcast"
+      ],
+      "aliases": [
+        "remove silence",
+        "trim silence"
+      ]
+    },
+    "video-extract-audio": {
+      "name": "Ekstrak audio dari video",
+      "description": "Ambil trek suara video dalam format pilihan Anda.",
+      "keywords": [
+        "ekstrak suara",
+        "trek suara",
+        "video ke mp3",
+        "mp4 ke mp3",
+        "ambil audio",
+        "suara video"
+      ],
+      "aliases": [
+        "extract audio",
+        "video to mp3",
+        "mp4 to mp3"
+      ]
+    },
+    "audio-transcribe": {
+      "name": "Transkripsi audio",
+      "description": "Ubah ucapan dalam berkas audio atau video menjadi teks, secara lokal.",
+      "keywords": [
+        "transkripsikan",
+        "transkripsi",
+        "audio ke teks",
+        "suara ke teks",
+        "rapat",
+        "wawancara",
+        "dikte",
+        "subtitle",
+        "transkripsi mp3",
+        "transkripsi video"
+      ],
+      "aliases": [
+        "transcribe",
+        "speech to text",
+        "audio to text",
+        "stt"
+      ],
+      "note": "Model pengenalan suara yang berjalan di komputer Anda, dipasang sesuai permintaan."
+    },
+    "audio-generate-srt": {
+      "name": "Buat subtitle SRT",
+      "description": "Buat berkas subtitle bercap waktu dari audio atau video.",
+      "keywords": [
+        "srt",
+        "subtitle",
+        "teks terjemahan",
+        "vtt",
+        "cap waktu",
+        "captions",
+        "buat subtitle"
+      ],
+      "aliases": [
+        "generate subtitles",
+        "srt generator"
+      ]
+    },
+    "text-to-speech": {
+      "name": "Teks ke ucapan",
+      "description": "Bacakan teks dan simpan sebagai berkas audio, tanpa layanan daring.",
+      "keywords": [
+        "sintesis suara",
+        "tts",
+        "bacakan",
+        "teks ke audio",
+        "suara sintetis",
+        "dengarkan teks",
+        "buat mp3 dari teks"
+      ],
+      "aliases": [
+        "text to speech",
+        "tts",
+        "pembaca teks"
+      ]
+    },
+    "pdf-to-audio": {
+      "name": "PDF ke audio",
+      "description": "Ubah PDF menjadi buku audio dengan sintesis suara lokal.",
+      "keywords": [
+        "pdf ke audio",
+        "buku audio",
+        "dengarkan pdf",
+        "bacakan pdf saya",
+        "dengarkan materi"
+      ],
+      "aliases": [
+        "pdf to audio",
+        "pdf to speech",
+        "audiobook"
+      ]
+    },
+    "text-file-to-audio": {
+      "name": "Berkas teks ke audio",
+      "description": "Konversi berkas TXT atau Markdown menjadi berkas audio yang dibacakan.",
+      "keywords": [
+        "txt ke audio",
+        "buku audio",
+        "narasi",
+        "dengarkan teks",
+        "buat mp3 dari teks"
+      ],
+      "aliases": [
+        "txt to audio",
+        "text file to audio"
+      ]
+    },
+    "audio-channels": {
+      "name": "Konversi kanal audio",
+      "description": "Ubah berkas ke mono atau stereo, atau biarkan apa adanya. Berkas multikanal tidak pernah diturunkan tanpa diminta.",
+      "keywords": [
+        "mono stereo",
+        "kanal audio",
+        "mono",
+        "stereo",
+        "ubah ke mono",
+        "ubah ke stereo",
+        "downmix",
+        "campur kanal",
+        "5.1 ke stereo"
+      ],
+      "aliases": [
+        "audio channels",
+        "mono to stereo",
+        "stereo to mono",
+        "downmix"
+      ],
+      "note": "Dari mono ke stereo, kanal digandakan: kedua sisi membawa sinyal yang sama. Tidak ada efek ruang yang dikarang."
+    },
+    "audio-metadata": {
+      "name": "Edit tag audio",
+      "description": "Baca dan perbaiki judul, artis, album, tahun, genre, nomor trek, dan komentar — tanpa mengenkode ulang suara.",
+      "keywords": [
+        "metadata audio",
+        "tag",
+        "tag mp3",
+        "id3",
+        "judul artis album",
+        "perbaiki judul",
+        "tahun genre trek",
+        "edit info mp3"
+      ],
+      "aliases": [
+        "audio metadata",
+        "id3 tags",
+        "edit tags",
+        "music tags"
+      ],
+      "note": "Penulisan menyalin aliran audio apa adanya (-c copy): suara hasilnya identik hingga ke tingkat bit."
+    },
+    "media-info": {
+      "name": "Periksa berkas media",
+      "description": "Semua yang dinyatakan berkas audio atau video: kontainer, codec, resolusi, frame rate, bitrate, kanal, tag.",
+      "keywords": [
+        "metadata video",
+        "metadata audio",
+        "info media",
+        "codec",
+        "bitrate",
+        "resolusi video",
+        "frame rate",
+        "fps",
+        "kanal",
+        "sample rate",
+        "periksa video",
+        "ffprobe"
+      ],
+      "aliases": [
+        "media info",
+        "media metadata",
+        "video metadata",
+        "ffprobe",
+        "mediainfo"
+      ]
+    },
+    "video-convert": {
+      "name": "Konversi video",
+      "description": "Ubah dari satu format ke format lain: MP4, MKV, WebM, MOV.",
+      "keywords": [
+        "konversi",
+        "ubah format",
+        "mkv ke mp4",
+        "avi ke mp4",
+        "webm",
+        "mov"
+      ],
+      "aliases": [
+        "convert video",
+        "mkv to mp4",
+        "video converter"
+      ],
+      "note": "Hanya codec yang benar-benar ada di mesin terpasang yang ditawarkan."
+    },
+    "video-compress": {
+      "name": "Kompres video",
+      "description": "Perkecil ukuran video secara drastis dengan memilih kualitas target.",
+      "keywords": [
+        "kompres",
+        "perkecil ukuran",
+        "terlalu besar",
+        "kirim lewat email",
+        "lebih sedikit mb",
+        "optimalkan"
+      ],
+      "aliases": [
+        "compress video",
+        "reduce video size"
+      ]
+    },
+    "video-resolution": {
+      "name": "Ubah resolusi",
+      "description": "Ubah video ke 1080p, 720p, 480p, atau ukuran khusus.",
+      "keywords": [
+        "resolusi",
+        "1080p",
+        "720p",
+        "480p",
+        "4k",
+        "ubah ukuran",
+        "definisi"
+      ],
+      "aliases": [
+        "resize video",
+        "change resolution",
+        "downscale video"
+      ]
+    },
+    "video-trim": {
+      "name": "Potong video",
+      "description": "Simpan hanya cuplikan, tanpa enkode ulang bila memungkinkan.",
+      "keywords": [
+        "potong",
+        "pangkas",
+        "cuplikan",
+        "perpendek",
+        "hapus awal",
+        "hapus akhir",
+        "klip"
+      ],
+      "aliases": [
+        "trim video",
+        "cut video"
+      ]
+    },
+    "video-merge": {
+      "name": "Gabungkan video",
+      "description": "Sambungkan beberapa video secara berurutan menjadi satu berkas.",
+      "keywords": [
+        "gabungkan",
+        "sambung",
+        "satukan",
+        "berurutan",
+        "gabungkan klip"
+      ],
+      "aliases": [
+        "merge video",
+        "concat video",
+        "join video"
+      ]
+    },
+    "video-crop": {
+      "name": "Pangkas bingkai video",
+      "description": "Pilih secara visual area yang dipertahankan, dengan proporsi tetap.",
+      "keywords": [
+        "pangkas",
+        "crop",
+        "bingkai ulang",
+        "potong tepi",
+        "format vertikal",
+        "9:16",
+        "persegi",
+        "hapus bar hitam"
+      ],
+      "aliases": [
+        "crop video",
+        "vertical video",
+        "reframe"
+      ]
+    },
+    "video-to-gif": {
+      "name": "Video ke GIF",
+      "description": "Ubah cuplikan video menjadi GIF animasi yang dioptimalkan.",
+      "keywords": [
+        "gif",
+        "video ke gif",
+        "animasi",
+        "berulang",
+        "mp4 ke gif"
+      ],
+      "aliases": [
+        "video to gif",
+        "mp4 to gif",
+        "gif maker"
+      ]
+    },
+    "gif-to-video": {
+      "name": "GIF ke video",
+      "description": "Konversi GIF animasi ke MP4 atau WebM yang jauh lebih ringan.",
+      "keywords": [
+        "gif ke video",
+        "gif ke mp4",
+        "konversi gif",
+        "animasi ke video",
+        "gif terlalu besar"
+      ],
+      "aliases": [
+        "gif to video",
+        "gif to mp4",
+        "gif to webm"
+      ]
+    },
+    "video-extract-frame": {
+      "name": "Ekstrak bingkai dari video",
+      "description": "Tangkap bingkai tertentu atau ambil cuplikan gambar pada interval teratur.",
+      "keywords": [
+        "tangkapan",
+        "bingkai",
+        "frame",
+        "gambar dari video",
+        "screenshot",
+        "thumbnail"
+      ],
+      "aliases": [
+        "extract frame",
+        "video screenshot",
+        "video to image"
+      ]
+    },
+    "video-speed": {
+      "name": "Ubah kecepatan video",
+      "description": "Buat time-lapse atau gerak lambat, termasuk audionya.",
+      "keywords": [
+        "kecepatan",
+        "time-lapse",
+        "gerak lambat",
+        "timelapse",
+        "slow motion",
+        "lebih cepat"
+      ],
+      "aliases": [
+        "video speed",
+        "timelapse",
+        "slow motion"
+      ]
+    },
+    "video-rotate": {
+      "name": "Putar video",
+      "description": "Perbaiki video yang direkam ke arah yang salah, atau balik seperti cermin.",
+      "keywords": [
+        "putar",
+        "rotasi",
+        "terbalik",
+        "direkam vertikal",
+        "luruskan",
+        "cermin",
+        "balik"
+      ],
+      "aliases": [
+        "rotate video",
+        "flip video",
+        "mirror video"
+      ]
+    },
+    "video-remove-audio": {
+      "name": "Hapus suara dari video",
+      "description": "Buat versi bisu video tanpa mengenkode ulang gambarnya.",
+      "keywords": [
+        "hapus suara",
+        "bisu",
+        "tanpa audio",
+        "hapus musik",
+        "senyapkan"
+      ],
+      "aliases": [
+        "remove audio",
+        "mute video"
+      ]
+    },
+    "video-replace-audio": {
+      "name": "Ganti trek audio",
+      "description": "Ganti trek suara video, atau tambahkan trek tambahan.",
+      "keywords": [
+        "ganti suara",
+        "tambah musik",
+        "sulih suara",
+        "trek suara",
+        "narasi",
+        "trek audio kedua"
+      ],
+      "aliases": [
+        "replace audio",
+        "add audio track",
+        "dub video"
+      ],
+      "note": "Letakkan video dan berkas audio bersamaan."
+    },
+    "video-volume": {
+      "name": "Atur volume video",
+      "description": "Naikkan atau turunkan suara video tanpa menyentuh gambar.",
+      "keywords": [
+        "volume",
+        "suara terlalu pelan",
+        "suara terlalu keras",
+        "keraskan suara",
+        "kecilkan suara",
+        "perkuat",
+        "normalkan volume"
+      ],
+      "aliases": [
+        "video volume",
+        "boost audio",
+        "louder video"
+      ]
+    },
+    "video-add-subtitles": {
+      "name": "Tambahkan trek subtitle",
+      "description": "Lampirkan berkas SRT atau VTT ke video, dapat diaktifkan di pemutar.",
+      "keywords": [
+        "subtitle",
+        "srt",
+        "vtt",
+        "trek subtitle",
+        "softsub",
+        "lampirkan"
+      ],
+      "aliases": [
+        "add subtitles",
+        "soft subtitles",
+        "mux srt"
+      ],
+      "note": "Letakkan video dan berkas subtitle bersamaan."
+    },
+    "video-burn-subtitles": {
+      "name": "Tanamkan subtitle",
+      "description": "Bakar subtitle ke dalam gambar: tampil di semua pemutar.",
+      "keywords": [
+        "tanamkan",
+        "hardsub",
+        "bakar subtitle",
+        "subtitle di gambar",
+        "srt tertanam",
+        "subtitle tampil di mana saja"
+      ],
+      "aliases": [
+        "burn subtitles",
+        "hardcode srt",
+        "hardsub"
+      ],
+      "note": "Letakkan video dan berkas subtitle bersamaan."
+    },
+    "video-extract-subtitles": {
+      "name": "Ekstrak subtitle dari video",
+      "description": "Ekspor trek subtitle yang sudah ada ke SRT atau VTT.",
+      "keywords": [
+        "ekstrak subtitle",
+        "ambil subtitle",
+        "keluarkan srt",
+        "trek subtitle",
+        "subtitle mkv"
+      ],
+      "aliases": [
+        "extract subtitles",
+        "rip subtitles",
+        "demux srt"
+      ],
+      "note": "Hanya trek teks yang dapat diekspor; trek grafis (PGS, DVD) berupa gambar."
+    },
+    "video-generate-subtitles": {
+      "name": "Buat subtitle untuk video",
+      "description": "Transkripsikan ucapan video secara otomatis, lalu ekspor atau tanamkan.",
+      "keywords": [
+        "buat subtitle",
+        "transkripsi video",
+        "subtitle otomatis",
+        "srt otomatis",
+        "pengenalan suara"
+      ],
+      "aliases": [
+        "auto subtitles",
+        "generate subtitles"
+      ],
+      "note": "Menggunakan model transkripsi lokal yang sudah terpasang (tidak ada yang dikirim lewat jaringan)."
+    },
+    "video-batch": {
+      "name": "Pemrosesan video massal",
+      "description": "Konversi, kompres, ubah ukuran, putar, atau ekstrak audio dari beberapa video.",
+      "keywords": [
+        "massal",
+        "sekaligus",
+        "semua video saya",
+        "folder",
+        "batch"
+      ],
+      "aliases": [
+        "batch video",
+        "bulk video"
+      ]
+    },
+    "video-frame-rate": {
+      "name": "Ubah frame rate",
+      "description": "Konversi video ke 24, 25, 30, 60 fps atau laju khusus, dengan menggandakan dan membuang bingkai.",
+      "keywords": [
+        "fps video",
+        "ubah fps",
+        "frame rate",
+        "bingkai per detik",
+        "24 fps",
+        "25 fps",
+        "30 fps",
+        "60 fps",
+        "29.97",
+        "23.976",
+        "ntsc",
+        "pal"
+      ],
+      "aliases": [
+        "frame rate",
+        "change fps",
+        "fps converter",
+        "framerate"
+      ],
+      "note": "Tidak ada bingkai antara yang dihitung: bingkai digandakan atau dibuang. Keluaran memiliki frame rate konstan."
+    },
+    "text-statistics": {
+      "name": "Penghitung kata dan karakter",
+      "description": "Kata, karakter, kalimat, paragraf, dan perkiraan waktu baca.",
+      "keywords": [
+        "hitung",
+        "jumlah kata",
+        "karakter",
+        "kalimat",
+        "waktu baca",
+        "panjang teks",
+        "statistik"
+      ],
+      "aliases": [
+        "word count",
+        "character count",
+        "reading time",
+        "penghitung kata"
+      ]
+    },
+    "text-case": {
+      "name": "Ubah huruf besar/kecil",
+      "description": "HURUF BESAR, huruf kecil, Huruf Kapital Tiap Kata, camelCase, snake_case, kebab-case.",
+      "keywords": [
+        "huruf besar",
+        "huruf kecil",
+        "kapitalisasi",
+        "semua kapital",
+        "camelcase",
+        "snake case",
+        "kebab case",
+        "title case"
+      ],
+      "aliases": [
+        "uppercase",
+        "lowercase",
+        "change case",
+        "text case"
+      ]
+    },
+    "text-clean": {
+      "name": "Bersihkan teks",
+      "description": "Hapus spasi berlebih, baris kosong, tab, dan karakter tak terlihat.",
+      "keywords": [
+        "bersihkan",
+        "spasi",
+        "baris kosong",
+        "tab",
+        "trim",
+        "hapus baris baru",
+        "format",
+        "teks salinan"
+      ],
+      "aliases": [
+        "clean text",
+        "trim whitespace",
+        "remove empty lines"
+      ]
+    },
+    "text-find-replace": {
+      "name": "Cari dan ganti",
+      "description": "Ganti teks secara massal, dengan atau tanpa ekspresi reguler.",
+      "keywords": [
+        "ganti",
+        "cari",
+        "temukan",
+        "regex",
+        "cari dan ganti"
+      ],
+      "aliases": [
+        "find and replace",
+        "search replace"
+      ]
+    },
+    "text-compare": {
+      "name": "Bandingkan dua teks",
+      "description": "Lihat baris demi baris apa yang ditambahkan, dihapus, atau diubah.",
+      "keywords": [
+        "bandingkan",
+        "perbedaan",
+        "diff",
+        "dua versi",
+        "perubahan"
+      ],
+      "aliases": [
+        "diff",
+        "compare text",
+        "text diff"
+      ]
+    },
+    "text-deduplicate": {
+      "name": "Hapus duplikat",
+      "description": "Simpan hanya satu kemunculan tiap baris, opsional tanpa membedakan huruf besar/kecil.",
+      "keywords": [
+        "duplikat",
+        "hapus duplikat",
+        "baris ganda",
+        "unik",
+        "hapus pengulangan"
+      ],
+      "aliases": [
+        "remove duplicates",
+        "dedupe lines",
+        "unique lines"
+      ]
+    },
+    "text-sort-lines": {
+      "name": "Urutkan baris",
+      "description": "Urutkan baris secara abjad, angka, atau acak.",
+      "keywords": [
+        "urutkan",
+        "susun",
+        "urutan abjad",
+        "daftar",
+        "acak"
+      ],
+      "aliases": [
+        "sort lines",
+        "sort list"
+      ]
+    },
+    "markdown-convert": {
+      "name": "Markdown ↔ HTML / teks",
+      "description": "Konversi Markdown ke HTML atau teks biasa, dan sebaliknya.",
+      "keywords": [
+        "markdown",
+        "md",
+        "html",
+        "konversi markdown",
+        "teks biasa",
+        "render"
+      ],
+      "aliases": [
+        "markdown to html",
+        "html to markdown",
+        "md converter"
+      ]
+    },
+    "text-extract-urls": {
+      "name": "Ekstrak URL",
+      "description": "Ambil semua alamat web dalam sebuah teks.",
+      "keywords": [
+        "url",
+        "tautan",
+        "link",
+        "alamat web",
+        "ekstrak tautan",
+        "http"
+      ],
+      "aliases": [
+        "extract urls",
+        "link extractor"
+      ]
+    },
+    "text-extract-emails": {
+      "name": "Ekstrak alamat email",
+      "description": "Pisahkan semua alamat email dalam sebuah teks.",
+      "keywords": [
+        "email",
+        "surel",
+        "alamat email",
+        "ekstrak email",
+        "kontak"
+      ],
+      "aliases": [
+        "extract emails",
+        "email extractor"
+      ]
+    },
+    "text-extract-numbers": {
+      "name": "Ekstrak angka",
+      "description": "Ambil semua angka dari teks dan hitung jumlahnya.",
+      "keywords": [
+        "angka",
+        "bilangan",
+        "ekstrak nominal",
+        "jumlah",
+        "nilai"
+      ],
+      "aliases": [
+        "extract numbers",
+        "number extractor"
+      ]
+    },
+    "lorem-ipsum": {
+      "name": "Lorem Ipsum",
+      "description": "Buat teks pengisi: kata, kalimat, atau paragraf.",
+      "keywords": [
+        "lorem",
+        "teks palsu",
+        "teks pengisi",
+        "placeholder",
+        "maket"
+      ],
+      "aliases": [
+        "lorem ipsum",
+        "dummy text",
+        "placeholder text"
+      ]
+    },
+    "text-unicode-normalize": {
+      "name": "Normalkan Unicode",
+      "description": "Seragamkan penulisan aksen antarsistem (NFC, NFD, NFKC, NFKD).",
+      "keywords": [
+        "unicode",
+        "aksen",
+        "nfc",
+        "nfd",
+        "nfkc",
+        "nfkd",
+        "normalkan",
+        "karakter aneh",
+        "aksen mac windows"
+      ],
+      "aliases": [
+        "unicode normalization",
+        "normalize unicode",
+        "nfc nfd"
+      ]
+    },
+    "text-line-endings": {
+      "name": "Konversi akhir baris",
+      "description": "Beralih dari CRLF (Windows) ke LF (Unix) dan sebaliknya, dengan deteksi lebih dulu.",
+      "keywords": [
+        "crlf",
+        "lf",
+        "akhir baris",
+        "carriage return",
+        "windows unix",
+        "^M",
+        "dos2unix",
+        "unix2dos",
+        "baris baru"
+      ],
+      "aliases": [
+        "line endings",
+        "crlf to lf",
+        "dos2unix",
+        "unix2dos"
+      ]
+    },
+    "docx-extract": {
+      "name": "Word (DOCX) ke teks, Markdown, atau HTML",
+      "description": "Ekstrak isi dokumen Word: judul, paragraf, daftar, dan tabel.",
+      "keywords": [
+        "docx",
+        "word",
+        "dokumen word",
+        "ekstrak teks dari word",
+        "docx ke teks",
+        "docx ke html",
+        "docx ke markdown",
+        "baca docx"
+      ],
+      "aliases": [
+        "docx to text",
+        "word to text",
+        "docx to html",
+        "docx to markdown"
+      ],
+      "note": "Tata letak rumit (kolom, gambar, gaya) tidak direproduksi: FourTout mengekstrak isi dan strukturnya."
+    },
+    "docx-to-pdf": {
+      "name": "Word (DOCX) ke PDF",
+      "description": "Konversi dokumen Word ke PDF: judul, paragraf, daftar, dan tabel sederhana.",
+      "keywords": [
+        "docx ke pdf",
+        "word ke pdf",
+        "konversi word",
+        "dokumen ke pdf"
+      ],
+      "aliases": [
+        "docx to pdf",
+        "word to pdf"
+      ],
+      "note": "FourTout mempertahankan isi dan strukturnya — judul, paragraf, tebal, miring, daftar, tabel sederhana — tetapi tidak tata letak Word: kolom, kotak mengambang, header dan footer, font khusus, dan gambar bisa berbeda atau hilang. Untuk hasil yang persis hingga piksel, ekspor ke PDF dari Word atau LibreOffice."
+    },
+    "document-compare": {
+      "name": "Bandingkan dua dokumen",
+      "description": "Bandingkan isi dua dokumen — PDF, Word, teks, Markdown, atau HTML — bahkan yang berbeda format, baris demi baris dan kata demi kata.",
+      "keywords": [
+        "bandingkan dokumen",
+        "bandingkan dua dokumen",
+        "bandingkan pdf dan word",
+        "perbedaan dua dokumen",
+        "diff dokumen",
+        "dua versi",
+        "apa yang berubah",
+        "bandingkan kontrak"
+      ],
+      "aliases": [
+        "compare documents",
+        "document diff",
+        "compare pdf docx"
+      ],
+      "note": "Perbandingan berdasarkan teks, bukan tata letak: menunjukkan apa yang berubah pada isi, bahkan antara dua format berbeda. PDF hasil pindai harus terlebih dahulu melalui “PDF pindaian ke PDF yang dapat dicari”."
+    },
+    "text-encoding-detect": {
+      "name": "Deteksi encoding berkas teks",
+      "description": "Kenali encoding, penanda urutan byte, dan konvensi akhir baris sebuah berkas, dengan tingkat kepastian yang sebenarnya.",
+      "keywords": [
+        "encoding teks",
+        "deteksi encoding",
+        "encoding apa",
+        "karakter aneh",
+        "aksen rusak",
+        "mojibake",
+        "utf8 atau latin1",
+        "bom",
+        "akhir baris",
+        "berkas tidak terbaca",
+        "charset"
+      ],
+      "aliases": [
+        "detect encoding",
+        "charset detection",
+        "what encoding",
+        "bom"
+      ],
+      "note": "Selain penanda urutan byte, tidak ada berkas yang menyatakan encodingnya: deteksi tetap berupa dugaan, dan FourTout menampilkan kepastian yang sebenarnya alih-alih vonis yang menyesatkan."
+    },
+    "text-encoding-convert": {
+      "name": "Konversi encoding berkas teks",
+      "description": "Beralih dari satu encoding ke encoding lain — UTF-8, UTF-8 dengan BOM, UTF-16 LE/BE, Windows-1252, Latin-1 — tanpa kehilangan karakter diam-diam.",
+      "keywords": [
+        "konversi encoding",
+        "utf16 utf8",
+        "latin1 utf8",
+        "windows 1252 utf8",
+        "ubah encoding",
+        "perbaiki aksen",
+        "ansi ke utf8",
+        "iso 8859 1",
+        "bom",
+        "transkode"
+      ],
+      "aliases": [
+        "convert encoding",
+        "utf16 to utf8",
+        "latin1 to utf8",
+        "transcode"
+      ],
+      "note": "Jika encoding tujuan tidak dapat menulis beberapa karakter, konversi ditolak dan karakter tersebut dicantumkan. Penggantian hanya dilakukan bila Anda memintanya secara tegas."
+    },
+    "subtitle-edit": {
+      "name": "Edit subtitle",
+      "description": "Konversi antara SRT dan WebVTT, geser cap waktu, gabungkan dua berkas, periksa dan perbaiki.",
+      "keywords": [
+        "subtitle",
+        "srt",
+        "vtt",
+        "webvtt",
+        "srt ke vtt",
+        "vtt ke srt",
+        "geser subtitle",
+        "sinkronkan subtitle",
+        "subtitle terlambat",
+        "gabungkan subtitle",
+        "perbaiki srt",
+        "tumpang tindih"
+      ],
+      "aliases": [
+        "subtitles",
+        "srt to vtt",
+        "vtt to srt",
+        "shift subtitles",
+        "merge subtitles",
+        "fix srt"
+      ],
+      "note": "Yang aman secara mekanis diperbaiki (urutan, penomoran, akhir baris); tumpang tindih dilaporkan tetapi tidak pernah dipersingkat secara otomatis."
+    },
+    "archive-create": {
+      "name": "Buat arsip",
+      "description": "Kompres berkas atau folder ke ZIP, 7z, TAR, TAR.GZ, atau TAR.XZ, dengan struktur folder tetap.",
+      "keywords": [
+        "zip",
+        "kompres",
+        "arsipkan",
+        "7z",
+        "tar",
+        "tar.gz",
+        "masukkan ke zip",
+        "kumpulkan berkas"
+      ],
+      "aliases": [
+        "create zip",
+        "compress files",
+        "make archive"
+      ],
+      "note": "7z yang dibuat di sini tidak terenkripsi: untuk arsip berkata sandi, gunakan “Arsip berkata sandi”, yang ZIP AES-256-nya terbuka di 7-Zip, WinRAR, Keka, dan Windows Explorer."
+    },
+    "archive-extract": {
+      "name": "Ekstrak arsip",
+      "description": "Ekstrak arsip ZIP, 7z, TAR, TAR.GZ, atau TAR.XZ ke folder pilihan Anda.",
+      "keywords": [
+        "ekstrak",
+        "unzip",
+        "buka zip",
+        "dekompresi",
+        "buka arsip"
+      ],
+      "aliases": [
+        "unzip",
+        "extract archive",
+        "decompress"
+      ],
+      "note": "Tidak ada berkas yang ditulis di luar folder yang dipilih: entri yang jalurnya naik (“../”), jalur absolut, dan tautan simbolis ditolak dan dicantumkan. Format RAR tidak didukung."
+    },
+    "archive-encrypted": {
+      "name": "Arsip berkata sandi",
+      "description": "Buat atau buka arsip yang dienkripsi dengan kata sandi.",
+      "keywords": [
+        "arsip terlindungi",
+        "zip berkata sandi",
+        "7z terenkripsi",
+        "lindungi berkas",
+        "arsip aman"
+      ],
+      "aliases": [
+        "encrypted zip",
+        "password protected archive"
+      ],
+      "note": "Enkripsi WinZip AES-256: arsip dapat dibuka di 7-Zip, WinRAR, PeaZip, Keka, dan Windows Explorer. “ZipCrypto” lama, yang bisa dibobol dalam hitungan detik, tidak pernah dipakai. Namun nama berkas tetap terbaca tanpa kata sandi — itu batasan format ZIP."
+    },
+    "file-hash": {
+      "name": "Hitung hash",
+      "description": "Dapatkan SHA-256, SHA-512, SHA-1, atau MD5 dari satu atau beberapa berkas, berapa pun ukurannya.",
+      "keywords": [
+        "hash",
+        "sidik jari",
+        "md5",
+        "sha256",
+        "sha1",
+        "checksum",
+        "jumlah pemeriksaan"
+      ],
+      "aliases": [
+        "file hash",
+        "checksum",
+        "md5",
+        "sha256"
+      ]
+    },
+    "file-verify-hash": {
+      "name": "Verifikasi hash",
+      "description": "Bandingkan hash berkas dengan yang dicantumkan sumbernya.",
+      "keywords": [
+        "verifikasi",
+        "integritas",
+        "checksum",
+        "apakah berkas rusak",
+        "bandingkan hash",
+        "keaslian"
+      ],
+      "aliases": [
+        "verify checksum",
+        "check integrity",
+        "hash compare"
+      ]
+    },
+    "file-find-duplicates": {
+      "name": "Temukan berkas duplikat",
+      "description": "Deteksi duplikat dalam folder berdasarkan isi, bukan nama.",
+      "keywords": [
+        "duplikat",
+        "berkas identik",
+        "kosongkan ruang",
+        "bersihkan",
+        "foto ganda"
+      ],
+      "aliases": [
+        "find duplicates",
+        "duplicate finder"
+      ]
+    },
+    "file-compare": {
+      "name": "Bandingkan dua berkas",
+      "description": "Periksa apakah dua berkas identik, byte demi byte atau baris demi baris.",
+      "keywords": [
+        "bandingkan",
+        "identik",
+        "perbedaan",
+        "biner",
+        "diff berkas"
+      ],
+      "aliases": [
+        "compare files",
+        "file diff"
+      ]
+    },
+    "file-bulk-rename": {
+      "name": "Ganti nama massal",
+      "description": "Ganti nama ratusan berkas dengan pola, penomoran, atau regex.",
+      "keywords": [
+        "ganti nama",
+        "massal",
+        "ganti nama sekaligus",
+        "beri nomor berkas",
+        "awalan",
+        "akhiran",
+        "semua berkas saya"
+      ],
+      "aliases": [
+        "bulk rename",
+        "batch rename"
+      ]
+    },
+    "file-clean-names": {
+      "name": "Bersihkan nama berkas",
+      "description": "Hapus aksen, spasi, dan karakter bermasalah dari nama berkas.",
+      "keywords": [
+        "aksen",
+        "spasi di nama",
+        "karakter khusus",
+        "slug",
+        "normalkan"
+      ],
+      "aliases": [
+        "clean filenames",
+        "sanitize filenames"
+      ]
+    },
+    "file-organize": {
+      "name": "Atur folder",
+      "description": "Rapikan berkas secara otomatis berdasarkan ekstensi, tanggal, atau jenis.",
+      "keywords": [
+        "rapikan",
+        "atur",
+        "kelompokkan",
+        "berdasarkan ekstensi",
+        "berdasarkan tanggal",
+        "rapikan folder unduhan",
+        "bereskan"
+      ],
+      "aliases": [
+        "organize folder",
+        "sort files"
+      ]
+    },
+    "folder-size": {
+      "name": "Analisis ruang folder",
+      "description": "Lihat apa yang sebenarnya memakan ruang: berkas terbesar, subfolder terbesar, pembagian per jenis.",
+      "keywords": [
+        "ukuran",
+        "ruang disk",
+        "apa yang memakan ruang",
+        "berkas besar",
+        "disk penuh",
+        "analisis"
+      ],
+      "aliases": [
+        "folder size",
+        "disk usage",
+        "disk analyzer",
+        "space analyzer"
+      ],
+      "note": "Hanya metadata sistem berkas yang dibaca: isi berkas tidak pernah dibuka. Folder yang tidak terbaca dilaporkan alih-alih dihitung nol, dan tautan simbolis tidak diikuti (targetnya akan terhitung dua kali)."
+    },
+    "file-secure-delete": {
+      "name": "Penghapusan aman",
+      "description": "Timpa isi berkas sebelum menghapusnya, agar pemulihan dengan perangkat lunak sangat kecil kemungkinannya.",
+      "keywords": [
+        "hapus permanen",
+        "penghapusan aman",
+        "tidak dapat dipulihkan",
+        "shred",
+        "hancurkan berkas",
+        "benar-benar hapus"
+      ],
+      "aliases": [
+        "secure delete",
+        "shred",
+        "wipe file"
+      ],
+      "note": "Penghapusan perangkat lunak yang diperkuat, bukan penghancuran fisik: pada SSD, kartu memori, Btrfs/ZFS/APFS, atau jika ada snapshot dan cadangan, tidak ada perangkat lunak yang dapat menjamin semua salinan sebelumnya hilang."
+    },
+    "file-split": {
+      "name": "Pisahkan berkas besar",
+      "description": "Potong berkas besar menjadi bagian bernomor, dengan manifes verifikasi.",
+      "keywords": [
+        "pisahkan",
+        "potong",
+        "split",
+        "bagian",
+        "berkas terlalu besar",
+        "flashdisk",
+        "fat32",
+        "kirim berkas besar",
+        "part001"
+      ],
+      "aliases": [
+        "split file",
+        "file splitter"
+      ]
+    },
+    "file-join": {
+      "name": "Satukan berkas",
+      "description": "Susun kembali berkas dari bagian .part001, dengan verifikasi hash.",
+      "keywords": [
+        "satukan",
+        "gabungkan kembali",
+        "join",
+        "gabungkan bagian",
+        "part001",
+        "susun ulang berkas"
+      ],
+      "aliases": [
+        "join files",
+        "merge parts",
+        "reassemble"
+      ]
+    },
+    "folder-tree": {
+      "name": "Buat pohon folder",
+      "description": "Hasilkan pohon teks sebuah folder, siap ditempel di README.",
+      "keywords": [
+        "pohon",
+        "struktur",
+        "tree",
+        "peta folder",
+        "hierarki",
+        "readme",
+        "daftar folder"
+      ],
+      "aliases": [
+        "folder tree",
+        "directory tree"
+      ]
+    },
+    "file-info": {
+      "name": "Periksa berkas",
+      "description": "Jenis sebenarnya berdasarkan tanda tangan, kecocokan ekstensi, encoding, tanggal, hash, dan byte pertama.",
+      "keywords": [
+        "informasi",
+        "properti",
+        "detail",
+        "jenis berkas",
+        "periksa",
+        "format apa",
+        "mime",
+        "tanggal dibuat",
+        "berkas apa ini",
+        "magic bytes",
+        "tanda tangan",
+        "ekstensi menyesatkan",
+        "format asli",
+        "encoding"
+      ],
+      "aliases": [
+        "file info",
+        "file properties",
+        "file details",
+        "inspect file",
+        "magic bytes"
+      ],
+      "note": "Jenis yang ditampilkan berasal dari byte pertama, bukan ekstensi: “.jpg” yang berisi PNG dilaporkan sebagai PNG. Tidak ada yang diganti nama secara otomatis — perbaikan tetap merupakan tindakan yang Anda minta."
+    },
+    "folder-compare": {
+      "name": "Bandingkan dua folder",
+      "description": "Lihat apa yang identik, berubah, atau hanya ada di satu sisi antara dua pohon folder.",
+      "keywords": [
+        "bandingkan folder",
+        "diff folder",
+        "perbedaan dua folder",
+        "apa yang berubah",
+        "dua versi folder",
+        "sebelum sesudah",
+        "periksa salinan",
+        "cadangan terbaru"
+      ],
+      "aliases": [
+        "compare folders",
+        "folder diff",
+        "directory compare",
+        "diff directories"
+      ],
+      "note": "Mode cepat membandingkan jenis dan ukuran tanpa membaca apa pun: dua berkas berukuran sama disebut “kemungkinan identik”. Hanya mode andal yang memastikan kesamaan berdasarkan isi — dan hanya membaca berkas berukuran sama, karena ukuran berbeda sudah cukup untuk menyimpulkan."
+    },
+    "folder-sync": {
+      "name": "Sinkronkan folder",
+      "description": "Perbarui tujuan dari sumber, dengan rencana rinci sebelum menulis apa pun.",
+      "keywords": [
+        "sinkronkan",
+        "cermin",
+        "salin folder",
+        "perbarui folder",
+        "cadangan disk eksternal",
+        "flashdisk",
+        "replikasi",
+        "mirror",
+        "rsync"
+      ],
+      "aliases": [
+        "sync folders",
+        "mirror folder",
+        "folder sync",
+        "one-way sync"
+      ],
+      "note": "Sinkronisasi satu arah: sumber menjadi acuan, tujuan mengikutinya. Tidak ada yang ditulis sebelum Anda membaca rencananya. Mode cermin menghapus dari tujuan apa yang sudah tidak ada di sumber, dan meminta konfirmasi tersendiri."
+    },
+    "file-search": {
+      "name": "Cari di dalam berkas",
+      "description": "Temukan berkas berdasarkan nama, jenis, ukuran, atau tanggal — atau berdasarkan teks di dalamnya.",
+      "keywords": [
+        "cari",
+        "cari di berkas",
+        "temukan berkas",
+        "grep",
+        "cari dokumen",
+        "di mana berkas ini",
+        "cari kata",
+        "pencarian isi",
+        "berdasarkan tanggal",
+        "berdasarkan ukuran"
+      ],
+      "aliases": [
+        "search files",
+        "find files",
+        "grep",
+        "search in files"
+      ],
+      "note": "Pencarian sesuai permintaan: FourTout tidak mengindeks apa pun di latar belakang dan tidak menyimpan apa pun di antara pencarian. Pencarian isi hanya membuka yang benar-benar tampak seperti teks — berkas biner tidak pernah dibaca sebagai teks."
+    },
+    "file-preview": {
+      "name": "Pratinjau berkas",
+      "description": "Buka berkas apa pun tanpa aplikasinya: teks, gambar, PDF, audio, video, arsip, atau byte mentah.",
+      "keywords": [
+        "pratinjau",
+        "lihat",
+        "buka tanpa aplikasi",
+        "lihat isi",
+        "quick look",
+        "lihat berkas",
+        "baca berkas"
+      ],
+      "aliases": [
+        "preview file",
+        "quick look",
+        "file viewer"
+      ],
+      "note": "Pratinjau dipilih berdasarkan isi sebenarnya, bukan ekstensi. Berkas teks besar hanya dimuat sebagian, dan pratinjau memberitahukannya."
+    },
+    "file-hex-edit": {
+      "name": "Editor heksadesimal",
+      "description": "Baca dan perbaiki byte berkas, jendela demi jendela, tanpa pernah memuat seluruhnya.",
+      "keywords": [
+        "heksadesimal",
+        "hex editor",
+        "editor hex",
+        "byte",
+        "biner",
+        "ubah byte",
+        "offset",
+        "ascii",
+        "dump"
+      ],
+      "aliases": [
+        "hex editor",
+        "hex edit",
+        "binary editor"
+      ],
+      "note": "Editor yang sengaja dibatasi: tanpa templat biner, tanpa skrip, tanpa menyisipkan atau menghapus byte — hanya perbaikan di tempat yang tidak pernah mengubah ukuran berkas. Secara bawaan, hasil disimpan ke berkas baru."
+    },
+    "folder-backup": {
+      "name": "Cadangkan folder",
+      "description": "Salin folder beserta manifes hash, agar dapat diverifikasi dan dipulihkan nanti.",
+      "keywords": [
+        "cadangan",
+        "backup",
+        "salinan cadangan",
+        "arsipkan dokumen",
+        "sebelum instal ulang",
+        "disk eksternal",
+        "lindungi berkas"
+      ],
+      "aliases": [
+        "backup folder",
+        "create backup"
+      ],
+      "note": "Format transparan: folder “donnees” yang mencerminkan struktur Anda, dan “manifeste.json” yang mudah dibaca. Tanpa kontainer tertutup — bahkan tanpa FourTout, berkas Anda tetap dapat diakses. Ini bukan cadangan berversi: setiap cadangan adalah salinan lengkap bertanggal."
+    },
+    "folder-restore": {
+      "name": "Pulihkan cadangan",
+      "description": "Verifikasi cadangan FourTout, lalu kembalikan tanpa menimpa apa yang tidak Anda pilih.",
+      "keywords": [
+        "pulihkan",
+        "kembalikan cadangan",
+        "kembalikan berkas saya",
+        "restore",
+        "kembali ke sebelumnya",
+        "verifikasi cadangan"
+      ],
+      "aliases": [
+        "restore backup",
+        "verify backup"
+      ],
+      "note": "Integritas diverifikasi sebelum penulisan apa pun: berkas rusak di dalam cadangan disebutkan namanya, tidak dipulihkan diam-diam. Pemulihan tidak pernah menghapus apa pun di tujuan."
+    },
+    "checksum-manifest": {
+      "name": "Buat manifes hash",
+      "description": "Hasilkan berkas .sha256 yang mencantumkan hash setiap berkas dalam folder.",
+      "keywords": [
+        "manifes",
+        "checksum",
+        "sha256sum",
+        "daftar hash",
+        "sebelum dibakar",
+        "sebelum dikirim",
+        "pemeriksaan integritas",
+        "sfv"
+      ],
+      "aliases": [
+        "checksum manifest",
+        "create checksums",
+        "sha256sum"
+      ],
+      "note": "Format teks yang dihasilkan adalah format sha256sum: dapat diperiksa dengan alat sistem di komputer mana pun. MD5 dan SHA-1 tetap tersedia untuk memverifikasi hash lama, tetapi ditandai tidak cocok untuk keperluan keamanan."
+    },
+    "checksum-verify": {
+      "name": "Verifikasi manifes hash",
+      "description": "Bandingkan folder dengan berkas checksum: utuh, berubah, hilang, atau tidak terbaca, berkas demi berkas.",
+      "keywords": [
+        "verifikasi checksum",
+        "periksa manifes",
+        "sha256sum -c",
+        "apakah berkas saya berubah",
+        "integritas folder",
+        "bit rot"
+      ],
+      "aliases": [
+        "verify checksums",
+        "check manifest",
+        "sha256sum -c"
+      ],
+      "note": "Manifes adalah data, bukan perintah: entri yang akan keluar dari folder yang diperiksa (“../”, jalur absolut) ditolak dan dicantumkan, tidak pernah diikuti."
+    },
+    "hmac": {
+      "name": "Hitung HMAC",
+      "description": "Tandatangani teks atau berkas dengan kunci rahasia, menggunakan HMAC-SHA-256 atau SHA-512.",
+      "keywords": [
+        "hmac",
+        "tanda tangan",
+        "kunci rahasia",
+        "webhook",
+        "api",
+        "autentikasi",
+        "tandatangani permintaan",
+        "kode autentikasi pesan"
+      ],
+      "aliases": [
+        "hmac",
+        "message authentication code"
+      ],
+      "note": "Kunci tidak disimpan, dicatat, atau ditambahkan ke daftar terbaru: kunci dipakai untuk perhitungan lalu hilang. Kunci dihapus dari layar begitu Anda meninggalkan alat."
+    },
+    "file-compress": {
+      "name": "Kompres berkas (GZ, XZ)",
+      "description": "Perkecil satu berkas menjadi .gz atau .xz — tanpa menjadikannya arsip.",
+      "keywords": [
+        "gzip",
+        "gz",
+        "xz",
+        "kompres berkas",
+        "lzma",
+        "perkecil berkas",
+        "kompresi",
+        "log besar"
+      ],
+      "aliases": [
+        "gzip",
+        "xz compress",
+        "compress file"
+      ],
+      "note": "“.gz” dan “.xz” hanya berisi satu berkas, tanpa nama folder atau struktur. Untuk mengompres beberapa berkas dengan susunan tetap, gunakan “Buat arsip” dengan format TAR.GZ atau TAR.XZ."
+    },
+    "file-decompress": {
+      "name": "Dekompresi berkas (GZ, XZ)",
+      "description": "Dapatkan kembali berkas asli dari .gz atau .xz.",
+      "keywords": [
+        "gunzip",
+        "unxz",
+        "buka .gz",
+        "buka .xz",
+        "ekstrak gz",
+        "dekompresi gz",
+        "dekompresi xz"
+      ],
+      "aliases": [
+        "gunzip",
+        "unxz",
+        "decompress file"
+      ],
+      "note": "“.tar.gz” berisi struktur folder: sebaiknya gunakan “Ekstrak arsip”, yang akan memulihkannya. Di sini, .tar.gz hanya akan menghasilkan .tar."
+    },
+    "archive-inspect": {
+      "name": "Periksa arsip",
+      "description": "Tampilkan isi arsip tanpa mengekstraknya: jalur, ukuran, rasio kompresi, entri mencurigakan.",
+      "keywords": [
+        "lihat isi zip",
+        "daftar arsip",
+        "tanpa ekstrak",
+        "apa isinya",
+        "periksa zip",
+        "isi 7z",
+        "telusuri arsip"
+      ],
+      "aliases": [
+        "inspect archive",
+        "list archive",
+        "browse archive"
+      ],
+      "note": "Tidak ada yang didekompresi: hanya daftar isi arsip yang dibaca. Entri yang jalurnya akan keluar dari folder ekstraksi ditandai bahkan sebelum Anda berniat mengekstrak."
+    },
+    "archive-test": {
+      "name": "Uji arsip",
+      "description": "Pastikan arsip utuh dengan mendekompresinya sepenuhnya, tanpa menulis apa pun ke disk.",
+      "keywords": [
+        "uji arsip",
+        "arsip rusak",
+        "zip rusak",
+        "periksa zip",
+        "unduhan tidak lengkap",
+        "integritas arsip",
+        "crc"
+      ],
+      "aliases": [
+        "test archive",
+        "verify archive",
+        "check archive"
+      ],
+      "note": "Isi benar-benar didekompresi dan checksum-nya diverifikasi — sekadar menampilkan daftar tidak membuktikan apa pun, karena hanya header yang dibaca. Tidak ada yang ditulis: byte dihitung lalu dibuang."
+    },
+    "universal-converter": {
+      "name": "Konverter universal",
+      "description": "Letakkan berkas: FourTout menyarankan konversi yang mungkin ke format yang kompatibel.",
+      "keywords": [
+        "konversi",
+        "ubah format",
+        "ubah",
+        "berkas apa saja",
+        "format apa",
+        "konverter"
+      ],
+      "aliases": [
+        "universal converter",
+        "convert anything",
+        "file converter"
+      ],
+      "note": "Konversi yang disarankan diturunkan dari masukan dan keluaran yang dinyatakan alat di registri: tidak ada tabel terpisah yang perlu dirawat, dan tidak pernah ada konversi yang diumumkan tanpa alat di baliknya."
+    },
+    "json-tools": {
+      "name": "JSON — format dan validasi",
+      "description": "Beri indentasi, minify, dan validasi JSON, dengan pesan galat yang tepat.",
+      "keywords": [
+        "json",
+        "format",
+        "indentasi",
+        "validasi",
+        "prettify",
+        "minify",
+        "parse"
+      ],
+      "aliases": [
+        "json formatter",
+        "json validator",
+        "json beautifier",
+        "prettify json"
+      ]
+    },
+    "xml-format": {
+      "name": "XML — format",
+      "description": "Beri indentasi dan validasi dokumen XML.",
+      "keywords": [
+        "xml",
+        "format",
+        "indentasi",
+        "validasi",
+        "tag"
+      ],
+      "aliases": [
+        "xml formatter",
+        "xml beautifier"
+      ]
+    },
+    "yaml-format": {
+      "name": "YAML — format dan konversi",
+      "description": "Format YAML dan konversi dari atau ke JSON.",
+      "keywords": [
+        "yaml",
+        "yml",
+        "format",
+        "yaml ke json",
+        "json ke yaml",
+        "konfigurasi"
+      ],
+      "aliases": [
+        "yaml formatter",
+        "yaml to json",
+        "json to yaml"
+      ]
+    },
+    "sql-format": {
+      "name": "SQL — format",
+      "description": "Buat kueri SQL yang padat atau hasil generator menjadi mudah dibaca.",
+      "keywords": [
+        "sql",
+        "kueri",
+        "query",
+        "format",
+        "indentasi",
+        "mudah dibaca"
+      ],
+      "aliases": [
+        "sql formatter",
+        "sql beautifier"
+      ]
+    },
+    "base64": {
+      "name": "Base64 — enkode dan dekode",
+      "description": "Ubah teks ke Base64 dan sebaliknya, termasuk base64url.",
+      "keywords": [
+        "base64",
+        "enkode",
+        "dekode",
+        "b64",
+        "encoding",
+        "data uri"
+      ],
+      "aliases": [
+        "base64 encode",
+        "base64 decode",
+        "b64"
+      ]
+    },
+    "url-encode": {
+      "name": "URL — enkode dan dekode",
+      "description": "Enkode atau dekode URL dan parameternya (percent-encoding).",
+      "keywords": [
+        "url",
+        "enkode",
+        "dekode",
+        "percent encoding",
+        "querystring",
+        "karakter khusus"
+      ],
+      "aliases": [
+        "url encode",
+        "url decode",
+        "uri encode"
+      ]
+    },
+    "jwt-decode": {
+      "name": "JWT — dekode",
+      "description": "Baca header dan payload token JWT, tanpa mengirimnya ke mana pun.",
+      "keywords": [
+        "jwt",
+        "token",
+        "dekode",
+        "bearer",
+        "payload",
+        "claims"
+      ],
+      "aliases": [
+        "jwt decoder",
+        "decode token"
+      ],
+      "note": "Token didekode secara lokal: tidak pernah meninggalkan komputer Anda."
+    },
+    "uuid-generate": {
+      "name": "Buat UUID",
+      "description": "Buat pengenal unik v4 atau v7, satu per satu atau massal.",
+      "keywords": [
+        "uuid",
+        "guid",
+        "pengenal unik",
+        "buat id",
+        "v4",
+        "v7"
+      ],
+      "aliases": [
+        "uuid generator",
+        "guid generator"
+      ]
+    },
+    "regex-tester": {
+      "name": "Penguji ekspresi reguler",
+      "description": "Uji regex secara langsung dan lihat kecocokan serta grupnya.",
+      "keywords": [
+        "regex",
+        "ekspresi reguler",
+        "uji",
+        "kecocokan",
+        "pola",
+        "match"
+      ],
+      "aliases": [
+        "regex tester",
+        "regexp",
+        "regex101"
+      ]
+    },
+    "timestamp-convert": {
+      "name": "Timestamp Unix",
+      "description": "Ubah timestamp menjadi tanggal yang mudah dibaca dan sebaliknya, dengan zona waktu.",
+      "keywords": [
+        "timestamp",
+        "cap waktu",
+        "unix",
+        "epoch",
+        "tanggal dalam detik",
+        "milidetik",
+        "ubah tanggal"
+      ],
+      "aliases": [
+        "unix timestamp",
+        "epoch converter"
+      ]
+    },
+    "hash-text": {
+      "name": "Buat hash teks",
+      "description": "Hitung MD5, SHA-1, SHA-256, atau SHA-512 dari sebuah string.",
+      "keywords": [
+        "hash",
+        "md5",
+        "sha256",
+        "sidik jari",
+        "hash teks",
+        "digest"
+      ],
+      "aliases": [
+        "hash generator",
+        "md5 text",
+        "sha256 text"
+      ]
+    },
+    "qr-generate": {
+      "name": "Buat kode QR",
+      "description": "Buat kode QR untuk URL, teks, kontak, atau jaringan Wi-Fi.",
+      "keywords": [
+        "kode qr",
+        "qrcode",
+        "barcode",
+        "buat qr",
+        "wifi",
+        "vcard"
+      ],
+      "aliases": [
+        "qr code generator",
+        "make qr code"
+      ]
+    },
+    "qr-read": {
+      "name": "Baca kode QR",
+      "description": "Dekode kode QR dari gambar atau tangkapan layar.",
+      "keywords": [
+        "baca qr",
+        "pindai",
+        "dekode kode qr",
+        "qr dari gambar"
+      ],
+      "aliases": [
+        "qr code reader",
+        "scan qr code",
+        "decode qr"
+      ]
+    },
+    "number-base-convert": {
+      "name": "Konversi heksadesimal, desimal, biner",
+      "description": "Beralih antarbasis: biner, oktal, desimal, heksadesimal.",
+      "keywords": [
+        "heksadesimal",
+        "biner",
+        "desimal",
+        "oktal",
+        "basis 16",
+        "basis 2",
+        "konversi angka",
+        "hex"
+      ],
+      "aliases": [
+        "hex to decimal",
+        "binary converter",
+        "base converter"
+      ]
+    },
+    "code-diff": {
+      "name": "Diff kode",
+      "description": "Bandingkan dua blok kode dengan penambahan dan penghapusan disorot.",
+      "keywords": [
+        "diff",
+        "bandingkan kode",
+        "perbedaan",
+        "merge",
+        "versi"
+      ],
+      "aliases": [
+        "code diff",
+        "compare code"
+      ]
+    },
+    "web-minify": {
+      "name": "Minify HTML, CSS, JS",
+      "description": "Perkecil ukuran kode dengan menghapus spasi dan komentar.",
+      "keywords": [
+        "minify",
+        "kompres kode",
+        "perkecil",
+        "uglify",
+        "produksi"
+      ],
+      "aliases": [
+        "minify",
+        "minify css",
+        "minify js",
+        "minify html"
+      ]
+    },
+    "web-beautify": {
+      "name": "Format HTML, CSS, JS",
+      "description": "Beri indentasi ulang pada kode yang di-minify atau berformat buruk agar mudah dibaca.",
+      "keywords": [
+        "format",
+        "indentasi",
+        "beautify",
+        "prettify",
+        "kode tidak terbaca",
+        "indentasi ulang"
+      ],
+      "aliases": [
+        "beautify",
+        "format code",
+        "prettify html"
+      ]
+    },
+    "cron-helper": {
+      "name": "Asisten cron",
+      "description": "Susun ekspresi cron dan jelaskan dengan bahasa yang mudah dipahami.",
+      "keywords": [
+        "cron",
+        "crontab",
+        "penjadwalan",
+        "tugas terjadwal",
+        "ekspresi cron",
+        "schedule"
+      ],
+      "aliases": [
+        "cron generator",
+        "crontab helper",
+        "cron expression"
+      ]
+    },
+    "toml-format": {
+      "name": "TOML — format dan validasi",
+      "description": "Periksa berkas TOML dan tulis ulang dalam bentuk kanonis.",
+      "keywords": [
+        "toml",
+        "format",
+        "validasi",
+        "konfigurasi",
+        "cargo",
+        "pyproject",
+        "indentasi",
+        "galat sintaks"
+      ],
+      "aliases": [
+        "toml formatter",
+        "toml validator",
+        "toml linter",
+        "format toml"
+      ],
+      "note": "Pemformatan ulang menyusun dokumen dari datanya: komentar dan urutan asli hilang. Validasi, sebaliknya, tidak mengubah apa pun."
+    },
+    "base32": {
+      "name": "Base32 — enkode dan dekode",
+      "description": "Ubah teks ke Base32 dan sebaliknya, sesuai RFC 4648.",
+      "keywords": [
+        "base32",
+        "enkode",
+        "dekode",
+        "rfc 4648",
+        "totp",
+        "encoding",
+        "padding",
+        "alfabet"
+      ],
+      "aliases": [
+        "base32 encode",
+        "base32 decode",
+        "b32"
+      ]
+    },
+    "sqlite-explorer": {
+      "name": "Basis data SQLite — jelajahi",
+      "description": "Buka basis data SQLite hanya-baca: skema, data, kueri, ekspor CSV.",
+      "keywords": [
+        "sqlite",
+        "basis data",
+        "database",
+        "db",
+        "jelajahi",
+        "skema",
+        "tabel",
+        "kueri",
+        "select",
+        "sql",
+        "hanya baca"
+      ],
+      "aliases": [
+        "sqlite browser",
+        "sqlite explorer",
+        "db browser",
+        "open sqlite"
+      ],
+      "note": "Penjelajah yang benar-benar hanya-baca: basis data dibuka hanya-baca dan tidak ada kueri yang dapat mengubahnya."
+    },
+    "unit-length": {
+      "name": "Konverter — panjang",
+      "description": "Meter, kilometer, mil, kaki, inci, mil laut.",
+      "keywords": [
+        "konversi",
+        "ubah satuan",
+        "satuan",
+        "panjang",
+        "jarak",
+        "meter",
+        "km",
+        "mil",
+        "inci",
+        "kaki",
+        "sentimeter"
+      ],
+      "aliases": [
+        "length converter",
+        "cm to inches",
+        "km to miles"
+      ]
+    },
+    "unit-weight": {
+      "name": "Konverter — berat dan massa",
+      "description": "Gram, kilogram, ton, pon, ons.",
+      "keywords": [
+        "konversi",
+        "ubah satuan",
+        "satuan",
+        "berat",
+        "massa",
+        "kilo",
+        "gram",
+        "pon",
+        "ons",
+        "ton",
+        "lbs"
+      ],
+      "aliases": [
+        "weight converter",
+        "kg to lbs",
+        "pounds to kg"
+      ]
+    },
+    "unit-temperature": {
+      "name": "Konverter — suhu",
+      "description": "Celsius, Fahrenheit, Kelvin.",
+      "keywords": [
+        "konversi",
+        "ubah satuan",
+        "satuan",
+        "suhu",
+        "celsius",
+        "fahrenheit",
+        "kelvin",
+        "derajat",
+        "°c",
+        "°f"
+      ],
+      "aliases": [
+        "temperature converter",
+        "celsius to fahrenheit"
+      ]
+    },
+    "unit-volume": {
+      "name": "Konverter — volume",
+      "description": "Liter, mililiter, galon, pint, cangkir, sendok.",
+      "keywords": [
+        "konversi",
+        "ubah satuan",
+        "satuan",
+        "volume",
+        "liter",
+        "ml",
+        "galon",
+        "pint",
+        "cangkir",
+        "sendok",
+        "resep"
+      ],
+      "aliases": [
+        "volume converter",
+        "cups to ml",
+        "gallons to liters"
+      ]
+    },
+    "unit-area": {
+      "name": "Konverter — luas",
+      "description": "Meter persegi, hektare, ekar, kaki persegi.",
+      "keywords": [
+        "konversi",
+        "ubah satuan",
+        "satuan",
+        "luas",
+        "m2",
+        "meter persegi",
+        "hektare",
+        "ekar",
+        "tanah"
+      ],
+      "aliases": [
+        "area converter",
+        "sqft to m2"
+      ]
+    },
+    "unit-speed": {
+      "name": "Konverter — kecepatan",
+      "description": "km/jam, m/s, mph, knot.",
+      "keywords": [
+        "konversi",
+        "ubah satuan",
+        "satuan",
+        "kecepatan",
+        "km/jam",
+        "km/h",
+        "mph",
+        "m/s",
+        "knot"
+      ],
+      "aliases": [
+        "speed converter",
+        "kmh to mph"
+      ]
+    },
+    "unit-pressure": {
+      "name": "Konverter — tekanan",
+      "description": "Pascal, bar, PSI, atmosfer, mmHg.",
+      "keywords": [
+        "konversi",
+        "ubah satuan",
+        "satuan",
+        "tekanan",
+        "bar",
+        "psi",
+        "pascal",
+        "atmosfer",
+        "ban"
+      ],
+      "aliases": [
+        "pressure converter",
+        "bar to psi"
+      ]
+    },
+    "unit-energy": {
+      "name": "Konverter — energi",
+      "description": "Joule, kalori, kWh, BTU.",
+      "keywords": [
+        "konversi",
+        "ubah satuan",
+        "satuan",
+        "energi",
+        "joule",
+        "kalori",
+        "kwh",
+        "btu",
+        "kkal"
+      ],
+      "aliases": [
+        "energy converter",
+        "kwh to joules"
+      ]
+    },
+    "unit-power": {
+      "name": "Konverter — daya",
+      "description": "Watt, kilowatt, tenaga kuda.",
+      "keywords": [
+        "konversi",
+        "ubah satuan",
+        "satuan",
+        "daya",
+        "watt",
+        "kw",
+        "kilowatt",
+        "tenaga kuda",
+        "hp",
+        "pk"
+      ],
+      "aliases": [
+        "power converter",
+        "watts to hp",
+        "kw to hp"
+      ]
+    },
+    "unit-data": {
+      "name": "Konverter — data digital",
+      "description": "Byte, KB, MB, GB, TB, dan padanan binernya (KiB, MiB).",
+      "keywords": [
+        "konversi",
+        "ubah satuan",
+        "satuan",
+        "byte",
+        "mb",
+        "gb",
+        "tb",
+        "megabyte",
+        "gigabyte",
+        "bit",
+        "kib",
+        "mib"
+      ],
+      "aliases": [
+        "data converter",
+        "mb to gb",
+        "bytes converter"
+      ]
+    },
+    "calc-percentage": {
+      "name": "Perhitungan persentase",
+      "description": "Persentase dari angka, perubahan, diskon, PPN, bagian dari total.",
+      "keywords": [
+        "persentase",
+        "persen",
+        "%",
+        "diskon",
+        "potongan",
+        "ppn",
+        "pajak",
+        "kenaikan",
+        "perubahan",
+        "hitung promo",
+        "naik",
+        "turun"
+      ],
+      "aliases": [
+        "percentage calculator",
+        "percent change",
+        "discount calculator"
+      ]
+    },
+    "calc-proportion": {
+      "name": "Aturan tiga",
+      "description": "Selesaikan perbandingan: jika A sama dengan B, berapa C?",
+      "keywords": [
+        "aturan tiga",
+        "perbandingan",
+        "kali silang",
+        "rasio",
+        "skala"
+      ],
+      "aliases": [
+        "rule of three",
+        "cross multiplication",
+        "proportion calculator"
+      ]
+    },
+    "calc-date-difference": {
+      "name": "Perhitungan tanggal",
+      "description": "Jumlah hari antara dua tanggal; tambah atau kurangi durasi.",
+      "keywords": [
+        "tanggal",
+        "hari antara",
+        "berapa hari",
+        "tambah hari",
+        "hari kerja",
+        "jatuh tempo",
+        "tenggat"
+      ],
+      "aliases": [
+        "date calculator",
+        "days between dates",
+        "date difference"
+      ]
+    },
+    "calc-duration": {
+      "name": "Perhitungan durasi",
+      "description": "Tambah dan kurangi jam, menit, dan detik.",
+      "keywords": [
+        "durasi",
+        "jam",
+        "menit",
+        "tambah jam",
+        "jam kerja",
+        "hh:mm"
+      ],
+      "aliases": [
+        "duration calculator",
+        "time calculator",
+        "add hours"
+      ]
+    },
+    "calc-age": {
+      "name": "Hitung usia",
+      "description": "Usia tepat dalam tahun, bulan, dan hari dari tanggal lahir.",
+      "keywords": [
+        "usia",
+        "umur",
+        "tanggal lahir",
+        "berapa umur",
+        "ulang tahun",
+        "tahun"
+      ],
+      "aliases": [
+        "age calculator",
+        "how old"
+      ]
+    },
+    "calc-scientific": {
+      "name": "Kalkulator ilmiah",
+      "description": "Operasi lanjutan: pangkat, akar, trigonometri, logaritma.",
+      "keywords": [
+        "kalkulator",
+        "ilmiah",
+        "akar kuadrat",
+        "pangkat",
+        "trigonometri",
+        "logaritma",
+        "sin",
+        "cos",
+        "hitung"
+      ],
+      "aliases": [
+        "scientific calculator",
+        "calculator"
+      ]
+    },
+    "calc-currency": {
+      "name": "Konverter mata uang",
+      "description": "Ubah nominal antar mata uang dengan kurs terbaru.",
+      "keywords": [
+        "mata uang",
+        "rupiah",
+        "euro",
+        "dolar",
+        "kurs",
+        "nilai tukar",
+        "uang",
+        "konversi rupiah"
+      ],
+      "aliases": [
+        "currency converter",
+        "eur to usd",
+        "exchange rate"
+      ],
+      "note": "Satu-satunya alat FourTout yang memerlukan Internet, hanya untuk mengambil kurs hari ini. Saat luring, kurs terakhir yang diketahui dipakai kembali."
+    },
+    "calc-timezone": {
+      "name": "Konversi antarzona waktu",
+      "description": "Ubah waktu lokal ke waktu lain, termasuk waktu musim panas.",
+      "keywords": [
+        "zona waktu",
+        "timezone",
+        "jam",
+        "selisih waktu",
+        "utc",
+        "gmt",
+        "jam jakarta tokyo",
+        "jam new york",
+        "waktu musim panas",
+        "dst"
+      ],
+      "aliases": [
+        "timezone converter",
+        "time zone",
+        "convert time",
+        "world clock"
+      ],
+      "note": "Selisih waktu berasal dari basis data zona waktu sistem, untuk tanggal yang diminta: perubahan jam diperhitungkan, dan waktu yang ambigu atau tidak ada ditandai."
+    },
+    "calc-bandwidth": {
+      "name": "Hitung bandwidth",
+      "description": "Hitung laju rata-rata dari jumlah data yang ditransfer dan durasinya.",
+      "keywords": [
+        "bandwidth",
+        "laju",
+        "kecepatan",
+        "mbps",
+        "mb per detik",
+        "bit",
+        "byte",
+        "koneksi"
+      ],
+      "aliases": [
+        "bandwidth calculator",
+        "throughput",
+        "data rate"
+      ]
+    },
+    "calc-transfer-time": {
+      "name": "Hitung waktu transfer",
+      "description": "Perkirakan lama transfer dari ukuran dan laju.",
+      "keywords": [
+        "waktu transfer",
+        "durasi",
+        "unduh",
+        "unggah",
+        "transfer",
+        "berapa lama",
+        "laju",
+        "ukuran",
+        "eta"
+      ],
+      "aliases": [
+        "transfer time",
+        "download time",
+        "upload time"
+      ],
+      "note": "Perhitungan teoretis: ukuran ÷ laju. Mengabaikan overhead protokol, latensi, dan kemacetan — transfer nyata selalu lebih lama."
+    },
+    "calc-interest": {
+      "name": "Hitung bunga",
+      "description": "Bunga sederhana atau majemuk, dengan setoran rutin opsional.",
+      "keywords": [
+        "bunga",
+        "bunga majemuk",
+        "bunga sederhana",
+        "kapitalisasi",
+        "tabungan",
+        "investasi",
+        "suku bunga",
+        "imbal hasil",
+        "deposito"
+      ],
+      "aliases": [
+        "compound interest",
+        "simple interest",
+        "savings calculator"
+      ],
+      "note": "Alat matematika, bukan nasihat keuangan: pajak, inflasi, dan biaya tidak diperhitungkan."
+    },
+    "network-ping": {
+      "name": "Ping",
+      "description": "Ukur apakah host merespons, dan seberapa cepat.",
+      "keywords": [
+        "ping",
+        "latensi",
+        "icmp",
+        "merespons",
+        "dapat dijangkau",
+        "packet loss",
+        "waktu respons",
+        "diagnosis"
+      ],
+      "aliases": [
+        "ping",
+        "icmp echo",
+        "latency test"
+      ],
+      "note": "Mengirim paket ICMP sungguhan, empat secara bawaan. Jika sistem menolak soket ICMP, alat memberitahukannya alih-alih mengukur hal lain."
+    },
+    "network-ports": {
+      "name": "Uji port",
+      "description": "Lihat port TCP mana pada host yang menerima koneksi.",
+      "keywords": [
+        "port",
+        "tcp",
+        "uji port",
+        "port terbuka",
+        "port tertutup",
+        "koneksi",
+        "firewall",
+        "layanan",
+        "mendengarkan"
+      ],
+      "aliases": [
+        "port check",
+        "port test",
+        "tcp connect",
+        "is port open"
+      ],
+      "note": "Satu host, paling banyak 256 port per eksekusi, melalui koneksi TCP biasa. Ini bukan pemindai: tanpa siluman, tanpa deteksi layanan, tanpa pencarian kerentanan."
+    },
+    "network-lan": {
+      "name": "Temukan perangkat di jaringan lokal",
+      "description": "Tampilkan perangkat yang muncul di subnet Anda.",
+      "keywords": [
+        "jaringan lokal",
+        "lan",
+        "perangkat",
+        "komputer",
+        "pindai jaringan lokal",
+        "penemuan",
+        "printer",
+        "alamat ip",
+        "mac"
+      ],
+      "aliases": [
+        "lan discovery",
+        "network scan",
+        "find devices",
+        "arp table"
+      ],
+      "note": "Terbatas pada subnet yang terhubung langsung dan 256 alamat. Rentang tepatnya diumumkan sebelum pengiriman apa pun, dan tidak ada yang keluar tanpa konfirmasi."
+    },
+    "file-diagnose": {
+      "name": "Diagnosis berkas",
+      "description": "Pahami apa sebenarnya sebuah berkas, dan apa yang kurang darinya.",
+      "keywords": [
+        "diagnosis berkas",
+        "berkas rusak",
+        "berkas korup",
+        "berkas tidak terbaca",
+        "jenis berkas",
+        "ekstensi",
+        "terpotong",
+        "tanda tangan",
+        "analisis"
+      ],
+      "aliases": [
+        "file diagnosis",
+        "corrupt file",
+        "file check",
+        "inspect file"
+      ],
+      "note": "Berkas asli tidak pernah diubah. FourTout menganalisis struktur internal ZIP, PDF, PNG, dan JPEG, dan berterus terang untuk format lainnya."
+    },
+    "archive-repair": {
+      "name": "Arsip ZIP rusak",
+      "description": "Diagnosis arsip yang tidak terbaca dan selamatkan isi yang masih ada.",
+      "keywords": [
+        "perbaiki zip",
+        "zip rusak",
+        "zip korup",
+        "arsip rusak",
+        "pulihkan arsip",
+        "arsip tidak terbaca",
+        "direktori pusat",
+        "ekstrak tetap"
+      ],
+      "aliases": [
+        "repair zip",
+        "recover zip",
+        "broken archive",
+        "zip repair"
+      ],
+      "note": "Memulihkan dengan memindai header lokal, bahkan tanpa direktori pusat. Entri dengan data terpotong dinyatakan hilang — tidak pernah direkonstruksi. Arsip asli tidak disentuh."
+    },
+    "pdf-repair": {
+      "name": "PDF rusak",
+      "description": "Diagnosis PDF yang tidak terbaca dan perbaiki bila dapat dibuktikan.",
+      "keywords": [
+        "perbaiki pdf",
+        "pdf rusak",
+        "pdf korup",
+        "pdf tidak terbaca",
+        "xref pdf",
+        "startxref",
+        "pdf terpotong",
+        "bangun ulang pdf"
+      ],
+      "aliases": [
+        "repair pdf",
+        "fix pdf",
+        "broken pdf",
+        "pdf recovery"
+      ],
+      "note": "Setiap berkas yang dihasilkan dibuka kembali oleh mesin PDF dan halamannya dihitung: jika mesin menolaknya, perbaikan dinyatakan gagal dan berkas dihapus. Penulisan ulang membatalkan tanda tangan digital apa pun."
+    },
+    "image-repair": {
+      "name": "Gambar rusak",
+      "description": "Diagnosis PNG atau JPEG yang rusak dan selamatkan piksel yang terbaca.",
+      "keywords": [
+        "pulihkan gambar",
+        "gambar rusak",
+        "jpeg rusak",
+        "png rusak",
+        "foto rusak",
+        "gambar tidak terbaca",
+        "gambar terpotong",
+        "crc png"
+      ],
+      "aliases": [
+        "repair image",
+        "recover photo",
+        "broken jpeg",
+        "png repair"
+      ],
+      "note": "Checksum yang salah tidak pernah dihitung ulang, dan baris yang hilang dari gambar terpotong tidak pernah dikarang. Pemulihan visual mengenkode ulang piksel yang didekode: yang diselamatkan gambarnya, bukan berkasnya."
+    },
+    "disk-inspect": {
+      "name": "Periksa disk dan partisi",
+      "description": "Lihat disk, partisi, volume, dan indikator kesehatan sistem.",
+      "keywords": [
+        "disk",
+        "cakram",
+        "partisi",
+        "sistem berkas",
+        "ruang disk",
+        "volume",
+        "smart",
+        "kesehatan disk",
+        "ssd",
+        "nvme",
+        "usb",
+        "mount"
+      ],
+      "aliases": [
+        "disk info",
+        "partitions",
+        "smart health",
+        "drive inspector",
+        "storage"
+      ],
+      "note": "Hanya-baca, tanpa pengecualian: FourTout tidak dapat mempartisi, memformat, me-mount, mengkloning, atau menghapus disk. Indikator kesehatan terperinci bergantung pada `smartctl`, yang tidak disertakan FourTout."
+    },
+    "password-generate": {
+      "name": "Buat kata sandi",
+      "description": "Buat kata sandi kuat atau frasa sandi yang mudah diingat.",
+      "keywords": [
+        "kata sandi",
+        "password",
+        "buat",
+        "acak",
+        "aman",
+        "frasa sandi",
+        "kata sandi kuat",
+        "buat kata sandi"
+      ],
+      "aliases": [
+        "password generator",
+        "generate password",
+        "passphrase"
+      ]
+    },
+    "password-strength": {
+      "name": "Uji kekuatan kata sandi",
+      "description": "Perkirakan secara luring berapa lama kata sandi bisa dibobol.",
+      "keywords": [
+        "kekuatan",
+        "kata sandi kuat",
+        "keamanan",
+        "apakah kata sandi saya bagus",
+        "entropi",
+        "periksa kata sandi"
+      ],
+      "aliases": [
+        "password strength",
+        "password checker"
+      ],
+      "note": "Analisis sepenuhnya lokal: kata sandi yang diketik tidak pernah dikirim."
+    },
+    "file-encrypt": {
+      "name": "Enkripsi berkas",
+      "description": "Lindungi berkas dengan kata sandi menggunakan enkripsi modern.",
+      "keywords": [
+        "enkripsi",
+        "lindungi",
+        "kata sandi",
+        "aes",
+        "rahasia",
+        "amankan berkas"
+      ],
+      "aliases": [
+        "encrypt file",
+        "file encryption",
+        "aes encrypt"
+      ]
+    },
+    "file-decrypt": {
+      "name": "Dekripsi berkas",
+      "description": "Dapatkan kembali isi berkas yang dienkripsi dengan FourTout.",
+      "keywords": [
+        "dekripsi",
+        "buka berkas terenkripsi",
+        "pulihkan"
+      ],
+      "aliases": [
+        "decrypt file",
+        "file decryption"
+      ]
+    },
+    "metadata-strip-any": {
+      "name": "Hapus metadata berkas",
+      "description": "Bersihkan penulis, tanggal, perangkat, dan lokasi sebelum membagikan dokumen.",
+      "keywords": [
+        "metadata",
+        "anonimkan",
+        "sebelum berbagi",
+        "privasi",
+        "hapus penulis",
+        "jejak",
+        "bersihkan dokumen"
+      ],
+      "aliases": [
+        "strip metadata",
+        "remove metadata",
+        "anonymize file"
+      ]
+    }
+  }
+}

@@ -20,6 +20,7 @@ import {
 import { saveFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Comparaison de deux documents.
@@ -60,7 +61,7 @@ export function DocumentCompareTool({ tool }: ToolComponentProps) {
     if (comparison) {
       setResult(comparison);
       notify.success(
-        comparison.diff.identical ? "Documents identiques" : "Comparaison terminée",
+        comparison.diff.identical ? t("Documents identiques") : t("Comparaison terminée"),
         `${comparison.left.name} ↔ ${comparison.right.name}`,
       );
     }
@@ -74,7 +75,7 @@ export function DocumentCompareTool({ tool }: ToolComponentProps) {
       bytes: new TextEncoder().encode(text),
       mimeType: "text/plain;charset=utf-8",
     });
-    if (saved.saved) notify.success("Fichier enregistré", saved.path);
+    if (saved.saved) notify.success(t("Fichier enregistré"), saved.path);
   };
 
   const copy = async () => {
@@ -83,9 +84,9 @@ export function DocumentCompareTool({ tool }: ToolComponentProps) {
       await navigator.clipboard.writeText(
         toUnifiedDiff(result.diff, result.left.name, result.right.name),
       );
-      notify.success("Diff copié");
+      notify.success(t("Diff copié"));
     } catch {
-      notify.error("Copie impossible");
+      notify.error(t("Copie impossible"));
     }
   };
 
@@ -100,24 +101,24 @@ export function DocumentCompareTool({ tool }: ToolComponentProps) {
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <p className="ft-section">Document de référence (avant)</p>
+          <p className="ft-section">{t("Document de référence (avant)")}</p>
           <FileDropZone
             constraints={constraints}
             files={left}
             onChange={setLeft}
-            label="Déposez le premier document"
-            hint="PDF, Word (.docx), texte, Markdown ou HTML."
+            label={t("Déposez le premier document")}
+            hint={t("PDF, Word (.docx), texte, Markdown ou HTML.")}
             disabled={job.isRunning}
           />
         </div>
         <div className="space-y-1.5">
-          <p className="ft-section">Document à comparer (après)</p>
+          <p className="ft-section">{t("Document à comparer (après)")}</p>
           <FileDropZone
             constraints={constraints}
             files={right}
             onChange={setRight}
-            label="Déposez le second document"
-            hint="Les deux documents peuvent être de formats différents."
+            label={t("Déposez le second document")}
+            hint={t("Les deux documents peuvent être de formats différents.")}
             disabled={job.isRunning}
           />
         </div>
@@ -125,11 +126,11 @@ export function DocumentCompareTool({ tool }: ToolComponentProps) {
 
       <Fieldset columns={2}>
         <Field
-          label="Mode de comparaison"
-          hint="« Normalisé » ignore les espaces multiples, les fins de ligne et les césures de PDF. Aucun mot n'est jamais masqué."
+          label={t("Mode de comparaison")}
+          hint={t("« Normalisé » ignore les espaces multiples, les fins de ligne et les césures de PDF. Aucun mot n'est jamais masqué.")}
         >
           <OptionGroup
-            ariaLabel="Mode de comparaison"
+            ariaLabel={t("Mode de comparaison")}
             value={mode}
             onChange={setMode}
             options={(["exact", "normalized"] as CompareMode[]).map((value) => ({
@@ -139,14 +140,14 @@ export function DocumentCompareTool({ tool }: ToolComponentProps) {
             disabled={job.isRunning}
           />
         </Field>
-        <Field label="Affichage">
+        <Field label={t("Affichage")}>
           <OptionGroup
-            ariaLabel="Affichage"
+            ariaLabel={t("Affichage")}
             value={view}
             onChange={setView}
             options={[
-              { value: "side", label: "Côte à côte" },
-              { value: "unified", label: "Diff unifié" },
+              { value: "side", label: t("Côte à côte") },
+              { value: "unified", label: t("Diff unifié") },
             ]}
           />
         </Field>
@@ -155,7 +156,7 @@ export function DocumentCompareTool({ tool }: ToolComponentProps) {
       <div className="flex items-center justify-end gap-2 border-t border-[var(--ft-border)] pt-4">
         {job.isRunning && (
           <Button size="sm" variant="ghost" onClick={job.cancel}>
-            Annuler
+            {t("Annuler")}
           </Button>
         )}
         <Button
@@ -167,21 +168,21 @@ export function DocumentCompareTool({ tool }: ToolComponentProps) {
           {job.isRunning ? (
             <>
               <Icon name="Loader" size={15} className="animate-spin" />
-              {job.progress.label ?? "Comparaison…"}
+              {job.progress.label ?? t("Comparaison…")}
             </>
           ) : (
             <>
               <Icon name="FileDiff" size={15} />
-              Comparer
+              {t("Comparer")}
             </>
           )}
         </Button>
       </div>
 
-      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
+      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={tx(job.progress.label)} />}
 
       {errorMessage && job.status === "error" && (
-        <Callout tone="error" title="La comparaison a échoué">
+        <Callout tone="error" title={t("La comparaison a échoué")}>
           {errorMessage}
         </Callout>
       )}
@@ -189,27 +190,25 @@ export function DocumentCompareTool({ tool }: ToolComponentProps) {
       {result && (
         <>
           <p className="ft-meta">
-            {DOCUMENT_FORMAT_LABELS[result.left.format]} « {result.left.name} » ↔{" "}
-            {DOCUMENT_FORMAT_LABELS[result.right.format]} « {result.right.name} » · comparaison sur
-            le contenu textuel, pas sur la mise en page.
+            {t("{value} « {name} » ↔ {value2} « {name2} » · comparaison sur le contenu textuel, pas sur la mise en page.", { value: DOCUMENT_FORMAT_LABELS[result.left.format], name: result.left.name, value2: DOCUMENT_FORMAT_LABELS[result.right.format], name2: result.right.name })}
           </p>
 
           <DiffStatsBar stats={result.diff.stats} identical={result.diff.identical}>
             <Button size="sm" onClick={() => setOnlyChanges((value) => !value)}>
               <Icon name="Eye" size={14} />
-              {onlyChanges ? "Tout le texte" : "Différences seules"}
+              {onlyChanges ? t("Tout le texte") : t("Différences seules")}
             </Button>
             <Button size="sm" onClick={download} disabled={result.diff.identical}>
-              <Icon name="Download" size={14} /> Télécharger le diff
+              <Icon name="Download" size={14} />{" "}{t("Télécharger le diff")}
             </Button>
             <Button size="sm" variant="primary" onClick={copy} disabled={result.diff.identical}>
-              <Icon name="Copy" size={14} /> Copier le diff
+              <Icon name="Copy" size={14} />{" "}{t("Copier le diff")}
             </Button>
           </DiffStatsBar>
 
           {result.diff.truncated && (
             <Callout tone="warning">
-              Documents très longs : la comparaison est faite ligne à ligne, sans alignement fin.
+              {t("Documents très longs : la comparaison est faite ligne à ligne, sans alignement fin.")}
             </Callout>
           )}
 

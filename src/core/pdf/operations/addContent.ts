@@ -5,6 +5,7 @@ import { toWinAnsi } from "./documentToPdf";
 import { detectImageFormat } from "./imagesToPdf";
 import { decodeImage } from "@/core/image/codec";
 import type { OperationContext, OutputFile, PdfSource } from "../types";
+import { t } from "@/i18n";
 
 /**
  * Ajouts de contenu par-dessus un PDF existant : zones de texte et images /
@@ -33,7 +34,7 @@ export async function addTextToPdf(
   context?: OperationContext,
 ): Promise<OutputFile> {
   const usable = boxes.filter((box) => box.text.trim().length > 0);
-  if (usable.length === 0) throw new PdfError("no-pages-selected", "Aucun texte à ajouter.");
+  if (usable.length === 0) throw new PdfError("no-pages-selected", t("Aucun texte à ajouter."));
 
   const document = await loadPdf(source);
   const font = await document.embedFont(StandardFonts.Helvetica);
@@ -42,7 +43,7 @@ export async function addTextToPdf(
 
   for (const [index, box] of usable.entries()) {
     throwIfCancelled(context);
-    report(context, index / usable.length, `Zone ${index + 1} sur ${usable.length}`);
+    report(context, index / usable.length, t("Zone {value} sur {count}", { value: index + 1, count: usable.length }));
     if (box.page < 1 || box.page > pageCount) continue;
     const page = document.getPage(box.page - 1);
     const { width, height } = page.getSize();
@@ -59,7 +60,7 @@ export async function addTextToPdf(
     });
   }
 
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   return savePdf(document, source.name.replace(/\.pdf$/i, "") + "-annote.pdf");
 }
 
@@ -80,14 +81,14 @@ export async function addImageToPdf(
   placements: readonly ImagePlacement[],
   context?: OperationContext,
 ): Promise<OutputFile> {
-  if (placements.length === 0) throw new PdfError("no-pages-selected", "Aucune image à ajouter.");
+  if (placements.length === 0) throw new PdfError("no-pages-selected", t("Aucune image à ajouter."));
 
   const document = await loadPdf(source);
   const pageCount = document.getPageCount();
 
   for (const [index, placement] of placements.entries()) {
     throwIfCancelled(context);
-    report(context, index / placements.length, `Image ${index + 1} sur ${placements.length}`);
+    report(context, index / placements.length, t("Image {value} sur {count}", { value: index + 1, count: placements.length }));
     if (placement.page < 1 || placement.page > pageCount) continue;
 
     const format = detectImageFormat(placement.bytes);
@@ -112,6 +113,6 @@ export async function addImageToPdf(
     });
   }
 
-  report(context, 1, "Écriture du document");
+  report(context, 1, t("Écriture du document"));
   return savePdf(document, source.name.replace(/\.pdf$/i, "") + "-image.pdf");
 }

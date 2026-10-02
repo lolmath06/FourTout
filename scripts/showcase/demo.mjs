@@ -11,19 +11,66 @@
  *    enregistrement légendé, écrans de l'application native
  *    (`native-capture.sh`), carton de fin — 1920 × 1080, sans son.
  *
- * Prérequis : FFmpeg (libx264, libwebp_anim) dans le PATH ; `fixtures.mjs`
+ * Prérequis : FFmpeg (libx264, libwebp) dans le PATH ; `fixtures.mjs`
  * déjà exécuté.
  * Usage : `pnpm dev` dans un terminal, puis `node scripts/showcase/demo.mjs`
+ *
+ * Version anglaise : `SHOWCASE_LANG=en` (fixtures et `native-capture.sh` lancés
+ * avec la même variable). Même scénario, interface et fichiers en anglais ;
+ * l'enregistrement est recalé chapitre par chapitre sur la chronologie de la
+ * vidéo de référence, pour que les deux versions aient la même timeline.
+ * Sorties suffixées `-en` : la version française n'est jamais écrasée.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { chromium } from "playwright-core";
 import { APP_URL, BRANDING, CHROMIUM, DEMO, FIXTURES, OUTPUT, RAW, ROOT } from "./paths.mjs";
 import { catalogCounts } from "./counts.mjs";
 
 const VERSION = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")).version;
-const WORK = join(OUTPUT, "demo-work");
+const LANG = process.env.SHOWCASE_LANG === "en" ? "en" : "fr";
+const SUFFIX = LANG === "fr" ? "" : `-${LANG}`;
+
+/** Ce que la démo tape, clique et dépose, dans la langue de l'interface. */
+const SCRIPT = {
+  fr: {
+    locale: "fr-FR",
+    favorite: "Ajouter aux favoris",
+    search: "Décrivez ce que vous voulez faire",
+    // [texte, délai entre deux touches en ms]
+    queries: [["réduire la taille d'une vidéo", 55], ["pdf en images", 55]],
+    sliderStep: 45,
+    tools: "Outils",
+    example: "Exemple",
+    pdfs: ["rapport-annuel-exemple.pdf", "annexes-exemple.pdf", "presentation-exemple.pdf"],
+    image: "paysage-exemple.jpg",
+    raw: RAW,
+  },
+  en: {
+    locale: "en-US",
+    favorite: "Add to favorites",
+    search: "Describe what you want to do",
+    // Délais réglés pour retrouver, à l'écran, les vitesses de la référence :
+    // frappe des deux recherches (2,35 s et 0,99 s) et curseurs (2,42 s).
+    queries: [["reduce the size of a video", 47], ["pdf to images", 29]],
+    sliderStep: 36,
+    tools: "Tools",
+    example: "Example",
+    pdfs: ["annual-report-sample.pdf", "appendices-sample.pdf", "presentation-sample.pdf"],
+    image: "landscape-sample.jpg",
+    raw: join(OUTPUT, "raw-en"),
+  },
+}[LANG];
+
+/**
+ * Chronologie de la vidéo de référence (`FourTout-1.0.0-demo.mp4`, française),
+ * mesurée sur l'apparition de ses légendes : début de chaque chapitre et durée
+ * de l'enregistrement, en secondes. Les autres langues s'y recalent.
+ */
+const REFERENCE = { marks: [1.19, 7.86, 11.42, 14.85, 20.02, 23.38], duration: 28.1333 };
+
+const WORK = join(OUTPUT, `demo-work${SUFFIX}`);
 const FRAMES = join(WORK, "frames");
 const SESSION = join(WORK, "session.mp4");
 
@@ -35,6 +82,7 @@ const probeDuration = (file) =>
       .trim(),
   );
 const fixture = (name) => join(FIXTURES, name);
+const queryArgs = ([text, delay]) => [text, { delay }];
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // ------------------------------------------------------- enregistrement
@@ -48,9 +96,20 @@ async function record() {
     viewport: { width: 1280, height: 800 },
     deviceScaleFactor: 1.5,
     colorScheme: "dark",
-    locale: "fr-FR",
+    locale: SCRIPT.locale,
     timezoneId: "Europe/Paris",
   });
+  // Langue de l'interface choisie explicitement, comme dans les Réglages.
+  await context.addInitScript((language) => {
+    const key = "fourtout:settings";
+    let settings = {};
+    try {
+      settings = JSON.parse(window.localStorage.getItem(key) ?? "{}") ?? {};
+    } catch {
+      settings = {};
+    }
+    window.localStorage.setItem(key, JSON.stringify({ ...settings, language }));
+  }, LANG);
   const page = await context.newPage();
   const go = async (route) => {
     await page.evaluate((hash) => (window.location.hash = hash), route);
@@ -65,7 +124,7 @@ async function record() {
   }
   for (const id of ["pdf-merge", "image-convert", "json-tools"]) {
     await go(`/tools/t/${id}`);
-    await page.getByRole("button", { name: "Ajouter aux favoris" }).first().click();
+    await page.getByRole("button", { name: SCRIPT.favorite }).first().click();
   }
   await page.goto(`${APP_URL}/#/`, { waitUntil: "networkidle" });
   await page.reload({ waitUntil: "networkidle" });
@@ -89,16 +148,16 @@ async function record() {
 
   await sleep(1200);
   mark("Describe what you need");
-  const search = page.getByLabel("Décrivez ce que vous voulez faire");
+  const search = page.getByLabel(SCRIPT.search);
   await search.click();
-  await search.pressSequentially("réduire la taille d'une vidéo", { delay: 55 });
+  await search.pressSequentially(...queryArgs(SCRIPT.queries[0]));
   await sleep(1800);
   await search.fill("");
-  await search.pressSequentially("pdf en images", { delay: 55 });
+  await search.pressSequentially(...queryArgs(SCRIPT.queries[1]));
   await sleep(1500);
 
   mark("Organized in categories");
-  await page.getByRole("link", { name: "Outils", exact: true }).click();
+  await page.getByRole("link", { name: SCRIPT.tools, exact: true }).click();
   await page.evaluate(() => document.activeElement?.blur());
   await sleep(2000);
   await page.getByRole("link", { name: /^PDF/ }).first().click();
@@ -107,16 +166,12 @@ async function record() {
   mark("PDF & documents");
   await go("/tools/t/pdf-merge");
   await sleep(600);
-  await page.locator('input[type="file"]').first().setInputFiles([
-    fixture("rapport-annuel-exemple.pdf"),
-    fixture("annexes-exemple.pdf"),
-    fixture("presentation-exemple.pdf"),
-  ]);
+  await page.locator('input[type="file"]').first().setInputFiles(SCRIPT.pdfs.map(fixture));
   await sleep(2400);
 
   mark("Images, with live preview");
   await go("/tools/t/image-adjust");
-  await page.locator('input[type="file"]').first().setInputFiles(fixture("paysage-exemple.jpg"));
+  await page.locator('input[type="file"]').first().setInputFiles(fixture(SCRIPT.image));
   await page.waitForSelector('input[type="range"]', { timeout: 10000 });
   await sleep(1000);
   const sliders = page.locator('input[type="range"]');
@@ -124,7 +179,7 @@ async function record() {
     await sliders.nth(index).focus();
     for (let i = 0; i < steps; i++) {
       await page.keyboard.press("ArrowRight");
-      await sleep(45);
+      await sleep(SCRIPT.sliderStep);
     }
   }
   await page.evaluate(() => document.activeElement?.blur());
@@ -133,7 +188,7 @@ async function record() {
   mark("Developer tools");
   await go("/tools/t/json-tools");
   await sleep(700);
-  await page.getByRole("button", { name: "Exemple" }).first().click();
+  await page.getByRole("button", { name: SCRIPT.example }).first().click();
   await sleep(2200);
 
   mark("Files & archives");
@@ -173,20 +228,49 @@ async function record() {
 
 // ------------------------------------------------------------ WebP animé
 
-/** Le WebP de la page d'accueil reste court : l'enregistrement y est accéléré. */
-const WEBP_SPEED = 1.3;
-
-function animatedWebp() {
+/** WebP du README : la vidéo MP4 finale, réduite à 1280 px de large et 15 i/s. */
+function animatedWebp(mp4) {
   mkdirSync(DEMO, { recursive: true });
-  const out = join(DEMO, "fourtout-demo.webp");
+  const out = join(DEMO, `fourtout-demo${SUFFIX}.webp`);
   ffmpeg(
-    "-i", SESSION,
-    "-vf", `setpts=PTS/${WEBP_SPEED},fps=12,scale=1280:800:flags=lanczos`,
-    "-c:v", "libwebp_anim", "-quality", "72", "-compression_level", "6",
-    "-loop", "0", "-an", "-map_metadata", "-1",
+    "-i", mp4,
+    "-vf", "fps=15,scale=1280:-2:flags=lanczos",
+    "-c:v", "libwebp", "-lossless", "0", "-quality", "88", "-compression_level", "6",
+    "-preset", "picture", "-loop", "0", "-an", "-map_metadata", "-1",
     out,
   );
   return out;
+}
+
+// ------------------------------------------------------- recalage
+
+/**
+ * Recale l'enregistrement sur la chronologie de référence : chaque chapitre
+ * est légèrement accéléré ou ralenti pour durer exactement comme dans la
+ * vidéo de référence. Aucune image n'est retouchée, seules leurs durées.
+ */
+function alignToReference(marks) {
+  if (marks.length !== REFERENCE.marks.length) {
+    throw new Error(`${marks.length} chapitres enregistrés, ${REFERENCE.marks.length} attendus`);
+  }
+  const raw = join(WORK, "session-raw.mp4");
+  renameSync(SESSION, raw);
+  const from = [0, ...marks.map((m) => m.at), probeDuration(raw)];
+  const to = [0, ...REFERENCE.marks, REFERENCE.duration];
+  let graph = "";
+  for (let i = 0; i < from.length - 1; i++) {
+    const factor = (to[i + 1] - to[i]) / (from[i + 1] - from[i]);
+    graph += `[0:v]trim=start=${from[i].toFixed(4)}:end=${from[i + 1].toFixed(4)},setpts=(PTS-STARTPTS)*${factor.toFixed(5)}[p${i}];`;
+  }
+  const count = from.length - 1;
+  graph += `${Array.from({ length: count }, (_, i) => `[p${i}]`).join("")}concat=n=${count}:v=1:a=0,fps=30,format=yuv420p[out]`;
+  ffmpeg(
+    "-i", raw, "-filter_complex", graph, "-map", "[out]",
+    "-t", REFERENCE.duration.toFixed(4),
+    "-c:v", "libx264", "-crf", "14", "-preset", "slow",
+    SESSION,
+  );
+  return marks.map((m, i) => ({ ...m, at: REFERENCE.marks[i] }));
 }
 
 // ------------------------------------------------------------ vidéo MP4
@@ -264,7 +348,7 @@ async function renderCards({ tools, categories }, marks) {
   }
   // Écrans natifs : capture réelle posée sur le fond, avec sa légende.
   for (const still of NATIVE_STILLS) {
-    const shot = join(RAW, `${still.scene}-dark.png`);
+    const shot = join(SCRIPT.raw, `${still.scene}-dark.png`);
     if (!existsSync(shot)) throw new Error(`Capture native manquante : ${shot} (native-capture.sh)`);
     await shoot(
       card(`<style>
@@ -337,7 +421,7 @@ function video(marks) {
     label = next;
   }
 
-  const out = join(OUTPUT, `FourTout-${VERSION}-demo.mp4`);
+  const out = join(OUTPUT, `FourTout-${VERSION}-demo${SUFFIX}.mp4`);
   ffmpeg(
     ...parts.flatMap((part) => ["-i", part.file]),
     "-filter_complex", graph.replace(/;$/, ""),
@@ -350,11 +434,17 @@ function video(marks) {
 
 async function main() {
   const counts = await catalogCounts();
-  const marks = await record();
+  let marks = await record();
   console.log(`✓ enregistrement : ${probeDuration(SESSION).toFixed(1)} s`);
-  console.log(`✓ ${animatedWebp()}`);
+  console.log(`  chapitres : ${marks.map((m) => m.at.toFixed(2)).join(" / ")}`);
+  if (LANG !== "fr") {
+    marks = alignToReference(marks);
+    console.log(`✓ recalé sur la référence : ${probeDuration(SESSION).toFixed(2)} s`);
+  }
   await renderCards(counts, marks);
-  console.log(`✓ ${video(marks)}`);
+  const mp4 = video(marks);
+  console.log(`✓ ${mp4}`);
+  console.log(`✓ ${animatedWebp(mp4)}`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) await main();

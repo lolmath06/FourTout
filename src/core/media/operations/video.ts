@@ -5,6 +5,7 @@ import {
 } from "../capabilities";
 import type { PixelRect } from "../video/dimensions";
 import { atempoChain } from "./audio";
+import { localized, t } from "@/i18n";
 
 /**
  * Constructeurs d'arguments FFmpeg pour la suite vidéo.
@@ -340,13 +341,13 @@ export function concatVideoReencode(options: {
 
 export type VideoTransform = "rotate-left" | "rotate-right" | "rotate-180" | "flip-h" | "flip-v";
 
-export const VIDEO_TRANSFORMS: { value: VideoTransform; label: string; icon: string }[] = [
-  { value: "rotate-left", label: "90° à gauche", icon: "RotateCw" },
-  { value: "rotate-right", label: "90° à droite", icon: "RotateCw" },
+export const VIDEO_TRANSFORMS: { value: VideoTransform; label: string; icon: string }[] = localized(() => [
+  { value: "rotate-left", label: t("90° à gauche"), icon: "RotateCw" },
+  { value: "rotate-right", label: t("90° à droite"), icon: "RotateCw" },
   { value: "rotate-180", label: "180°", icon: "RotateCw" },
-  { value: "flip-h", label: "Miroir horizontal", icon: "FlipHorizontal2" },
-  { value: "flip-v", label: "Miroir vertical", icon: "FlipHorizontal2" },
-];
+  { value: "flip-h", label: t("Miroir horizontal"), icon: "FlipHorizontal2" },
+  { value: "flip-v", label: t("Miroir vertical"), icon: "FlipHorizontal2" },
+]);
 
 /** Filtre correspondant à une transformation. */
 export function transformFilter(transform: VideoTransform): string {
@@ -442,11 +443,11 @@ export function stripMediaMetadata(extension: string, mimeType: string): VideoOp
 /** Que faire quand la vidéo et l'audio n'ont pas la même durée. */
 export type AudioFitMode = "video" | "audio" | "loop";
 
-export const AUDIO_FIT_MODES: { value: AudioFitMode; label: string; hint: string }[] = [
-  { value: "video", label: "Caler sur la vidéo", hint: "L'audio est coupé, ou complété par du silence." },
-  { value: "audio", label: "Caler sur l'audio", hint: "La sortie dure aussi longtemps que la bande son." },
-  { value: "loop", label: "Boucler l'audio", hint: "La bande son est répétée jusqu'à la fin de la vidéo." },
-];
+export const AUDIO_FIT_MODES: { value: AudioFitMode; label: string; hint: string }[] = localized(() => [
+  { value: "video", label: t("Caler sur la vidéo"), hint: t("L'audio est coupé, ou complété par du silence.") },
+  { value: "audio", label: t("Caler sur l'audio"), hint: t("La sortie dure aussi longtemps que la bande son.") },
+  { value: "loop", label: t("Boucler l'audio"), hint: t("La bande son est répétée jusqu'à la fin de la vidéo.") },
+]);
 
 /**
  * Remplace la bande son (entrée 0 = vidéo, entrée 1 = audio). La vidéo est
@@ -691,16 +692,16 @@ export function cropFilter(rect: PixelRect): string {
  * les quelques minutes par rapport au son. On transmet donc toujours la
  * fraction, et c'est aussi elle que ffprobe renverra à la relecture.
  */
-export const FRAME_RATE_PRESETS: { value: string; label: string; hint?: string }[] = [
-  { value: "24000/1001", label: "23,976", hint: "Cinéma transféré en NTSC" },
-  { value: "24/1", label: "24", hint: "Cinéma" },
-  { value: "25/1", label: "25", hint: "PAL / Europe" },
+export const FRAME_RATE_PRESETS: { value: string; label: string; hint?: string }[] = localized(() => [
+  { value: "24000/1001", label: "23,976", hint: t("Cinéma transféré en NTSC") },
+  { value: "24/1", label: "24", hint: t("Cinéma") },
+  { value: "25/1", label: "25", hint: t("PAL / Europe") },
   { value: "30000/1001", label: "29,97", hint: "NTSC" },
   { value: "30/1", label: "30" },
   { value: "50/1", label: "50" },
   { value: "60000/1001", label: "59,94" },
   { value: "60/1", label: "60" },
-];
+]);
 
 /** `30000/1001` → 29.97. Renvoie `undefined` si la fraction est invalide. */
 export function frameRateValue(fraction: string): number | undefined {

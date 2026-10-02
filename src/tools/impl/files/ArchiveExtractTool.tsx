@@ -17,6 +17,7 @@ import { openFolder } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t } from "@/i18n";
 
 /**
  * Extraction d'archives ZIP, 7z, TAR, TAR.GZ et TAR.XZ.
@@ -67,11 +68,11 @@ export function ArchiveExtractTool({ tool }: ToolComponentProps) {
           setPaths(next.slice(-1));
           setDestination("");
         },
-        label: "Choisissez l'archive à extraire",
-        filters: [{ name: "Archives", extensions: ["zip", "7z", "tar", "gz", "tgz", "xz", "txz"] }],
-        hint: "ZIP, 7z, TAR, TAR.GZ et TAR.XZ",
+        label: t("Choisissez l'archive à extraire"),
+        filters: [{ name: t("Archives"), extensions: ["zip", "7z", "tar", "gz", "tgz", "xz", "txz"] }],
+        hint: t("ZIP, 7z, TAR, TAR.GZ et TAR.XZ"),
       }}
-      actionLabel="Extraire l'archive"
+      actionLabel={t("Extraire l'archive")}
       actionIcon="PackageOpen"
       actionDisabled={target.length === 0 || listing === null}
       run={(context) => extractArchive(paths[0], target, overwrite, context)}
@@ -80,12 +81,12 @@ export function ArchiveExtractTool({ tool }: ToolComponentProps) {
         <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklch,var(--ft-ok)_45%,var(--ft-border))] bg-[color-mix(in_oklch,var(--ft-ok)_6%,transparent)] p-4">
           <p className="flex items-center gap-2 text-sm font-medium">
             <Icon name="CircleCheck" size={17} className="text-[var(--ft-ok)]" />
-            {summary.extracted} fichier(s) extrait(s) — {formatFileSize(summary.bytes)}
+            {t("{extracted} fichier(s) extrait(s) — {size}", { extracted: summary.extracted, size: formatFileSize(summary.bytes) })}
           </p>
           <p className="mt-1 break-all text-xs text-[var(--ft-text-muted)]">{summary.destination}</p>
           {summary.skipped.length > 0 && (
             <div className="mt-2 rounded-md border border-[var(--ft-warn)] px-2.5 py-2 text-xs text-[var(--ft-warn)]">
-              <p className="font-medium">{summary.skipped.length} entrée(s) refusée(s) par sécurité</p>
+              <p className="font-medium">{t("{count} entrée(s) refusée(s) par sécurité", { count: summary.skipped.length })}</p>
               <ul className="mt-1 max-h-32 overflow-y-auto font-mono">
                 {summary.skipped.map((entry) => (
                   <li key={entry} className="truncate">
@@ -97,7 +98,7 @@ export function ArchiveExtractTool({ tool }: ToolComponentProps) {
           )}
           <div className="mt-3">
             <Button size="sm" onClick={() => openFolder(summary.destination)}>
-              <Icon name="FolderTree" size={14} /> Ouvrir le dossier
+              <Icon name="FolderTree" size={14} />{" "}{t("Ouvrir le dossier")}
             </Button>
           </div>
         </div>
@@ -112,27 +113,23 @@ export function ArchiveExtractTool({ tool }: ToolComponentProps) {
       {listing && (
         <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-3 text-sm">
           <p className="tabular-nums">
-            Archive {listing.format.toUpperCase()} · <strong>{listing.files}</strong> fichier(s) ·{" "}
-            {formatFileSize(listing.archiveSize)} compressés →{" "}
-            <strong>{formatFileSize(listing.totalSize)}</strong> décompressés
+            <Trans source={"Archive {value} · <0>{files}</0> fichier(s) · {size} compressés → <1>{size2}</1> décompressés"} values={{ value: listing.format.toUpperCase(), files: listing.files, size: formatFileSize(listing.archiveSize), size2: formatFileSize(listing.totalSize) }} components={[<strong />, <strong />]} />
           </p>
           {listing.suspicious && (
             <p className="mt-1.5 flex items-start gap-1.5 text-xs text-[var(--ft-warn)]">
               <Icon name="TriangleAlert" size={13} className="mt-px shrink-0" />
-              Rapport de compression inhabituel : cette archive occupera beaucoup plus de place une
-              fois extraite. Vérifiez que c'est attendu avant de continuer.
+              {t("Rapport de compression inhabituel : cette archive occupera beaucoup plus de place une fois extraite. Vérifiez que c'est attendu avant de continuer.")}
             </p>
           )}
           {listing.rejected > 0 && (
             <p className="mt-1.5 flex items-start gap-1.5 text-xs text-[var(--ft-danger)]">
               <Icon name="ShieldCheck" size={13} className="mt-px shrink-0" />
-              {listing.rejected} entrée(s) seront ignorées : leur chemin sortirait du dossier de
-              destination (remontée « .. », chemin absolu ou lien symbolique).
+              {t("{rejected} entrée(s) seront ignorées : leur chemin sortirait du dossier de destination (remontée « .. », chemin absolu ou lien symbolique).", { rejected: listing.rejected })}
             </p>
           )}
           <details className="mt-2">
             <summary className="cursor-pointer text-xs text-[var(--ft-text-muted)]">
-              Voir le contenu ({listing.entries.length} entrée(s))
+              {t("Voir le contenu ({count} entrée(s))", { count: listing.entries.length })}
             </summary>
             <ul className="mt-1.5 max-h-56 overflow-y-auto font-mono text-[11px]">
               {listing.entries.slice(0, 500).map((entry) => (
@@ -146,7 +143,7 @@ export function ArchiveExtractTool({ tool }: ToolComponentProps) {
                       {formatFileSize(entry.size)}
                     </span>
                   )}
-                  {entry.rejected && <span className="shrink-0">refusé</span>}
+                  {entry.rejected && <span className="shrink-0">{t("refusé")}</span>}
                 </li>
               ))}
             </ul>
@@ -155,7 +152,7 @@ export function ArchiveExtractTool({ tool }: ToolComponentProps) {
       )}
 
       <Fieldset columns={2}>
-        <Field label="Dossier de destination">
+        <Field label={t("Dossier de destination")}>
           <div className="flex items-center gap-2">
             <span className="min-w-0 flex-1 truncate rounded-md border border-[var(--ft-border)] bg-[var(--ft-bg)] px-2.5 py-2 text-xs">
               {target || "—"}
@@ -163,27 +160,27 @@ export function ArchiveExtractTool({ tool }: ToolComponentProps) {
             <Button
               size="sm"
               onClick={async () => {
-                const chosen = await pickDirectory("Dossier de destination");
+                const chosen = await pickDirectory(t("Dossier de destination"));
                 if (chosen) setDestination(chosen);
-                else notify.info("Destination inchangée");
+                else notify.info(t("Destination inchangée"));
               }}
             >
-              Choisir…
+              {t("Choisir…")}
             </Button>
           </div>
         </Field>
-        <Field label="Options" full>
+        <Field label={t("Options")} full>
           <div className="grid gap-0.5 sm:grid-cols-2">
             <CheckOption
               checked={subfolder}
               onChange={setSubfolder}
-              label="Créer un sous-dossier au nom de l'archive"
+              label={t("Créer un sous-dossier au nom de l'archive")}
             />
             <CheckOption
               checked={overwrite}
               onChange={setOverwrite}
-              label="Écraser les fichiers existants"
-              hint="Sinon, ils sont écrits à côté sous un nom libre"
+              label={t("Écraser les fichiers existants")}
+              hint={t("Sinon, ils sont écrits à côté sous un nom libre")}
             />
           </div>
         </Field>

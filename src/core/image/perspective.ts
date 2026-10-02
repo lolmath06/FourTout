@@ -1,5 +1,6 @@
 import { getRasterBackend, type RasterCanvas, type RasterPixels } from "@/core/pdf/raster/types";
 import { ImageError } from "./errors";
+import { localized, t } from "@/i18n";
 
 /**
  * Correction de perspective d'un document photographié.
@@ -208,13 +209,13 @@ export const ASPECT_RATIOS: Record<Exclude<PerspectiveAspect, "auto">, number> =
   square: 1,
 };
 
-export const ASPECT_LABELS: Record<PerspectiveAspect, string> = {
-  auto: "Déduites des coins",
+export const ASPECT_LABELS: Record<PerspectiveAspect, string> = localized(() => ({
+  auto: t("Déduites des coins"),
   "a4-portrait": "A4 portrait",
   "a4-landscape": "A4 paysage",
-  "letter-portrait": "Lettre portrait",
-  square: "Carré",
-};
+  "letter-portrait": t("Lettre portrait"),
+  square: t("Carré"),
+}));
 
 export interface PerspectiveOptions {
   /** Les quatre coins, en pixels de l'image source. */
@@ -323,7 +324,7 @@ export function correctPerspective(
   if (!isUsableQuad(options.quad)) {
     throw new ImageError(
       "invalid-crop",
-      "Les quatre coins doivent former un quadrilatère non croisé.",
+      t("Les quatre coins doivent former un quadrilatère non croisé."),
     );
   }
 
@@ -338,7 +339,7 @@ export function correctPerspective(
   ];
   const homography = computeHomography(destination, quadPoints(options.quad));
   if (!homography) {
-    throw new ImageError("invalid-crop", "Les quatre coins sont alignés ou confondus.");
+    throw new ImageError("invalid-crop", t("Les quatre coins sont alignés ou confondus."));
   }
 
   const pixels = source.getPixels();

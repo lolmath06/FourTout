@@ -1,4 +1,5 @@
 import { parseFrameRate, readProbeJson } from "./types";
+import { t } from "@/i18n";
 
 /**
  * Fiche d'identité détaillée d'un fichier média.
@@ -297,7 +298,7 @@ export function describeChannels(channels: number | undefined, layout: string | 
   if (layout) return channels ? `${layout} (${channels})` : layout;
   if (channels === undefined) return "inconnu";
   if (channels === 1) return "mono (1)";
-  if (channels === 2) return "stéréo (2)";
+  if (channels === 2) return t("stéréo (2)");
   return `${channels} canaux`;
 }
 

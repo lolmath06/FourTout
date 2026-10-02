@@ -1,4 +1,5 @@
 import { PdfError } from "./errors";
+import { t as tI18n } from "@/i18n";
 
 /**
  * Analyse des sélections de pages, en numérotation humaine (la page 1 est la
@@ -52,10 +53,12 @@ export function parsePageRange(input: string, pageCount: number): ParsedRange {
 
   if (outOfRange.size > 0) {
     const list = [...outOfRange].sort((a, b) => a - b).join(", ");
-    const plural = outOfRange.size > 1 ? "s" : "";
     throw new PdfError(
       "page-out-of-range",
-      `Ce document a ${pageCount} page${pageCount > 1 ? "s" : ""} ; page${plural} demandée${plural} : ${list}.`,
+      tI18n(
+        "Ce document a {pageCount} {pageCount, plural, one {page} other {pages}} ; {requested, plural, one {page demandée} other {pages demandées}} : {list}.",
+        { pageCount, requested: outOfRange.size, list },
+      ),
     );
   }
   if (ordered.length === 0) throw new PdfError("no-pages-selected");
@@ -81,7 +84,7 @@ function parseToken(token: string, pageCount: number): number[] {
 
   if (/^\d+$/.test(token)) return [Number(token)];
 
-  throw new PdfError("invalid-range", `« ${token} » n'est pas une page ni une plage valide.`);
+  throw new PdfError("invalid-range", tI18n("« {token} » n'est pas une page ni une plage valide.", { token }));
 }
 
 function sequence(from: number, to: number): number[] {

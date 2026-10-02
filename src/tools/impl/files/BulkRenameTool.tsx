@@ -16,6 +16,7 @@ import {
 import { notify } from "@/features/notifications/store";
 import { useHandoffPaths } from "@/features/handoff/usePathHandoff";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t, tx } from "@/i18n";
 
 /**
  * Renommage par lot, et nettoyage des noms de fichiers.
@@ -45,7 +46,7 @@ export function BulkRenameTool({ tool }: ToolComponentProps) {
     try {
       setPlan(await renamePlan(paths, rules));
     } catch (error) {
-      notify.error("Aperçu impossible", error instanceof Error ? error.message : undefined);
+      notify.error(t("Aperçu impossible"), error instanceof Error ? error.message : undefined);
     }
   }, [paths, rules]);
 
@@ -62,14 +63,14 @@ export function BulkRenameTool({ tool }: ToolComponentProps) {
     try {
       const outcome = await renameApply(paths, rules);
       notify.success(
-        `${outcome.renamed} fichier(s) renommé(s)`,
+        t("{renamed} fichier(s) renommé(s)", { renamed: outcome.renamed }),
         outcome.errors.length > 0 ? outcome.errors[0] : undefined,
       );
       // Les chemins ont changé : on repart d'une sélection propre.
       setPaths([]);
       setPlan(null);
     } catch (error) {
-      notify.error("Renommage impossible", error instanceof Error ? error.message : undefined);
+      notify.error(t("Renommage impossible"), error instanceof Error ? error.message : undefined);
     } finally {
       setBusy(false);
     }
@@ -79,9 +80,9 @@ export function BulkRenameTool({ tool }: ToolComponentProps) {
     return (
       <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-4 text-sm text-[var(--ft-text-muted)]">
         <p className="flex items-center gap-2 font-medium text-[var(--ft-text)]">
-          <Icon name="Info" size={16} /> Application installée requise
+          <Icon name="Info" size={16} />{" "}{t("Application installée requise")}
         </p>
-        <p className="mt-1.5">{NATIVE_REQUIRED}</p>
+        <p className="mt-1.5">{tx(NATIVE_REQUIRED)}</p>
       </div>
     );
   }
@@ -93,92 +94,92 @@ export function BulkRenameTool({ tool }: ToolComponentProps) {
         paths={paths}
         onChange={setPaths}
         multiple
-        label="Choisissez les fichiers à renommer"
-        hint="L'ordre de la liste détermine la numérotation."
+        label={t("Choisissez les fichiers à renommer")}
+        hint={t("L'ordre de la liste détermine la numérotation.")}
         disabled={busy}
       />
 
       {paths.length > 0 && (
         <>
           <Fieldset columns={3}>
-            <Field label="Préfixe">
+            <Field label={t("Préfixe")}>
               <TextInput
                 value={rules.prefix}
                 onChange={(event) => set("prefix", event.target.value)}
-                placeholder="vacances-"
-                aria-label="Préfixe"
+                placeholder={t("vacances-")}
+                aria-label={t("Préfixe")}
               />
             </Field>
-            <Field label="Suffixe">
+            <Field label={t("Suffixe")}>
               <TextInput
                 value={rules.suffix}
                 onChange={(event) => set("suffix", event.target.value)}
-                placeholder="-final"
-                aria-label="Suffixe"
+                placeholder={t("-final")}
+                aria-label={t("Suffixe")}
               />
             </Field>
-            <Field label="Casse du nom">
+            <Field label={t("Casse du nom")}>
               <OptionGroup
-                ariaLabel="Casse du nom"
+                ariaLabel={t("Casse du nom")}
                 value={rules.caseRule}
                 onChange={(value: CaseRule) => set("caseRule", value)}
                 options={[
-                  { value: "keep", label: "Inchangée" },
+                  { value: "keep", label: t("Inchangée") },
                   { value: "lower", label: "minuscules" },
                   { value: "upper", label: "MAJUSCULES" },
-                  { value: "title", label: "Initiales" },
+                  { value: "title", label: t("Initiales") },
                 ]}
               />
             </Field>
 
-            <Field label="Remplacer">
+            <Field label={t("Remplacer")}>
               <TextInput
                 value={rules.find}
                 onChange={(event) => set("find", event.target.value)}
                 placeholder="IMG_"
-                aria-label="Texte à remplacer"
+                aria-label={t("Texte à remplacer")}
               />
             </Field>
-            <Field label="Par">
+            <Field label={t("Par")}>
               <TextInput
                 value={rules.replace}
                 onChange={(event) => set("replace", event.target.value)}
                 placeholder="photo"
-                aria-label="Texte de remplacement"
+                aria-label={t("Texte de remplacement")}
               />
             </Field>
-            <Field label="Numérotation">
+            <Field label={t("Numérotation")}>
               <CheckOption
                 checked={rules.numbering}
                 onChange={(value) => set("numbering", value)}
-                label="Ajouter un numéro"
+                label={t("Ajouter un numéro")}
               />
             </Field>
 
-            <Field label="Retirer au début" hint="Nombre de caractères">
+            <Field label={t("Retirer au début")} hint={t("Nombre de caractères")}>
               <NumberInput
                 min={0}
                 value={rules.trimStart}
                 onChange={(event) => set("trimStart", Math.max(0, Number(event.target.value) || 0))}
-                aria-label="Caractères à retirer au début"
+                aria-label={t("Caractères à retirer au début")}
               />
             </Field>
-            <Field label="Retirer à la fin" hint="Nombre de caractères">
+            <Field label={t("Retirer à la fin")} hint={t("Nombre de caractères")}>
               <NumberInput
                 min={0}
                 value={rules.trimEnd}
                 onChange={(event) => set("trimEnd", Math.max(0, Number(event.target.value) || 0))}
-                aria-label="Caractères à retirer à la fin"
+                aria-label={t("Caractères à retirer à la fin")}
               />
             </Field>
             {rules.numbering && (
-              <Field label="Premier numéro / chiffres">
+              <Field label={t("Premier numéro / chiffres")}>
                 <div className="flex gap-2">
                   <NumberInput
                     min={0}
                     value={rules.numberStart}
                     onChange={(event) => set("numberStart", Math.max(0, Number(event.target.value) || 0))}
-                    aria-label="Premier numéro"
+                    aria-label={t("Premier numéro")}
                   />
                   <NumberInput
                     min={1}
@@ -187,30 +188,30 @@ export function BulkRenameTool({ tool }: ToolComponentProps) {
                     onChange={(event) =>
                       set("numberPadding", Math.min(8, Math.max(1, Number(event.target.value) || 1)))
                     }
-                    aria-label="Nombre de chiffres"
+                    aria-label={t("Nombre de chiffres")}
                   />
                 </div>
               </Field>
             )}
 
-            <Field label="Options" full>
+            <Field label={t("Options")} full>
               <div className="grid gap-0.5 sm:grid-cols-3">
                 <CheckOption
                   checked={rules.sanitize}
                   onChange={(value) => set("sanitize", value)}
-                  label="Nettoyer les noms"
-                  hint="Accents, espaces et caractères spéciaux"
+                  label={t("Nettoyer les noms")}
+                  hint={t("Accents, espaces et caractères spéciaux")}
                 />
                 <CheckOption
                   checked={rules.lowercaseExtension}
                   onChange={(value) => set("lowercaseExtension", value)}
-                  label="Extension en minuscules"
+                  label={t("Extension en minuscules")}
                 />
                 {rules.numbering && (
                   <CheckOption
                     checked={rules.numberPosition === "prefix"}
                     onChange={(value) => set("numberPosition", value ? "prefix" : "suffix")}
-                    label="Numéro au début du nom"
+                    label={t("Numéro au début du nom")}
                   />
                 )}
               </div>
@@ -221,12 +222,12 @@ export function BulkRenameTool({ tool }: ToolComponentProps) {
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-3 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-sm">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <Icon name="Eye" size={15} /> Aperçu
+                  <Icon name="Eye" size={15} />{" "}{t("Aperçu")}
                 </span>
-                <span className="tabular-nums">{plan.changed} renommage(s)</span>
+                <Trans source={"<0>{changed} renommage(s)</0>"} values={{ changed: plan.changed }} components={[<span className="tabular-nums" />]} />
                 {plan.problems > 0 && (
                   <span className="flex items-center gap-1.5 tabular-nums text-[var(--ft-danger)]">
-                    <Icon name="CircleAlert" size={14} /> {plan.problems} conflit(s)
+                    <Icon name="CircleAlert" size={14} />{" "}{t("{problems} conflit(s)", { problems: plan.problems })}
                   </span>
                 )}
                 <div className="flex-1" />
@@ -236,7 +237,7 @@ export function BulkRenameTool({ tool }: ToolComponentProps) {
                   onClick={apply}
                   disabled={busy || plan.problems > 0 || plan.changed === 0}
                 >
-                  <Icon name="PenLine" size={14} /> Appliquer le renommage
+                  <Icon name="PenLine" size={14} />{" "}{t("Appliquer le renommage")}
                 </Button>
               </div>
 
@@ -244,8 +245,8 @@ export function BulkRenameTool({ tool }: ToolComponentProps) {
                 <table className="w-full border-collapse text-xs" data-testid="rename-preview">
                   <thead>
                     <tr className="border-b border-[var(--ft-border)] text-left text-[var(--ft-text-muted)]">
-                      <th className="px-3 py-1.5 font-medium">Nom actuel</th>
-                      <th className="px-3 py-1.5 font-medium">Nouveau nom</th>
+                      <th className="px-3 py-1.5 font-medium">{t("Nom actuel")}</th>
+                      <th className="px-3 py-1.5 font-medium">{t("Nouveau nom")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -264,12 +265,12 @@ export function BulkRenameTool({ tool }: ToolComponentProps) {
                         <td className="px-3 py-1 font-mono">
                           {entry.problem ? (
                             <span className="text-[var(--ft-danger)]">
-                              {entry.to} — {entry.problem}
+                              {entry.to} — {tx(entry.problem)}
                             </span>
                           ) : entry.changed ? (
                             entry.to
                           ) : (
-                            <span className="text-[var(--ft-text-faint)]">inchangé</span>
+                            <span className="text-[var(--ft-text-faint)]">{t("inchangé")}</span>
                           )}
                         </td>
                       </tr>
@@ -280,8 +281,7 @@ export function BulkRenameTool({ tool }: ToolComponentProps) {
 
               <p className="flex items-start gap-2 text-xs text-[var(--ft-text-muted)]">
                 <Icon name="ShieldCheck" size={13} className="mt-px shrink-0" />
-                Aucun fichier n'est écrasé : les conflits bloquent le renommage tant qu'ils ne sont
-                pas résolus, et l'application se fait en deux temps pour permettre les permutations.
+                {t("Aucun fichier n'est écrasé : les conflits bloquent le renommage tant qu'ils ne sont pas résolus, et l'application se fait en deux temps pour permettre les permutations.")}
               </p>
             </div>
           )}

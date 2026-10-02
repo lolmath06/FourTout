@@ -8,6 +8,7 @@ import { TAG_FIELDS, writeTags, type AudioTags } from "@/core/media/operations/a
 import { AUDIO_MIME } from "@/core/media/types";
 import type { SelectedFile } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Lire et corriger les étiquettes d'un fichier audio.
@@ -29,8 +30,8 @@ export function AudioMetadataTool({ tool }: ToolComponentProps) {
   return (
     <MediaToolShell
       tool={tool}
-      actionLabel="Enregistrer les étiquettes"
-      hint="Le son n'est pas réencodé : seules les étiquettes changent."
+      actionLabel={t("Enregistrer les étiquettes")}
+      hint={t("Le son n'est pas réencodé : seules les étiquettes changent.")}
       run={async ({ files, context }) => {
         const extension = (files[0].extension || "mp3").toLowerCase();
         const file = await runMedia(
@@ -38,14 +39,14 @@ export function AudioMetadataTool({ tool }: ToolComponentProps) {
             files: [files[0]],
             operation: writeTags(tags, extension, AUDIO_MIME[extension] ?? "application/octet-stream"),
             outputName: files[0].name,
-            label: "Écriture des étiquettes…",
+            label: t("Écriture des étiquettes…"),
           },
           context,
         );
         const written = TAG_FIELDS.filter(({ key }) => tags[key] !== undefined).length;
         return {
           files: [file],
-          summary: `${written} étiquette${written > 1 ? "s" : ""} écrite${written > 1 ? "s" : ""}, sans réencodage du son.`,
+          summary: t("{written} {written, plural, one {étiquette} other {étiquettes}} {written, plural, one {écrite} other {écrites}}, sans réencodage du son.", { written }),
         };
       }}
     >
@@ -111,24 +112,23 @@ function TagEditor({
   return (
     <div className="space-y-3">
       {error && (
-        <Callout tone="error" title="Étiquettes illisibles">
-          {error}
+        <Callout tone="error" title={t("Étiquettes illisibles")}>
+          {tx(error)}
         </Callout>
       )}
 
       {details?.hasCoverArt && (
-        <Callout tone="info" title="Pochette embarquée">
-          Ce fichier porte une image de couverture. Elle est conservée telle quelle : cet outil ne
-          touche qu'aux étiquettes textuelles.
+        <Callout tone="info" title={t("Pochette embarquée")}>
+          {t("Ce fichier porte une image de couverture. Elle est conservée telle quelle : cet outil ne touche qu'aux étiquettes textuelles.")}
         </Callout>
       )}
 
       <Fieldset columns={2}>
         {TAG_FIELDS.map(({ key, label, placeholder }) => (
-          <Field key={key} label={label} full={key === "comment"}>
+          <Field key={key} label={tx(label)} full={key === "comment"}>
             <TextInput
               value={tags[key] ?? ""}
-              placeholder={placeholder}
+              placeholder={tx(placeholder)}
               onChange={(event) => setTag(key, event.target.value)}
             />
           </Field>
@@ -136,8 +136,7 @@ function TagEditor({
       </Fieldset>
 
       <p className="text-xs text-[var(--ft-text-muted)]">
-        Un champ vidé est effacé du fichier produit. Pour consulter tout ce que le fichier déclare
-        (codec, débit, disposition des canaux), passez par « Inspecter un média ».
+        {t("Un champ vidé est effacé du fichier produit. Pour consulter tout ce que le fichier déclare (codec, débit, disposition des canaux), passez par « Inspecter un média ».")}
       </p>
     </div>
   );

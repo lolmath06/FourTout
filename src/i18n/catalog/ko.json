@@ -1,0 +1,3749 @@
+{
+  "categories": {
+    "pdf": {
+      "name": "PDF",
+      "description": "PDF 병합, 분할, 압축, 변환, 보호.",
+      "keywords": [
+        "pdf",
+        "문서",
+        "acrobat"
+      ]
+    },
+    "images": {
+      "name": "이미지",
+      "description": "이미지 변환, 압축, 크기 조정, 정리.",
+      "keywords": [
+        "이미지",
+        "사진",
+        "그림",
+        "png",
+        "jpg",
+        "jpeg",
+        "webp"
+      ]
+    },
+    "audio": {
+      "name": "오디오",
+      "description": "소리 변환, 자르기, 정규화, 받아쓰기, 합성.",
+      "keywords": [
+        "오디오",
+        "소리",
+        "음성",
+        "음악",
+        "mp3"
+      ]
+    },
+    "video": {
+      "name": "동영상",
+      "description": "동영상 변환, 압축, 자르기, 자막 넣기.",
+      "keywords": [
+        "동영상",
+        "비디오",
+        "영상",
+        "mp4",
+        "클립"
+      ]
+    },
+    "text": {
+      "name": "텍스트 및 문서",
+      "description": "텍스트 분석, 정리, 비교, 변환.",
+      "keywords": [
+        "텍스트",
+        "문서",
+        "글",
+        "markdown",
+        "단어"
+      ]
+    },
+    "files": {
+      "name": "파일 및 압축 파일",
+      "description": "파일 압축, 압축 풀기, 비교, 이름 바꾸기, 정리.",
+      "keywords": [
+        "파일",
+        "압축 파일",
+        "아카이브",
+        "zip",
+        "폴더"
+      ]
+    },
+    "converters": {
+      "name": "변환기",
+      "description": "파일 종류와 상관없이 한 형식에서 다른 형식으로.",
+      "keywords": [
+        "변환",
+        "변환기",
+        "컨버터",
+        "형식",
+        "포맷"
+      ]
+    },
+    "developer": {
+      "name": "개발자",
+      "description": "기술 형식 정렬, 인코딩, 생성, 검사.",
+      "keywords": [
+        "dev",
+        "개발자",
+        "개발",
+        "json",
+        "코드",
+        "프로그래밍"
+      ]
+    },
+    "calculators": {
+      "name": "계산기",
+      "description": "단위, 퍼센트, 날짜, 기간, 일상 계산.",
+      "keywords": [
+        "계산",
+        "계산기",
+        "단위",
+        "환산",
+        "측정",
+        "수학"
+      ]
+    },
+    "network": {
+      "name": "네트워크",
+      "description": "연결을 진단하고, 포트를 테스트하고, 집에 무엇이 연결되어 있는지 확인합니다.",
+      "keywords": [
+        "네트워크",
+        "lan",
+        "ip",
+        "ping",
+        "핑",
+        "포트",
+        "연결",
+        "wifi",
+        "와이파이"
+      ]
+    },
+    "diagnostics": {
+      "name": "진단 및 복구",
+      "description": "손상된 파일의 어디가 망가졌는지 파악하고 살릴 수 있는 것을 살립니다.",
+      "keywords": [
+        "진단",
+        "손상",
+        "깨진",
+        "고장",
+        "복구",
+        "살리기",
+        "디스크",
+        "파티션",
+        "smart"
+      ]
+    },
+    "security": {
+      "name": "보안 및 개인정보",
+      "description": "비밀번호, 암호화, 해시, 데이터 삭제.",
+      "keywords": [
+        "보안",
+        "개인정보",
+        "암호화",
+        "비밀번호",
+        "해시"
+      ]
+    }
+  },
+  "tools": {
+    "pdf-merge": {
+      "name": "PDF 병합",
+      "description": "여러 PDF를 원하는 순서대로 하나의 문서로 합칩니다.",
+      "keywords": [
+        "병합",
+        "합치기",
+        "결합",
+        "여러 pdf",
+        "하나의 pdf",
+        "pdf 두 개 합치기"
+      ],
+      "aliases": [
+        "merge pdf",
+        "combine pdf",
+        "pdf 합치기"
+      ]
+    },
+    "pdf-split": {
+      "name": "PDF 분할",
+      "description": "페이지 범위에 따라 PDF를 여러 파일로 나눕니다.",
+      "keywords": [
+        "분할",
+        "나누기",
+        "자르기",
+        "쪼개기",
+        "둘로 나누기"
+      ],
+      "aliases": [
+        "split pdf",
+        "pdf 나누기"
+      ]
+    },
+    "pdf-extract-pages": {
+      "name": "페이지 추출",
+      "description": "선택한 페이지로 새 PDF를 만듭니다.",
+      "keywords": [
+        "추출",
+        "선택",
+        "페이지 빼내기",
+        "일부 페이지만 남기기"
+      ],
+      "aliases": [
+        "extract pages",
+        "pdf 페이지 추출"
+      ]
+    },
+    "pdf-remove-pages": {
+      "name": "페이지 삭제",
+      "description": "PDF에서 일부 페이지를 영구적으로 삭제합니다.",
+      "keywords": [
+        "삭제",
+        "제거",
+        "페이지 삭제",
+        "한 페이지 삭제",
+        "마지막 페이지 삭제"
+      ],
+      "aliases": [
+        "delete pages",
+        "remove pages pdf"
+      ]
+    },
+    "pdf-reorder-pages": {
+      "name": "페이지 순서 변경",
+      "description": "끌어서 놓아 페이지 순서를 바꿉니다.",
+      "keywords": [
+        "순서 변경",
+        "순서",
+        "페이지 정렬",
+        "페이지 이동",
+        "뒤집기"
+      ],
+      "aliases": [
+        "reorder pages",
+        "organize pdf"
+      ]
+    },
+    "pdf-rotate": {
+      "name": "페이지 회전",
+      "description": "전체 또는 일부 페이지를 90, 180, 270도 회전합니다.",
+      "keywords": [
+        "회전",
+        "돌리기",
+        "방향",
+        "똑바로",
+        "거꾸로 된 페이지"
+      ],
+      "aliases": [
+        "rotate pdf",
+        "pdf 회전"
+      ]
+    },
+    "pdf-compress": {
+      "name": "PDF 압축",
+      "description": "읽기 좋은 품질을 유지하면서 PDF 크기를 줄입니다.",
+      "keywords": [
+        "압축",
+        "줄이기",
+        "용량 줄이기",
+        "크기 줄이기",
+        "가볍게",
+        "최적화",
+        "너무 큼",
+        "큰 파일",
+        "용량 축소"
+      ],
+      "aliases": [
+        "compress pdf",
+        "reduce pdf size",
+        "pdf 용량 줄이기",
+        "pdf 압축"
+      ]
+    },
+    "images-to-pdf": {
+      "name": "이미지를 PDF로",
+      "description": "여러 이미지를 페이지가 있는 PDF 문서로 변환합니다.",
+      "keywords": [
+        "이미지를 pdf로",
+        "사진을 pdf로",
+        "jpg를 pdf로",
+        "png를 pdf로",
+        "스캐너"
+      ],
+      "aliases": [
+        "image to pdf",
+        "jpg to pdf",
+        "png to pdf"
+      ]
+    },
+    "pdf-to-images": {
+      "name": "PDF를 이미지로",
+      "description": "PDF의 각 페이지를 원하는 해상도의 PNG 또는 JPEG로 내보냅니다.",
+      "keywords": [
+        "pdf를 이미지로",
+        "pdf를 png로",
+        "pdf를 jpg로",
+        "pdf를 jpeg로",
+        "페이지 내보내기",
+        "pdf 이미지 변환"
+      ],
+      "aliases": [
+        "pdf to image",
+        "pdf to jpg",
+        "pdf to png"
+      ]
+    },
+    "document-to-pdf": {
+      "name": "문서를 PDF로",
+      "description": "텍스트, Markdown, HTML 파일을 PDF로 변환합니다.",
+      "keywords": [
+        "텍스트를 pdf로",
+        "markdown을 pdf로",
+        "html을 pdf로",
+        "txt를 pdf로",
+        "docx를 pdf로"
+      ],
+      "aliases": [
+        "text to pdf",
+        "markdown to pdf",
+        "html to pdf"
+      ]
+    },
+    "pdf-add-text": {
+      "name": "텍스트 추가",
+      "description": "PDF에 텍스트를 써서 양식을 채우거나 메모를 남깁니다.",
+      "keywords": [
+        "쓰기",
+        "주석",
+        "채우기",
+        "양식",
+        "메모",
+        "pdf에 텍스트"
+      ],
+      "aliases": [
+        "add text to pdf",
+        "pdf 작성"
+      ]
+    },
+    "pdf-add-image": {
+      "name": "이미지나 서명 추가",
+      "description": "이미지, 도장, 서명을 원하는 위치에 넣습니다.",
+      "keywords": [
+        "서명",
+        "사인",
+        "도장",
+        "스탬프",
+        "로고",
+        "이미지 붙이기"
+      ],
+      "aliases": [
+        "sign pdf",
+        "add signature",
+        "pdf 서명"
+      ]
+    },
+    "pdf-watermark": {
+      "name": "워터마크 추가",
+      "description": "전체 또는 일부 페이지에 텍스트 워터마크를 넣습니다.",
+      "keywords": [
+        "워터마크",
+        "watermark",
+        "대외비",
+        "표시",
+        "초안"
+      ],
+      "aliases": [
+        "watermark pdf"
+      ]
+    },
+    "pdf-page-numbers": {
+      "name": "페이지 번호 넣기",
+      "description": "머리글이나 바닥글에 사용자 지정 페이지 번호를 넣습니다.",
+      "keywords": [
+        "페이지 번호",
+        "쪽 번호",
+        "번호 매기기",
+        "페이지 매김"
+      ],
+      "aliases": [
+        "page numbers",
+        "pdf 페이지 번호"
+      ]
+    },
+    "pdf-protect": {
+      "name": "비밀번호로 보호",
+      "description": "비밀번호가 있어야만 열리도록 PDF를 암호화합니다.",
+      "keywords": [
+        "보호",
+        "비밀번호",
+        "암호",
+        "암호화",
+        "잠금",
+        "pdf 비밀번호 설정",
+        "기밀 pdf"
+      ],
+      "aliases": [
+        "protect pdf",
+        "encrypt pdf",
+        "password pdf"
+      ]
+    },
+    "pdf-unlock": {
+      "name": "PDF 잠금 해제",
+      "description": "비밀번호를 알고 있는 PDF의 보호를 해제합니다.",
+      "keywords": [
+        "잠금 해제",
+        "비밀번호 제거",
+        "보호 해제",
+        "복호화"
+      ],
+      "aliases": [
+        "unlock pdf",
+        "remove pdf password",
+        "decrypt pdf"
+      ],
+      "note": "FourTout는 보호를 깨지 않습니다. 비밀번호를 알고 있어야 합니다. 비밀번호를 잊었다면 “PDF 비밀번호 복구”를 참고하세요."
+    },
+    "pdf-recover-password": {
+      "name": "PDF 비밀번호 복구",
+      "description": "비밀번호를 잊은 PDF를 다시 열기 위해 가능성 높은 비밀번호를 시도합니다.",
+      "keywords": [
+        "비밀번호 분실",
+        "비밀번호 잊음",
+        "비밀번호 복구",
+        "복구",
+        "잠긴 pdf",
+        "보호된 pdf 열기",
+        "사전"
+      ],
+      "aliases": [
+        "recover pdf password",
+        "forgot pdf password",
+        "pdf password recovery"
+      ],
+      "note": "열어 볼 권한이 있는 문서에 대해 사전과 규칙으로 로컬에서 복구합니다. 전수 검색이 아니므로 목록에 없는 비밀번호는 찾지 못합니다."
+    },
+    "pdf-metadata": {
+      "name": "PDF 메타데이터",
+      "description": "PDF의 제목, 작성자, 주제, 키워드를 읽고 수정합니다.",
+      "keywords": [
+        "메타데이터",
+        "속성",
+        "작성자",
+        "제목",
+        "문서 정보"
+      ],
+      "aliases": [
+        "pdf metadata",
+        "edit pdf properties"
+      ]
+    },
+    "pdf-extract-images": {
+      "name": "PDF에서 이미지 추출",
+      "description": "PDF에 포함된 모든 이미지를 꺼냅니다.",
+      "keywords": [
+        "이미지 추출",
+        "사진 꺼내기",
+        "이미지 저장"
+      ],
+      "aliases": [
+        "extract images from pdf"
+      ]
+    },
+    "pdf-extract-text": {
+      "name": "PDF에서 텍스트 추출",
+      "description": "PDF의 선택 가능한 텍스트를 페이지별로 가져옵니다.",
+      "keywords": [
+        "텍스트 추출",
+        "텍스트 복사",
+        "pdf를 텍스트로",
+        "내용 가져오기"
+      ],
+      "aliases": [
+        "pdf to text",
+        "extract text"
+      ]
+    },
+    "pdf-edit-text": {
+      "name": "PDF 텍스트 편집",
+      "description": "페이지에서 바로 텍스트를 고칩니다: 단어를 두 번 클릭해 바꾸세요.",
+      "keywords": [
+        "pdf 텍스트 편집",
+        "pdf 글자 수정",
+        "pdf 안 텍스트 고치기",
+        "텍스트 바꾸기",
+        "pdf 편집",
+        "오타 수정",
+        "날짜 변경",
+        "금액 변경"
+      ],
+      "aliases": [
+        "edit pdf text",
+        "modify pdf text",
+        "change text pdf",
+        "edit text in pdf"
+      ],
+      "note": "바꿔 넣기 방식의 시각적 편집: 원래 텍스트를 추출한 배경색으로 덮고 다시 그립니다. 단색 배경의 가로 텍스트(문서, 청구서, 보고서)에 가장 적합합니다. 배경이 고르지 않거나 회전된 부분은 표시만 하고 수정하지 않습니다."
+    },
+    "ocr-document": {
+      "name": "스캔한 PDF OCR",
+      "description": "스캔한 PDF의 텍스트를 페이지별로 프랑스어 또는 영어로 인식합니다.",
+      "keywords": [
+        "ocr",
+        "문자 인식",
+        "스캔",
+        "스캔본",
+        "사진을 텍스트로",
+        "스캔 읽기",
+        "선택 안 되는 pdf",
+        "이미지를 텍스트로"
+      ],
+      "aliases": [
+        "ocr",
+        "optical character recognition",
+        "image to text",
+        "scan to text"
+      ],
+      "note": "로컬 OCR 엔진(tesseract.js) 내장: 데이터를 네트워크로 보내지 않습니다. 이미지 한 장이라면 “이미지에서 텍스트 추출”을 참고하세요."
+    },
+    "pdf-compare": {
+      "name": "두 PDF 비교",
+      "description": "문서의 두 버전 사이의 차이를 강조해 보여줍니다.",
+      "keywords": [
+        "비교",
+        "차이",
+        "diff",
+        "두 버전",
+        "변경 사항"
+      ],
+      "aliases": [
+        "compare pdf",
+        "pdf diff"
+      ]
+    },
+    "pdf-redact": {
+      "name": "PDF 가리기",
+      "description": "민감한 부분을 영구적으로 가립니다: 내용을 덮는 데 그치지 않고 삭제합니다.",
+      "keywords": [
+        "가리기",
+        "검게 칠하기",
+        "비식별화",
+        "익명화",
+        "검열",
+        "민감 정보"
+      ],
+      "aliases": [
+        "redact pdf",
+        "redaction"
+      ]
+    },
+    "pdf-searchable": {
+      "name": "스캔 PDF를 검색 가능한 PDF로",
+      "description": "스캔한 PDF의 텍스트를 인식해 보이지 않는 레이어로 추가합니다. Ctrl+F, 선택, 복사가 되고 모양은 그대로입니다.",
+      "keywords": [
+        "검색 가능한 pdf",
+        "ocr pdf",
+        "pdf 스캔",
+        "스캔한 pdf",
+        "pdf 검색 가능하게",
+        "pdf 문자 인식",
+        "텍스트 레이어",
+        "선택 안 되는 pdf"
+      ],
+      "aliases": [
+        "searchable pdf",
+        "ocr pdf",
+        "make pdf searchable",
+        "scanned pdf"
+      ],
+      "note": "인식은 전부 로컬에서 이루어집니다. 원래 페이지는 래스터화하거나 다시 압축하지 않고, 보이지 않는 텍스트 레이어만 추가합니다. 결과 품질은 스캔 품질에 따라 달라집니다."
+    },
+    "pdf-extract-tables": {
+      "name": "PDF에서 표 추출",
+      "description": "텍스트 위치로 행과 열을 다시 구성해 CSV나 XLSX 통합 문서로 내보냅니다.",
+      "keywords": [
+        "pdf 표 추출",
+        "pdf 표",
+        "pdf를 엑셀로",
+        "pdf를 csv로",
+        "표 가져오기",
+        "pdf xlsx",
+        "스프레드시트",
+        "열",
+        "행"
+      ],
+      "aliases": [
+        "pdf to excel",
+        "extract tables",
+        "pdf table to csv",
+        "pdf to csv"
+      ],
+      "note": "PDF에는 표가 없고 위치가 지정된 텍스트만 있습니다. FourTout는 그 위치로 행과 열을 다시 구성합니다. 병합된 셀이나 여러 줄 텍스트가 있는 복잡한 표는 내보내기 전에 수정이 필요할 수 있습니다."
+    },
+    "scans-to-pdf": {
+      "name": "스캔본과 사진을 PDF로",
+      "description": "스캔하거나 촬영한 페이지를 정리하고 순서를 맞춰 하나의 PDF로 묶습니다.",
+      "keywords": [
+        "스캔본을 pdf로",
+        "사진을 pdf로",
+        "스캔 합치기",
+        "페이지 묶기",
+        "문서 사진 pdf",
+        "정리 후 묶기"
+      ],
+      "aliases": [
+        "scans to pdf",
+        "photos to pdf",
+        "scan to pdf"
+      ],
+      "note": "정리는 모든 페이지에 같은 설정으로 적용되며, 묶기는 “이미지를 PDF로” 엔진을 사용합니다."
+    },
+    "image-convert": {
+      "name": "이미지 변환",
+      "description": "PNG, JPG, WebP 사이에서 형식을 바꿉니다. GIF, BMP, TIFF, SVG도 읽습니다.",
+      "keywords": [
+        "변환",
+        "형식 변경",
+        "png를 jpg로",
+        "jpg를 png로",
+        "png를 webp로",
+        "jpg를 webp로",
+        "webp를 png로",
+        "webp를 jpg로",
+        "webp",
+        "svg를 png로",
+        "gif를 png로",
+        "bmp",
+        "tiff",
+        "heic",
+        "avif"
+      ],
+      "aliases": [
+        "convert image",
+        "png to jpg",
+        "jpg to png",
+        "jpg to webp",
+        "webp to png",
+        "image converter"
+      ]
+    },
+    "image-compress": {
+      "name": "이미지 압축",
+      "description": "화질 손실을 조절하면서 이미지 크기를 줄입니다.",
+      "keywords": [
+        "압축",
+        "사진 압축",
+        "용량 줄이기",
+        "가볍게",
+        "최적화",
+        "사진이 너무 큼",
+        "kb 줄이기"
+      ],
+      "aliases": [
+        "compress image",
+        "optimize image",
+        "reduce image size"
+      ]
+    },
+    "image-resize": {
+      "name": "이미지 크기 조정",
+      "description": "비율을 유지하거나 유지하지 않고 픽셀 또는 퍼센트로 크기를 바꿉니다.",
+      "keywords": [
+        "크기 조정",
+        "리사이즈",
+        "사진 크기",
+        "확대",
+        "축소",
+        "픽셀",
+        "너비",
+        "높이",
+        "1920",
+        "1080"
+      ],
+      "aliases": [
+        "resize image",
+        "scale image"
+      ]
+    },
+    "image-crop": {
+      "name": "이미지 자르기",
+      "description": "자유롭게 또는 비율(1:1, 4:3, 16:9, 3:2)에 맞춰 이미지를 자릅니다.",
+      "keywords": [
+        "자르기",
+        "크롭",
+        "사진 자르기",
+        "프레이밍",
+        "비율",
+        "정사각형",
+        "crop"
+      ],
+      "aliases": [
+        "crop image"
+      ]
+    },
+    "image-rotate": {
+      "name": "회전 및 반전",
+      "description": "90도 단위로 회전하고 좌우를 뒤집으며, 바로 미리 볼 수 있습니다.",
+      "keywords": [
+        "회전",
+        "돌리기",
+        "똑바로",
+        "기울어진 사진",
+        "반전",
+        "좌우 반전",
+        "90도"
+      ],
+      "aliases": [
+        "rotate image",
+        "rotate and flip"
+      ]
+    },
+    "image-flip": {
+      "name": "좌우 또는 상하 반전",
+      "description": "이미지를 거울에 비친 것처럼 뒤집습니다.",
+      "keywords": [
+        "반전",
+        "미러",
+        "좌우 반전",
+        "상하 반전",
+        "flip"
+      ],
+      "aliases": [
+        "flip image",
+        "mirror image"
+      ]
+    },
+    "image-grayscale": {
+      "name": "흑백",
+      "description": "회색조로, 또는 임계값을 조절한 순수 흑백으로 변환합니다.",
+      "keywords": [
+        "흑백",
+        "회색조",
+        "그레이스케일",
+        "grayscale",
+        "단색",
+        "임계값",
+        "채도 제거"
+      ],
+      "aliases": [
+        "grayscale",
+        "black and white"
+      ]
+    },
+    "image-adjust": {
+      "name": "이미지 보정",
+      "description": "밝기, 대비, 채도, 감마를 실시간 미리 보기로 조절합니다.",
+      "keywords": [
+        "보정",
+        "밝기",
+        "대비",
+        "채도",
+        "감마",
+        "밝게",
+        "어둡게",
+        "조정"
+      ],
+      "aliases": [
+        "adjust image",
+        "brightness contrast"
+      ]
+    },
+    "image-blur": {
+      "name": "흐리게 또는 모자이크",
+      "description": "이미지 전체나 그린 영역에 흐림 또는 모자이크를 적용해 정보를 가립니다.",
+      "keywords": [
+        "흐리게",
+        "블러",
+        "모자이크",
+        "픽셀화",
+        "가리기",
+        "검열"
+      ],
+      "aliases": [
+        "blur image",
+        "pixelate"
+      ]
+    },
+    "image-remove-transparency": {
+      "name": "투명도 제거",
+      "description": "투명한 PNG나 WebP를 단색 배경(흰색, 검은색, 원하는 색)에 합칩니다.",
+      "keywords": [
+        "투명도 제거",
+        "평탄화",
+        "흰 배경",
+        "단색 배경",
+        "알파 제거",
+        "불투명"
+      ],
+      "aliases": [
+        "remove transparency",
+        "flatten image"
+      ]
+    },
+    "image-remove-background": {
+      "name": "배경 제거",
+      "description": "사진의 피사체를 자동으로 오려 내고 배경을 투명하게 만듭니다.",
+      "keywords": [
+        "배경 제거",
+        "배경 지우기",
+        "투명 배경",
+        "누끼",
+        "누끼 따기",
+        "피사체 분리",
+        "프로필 사진",
+        "투명 png"
+      ],
+      "aliases": [
+        "remove background",
+        "background remover",
+        "cutout"
+      ],
+      "note": "오려 내기 모델은 설정 → 모델에서 한 번 설치하면 이후 오프라인으로 작동하며, 이미지는 서버로 전송되지 않습니다. 선명하고 잘 분리된 주 피사체를 인식하지만, 뚜렷한 피사체가 없는 장면이나 매우 섬세한 부분에서는 틀릴 수 있습니다."
+    },
+    "image-color-transparent": {
+      "name": "특정 색을 투명하게",
+      "description": "단색(배경)을 지워 투명하게 바꿉니다.",
+      "keywords": [
+        "투명하게",
+        "오려 내기",
+        "배경 지우기",
+        "투명 색",
+        "투명 배경",
+        "크로마키"
+      ],
+      "aliases": [
+        "color to transparent",
+        "remove background color"
+      ]
+    },
+    "image-ocr": {
+      "name": "이미지에서 텍스트 추출(OCR)",
+      "description": "이미지 속 텍스트를 프랑스어 또는 영어로, 100% 로컬에서 인식합니다.",
+      "keywords": [
+        "ocr",
+        "텍스트 추출",
+        "사진에서 글자",
+        "이미지를 텍스트로",
+        "글자 읽기",
+        "문자 인식",
+        "디지털화",
+        "이미지 속 글자"
+      ],
+      "aliases": [
+        "ocr",
+        "image to text",
+        "extract text"
+      ]
+    },
+    "image-add-text": {
+      "name": "이미지에 글자 넣기",
+      "description": "이미지에 캡션, 밈, 메모 같은 텍스트를 쓰고 손으로 배치합니다.",
+      "keywords": [
+        "이미지에 글자",
+        "캡션",
+        "밈",
+        "짤",
+        "쓰기",
+        "사진에 메모"
+      ],
+      "aliases": [
+        "add text to image",
+        "meme generator"
+      ]
+    },
+    "image-metadata-read": {
+      "name": "이미지 메타데이터 보기",
+      "description": "EXIF, GPS, 카메라, 촬영 날짜를 표시합니다.",
+      "keywords": [
+        "exif",
+        "메타데이터",
+        "gps",
+        "촬영 장소",
+        "카메라",
+        "촬영 날짜"
+      ],
+      "aliases": [
+        "exif viewer",
+        "image metadata"
+      ]
+    },
+    "image-metadata-strip": {
+      "name": "이미지 메타데이터 제거",
+      "description": "사진을 공유하기 전에 EXIF와 GPS 정보를 지웁니다.",
+      "keywords": [
+        "exif 제거",
+        "exif 지우기",
+        "메타데이터 제거",
+        "사진 익명화",
+        "gps 제거",
+        "공유 전",
+        "개인정보"
+      ],
+      "aliases": [
+        "strip exif",
+        "remove metadata",
+        "anonymize image"
+      ]
+    },
+    "image-batch-convert": {
+      "name": "이미지 일괄 변환",
+      "description": "이미지 폴더 전체에 같은 변환을 적용합니다.",
+      "keywords": [
+        "일괄",
+        "한꺼번에",
+        "여러 이미지",
+        "이미지 폴더",
+        "batch",
+        "모든 사진"
+      ],
+      "aliases": [
+        "batch convert",
+        "bulk image convert"
+      ]
+    },
+    "image-watermark": {
+      "name": "이미지 워터마크",
+      "description": "로고나 텍스트 워터마크를 한 장씩 또는 일괄로 넣습니다.",
+      "keywords": [
+        "워터마크",
+        "watermark",
+        "로고",
+        "서명",
+        "사진 보호"
+      ],
+      "aliases": [
+        "watermark image"
+      ]
+    },
+    "image-favicon": {
+      "name": "파비콘 만들기",
+      "description": "이미지로 여러 크기의 파비콘과 .ico 파일을 만듭니다.",
+      "keywords": [
+        "파비콘",
+        "favicon",
+        "사이트 아이콘",
+        "ico",
+        "브라우저 탭",
+        "웹사이트 로고"
+      ],
+      "aliases": [
+        "favicon generator",
+        "ico"
+      ]
+    },
+    "image-icon-sizes": {
+      "name": "여러 크기 만들기",
+      "description": "필요한 아이콘이나 썸네일 크기를 한 번에 모두 내보냅니다.",
+      "keywords": [
+        "크기",
+        "아이콘",
+        "앱 아이콘",
+        "썸네일",
+        "thumbnails",
+        "모든 해상도"
+      ],
+      "aliases": [
+        "icon generator",
+        "app icon sizes"
+      ]
+    },
+    "color-picker": {
+      "name": "색 분석 및 변환",
+      "description": "이미지의 주요 색, 픽셀 단위 스포이트, HEX / RGB / HSL / HSV 표기, 텍스트와 배경 사이의 WCAG 대비.",
+      "keywords": [
+        "팔레트",
+        "주요 색",
+        "색",
+        "색상",
+        "hex",
+        "rgb",
+        "hsl",
+        "hsv",
+        "색 추출",
+        "색 견본",
+        "스포이트",
+        "rgb를 hex로",
+        "hex를 rgb로",
+        "색 변환",
+        "색 코드",
+        "wcag 대비",
+        "대비",
+        "접근성",
+        "명암비",
+        "가독성"
+      ],
+      "aliases": [
+        "color picker",
+        "hex to rgb",
+        "color converter",
+        "eyedropper",
+        "wcag contrast",
+        "contrast checker"
+      ]
+    },
+    "document-perspective": {
+      "name": "문서 원근 보정",
+      "description": "비스듬히 찍은 종이 사진을 바로잡습니다: 네 모서리를 지정하면 FourTout가 정면에서 본 직사각형으로 바꿉니다.",
+      "keywords": [
+        "원근 보정",
+        "문서 바로잡기",
+        "문서 사진",
+        "비스듬한 종이",
+        "기울어진 사진",
+        "네 모서리",
+        "휴대폰으로 스캔",
+        "펴기",
+        "왜곡"
+      ],
+      "aliases": [
+        "perspective correction",
+        "dewarp",
+        "document scanner",
+        "deskew photo"
+      ],
+      "note": "네 모서리는 손으로 지정하므로, 자동 감지가 틀리는 경우에도 항상 정확합니다. 모서리로 추정한 비율은 근삿값이니 정확한 결과가 필요하면 A4 또는 레터를 지정하세요."
+    },
+    "scan-clean": {
+      "name": "스캔본 정리",
+      "description": "살짝 기운 문서를 바로잡고, 대비를 높이고, 회색이나 누렇게 바랜 배경을 하얗게 만들고, 회색조나 흑백으로 바꿉니다.",
+      "keywords": [
+        "스캔 정리",
+        "스캔 문서 정리",
+        "스캔 바로잡기",
+        "기울기 보정",
+        "deskew",
+        "기운 스캔",
+        "회색 배경",
+        "누런 종이",
+        "문서 대비",
+        "읽기 힘든 스캔",
+        "스캔 개선"
+      ],
+      "aliases": [
+        "clean scan",
+        "deskew",
+        "enhance scan",
+        "document cleanup"
+      ],
+      "note": "모든 설정은 선택 사항이며 전후 비교 미리 보기로 확인할 수 있습니다. 하얗게 만드는 처리는 어두운 픽셀을 건드리지 않으므로 가는 글씨도 진하기를 유지합니다."
+    },
+    "image-compare": {
+      "name": "두 이미지 비교",
+      "description": "두 이미지 사이에서 바뀐 것을 나란히, 겹쳐서, 또는 차이로 보고 다른 픽셀 수, PSNR, SSIM으로 측정합니다.",
+      "keywords": [
+        "이미지 비교",
+        "두 이미지 비교",
+        "이미지 차이",
+        "image diff",
+        "픽셀 차이",
+        "psnr",
+        "ssim",
+        "두 사진의 차이",
+        "전후 비교",
+        "압축 품질",
+        "겹쳐 보기",
+        "틀린 그림 찾기"
+      ],
+      "aliases": [
+        "compare images",
+        "image diff",
+        "pixel diff",
+        "psnr",
+        "ssim",
+        "image comparison"
+      ],
+      "note": "크기가 다른 두 이미지는 동의 없이 크기를 바꾸지 않습니다. 리샘플링하면 파일에 없는 차이가 생기기 때문입니다."
+    },
+    "image-contact-sheet": {
+      "name": "밀착 인화지 만들기",
+      "description": "여러 이미지를 파일 이름과 함께 한 장에 격자로 배치합니다.",
+      "keywords": [
+        "밀착 인화지",
+        "콘택트 시트",
+        "contact sheet",
+        "이미지 격자",
+        "모자이크",
+        "썸네일",
+        "이미지 합치기",
+        "사진 몽타주",
+        "이미지 목록",
+        "한 페이지에 여러 이미지"
+      ],
+      "aliases": [
+        "contact sheet",
+        "photo grid",
+        "thumbnail sheet"
+      ]
+    },
+    "audio-record": {
+      "name": "마이크로 녹음",
+      "description": "마이크 소리를 녹음해 로컬에 저장합니다.",
+      "keywords": [
+        "녹음",
+        "마이크",
+        "녹음기",
+        "내 목소리 녹음",
+        "음성 메모"
+      ],
+      "aliases": [
+        "record audio",
+        "voice recorder"
+      ]
+    },
+    "audio-trim": {
+      "name": "오디오 자르기",
+      "description": "오디오 파일에서 원하는 구간만 남깁니다.",
+      "keywords": [
+        "자르기",
+        "잘라내기",
+        "구간",
+        "줄이기",
+        "일부만 남기기"
+      ],
+      "aliases": [
+        "trim audio",
+        "cut audio",
+        "split audio"
+      ]
+    },
+    "audio-merge": {
+      "name": "오디오 합치기",
+      "description": "여러 트랙을 이어 붙여 하나의 파일로 만듭니다.",
+      "keywords": [
+        "합치기",
+        "병합",
+        "이어 붙이기",
+        "트랙 합치기"
+      ],
+      "aliases": [
+        "merge audio",
+        "join audio",
+        "concat audio"
+      ]
+    },
+    "audio-convert": {
+      "name": "오디오 변환",
+      "description": "MP3, WAV, FLAC, OGG, M4A, OPUS 사이에서 형식을 바꿉니다.",
+      "keywords": [
+        "변환",
+        "형식 변경",
+        "wav를 mp3로",
+        "mp3를 wav로",
+        "flac",
+        "ogg",
+        "m4a",
+        "opus",
+        "aac"
+      ],
+      "aliases": [
+        "convert audio",
+        "wav to mp3",
+        "audio converter"
+      ]
+    },
+    "audio-compress": {
+      "name": "오디오 압축",
+      "description": "비트레이트를 조절해 오디오 파일 크기를 줄입니다.",
+      "keywords": [
+        "압축",
+        "용량 줄이기",
+        "가볍게",
+        "비트레이트",
+        "bitrate",
+        "너무 큼"
+      ],
+      "aliases": [
+        "compress audio",
+        "reduce audio size"
+      ]
+    },
+    "audio-volume": {
+      "name": "볼륨 조절",
+      "description": "오디오 파일 전체 볼륨을 높이거나 낮춥니다.",
+      "keywords": [
+        "볼륨",
+        "음량",
+        "크게",
+        "작게",
+        "증폭",
+        "소리 줄이기",
+        "너무 작음"
+      ],
+      "aliases": [
+        "change volume",
+        "amplify audio"
+      ]
+    },
+    "audio-normalize": {
+      "name": "오디오 정규화",
+      "description": "여러 파일의 소리 크기(라우드니스)를 맞춥니다.",
+      "keywords": [
+        "정규화",
+        "노멀라이즈",
+        "라우드니스",
+        "loudness",
+        "볼륨 맞추기",
+        "lufs"
+      ],
+      "aliases": [
+        "normalize audio",
+        "loudness"
+      ]
+    },
+    "audio-speed": {
+      "name": "속도 변경",
+      "description": "음높이 보정 여부를 골라 오디오를 빠르게 또는 느리게 합니다.",
+      "keywords": [
+        "속도",
+        "빠르게",
+        "느리게",
+        "템포",
+        "음높이",
+        "배속"
+      ],
+      "aliases": [
+        "audio speed",
+        "speed up audio",
+        "slow down audio"
+      ]
+    },
+    "audio-remove-silence": {
+      "name": "무음 제거",
+      "description": "녹음에서 무음 구간을 자동으로 찾아 잘라냅니다.",
+      "keywords": [
+        "무음",
+        "공백",
+        "쉬는 구간 자르기",
+        "녹음 정리",
+        "팟캐스트"
+      ],
+      "aliases": [
+        "remove silence",
+        "trim silence"
+      ]
+    },
+    "video-extract-audio": {
+      "name": "동영상에서 오디오 추출",
+      "description": "동영상의 사운드트랙을 원하는 형식으로 꺼냅니다.",
+      "keywords": [
+        "오디오 추출",
+        "사운드트랙",
+        "동영상을 mp3로",
+        "mp4를 mp3로",
+        "소리 꺼내기",
+        "영상 소리"
+      ],
+      "aliases": [
+        "extract audio",
+        "video to mp3",
+        "mp4 to mp3"
+      ]
+    },
+    "audio-transcribe": {
+      "name": "오디오 받아쓰기",
+      "description": "오디오나 동영상 파일의 말소리를 로컬에서 텍스트로 바꿉니다.",
+      "keywords": [
+        "받아쓰기",
+        "전사",
+        "음성을 텍스트로",
+        "음성 인식",
+        "회의",
+        "인터뷰",
+        "구술",
+        "자막",
+        "mp3 받아쓰기",
+        "동영상 받아쓰기"
+      ],
+      "aliases": [
+        "transcribe",
+        "speech to text",
+        "audio to text",
+        "stt"
+      ],
+      "note": "컴퓨터에서 실행되는 음성 인식 모델로, 필요할 때 설치됩니다."
+    },
+    "audio-generate-srt": {
+      "name": "SRT 자막 생성",
+      "description": "오디오나 동영상으로 타임스탬프가 있는 자막 파일을 만듭니다.",
+      "keywords": [
+        "srt",
+        "자막",
+        "vtt",
+        "타임스탬프",
+        "캡션",
+        "자막 만들기"
+      ],
+      "aliases": [
+        "generate subtitles",
+        "srt generator"
+      ]
+    },
+    "text-to-speech": {
+      "name": "텍스트 음성 변환",
+      "description": "온라인 서비스 없이 텍스트를 소리 내어 읽고 오디오 파일로 저장합니다.",
+      "keywords": [
+        "음성 합성",
+        "tts",
+        "소리 내어 읽기",
+        "텍스트를 오디오로",
+        "합성 음성",
+        "텍스트 듣기",
+        "내 글로 mp3 만들기"
+      ],
+      "aliases": [
+        "text to speech",
+        "tts",
+        "음성 변환"
+      ]
+    },
+    "pdf-to-audio": {
+      "name": "PDF를 오디오로",
+      "description": "로컬 음성 합성으로 PDF를 오디오북으로 만듭니다.",
+      "keywords": [
+        "pdf를 오디오로",
+        "오디오북",
+        "pdf 듣기",
+        "pdf 읽어 주기",
+        "강의 듣기"
+      ],
+      "aliases": [
+        "pdf to audio",
+        "pdf to speech",
+        "audiobook"
+      ]
+    },
+    "text-file-to-audio": {
+      "name": "텍스트 파일을 오디오로",
+      "description": "TXT나 Markdown 파일을 낭독 오디오 파일로 변환합니다.",
+      "keywords": [
+        "txt를 오디오로",
+        "오디오북",
+        "낭독",
+        "텍스트 듣기",
+        "내 글로 mp3 만들기"
+      ],
+      "aliases": [
+        "txt to audio",
+        "text file to audio"
+      ]
+    },
+    "audio-channels": {
+      "name": "오디오 채널 변환",
+      "description": "파일을 모노나 스테레오로 바꾸거나 그대로 둡니다. 다채널 파일은 요청 없이 절대 다운믹스하지 않습니다.",
+      "keywords": [
+        "모노 스테레오",
+        "오디오 채널",
+        "모노",
+        "스테레오",
+        "모노로 변환",
+        "스테레오로 변환",
+        "다운믹스",
+        "채널 섞기",
+        "5.1을 스테레오로"
+      ],
+      "aliases": [
+        "audio channels",
+        "mono to stereo",
+        "stereo to mono",
+        "downmix"
+      ],
+      "note": "모노에서 스테레오로 바꾸면 채널이 복제되어 양쪽에 같은 신호가 들어갑니다. 공간감을 지어내지 않습니다."
+    },
+    "audio-metadata": {
+      "name": "오디오 태그 편집",
+      "description": "제목, 아티스트, 앨범, 연도, 장르, 트랙 번호, 코멘트를 읽고 고칩니다 — 소리는 다시 인코딩하지 않습니다.",
+      "keywords": [
+        "오디오 메타데이터",
+        "태그",
+        "mp3 태그",
+        "id3",
+        "제목 아티스트 앨범",
+        "제목 수정",
+        "연도 장르 트랙",
+        "mp3 정보 편집"
+      ],
+      "aliases": [
+        "audio metadata",
+        "id3 tags",
+        "edit tags",
+        "music tags"
+      ],
+      "note": "쓰기는 오디오 스트림을 그대로 복사(-c copy)하므로 결과 소리는 비트 단위까지 같습니다."
+    },
+    "media-info": {
+      "name": "미디어 정보 보기",
+      "description": "오디오·동영상 파일이 밝히는 모든 정보: 컨테이너, 코덱, 해상도, 프레임 속도, 비트레이트, 채널, 태그.",
+      "keywords": [
+        "동영상 메타데이터",
+        "오디오 메타데이터",
+        "미디어 정보",
+        "코덱",
+        "비트레이트",
+        "동영상 해상도",
+        "프레임 속도",
+        "fps",
+        "채널",
+        "샘플링 레이트",
+        "동영상 정보",
+        "ffprobe"
+      ],
+      "aliases": [
+        "media info",
+        "media metadata",
+        "video metadata",
+        "ffprobe",
+        "mediainfo"
+      ]
+    },
+    "video-convert": {
+      "name": "동영상 변환",
+      "description": "MP4, MKV, WebM, MOV 사이에서 형식을 바꿉니다.",
+      "keywords": [
+        "변환",
+        "형식 변경",
+        "mkv를 mp4로",
+        "avi를 mp4로",
+        "webm",
+        "mov"
+      ],
+      "aliases": [
+        "convert video",
+        "mkv to mp4",
+        "video converter"
+      ],
+      "note": "설치된 엔진에 실제로 있는 코덱만 제안합니다."
+    },
+    "video-compress": {
+      "name": "동영상 압축",
+      "description": "목표 화질을 골라 동영상 용량을 크게 줄입니다.",
+      "keywords": [
+        "압축",
+        "용량 줄이기",
+        "가볍게",
+        "너무 큼",
+        "메일로 보내기",
+        "mb 줄이기",
+        "최적화"
+      ],
+      "aliases": [
+        "compress video",
+        "reduce video size"
+      ]
+    },
+    "video-resolution": {
+      "name": "해상도 변경",
+      "description": "동영상을 1080p, 720p, 480p 또는 원하는 크기로 바꿉니다.",
+      "keywords": [
+        "해상도",
+        "1080p",
+        "720p",
+        "480p",
+        "4k",
+        "크기 조정",
+        "화질"
+      ],
+      "aliases": [
+        "resize video",
+        "change resolution",
+        "downscale video"
+      ]
+    },
+    "video-trim": {
+      "name": "동영상 자르기",
+      "description": "가능하면 다시 인코딩하지 않고 원하는 구간만 남깁니다.",
+      "keywords": [
+        "자르기",
+        "잘라내기",
+        "구간",
+        "줄이기",
+        "앞부분 삭제",
+        "뒷부분 삭제",
+        "클립"
+      ],
+      "aliases": [
+        "trim video",
+        "cut video"
+      ]
+    },
+    "video-merge": {
+      "name": "동영상 합치기",
+      "description": "여러 동영상을 이어 붙여 하나의 파일로 만듭니다.",
+      "keywords": [
+        "합치기",
+        "병합",
+        "이어 붙이기",
+        "클립 합치기"
+      ],
+      "aliases": [
+        "merge video",
+        "concat video",
+        "join video"
+      ]
+    },
+    "video-crop": {
+      "name": "동영상 화면 자르기",
+      "description": "남길 영역을 고정 비율로 직접 보면서 고릅니다.",
+      "keywords": [
+        "화면 자르기",
+        "크롭",
+        "프레이밍",
+        "가장자리 자르기",
+        "세로 영상",
+        "9:16",
+        "정사각형",
+        "검은 띠 제거"
+      ],
+      "aliases": [
+        "crop video",
+        "vertical video",
+        "reframe"
+      ]
+    },
+    "video-to-gif": {
+      "name": "동영상을 GIF로",
+      "description": "동영상 구간을 최적화된 움직이는 GIF로 만듭니다.",
+      "keywords": [
+        "gif",
+        "움짤",
+        "동영상을 gif로",
+        "애니메이션",
+        "반복",
+        "mp4를 gif로"
+      ],
+      "aliases": [
+        "video to gif",
+        "mp4 to gif",
+        "gif maker"
+      ]
+    },
+    "gif-to-video": {
+      "name": "GIF를 동영상으로",
+      "description": "움직이는 GIF를 훨씬 가벼운 MP4나 WebM으로 변환합니다.",
+      "keywords": [
+        "gif를 동영상으로",
+        "gif를 mp4로",
+        "gif 변환",
+        "애니메이션을 동영상으로",
+        "gif가 너무 큼"
+      ],
+      "aliases": [
+        "gif to video",
+        "gif to mp4",
+        "gif to webm"
+      ]
+    },
+    "video-extract-frame": {
+      "name": "동영상에서 프레임 추출",
+      "description": "특정 프레임을 캡처하거나 일정 간격으로 정지 화면을 만듭니다.",
+      "keywords": [
+        "캡처",
+        "프레임",
+        "정지 화면",
+        "동영상에서 이미지",
+        "스크린샷",
+        "썸네일"
+      ],
+      "aliases": [
+        "extract frame",
+        "video screenshot",
+        "video to image"
+      ]
+    },
+    "video-speed": {
+      "name": "동영상 속도 변경",
+      "description": "소리까지 포함해 빠르게 감기나 슬로 모션을 만듭니다.",
+      "keywords": [
+        "속도",
+        "빨리 감기",
+        "슬로 모션",
+        "타임랩스",
+        "slow motion",
+        "배속"
+      ],
+      "aliases": [
+        "video speed",
+        "timelapse",
+        "slow motion"
+      ]
+    },
+    "video-rotate": {
+      "name": "동영상 회전",
+      "description": "잘못된 방향으로 찍은 동영상을 바로잡거나 좌우를 뒤집습니다.",
+      "keywords": [
+        "회전",
+        "돌리기",
+        "거꾸로",
+        "세로로 촬영",
+        "바로잡기",
+        "반전",
+        "좌우 반전"
+      ],
+      "aliases": [
+        "rotate video",
+        "flip video",
+        "mirror video"
+      ]
+    },
+    "video-remove-audio": {
+      "name": "동영상 소리 제거",
+      "description": "화면을 다시 인코딩하지 않고 소리 없는 동영상을 만듭니다.",
+      "keywords": [
+        "소리 제거",
+        "음소거",
+        "무음",
+        "음악 제거",
+        "소리 끄기"
+      ],
+      "aliases": [
+        "remove audio",
+        "mute video"
+      ]
+    },
+    "video-replace-audio": {
+      "name": "오디오 트랙 교체",
+      "description": "동영상의 사운드트랙을 바꾸거나 트랙을 하나 더 추가합니다.",
+      "keywords": [
+        "소리 교체",
+        "음악 넣기",
+        "더빙",
+        "사운드트랙",
+        "내레이션",
+        "두 번째 오디오 트랙"
+      ],
+      "aliases": [
+        "replace audio",
+        "add audio track",
+        "dub video"
+      ],
+      "note": "동영상과 오디오 파일을 함께 놓으세요."
+    },
+    "video-volume": {
+      "name": "동영상 볼륨 조절",
+      "description": "화면은 그대로 두고 동영상 소리를 키우거나 줄입니다.",
+      "keywords": [
+        "볼륨",
+        "소리가 작음",
+        "소리가 큼",
+        "소리 키우기",
+        "소리 줄이기",
+        "증폭",
+        "볼륨 정규화"
+      ],
+      "aliases": [
+        "video volume",
+        "boost audio",
+        "louder video"
+      ]
+    },
+    "video-add-subtitles": {
+      "name": "자막 트랙 추가",
+      "description": "SRT나 VTT 파일을 동영상에 붙여 플레이어에서 켤 수 있게 합니다.",
+      "keywords": [
+        "자막",
+        "srt",
+        "vtt",
+        "자막 트랙",
+        "소프트섭",
+        "첨부"
+      ],
+      "aliases": [
+        "add subtitles",
+        "soft subtitles",
+        "mux srt"
+      ],
+      "note": "동영상과 자막 파일을 함께 놓으세요."
+    },
+    "video-burn-subtitles": {
+      "name": "자막 입히기",
+      "description": "자막을 화면에 새겨 넣어 어떤 플레이어에서나 보이게 합니다.",
+      "keywords": [
+        "자막 입히기",
+        "하드섭",
+        "자막 굽기",
+        "화면에 자막",
+        "입힌 srt",
+        "어디서나 보이는 자막"
+      ],
+      "aliases": [
+        "burn subtitles",
+        "hardcode srt",
+        "hardsub"
+      ],
+      "note": "동영상과 자막 파일을 함께 놓으세요."
+    },
+    "video-extract-subtitles": {
+      "name": "동영상에서 자막 추출",
+      "description": "이미 들어 있는 자막 트랙을 SRT나 VTT로 내보냅니다.",
+      "keywords": [
+        "자막 추출",
+        "자막 꺼내기",
+        "srt 내보내기",
+        "자막 트랙",
+        "mkv 자막"
+      ],
+      "aliases": [
+        "extract subtitles",
+        "rip subtitles",
+        "demux srt"
+      ],
+      "note": "텍스트 트랙만 내보낼 수 있습니다. 그래픽 트랙(PGS, DVD)은 이미지입니다."
+    },
+    "video-generate-subtitles": {
+      "name": "동영상 자막 생성",
+      "description": "동영상의 말소리를 자동으로 받아쓴 뒤 내보내거나 입힙니다.",
+      "keywords": [
+        "자막 생성",
+        "동영상 받아쓰기",
+        "자동 자막",
+        "자동 srt",
+        "음성 인식"
+      ],
+      "aliases": [
+        "auto subtitles",
+        "generate subtitles"
+      ],
+      "note": "이미 설치된 로컬 받아쓰기 모델을 사용합니다(네트워크로 아무것도 보내지 않음)."
+    },
+    "video-batch": {
+      "name": "동영상 일괄 처리",
+      "description": "여러 동영상을 변환, 압축, 크기 조정, 회전하거나 오디오를 추출합니다.",
+      "keywords": [
+        "일괄",
+        "한꺼번에",
+        "모든 동영상",
+        "폴더",
+        "batch"
+      ],
+      "aliases": [
+        "batch video",
+        "bulk video"
+      ]
+    },
+    "video-frame-rate": {
+      "name": "프레임 속도 변경",
+      "description": "프레임을 복제하거나 버려서 동영상을 24, 25, 30, 60fps 또는 원하는 속도로 바꿉니다.",
+      "keywords": [
+        "동영상 fps",
+        "fps 변경",
+        "프레임 속도",
+        "초당 프레임",
+        "24 fps",
+        "25 fps",
+        "30 fps",
+        "60 fps",
+        "29.97",
+        "23.976",
+        "ntsc",
+        "pal"
+      ],
+      "aliases": [
+        "frame rate",
+        "change fps",
+        "fps converter",
+        "framerate"
+      ],
+      "note": "중간 프레임은 계산하지 않고 프레임을 복제하거나 버립니다. 출력은 고정 프레임 속도입니다."
+    },
+    "text-statistics": {
+      "name": "글자 수·단어 수 세기",
+      "description": "단어, 글자, 문장, 문단 수와 예상 읽기 시간.",
+      "keywords": [
+        "세기",
+        "글자 수",
+        "단어 수",
+        "문장",
+        "읽기 시간",
+        "글 길이",
+        "통계"
+      ],
+      "aliases": [
+        "word count",
+        "character count",
+        "reading time",
+        "글자 수 세기"
+      ]
+    },
+    "text-case": {
+      "name": "대소문자 변환",
+      "description": "대문자, 소문자, 단어 첫 글자 대문자, camelCase, snake_case, kebab-case.",
+      "keywords": [
+        "대문자",
+        "소문자",
+        "대소문자",
+        "모두 대문자",
+        "camelcase",
+        "snake case",
+        "kebab case",
+        "title case"
+      ],
+      "aliases": [
+        "uppercase",
+        "lowercase",
+        "change case",
+        "text case"
+      ]
+    },
+    "text-clean": {
+      "name": "텍스트 정리",
+      "description": "불필요한 공백, 빈 줄, 탭, 보이지 않는 문자를 없앱니다.",
+      "keywords": [
+        "정리",
+        "공백",
+        "빈 줄",
+        "탭",
+        "trim",
+        "줄바꿈 제거",
+        "서식",
+        "복사한 텍스트"
+      ],
+      "aliases": [
+        "clean text",
+        "trim whitespace",
+        "remove empty lines"
+      ]
+    },
+    "text-find-replace": {
+      "name": "찾아 바꾸기",
+      "description": "정규식을 쓰거나 쓰지 않고 텍스트를 한꺼번에 바꿉니다.",
+      "keywords": [
+        "바꾸기",
+        "찾기",
+        "검색",
+        "regex",
+        "찾아 바꾸기"
+      ],
+      "aliases": [
+        "find and replace",
+        "search replace"
+      ]
+    },
+    "text-compare": {
+      "name": "두 텍스트 비교",
+      "description": "추가, 삭제, 수정된 내용을 줄 단위로 확인합니다.",
+      "keywords": [
+        "비교",
+        "차이",
+        "diff",
+        "두 버전",
+        "변경 사항"
+      ],
+      "aliases": [
+        "diff",
+        "compare text",
+        "text diff"
+      ]
+    },
+    "text-deduplicate": {
+      "name": "중복 제거",
+      "description": "각 줄을 한 번만 남기며, 대소문자 구분 없이 처리할 수도 있습니다.",
+      "keywords": [
+        "중복",
+        "중복 제거",
+        "중복 줄",
+        "고유",
+        "반복 제거"
+      ],
+      "aliases": [
+        "remove duplicates",
+        "dedupe lines",
+        "unique lines"
+      ]
+    },
+    "text-sort-lines": {
+      "name": "줄 정렬",
+      "description": "줄을 가나다순, 숫자순, 또는 무작위로 정렬합니다.",
+      "keywords": [
+        "정렬",
+        "가나다순",
+        "알파벳순",
+        "목록",
+        "무작위"
+      ],
+      "aliases": [
+        "sort lines",
+        "sort list"
+      ]
+    },
+    "markdown-convert": {
+      "name": "Markdown ↔ HTML / 텍스트",
+      "description": "Markdown을 HTML이나 일반 텍스트로, 또는 그 반대로 변환합니다.",
+      "keywords": [
+        "markdown",
+        "마크다운",
+        "md",
+        "html",
+        "마크다운 변환",
+        "일반 텍스트",
+        "렌더링"
+      ],
+      "aliases": [
+        "markdown to html",
+        "html to markdown",
+        "md converter"
+      ]
+    },
+    "text-extract-urls": {
+      "name": "URL 추출",
+      "description": "텍스트에 들어 있는 웹 주소를 모두 꺼냅니다.",
+      "keywords": [
+        "url",
+        "링크",
+        "웹 주소",
+        "링크 추출",
+        "http"
+      ],
+      "aliases": [
+        "extract urls",
+        "link extractor"
+      ]
+    },
+    "text-extract-emails": {
+      "name": "이메일 주소 추출",
+      "description": "텍스트에 있는 이메일 주소를 모두 골라냅니다.",
+      "keywords": [
+        "이메일",
+        "이메일 주소",
+        "메일 주소",
+        "이메일 추출",
+        "연락처"
+      ],
+      "aliases": [
+        "extract emails",
+        "email extractor"
+      ]
+    },
+    "text-extract-numbers": {
+      "name": "숫자 추출",
+      "description": "텍스트에서 모든 숫자를 꺼내 합계를 구합니다.",
+      "keywords": [
+        "숫자",
+        "수치",
+        "금액 추출",
+        "합계",
+        "값"
+      ],
+      "aliases": [
+        "extract numbers",
+        "number extractor"
+      ]
+    },
+    "lorem-ipsum": {
+      "name": "Lorem Ipsum",
+      "description": "채움 텍스트(단어, 문장, 문단)를 생성합니다.",
+      "keywords": [
+        "lorem",
+        "더미 텍스트",
+        "채움 글",
+        "자리 표시자",
+        "placeholder",
+        "목업"
+      ],
+      "aliases": [
+        "lorem ipsum",
+        "dummy text",
+        "placeholder text"
+      ]
+    },
+    "text-unicode-normalize": {
+      "name": "유니코드 정규화",
+      "description": "시스템 간 문자 표기(한글 자모, 악센트 등)를 통일합니다(NFC, NFD, NFKC, NFKD).",
+      "keywords": [
+        "unicode",
+        "유니코드",
+        "정규화",
+        "자모 분리",
+        "한글 깨짐",
+        "nfc",
+        "nfd",
+        "nfkc",
+        "nfkd",
+        "이상한 문자",
+        "mac windows"
+      ],
+      "aliases": [
+        "unicode normalization",
+        "normalize unicode",
+        "nfc nfd"
+      ]
+    },
+    "text-line-endings": {
+      "name": "줄 끝 문자 변환",
+      "description": "먼저 감지한 뒤 CRLF(Windows)와 LF(Unix)를 서로 변환합니다.",
+      "keywords": [
+        "crlf",
+        "lf",
+        "줄 끝",
+        "줄바꿈",
+        "캐리지 리턴",
+        "windows unix",
+        "^M",
+        "dos2unix",
+        "unix2dos"
+      ],
+      "aliases": [
+        "line endings",
+        "crlf to lf",
+        "dos2unix",
+        "unix2dos"
+      ]
+    },
+    "docx-extract": {
+      "name": "Word(DOCX)를 텍스트, Markdown, HTML로",
+      "description": "Word 문서의 내용을 꺼냅니다: 제목, 문단, 목록, 표.",
+      "keywords": [
+        "docx",
+        "word",
+        "워드 문서",
+        "워드에서 텍스트",
+        "docx를 텍스트로",
+        "docx를 html로",
+        "docx를 markdown으로",
+        "docx 읽기"
+      ],
+      "aliases": [
+        "docx to text",
+        "word to text",
+        "docx to html",
+        "docx to markdown"
+      ],
+      "note": "복잡한 레이아웃(단, 이미지, 스타일)은 재현하지 않습니다. FourTout는 내용과 구조를 꺼냅니다."
+    },
+    "docx-to-pdf": {
+      "name": "Word(DOCX)를 PDF로",
+      "description": "Word 문서를 PDF로 변환합니다: 제목, 문단, 목록, 간단한 표.",
+      "keywords": [
+        "docx를 pdf로",
+        "워드를 pdf로",
+        "워드 변환",
+        "문서를 pdf로"
+      ],
+      "aliases": [
+        "docx to pdf",
+        "word to pdf"
+      ],
+      "note": "FourTout는 내용과 구조(제목, 문단, 굵게, 기울임, 목록, 간단한 표)는 옮기지만 Word 레이아웃은 옮기지 않습니다. 단, 떠 있는 상자, 머리글과 바닥글, 특정 글꼴, 이미지는 달라지거나 빠질 수 있습니다. 픽셀 단위로 똑같은 결과가 필요하면 Word나 LibreOffice에서 PDF로 내보내세요."
+    },
+    "document-compare": {
+      "name": "두 문서 비교",
+      "description": "PDF, Word, 텍스트, Markdown, HTML 두 문서의 내용을, 형식이 달라도 줄 단위와 단어 단위로 비교합니다.",
+      "keywords": [
+        "문서 비교",
+        "두 문서 비교",
+        "pdf와 워드 비교",
+        "두 문서의 차이",
+        "문서 diff",
+        "두 버전",
+        "무엇이 바뀌었나",
+        "계약서 비교",
+        "대조"
+      ],
+      "aliases": [
+        "compare documents",
+        "document diff",
+        "compare pdf docx"
+      ],
+      "note": "비교 대상은 레이아웃이 아니라 텍스트입니다. 형식이 다른 두 문서 사이에서도 내용이 무엇이 바뀌었는지 알려 줍니다. 스캔한 PDF는 먼저 “스캔 PDF를 검색 가능한 PDF로”를 거쳐야 합니다."
+    },
+    "text-encoding-detect": {
+      "name": "텍스트 파일 인코딩 감지",
+      "description": "파일의 인코딩, 바이트 순서 표시(BOM), 줄 끝 방식을 실제 확신도와 함께 알아냅니다.",
+      "keywords": [
+        "텍스트 인코딩",
+        "인코딩 감지",
+        "어떤 인코딩",
+        "이상한 문자",
+        "한글 깨짐",
+        "mojibake",
+        "utf8 또는 euc-kr",
+        "bom",
+        "줄 끝",
+        "읽을 수 없는 파일",
+        "charset"
+      ],
+      "aliases": [
+        "detect encoding",
+        "charset detection",
+        "what encoding",
+        "bom"
+      ],
+      "note": "BOM을 제외하면 어떤 파일도 자기 인코딩을 밝히지 않습니다. 감지는 추정일 뿐이며, FourTout는 오해를 부르는 판정 대신 실제 확신도를 보여 줍니다."
+    },
+    "text-encoding-convert": {
+      "name": "텍스트 파일 인코딩 변환",
+      "description": "UTF-8, BOM 있는 UTF-8, UTF-16 LE/BE, Windows-1252, Latin-1 사이에서 문자를 모르게 잃지 않고 변환합니다.",
+      "keywords": [
+        "인코딩 변환",
+        "utf16 utf8",
+        "latin1 utf8",
+        "windows 1252 utf8",
+        "인코딩 바꾸기",
+        "깨진 글자 복구",
+        "ansi를 utf8로",
+        "iso 8859 1",
+        "bom",
+        "트랜스코딩"
+      ],
+      "aliases": [
+        "convert encoding",
+        "utf16 to utf8",
+        "latin1 to utf8",
+        "transcode"
+      ],
+      "note": "대상 인코딩으로 쓸 수 없는 문자가 있으면 변환을 거부하고 해당 문자를 나열합니다. 대체는 명시적으로 요청할 때만 합니다."
+    },
+    "subtitle-edit": {
+      "name": "자막 편집",
+      "description": "SRT와 WebVTT 간 변환, 타임스탬프 이동, 두 파일 합치기, 검사와 복구.",
+      "keywords": [
+        "자막",
+        "srt",
+        "vtt",
+        "webvtt",
+        "srt를 vtt로",
+        "vtt를 srt로",
+        "자막 싱크 이동",
+        "자막 동기화",
+        "자막이 늦음",
+        "자막 합치기",
+        "srt 복구",
+        "겹침"
+      ],
+      "aliases": [
+        "subtitles",
+        "srt to vtt",
+        "vtt to srt",
+        "shift subtitles",
+        "merge subtitles",
+        "fix srt"
+      ],
+      "note": "기계적으로 안전한 것(순서, 번호, 줄 끝)은 고칩니다. 겹침은 알려 주지만 임의로 줄이지는 않습니다."
+    },
+    "archive-create": {
+      "name": "압축 파일 만들기",
+      "description": "파일이나 폴더를 폴더 구조를 유지한 채 ZIP, 7z, TAR, TAR.GZ, TAR.XZ로 압축합니다.",
+      "keywords": [
+        "zip",
+        "압축",
+        "압축하기",
+        "7z",
+        "tar",
+        "tar.gz",
+        "zip으로 묶기",
+        "파일 묶기"
+      ],
+      "aliases": [
+        "create zip",
+        "compress files",
+        "make archive"
+      ],
+      "note": "여기서 만드는 7z는 암호화되지 않습니다. 비밀번호가 필요하면 “비밀번호 보호 압축 파일”을 사용하세요. 그 AES-256 ZIP은 7-Zip, WinRAR, Keka, Windows 탐색기에서 열립니다."
+    },
+    "archive-extract": {
+      "name": "압축 풀기",
+      "description": "ZIP, 7z, TAR, TAR.GZ, TAR.XZ 압축 파일을 원하는 폴더에 풉니다.",
+      "keywords": [
+        "압축 풀기",
+        "압축 해제",
+        "zip 열기",
+        "unzip",
+        "풀기"
+      ],
+      "aliases": [
+        "unzip",
+        "extract archive",
+        "decompress"
+      ],
+      "note": "선택한 폴더 밖에는 어떤 파일도 쓰지 않습니다. 상위로 올라가는 경로(“../”), 절대 경로, 심볼릭 링크는 거부하고 목록으로 보여 줍니다. RAR 형식은 지원하지 않습니다."
+    },
+    "archive-encrypted": {
+      "name": "비밀번호 보호 압축 파일",
+      "description": "비밀번호로 암호화한 압축 파일을 만들거나 엽니다.",
+      "keywords": [
+        "비밀번호 압축",
+        "암호 걸린 zip",
+        "암호화 7z",
+        "파일 보호",
+        "안전한 압축 파일"
+      ],
+      "aliases": [
+        "encrypted zip",
+        "password protected archive"
+      ],
+      "note": "WinZip AES-256 암호화: 7-Zip, WinRAR, PeaZip, Keka, Windows 탐색기에서 열립니다. 몇 초 만에 뚫리는 예전 방식 “ZipCrypto”는 절대 쓰지 않습니다. 다만 파일 이름은 비밀번호 없이도 보입니다 — ZIP 형식의 한계입니다."
+    },
+    "file-hash": {
+      "name": "해시 계산",
+      "description": "크기와 상관없이 하나 이상의 파일의 SHA-256, SHA-512, SHA-1, MD5를 구합니다.",
+      "keywords": [
+        "해시",
+        "지문",
+        "md5",
+        "sha256",
+        "sha1",
+        "체크섬",
+        "checksum"
+      ],
+      "aliases": [
+        "file hash",
+        "checksum",
+        "md5",
+        "sha256"
+      ]
+    },
+    "file-verify-hash": {
+      "name": "해시 검증",
+      "description": "파일의 해시를 배포처가 공개한 값과 비교합니다.",
+      "keywords": [
+        "검증",
+        "무결성",
+        "체크섬",
+        "파일이 손상됐나",
+        "해시 비교",
+        "진위"
+      ],
+      "aliases": [
+        "verify checksum",
+        "check integrity",
+        "hash compare"
+      ]
+    },
+    "file-find-duplicates": {
+      "name": "중복 파일 찾기",
+      "description": "이름이 아닌 내용으로 폴더 안의 중복 파일을 찾습니다.",
+      "keywords": [
+        "중복",
+        "같은 파일",
+        "공간 확보",
+        "정리",
+        "중복 사진"
+      ],
+      "aliases": [
+        "find duplicates",
+        "duplicate finder"
+      ]
+    },
+    "file-compare": {
+      "name": "두 파일 비교",
+      "description": "두 파일이 같은지 바이트 단위나 줄 단위로 확인합니다.",
+      "keywords": [
+        "비교",
+        "동일",
+        "차이",
+        "바이너리",
+        "파일 diff"
+      ],
+      "aliases": [
+        "compare files",
+        "file diff"
+      ]
+    },
+    "file-bulk-rename": {
+      "name": "일괄 이름 바꾸기",
+      "description": "패턴, 번호 매기기, 정규식으로 수백 개 파일의 이름을 바꿉니다.",
+      "keywords": [
+        "이름 바꾸기",
+        "일괄",
+        "일괄 이름 변경",
+        "파일 번호 매기기",
+        "접두사",
+        "접미사",
+        "모든 파일"
+      ],
+      "aliases": [
+        "bulk rename",
+        "batch rename"
+      ]
+    },
+    "file-clean-names": {
+      "name": "파일 이름 정리",
+      "description": "파일 이름에서 악센트, 공백, 문제가 되는 문자를 없앱니다.",
+      "keywords": [
+        "악센트",
+        "이름의 공백",
+        "특수 문자",
+        "slug",
+        "정규화"
+      ],
+      "aliases": [
+        "clean filenames",
+        "sanitize filenames"
+      ]
+    },
+    "file-organize": {
+      "name": "폴더 정리",
+      "description": "확장자, 날짜, 종류별로 파일을 자동 분류합니다.",
+      "keywords": [
+        "정리",
+        "분류",
+        "확장자별",
+        "날짜별",
+        "다운로드 폴더 정리",
+        "깔끔하게"
+      ],
+      "aliases": [
+        "organize folder",
+        "sort files"
+      ]
+    },
+    "folder-size": {
+      "name": "폴더 용량 분석",
+      "description": "실제로 공간을 차지하는 것을 확인합니다: 가장 큰 파일, 가장 큰 하위 폴더, 종류별 분포.",
+      "keywords": [
+        "크기",
+        "디스크 공간",
+        "무엇이 용량을 차지하나",
+        "큰 파일",
+        "디스크가 꽉 참",
+        "분석"
+      ],
+      "aliases": [
+        "folder size",
+        "disk usage",
+        "disk analyzer",
+        "space analyzer"
+      ],
+      "note": "파일 시스템의 메타데이터만 읽으며 파일 내용은 절대 열지 않습니다. 읽을 수 없는 폴더는 0으로 세지 않고 알려 주며, 심볼릭 링크는 따라가지 않습니다(대상이 두 번 세어지므로)."
+    },
+    "file-secure-delete": {
+      "name": "안전하게 삭제",
+      "description": "파일을 지우기 전에 내용을 덮어써서 소프트웨어로 복구할 가능성을 매우 낮춥니다.",
+      "keywords": [
+        "완전 삭제",
+        "안전한 삭제",
+        "복구 불가",
+        "shred",
+        "파일 파기",
+        "정말 지우기"
+      ],
+      "aliases": [
+        "secure delete",
+        "shred",
+        "wipe file"
+      ],
+      "note": "강화된 소프트웨어 삭제일 뿐 물리적 파기는 아닙니다. SSD, 메모리 카드, Btrfs/ZFS/APFS에서나 스냅숏·백업이 있는 경우에는 어떤 소프트웨어도 이전 사본이 모두 사라졌다고 보장할 수 없습니다."
+    },
+    "file-split": {
+      "name": "큰 파일 나누기",
+      "description": "큰 파일을 검증용 매니페스트와 함께 번호가 붙은 조각으로 나눕니다.",
+      "keywords": [
+        "나누기",
+        "분할",
+        "split",
+        "조각",
+        "파일이 너무 큼",
+        "usb 메모리",
+        "fat32",
+        "큰 파일 보내기",
+        "part001"
+      ],
+      "aliases": [
+        "split file",
+        "file splitter"
+      ]
+    },
+    "file-join": {
+      "name": "파일 다시 합치기",
+      "description": ".part001 같은 조각에서 해시를 검증하며 원래 파일을 복원합니다.",
+      "keywords": [
+        "다시 합치기",
+        "합치기",
+        "join",
+        "조각 합치기",
+        "part001",
+        "파일 복원"
+      ],
+      "aliases": [
+        "join files",
+        "merge parts",
+        "reassemble"
+      ]
+    },
+    "folder-tree": {
+      "name": "폴더 트리 만들기",
+      "description": "README에 바로 붙일 수 있는 폴더의 텍스트 트리를 만듭니다.",
+      "keywords": [
+        "트리",
+        "구조",
+        "tree",
+        "폴더 구조",
+        "계층",
+        "readme",
+        "폴더 목록"
+      ],
+      "aliases": [
+        "folder tree",
+        "directory tree"
+      ]
+    },
+    "file-info": {
+      "name": "파일 정보 보기",
+      "description": "시그니처로 알아낸 실제 형식, 확장자 일치 여부, 인코딩, 날짜, 해시, 처음 몇 바이트.",
+      "keywords": [
+        "정보",
+        "속성",
+        "세부 정보",
+        "파일 형식",
+        "살펴보기",
+        "무슨 형식",
+        "mime",
+        "만든 날짜",
+        "이 파일은 뭐지",
+        "매직 바이트",
+        "시그니처",
+        "속이는 확장자",
+        "실제 형식",
+        "인코딩"
+      ],
+      "aliases": [
+        "file info",
+        "file properties",
+        "file details",
+        "inspect file",
+        "magic bytes"
+      ],
+      "note": "표시되는 형식은 확장자가 아니라 처음 바이트에서 판단합니다. PNG가 든 “.jpg”는 PNG로 표시됩니다. 자동으로 이름을 바꾸지는 않습니다 — 수정은 사용자가 요청하는 작업입니다."
+    },
+    "folder-compare": {
+      "name": "두 폴더 비교",
+      "description": "두 폴더 트리 사이에서 같은 것, 바뀐 것, 한쪽에만 있는 것을 확인합니다.",
+      "keywords": [
+        "폴더 비교",
+        "폴더 diff",
+        "두 폴더의 차이",
+        "무엇이 바뀌었나",
+        "폴더의 두 버전",
+        "전후",
+        "복사본 확인",
+        "백업 최신 여부"
+      ],
+      "aliases": [
+        "compare folders",
+        "folder diff",
+        "directory compare",
+        "diff directories"
+      ],
+      "note": "빠른 모드는 아무것도 읽지 않고 형식과 크기만 비교하므로, 크기가 같은 두 파일은 “아마 같음”으로 표시됩니다. 내용으로 같음을 확인하는 것은 신뢰 모드뿐이며, 그것도 크기가 같은 파일만 읽습니다. 크기가 다르면 그것만으로 결론이 나기 때문입니다."
+    },
+    "folder-sync": {
+      "name": "폴더 동기화",
+      "description": "쓰기 전에 자세한 계획을 보여 주고 원본에서 대상을 업데이트합니다.",
+      "keywords": [
+        "동기화",
+        "싱크",
+        "미러",
+        "폴더 복사",
+        "폴더 업데이트",
+        "외장 디스크 백업",
+        "usb 메모리",
+        "복제",
+        "mirror",
+        "rsync"
+      ],
+      "aliases": [
+        "sync folders",
+        "mirror folder",
+        "folder sync",
+        "one-way sync"
+      ],
+      "note": "단방향 동기화: 원본이 기준이고 대상은 원본을 따릅니다. 계획을 확인하기 전에는 아무것도 쓰지 않습니다. 미러 모드는 원본에 더 이상 없는 것을 대상에서 지우므로 별도의 확인을 요청합니다."
+    },
+    "file-search": {
+      "name": "파일 내용 검색",
+      "description": "이름, 형식, 크기, 날짜 — 또는 안에 든 텍스트로 파일을 찾습니다.",
+      "keywords": [
+        "검색",
+        "파일 검색",
+        "파일 찾기",
+        "grep",
+        "문서 찾기",
+        "이 파일 어디 있지",
+        "단어 검색",
+        "내용 검색",
+        "날짜로",
+        "크기로"
+      ],
+      "aliases": [
+        "search files",
+        "find files",
+        "grep",
+        "search in files"
+      ],
+      "note": "요청할 때만 검색합니다. FourTout는 백그라운드에서 아무것도 색인하지 않으며 검색 사이에 아무것도 보관하지 않습니다. 내용 검색은 실제로 텍스트처럼 보이는 것만 열며, 바이너리를 텍스트로 해석하지 않습니다."
+    },
+    "file-preview": {
+      "name": "파일 미리 보기",
+      "description": "텍스트, 이미지, PDF, 오디오, 동영상, 압축 파일, 원시 바이트 등 어떤 파일이든 전용 앱 없이 엽니다.",
+      "keywords": [
+        "미리 보기",
+        "보기",
+        "프로그램 없이 열기",
+        "내용 보기",
+        "quick look",
+        "파일 보기",
+        "파일 읽기"
+      ],
+      "aliases": [
+        "preview file",
+        "quick look",
+        "file viewer"
+      ],
+      "note": "미리 보기 방식은 확장자가 아니라 실제 내용으로 정합니다. 큰 텍스트 파일은 일부만 불러오며 미리 보기에서 그 사실을 알려 줍니다."
+    },
+    "file-hex-edit": {
+      "name": "16진수 편집기",
+      "description": "파일 전체를 불러오지 않고 창 단위로 바이트를 읽고 고칩니다.",
+      "keywords": [
+        "16진수",
+        "hex editor",
+        "헥스 편집기",
+        "바이트",
+        "바이너리",
+        "바이트 수정",
+        "오프셋",
+        "ascii",
+        "덤프"
+      ],
+      "aliases": [
+        "hex editor",
+        "hex edit",
+        "binary editor"
+      ],
+      "note": "일부러 기능을 제한한 편집기입니다. 바이너리 템플릿도, 스크립트도, 바이트 삽입·삭제도 없으며, 파일 크기를 바꾸지 않는 제자리 수정만 가능합니다. 기본적으로 결과는 새 파일에 저장합니다."
+    },
+    "folder-backup": {
+      "name": "폴더 백업",
+      "description": "나중에 검증하고 복원할 수 있도록 해시 매니페스트와 함께 폴더를 복사합니다.",
+      "keywords": [
+        "백업",
+        "백업하기",
+        "사본",
+        "문서 보관",
+        "재설치 전",
+        "외장 디스크",
+        "파일 보호"
+      ],
+      "aliases": [
+        "backup folder",
+        "create backup"
+      ],
+      "note": "투명한 형식: 폴더 구조를 그대로 옮긴 “donnees” 폴더와 읽을 수 있는 “manifeste.json”. 독자 형식의 컨테이너가 없어 FourTout 없이도 파일에 접근할 수 있습니다. 버전 관리 백업이 아니며, 매번 날짜가 붙은 전체 사본입니다."
+    },
+    "folder-restore": {
+      "name": "백업 복원",
+      "description": "FourTout 백업을 검증한 뒤, 선택하지 않은 것은 덮어쓰지 않고 되돌려 놓습니다.",
+      "keywords": [
+        "복원",
+        "백업 되돌리기",
+        "파일 되돌리기",
+        "restore",
+        "이전으로",
+        "백업 검증"
+      ],
+      "aliases": [
+        "restore backup",
+        "verify backup"
+      ],
+      "note": "쓰기 전에 무결성을 검증합니다. 백업 안의 손상된 파일은 이름을 밝히며, 몰래 복원하지 않습니다. 복원은 대상에서 아무것도 지우지 않습니다."
+    },
+    "checksum-manifest": {
+      "name": "해시 매니페스트 만들기",
+      "description": "폴더 안 모든 파일의 해시를 적은 .sha256 파일을 만듭니다.",
+      "keywords": [
+        "매니페스트",
+        "체크섬",
+        "sha256sum",
+        "해시 목록",
+        "굽기 전",
+        "보내기 전",
+        "무결성 검사",
+        "sfv"
+      ],
+      "aliases": [
+        "checksum manifest",
+        "create checksums",
+        "sha256sum"
+      ],
+      "note": "만들어지는 텍스트 형식은 sha256sum과 같아서 어느 컴퓨터에서나 시스템 도구로 검증할 수 있습니다. 예전 해시 검증용으로 MD5와 SHA-1도 제공하지만 보안 용도에는 맞지 않는다고 표시합니다."
+    },
+    "checksum-verify": {
+      "name": "해시 매니페스트 검증",
+      "description": "폴더를 체크섬 파일과 대조해 파일마다 정상, 변경, 없음, 읽을 수 없음을 표시합니다.",
+      "keywords": [
+        "체크섬 검증",
+        "매니페스트 확인",
+        "sha256sum -c",
+        "파일이 바뀌었나",
+        "폴더 무결성",
+        "비트 부패"
+      ],
+      "aliases": [
+        "verify checksums",
+        "check manifest",
+        "sha256sum -c"
+      ],
+      "note": "매니페스트는 명령이 아니라 데이터입니다. 검증 대상 폴더 밖으로 나가는 항목(“../”, 절대 경로)은 거부하고 목록으로 보여 주며, 절대 따라가지 않습니다."
+    },
+    "hmac": {
+      "name": "HMAC 계산",
+      "description": "텍스트나 파일에 비밀 키로 HMAC-SHA-256 또는 SHA-512 서명을 합니다.",
+      "keywords": [
+        "hmac",
+        "서명",
+        "비밀 키",
+        "webhook",
+        "api",
+        "인증",
+        "요청 서명",
+        "메시지 인증 코드"
+      ],
+      "aliases": [
+        "hmac",
+        "message authentication code"
+      ],
+      "note": "키는 저장되지 않고, 기록되지 않으며, 최근 항목에도 추가되지 않습니다. 계산에 쓰인 뒤 사라지며, 도구를 떠나는 즉시 화면에서도 지워집니다."
+    },
+    "file-compress": {
+      "name": "파일 압축(GZ, XZ)",
+      "description": "파일 하나를 압축 파일로 묶지 않고 .gz 또는 .xz로 줄입니다.",
+      "keywords": [
+        "gzip",
+        "gz",
+        "xz",
+        "파일 압축",
+        "lzma",
+        "파일 줄이기",
+        "압축",
+        "큰 로그"
+      ],
+      "aliases": [
+        "gzip",
+        "xz compress",
+        "compress file"
+      ],
+      "note": "“.gz”와 “.xz”에는 폴더 이름이나 구조 없이 파일 하나만 들어갑니다. 여러 파일을 구조 그대로 압축하려면 “압축 파일 만들기”에서 TAR.GZ나 TAR.XZ 형식을 쓰세요."
+    },
+    "file-decompress": {
+      "name": "파일 압축 풀기(GZ, XZ)",
+      "description": ".gz나 .xz에서 원래 파일을 꺼냅니다.",
+      "keywords": [
+        "gunzip",
+        "unxz",
+        ".gz 열기",
+        ".xz 열기",
+        "gz 풀기",
+        "gz 압축 해제",
+        "xz 압축 해제"
+      ],
+      "aliases": [
+        "gunzip",
+        "unxz",
+        "decompress file"
+      ],
+      "note": "“.tar.gz”에는 폴더 구조가 들어 있으니 그것을 되살려 주는 “압축 풀기”를 쓰세요. 여기서는 .tar.gz를 풀면 .tar만 나옵니다."
+    },
+    "archive-inspect": {
+      "name": "압축 파일 살펴보기",
+      "description": "압축을 풀지 않고 내용을 나열합니다: 경로, 크기, 압축률, 의심스러운 항목.",
+      "keywords": [
+        "zip 내용 보기",
+        "압축 파일 목록",
+        "풀지 않고",
+        "안에 뭐가 있나",
+        "zip 살펴보기",
+        "7z 내용",
+        "압축 파일 둘러보기"
+      ],
+      "aliases": [
+        "inspect archive",
+        "list archive",
+        "browse archive"
+      ],
+      "note": "아무것도 압축 해제하지 않고 압축 파일의 목차만 읽습니다. 압축을 풀 폴더 밖으로 나가는 경로의 항목은 풀기도 전에 알려 줍니다."
+    },
+    "archive-test": {
+      "name": "압축 파일 테스트",
+      "description": "디스크에 아무것도 쓰지 않고 끝까지 압축을 풀어 압축 파일이 온전한지 확인합니다.",
+      "keywords": [
+        "압축 파일 테스트",
+        "손상된 압축 파일",
+        "깨진 zip",
+        "zip 확인",
+        "불완전한 다운로드",
+        "압축 파일 무결성",
+        "crc"
+      ],
+      "aliases": [
+        "test archive",
+        "verify archive",
+        "check archive"
+      ],
+      "note": "실제로 압축을 풀고 체크섬을 검증합니다. 목록만 보면 헤더만 읽으므로 아무것도 증명하지 못합니다. 아무것도 쓰지 않으며, 바이트는 세고 버립니다."
+    },
+    "universal-converter": {
+      "name": "만능 변환기",
+      "description": "파일을 놓으면 FourTout가 호환되는 형식으로의 가능한 변환을 제안합니다.",
+      "keywords": [
+        "변환",
+        "변환기",
+        "형식 변경",
+        "어떤 파일이든",
+        "무슨 형식",
+        "컨버터"
+      ],
+      "aliases": [
+        "universal converter",
+        "convert anything",
+        "file converter"
+      ],
+      "note": "제안되는 변환은 레지스트리의 도구들이 밝힌 입력과 출력에서 나옵니다. 따로 관리할 표가 없고, 도구가 없는 변환을 내세우는 일도 없습니다."
+    },
+    "json-tools": {
+      "name": "JSON — 정렬 및 검증",
+      "description": "JSON을 들여쓰기, 최소화하고, 정확한 오류 메시지와 함께 유효성을 검사합니다.",
+      "keywords": [
+        "json",
+        "정렬",
+        "들여쓰기",
+        "검증",
+        "prettify",
+        "최소화",
+        "파싱"
+      ],
+      "aliases": [
+        "json formatter",
+        "json validator",
+        "json beautifier",
+        "prettify json"
+      ]
+    },
+    "xml-format": {
+      "name": "XML — 정렬",
+      "description": "XML 문서를 들여쓰기하고 검증합니다.",
+      "keywords": [
+        "xml",
+        "정렬",
+        "들여쓰기",
+        "검증",
+        "태그"
+      ],
+      "aliases": [
+        "xml formatter",
+        "xml beautifier"
+      ]
+    },
+    "yaml-format": {
+      "name": "YAML — 정렬 및 변환",
+      "description": "YAML을 정렬하고 JSON과 서로 변환합니다.",
+      "keywords": [
+        "yaml",
+        "yml",
+        "정렬",
+        "yaml을 json으로",
+        "json을 yaml로",
+        "설정 파일"
+      ],
+      "aliases": [
+        "yaml formatter",
+        "yaml to json",
+        "json to yaml"
+      ]
+    },
+    "sql-format": {
+      "name": "SQL — 정렬",
+      "description": "압축되었거나 자동 생성된 SQL 쿼리를 읽기 쉽게 만듭니다.",
+      "keywords": [
+        "sql",
+        "쿼리",
+        "정렬",
+        "들여쓰기",
+        "가독성",
+        "query"
+      ],
+      "aliases": [
+        "sql formatter",
+        "sql beautifier"
+      ]
+    },
+    "base64": {
+      "name": "Base64 — 인코딩 및 디코딩",
+      "description": "텍스트를 Base64로, 또는 그 반대로 변환합니다(base64url 포함).",
+      "keywords": [
+        "base64",
+        "인코딩",
+        "디코딩",
+        "b64",
+        "부호화",
+        "data uri"
+      ],
+      "aliases": [
+        "base64 encode",
+        "base64 decode",
+        "b64"
+      ]
+    },
+    "url-encode": {
+      "name": "URL — 인코딩 및 디코딩",
+      "description": "URL과 매개변수를 인코딩하거나 디코딩합니다(퍼센트 인코딩).",
+      "keywords": [
+        "url",
+        "인코딩",
+        "디코딩",
+        "퍼센트 인코딩",
+        "쿼리 문자열",
+        "특수 문자"
+      ],
+      "aliases": [
+        "url encode",
+        "url decode",
+        "uri encode"
+      ]
+    },
+    "jwt-decode": {
+      "name": "JWT — 디코딩",
+      "description": "JWT 토큰의 헤더와 페이로드를 어디에도 보내지 않고 읽습니다.",
+      "keywords": [
+        "jwt",
+        "토큰",
+        "디코딩",
+        "bearer",
+        "페이로드",
+        "클레임"
+      ],
+      "aliases": [
+        "jwt decoder",
+        "decode token"
+      ],
+      "note": "토큰은 로컬에서 디코딩되며 컴퓨터 밖으로 나가지 않습니다."
+    },
+    "uuid-generate": {
+      "name": "UUID 생성",
+      "description": "고유한 v4 또는 v7 식별자를 하나씩 또는 한꺼번에 만듭니다.",
+      "keywords": [
+        "uuid",
+        "guid",
+        "고유 식별자",
+        "id 생성",
+        "v4",
+        "v7"
+      ],
+      "aliases": [
+        "uuid generator",
+        "guid generator"
+      ]
+    },
+    "regex-tester": {
+      "name": "정규식 테스트",
+      "description": "정규식을 실시간으로 시험하고 일치 항목과 그룹을 확인합니다.",
+      "keywords": [
+        "regex",
+        "정규식",
+        "정규 표현식",
+        "테스트",
+        "일치",
+        "패턴",
+        "match"
+      ],
+      "aliases": [
+        "regex tester",
+        "regexp",
+        "regex101"
+      ]
+    },
+    "timestamp-convert": {
+      "name": "Unix 타임스탬프",
+      "description": "시간대를 반영해 타임스탬프와 읽기 쉬운 날짜를 서로 변환합니다.",
+      "keywords": [
+        "타임스탬프",
+        "timestamp",
+        "unix",
+        "epoch",
+        "초 단위 날짜",
+        "밀리초",
+        "날짜 변환"
+      ],
+      "aliases": [
+        "unix timestamp",
+        "epoch converter"
+      ]
+    },
+    "hash-text": {
+      "name": "텍스트 해시 생성",
+      "description": "문자열의 MD5, SHA-1, SHA-256, SHA-512를 계산합니다.",
+      "keywords": [
+        "해시",
+        "md5",
+        "sha256",
+        "지문",
+        "텍스트 해시",
+        "다이제스트"
+      ],
+      "aliases": [
+        "hash generator",
+        "md5 text",
+        "sha256 text"
+      ]
+    },
+    "qr-generate": {
+      "name": "QR 코드 만들기",
+      "description": "URL, 텍스트, 연락처, Wi-Fi 네트워크용 QR 코드를 만듭니다.",
+      "keywords": [
+        "qr 코드",
+        "qrcode",
+        "바코드",
+        "qr 만들기",
+        "wifi",
+        "와이파이",
+        "vcard"
+      ],
+      "aliases": [
+        "qr code generator",
+        "make qr code"
+      ]
+    },
+    "qr-read": {
+      "name": "QR 코드 읽기",
+      "description": "이미지나 스크린샷에서 QR 코드를 해독합니다.",
+      "keywords": [
+        "qr 읽기",
+        "스캔",
+        "qr 코드 해독",
+        "이미지에서 qr"
+      ],
+      "aliases": [
+        "qr code reader",
+        "scan qr code",
+        "decode qr"
+      ]
+    },
+    "number-base-convert": {
+      "name": "16진수·10진수·2진수 변환",
+      "description": "2진수, 8진수, 10진수, 16진수 사이에서 변환합니다.",
+      "keywords": [
+        "16진수",
+        "2진수",
+        "10진수",
+        "8진수",
+        "진법 변환",
+        "숫자 변환",
+        "hex"
+      ],
+      "aliases": [
+        "hex to decimal",
+        "binary converter",
+        "base converter"
+      ]
+    },
+    "code-diff": {
+      "name": "코드 비교",
+      "description": "두 코드 블록을 비교해 추가와 삭제를 강조합니다.",
+      "keywords": [
+        "diff",
+        "코드 비교",
+        "차이",
+        "merge",
+        "버전"
+      ],
+      "aliases": [
+        "code diff",
+        "compare code"
+      ]
+    },
+    "web-minify": {
+      "name": "HTML·CSS·JS 최소화",
+      "description": "공백과 주석을 없애 코드 크기를 줄입니다.",
+      "keywords": [
+        "최소화",
+        "minify",
+        "코드 압축",
+        "줄이기",
+        "uglify",
+        "배포용"
+      ],
+      "aliases": [
+        "minify",
+        "minify css",
+        "minify js",
+        "minify html"
+      ]
+    },
+    "web-beautify": {
+      "name": "HTML·CSS·JS 정렬",
+      "description": "최소화되었거나 엉망인 코드를 다시 들여쓰기해 읽기 쉽게 만듭니다.",
+      "keywords": [
+        "정렬",
+        "들여쓰기",
+        "beautify",
+        "prettify",
+        "읽을 수 없는 코드",
+        "다시 들여쓰기"
+      ],
+      "aliases": [
+        "beautify",
+        "format code",
+        "prettify html"
+      ]
+    },
+    "cron-helper": {
+      "name": "cron 도우미",
+      "description": "cron 표현식을 만들고 알기 쉬운 말로 설명합니다.",
+      "keywords": [
+        "cron",
+        "crontab",
+        "일정",
+        "예약 작업",
+        "cron 표현식",
+        "schedule"
+      ],
+      "aliases": [
+        "cron generator",
+        "crontab helper",
+        "cron expression"
+      ]
+    },
+    "toml-format": {
+      "name": "TOML — 정렬 및 검증",
+      "description": "TOML 파일을 검사하고 표준 형태로 다시 씁니다.",
+      "keywords": [
+        "toml",
+        "정렬",
+        "검증",
+        "설정 파일",
+        "cargo",
+        "pyproject",
+        "들여쓰기",
+        "구문 오류"
+      ],
+      "aliases": [
+        "toml formatter",
+        "toml validator",
+        "toml linter",
+        "format toml"
+      ],
+      "note": "다시 정렬하면 데이터에서 문서를 새로 만들기 때문에 주석과 원래 순서가 사라집니다. 검증만 할 때는 아무것도 바꾸지 않습니다."
+    },
+    "base32": {
+      "name": "Base32 — 인코딩 및 디코딩",
+      "description": "RFC 4648에 따라 텍스트를 Base32로, 또는 그 반대로 변환합니다.",
+      "keywords": [
+        "base32",
+        "인코딩",
+        "디코딩",
+        "rfc 4648",
+        "totp",
+        "부호화",
+        "패딩",
+        "알파벳"
+      ],
+      "aliases": [
+        "base32 encode",
+        "base32 decode",
+        "b32"
+      ]
+    },
+    "sqlite-explorer": {
+      "name": "SQLite 데이터베이스 — 탐색",
+      "description": "SQLite 데이터베이스를 읽기 전용으로 엽니다: 스키마, 데이터, 쿼리, CSV 내보내기.",
+      "keywords": [
+        "sqlite",
+        "데이터베이스",
+        "db",
+        "탐색",
+        "스키마",
+        "테이블",
+        "쿼리",
+        "select",
+        "sql",
+        "읽기 전용"
+      ],
+      "aliases": [
+        "sqlite browser",
+        "sqlite explorer",
+        "db browser",
+        "open sqlite"
+      ],
+      "note": "철저히 읽기 전용인 탐색기입니다. 데이터베이스는 읽기 전용으로 열리며 어떤 쿼리도 수정할 수 없습니다."
+    },
+    "unit-length": {
+      "name": "단위 변환 — 길이",
+      "description": "미터, 킬로미터, 마일, 피트, 인치, 해리.",
+      "keywords": [
+        "변환",
+        "환산",
+        "단위",
+        "길이",
+        "거리",
+        "미터",
+        "km",
+        "마일",
+        "인치",
+        "피트",
+        "센티미터"
+      ],
+      "aliases": [
+        "length converter",
+        "cm to inches",
+        "km to miles"
+      ]
+    },
+    "unit-weight": {
+      "name": "단위 변환 — 무게와 질량",
+      "description": "그램, 킬로그램, 톤, 파운드, 온스.",
+      "keywords": [
+        "변환",
+        "환산",
+        "단위",
+        "무게",
+        "질량",
+        "킬로",
+        "그램",
+        "파운드",
+        "온스",
+        "톤",
+        "lbs"
+      ],
+      "aliases": [
+        "weight converter",
+        "kg to lbs",
+        "pounds to kg"
+      ]
+    },
+    "unit-temperature": {
+      "name": "단위 변환 — 온도",
+      "description": "섭씨, 화씨, 켈빈.",
+      "keywords": [
+        "변환",
+        "환산",
+        "단위",
+        "온도",
+        "섭씨",
+        "화씨",
+        "켈빈",
+        "도",
+        "°c",
+        "°f"
+      ],
+      "aliases": [
+        "temperature converter",
+        "celsius to fahrenheit"
+      ]
+    },
+    "unit-volume": {
+      "name": "단위 변환 — 부피",
+      "description": "리터, 밀리리터, 갤런, 파인트, 컵, 스푼.",
+      "keywords": [
+        "변환",
+        "환산",
+        "단위",
+        "부피",
+        "용량",
+        "리터",
+        "ml",
+        "갤런",
+        "파인트",
+        "컵",
+        "스푼",
+        "레시피"
+      ],
+      "aliases": [
+        "volume converter",
+        "cups to ml",
+        "gallons to liters"
+      ]
+    },
+    "unit-area": {
+      "name": "단위 변환 — 넓이",
+      "description": "제곱미터, 헥타르, 에이커, 제곱피트.",
+      "keywords": [
+        "변환",
+        "환산",
+        "단위",
+        "넓이",
+        "면적",
+        "m2",
+        "제곱미터",
+        "헥타르",
+        "에이커",
+        "평",
+        "토지"
+      ],
+      "aliases": [
+        "area converter",
+        "sqft to m2"
+      ]
+    },
+    "unit-speed": {
+      "name": "단위 변환 — 속도",
+      "description": "km/h, m/s, mph, 노트.",
+      "keywords": [
+        "변환",
+        "환산",
+        "단위",
+        "속도",
+        "km/h",
+        "시속",
+        "mph",
+        "m/s",
+        "노트"
+      ],
+      "aliases": [
+        "speed converter",
+        "kmh to mph"
+      ]
+    },
+    "unit-pressure": {
+      "name": "단위 변환 — 압력",
+      "description": "파스칼, 바, PSI, 기압, mmHg.",
+      "keywords": [
+        "변환",
+        "환산",
+        "단위",
+        "압력",
+        "바",
+        "psi",
+        "파스칼",
+        "기압",
+        "타이어"
+      ],
+      "aliases": [
+        "pressure converter",
+        "bar to psi"
+      ]
+    },
+    "unit-energy": {
+      "name": "단위 변환 — 에너지",
+      "description": "줄, 칼로리, kWh, BTU.",
+      "keywords": [
+        "변환",
+        "환산",
+        "단위",
+        "에너지",
+        "줄",
+        "칼로리",
+        "kwh",
+        "btu",
+        "kcal"
+      ],
+      "aliases": [
+        "energy converter",
+        "kwh to joules"
+      ]
+    },
+    "unit-power": {
+      "name": "단위 변환 — 일률",
+      "description": "와트, 킬로와트, 마력.",
+      "keywords": [
+        "변환",
+        "환산",
+        "단위",
+        "일률",
+        "출력",
+        "와트",
+        "kw",
+        "킬로와트",
+        "마력",
+        "hp"
+      ],
+      "aliases": [
+        "power converter",
+        "watts to hp",
+        "kw to hp"
+      ]
+    },
+    "unit-data": {
+      "name": "단위 변환 — 데이터 용량",
+      "description": "바이트, KB, MB, GB, TB와 2진 단위(KiB, MiB).",
+      "keywords": [
+        "변환",
+        "환산",
+        "단위",
+        "바이트",
+        "mb",
+        "gb",
+        "tb",
+        "메가바이트",
+        "기가바이트",
+        "비트",
+        "kib",
+        "mib"
+      ],
+      "aliases": [
+        "data converter",
+        "mb to gb",
+        "bytes converter"
+      ]
+    },
+    "calc-percentage": {
+      "name": "퍼센트 계산",
+      "description": "어떤 수의 퍼센트, 증감률, 할인, 부가세, 전체에서의 비중.",
+      "keywords": [
+        "퍼센트",
+        "%",
+        "할인",
+        "세일",
+        "부가세",
+        "인상",
+        "증감",
+        "할인 계산",
+        "상승",
+        "하락"
+      ],
+      "aliases": [
+        "percentage calculator",
+        "percent change",
+        "discount calculator"
+      ]
+    },
+    "calc-proportion": {
+      "name": "비례식",
+      "description": "비례식을 풉니다: A가 B라면 C는 얼마일까요?",
+      "keywords": [
+        "비례식",
+        "비례",
+        "교차 곱셈",
+        "비율",
+        "축척"
+      ],
+      "aliases": [
+        "rule of three",
+        "cross multiplication",
+        "proportion calculator"
+      ]
+    },
+    "calc-date-difference": {
+      "name": "날짜 계산",
+      "description": "두 날짜 사이의 일수를 구하고, 기간을 더하거나 뺍니다.",
+      "keywords": [
+        "날짜",
+        "며칠",
+        "일수",
+        "날짜 더하기",
+        "영업일",
+        "만기일",
+        "기한",
+        "디데이"
+      ],
+      "aliases": [
+        "date calculator",
+        "days between dates",
+        "date difference"
+      ]
+    },
+    "calc-duration": {
+      "name": "시간 계산",
+      "description": "시, 분, 초를 더하고 뺍니다.",
+      "keywords": [
+        "시간",
+        "시",
+        "분",
+        "시간 더하기",
+        "근무 시간",
+        "hh:mm"
+      ],
+      "aliases": [
+        "duration calculator",
+        "time calculator",
+        "add hours"
+      ]
+    },
+    "calc-age": {
+      "name": "나이 계산",
+      "description": "생년월일로 정확한 나이를 년, 월, 일 단위로 구합니다.",
+      "keywords": [
+        "나이",
+        "생년월일",
+        "몇 살",
+        "만 나이",
+        "생일",
+        "년"
+      ],
+      "aliases": [
+        "age calculator",
+        "how old"
+      ]
+    },
+    "calc-scientific": {
+      "name": "공학용 계산기",
+      "description": "고급 연산: 거듭제곱, 제곱근, 삼각함수, 로그.",
+      "keywords": [
+        "계산기",
+        "공학용",
+        "제곱근",
+        "거듭제곱",
+        "삼각함수",
+        "로그",
+        "sin",
+        "cos",
+        "계산"
+      ],
+      "aliases": [
+        "scientific calculator",
+        "calculator"
+      ]
+    },
+    "calc-currency": {
+      "name": "환율 변환기",
+      "description": "최신 환율로 통화 간 금액을 바꿉니다.",
+      "keywords": [
+        "통화",
+        "원",
+        "원화",
+        "유로",
+        "달러",
+        "환율",
+        "환전",
+        "돈",
+        "원으로 환산"
+      ],
+      "aliases": [
+        "currency converter",
+        "eur to usd",
+        "exchange rate"
+      ],
+      "note": "인터넷이 필요한 유일한 FourTout 도구이며, 오늘의 환율을 가져올 때만 사용합니다. 오프라인일 때는 마지막으로 받은 환율을 다시 씁니다."
+    },
+    "calc-timezone": {
+      "name": "시간대 변환",
+      "description": "서머타임을 포함해 한 지역의 현지 시각을 다른 지역 시각으로 바꿉니다.",
+      "keywords": [
+        "시간대",
+        "시차",
+        "timezone",
+        "시각",
+        "utc",
+        "gmt",
+        "서울 파리 시각",
+        "뉴욕 시각",
+        "서머타임",
+        "dst"
+      ],
+      "aliases": [
+        "timezone converter",
+        "time zone",
+        "convert time",
+        "world clock"
+      ],
+      "note": "시차는 요청한 날짜 기준으로 시스템의 시간대 데이터베이스에서 가져옵니다. 시각 변경이 반영되며, 모호하거나 존재하지 않는 시각은 알려 줍니다."
+    },
+    "calc-bandwidth": {
+      "name": "대역폭 계산",
+      "description": "전송한 데이터 양과 시간으로 평균 속도를 구합니다.",
+      "keywords": [
+        "대역폭",
+        "전송 속도",
+        "속도",
+        "bandwidth",
+        "mbps",
+        "초당 mb",
+        "비트",
+        "바이트",
+        "회선"
+      ],
+      "aliases": [
+        "bandwidth calculator",
+        "throughput",
+        "data rate"
+      ]
+    },
+    "calc-transfer-time": {
+      "name": "전송 시간 계산",
+      "description": "크기와 속도로 전송에 걸리는 시간을 추정합니다.",
+      "keywords": [
+        "전송 시간",
+        "소요 시간",
+        "다운로드",
+        "업로드",
+        "전송",
+        "얼마나 걸리나",
+        "속도",
+        "크기",
+        "eta"
+      ],
+      "aliases": [
+        "transfer time",
+        "download time",
+        "upload time"
+      ],
+      "note": "이론적인 계산입니다: 크기 ÷ 속도. 프로토콜 오버헤드, 지연, 혼잡은 무시하므로 실제 전송은 항상 더 오래 걸립니다."
+    },
+    "calc-interest": {
+      "name": "이자 계산",
+      "description": "단리 또는 복리를 계산하며, 정기 적립도 넣을 수 있습니다.",
+      "keywords": [
+        "이자",
+        "복리",
+        "단리",
+        "원리금",
+        "저축",
+        "투자",
+        "금리",
+        "수익률",
+        "적금",
+        "예금"
+      ],
+      "aliases": [
+        "compound interest",
+        "simple interest",
+        "savings calculator"
+      ],
+      "note": "수학 도구이지 금융 조언이 아닙니다. 세금, 물가 상승, 수수료는 반영하지 않습니다."
+    },
+    "network-ping": {
+      "name": "핑",
+      "description": "호스트가 응답하는지, 얼마 만에 응답하는지 측정합니다.",
+      "keywords": [
+        "ping",
+        "핑",
+        "지연",
+        "레이턴시",
+        "icmp",
+        "응답",
+        "접속 가능",
+        "패킷 손실",
+        "응답 시간",
+        "진단"
+      ],
+      "aliases": [
+        "ping",
+        "icmp echo",
+        "latency test"
+      ],
+      "note": "실제 ICMP 패킷을 보냅니다(기본 4개). 시스템이 ICMP 소켓을 거부하면 다른 것을 재는 대신 그 사실을 알려 줍니다."
+    },
+    "network-ports": {
+      "name": "포트 테스트",
+      "description": "호스트의 어떤 TCP 포트가 연결을 받는지 확인합니다.",
+      "keywords": [
+        "포트",
+        "tcp",
+        "포트 확인",
+        "열린 포트",
+        "닫힌 포트",
+        "연결",
+        "방화벽",
+        "서비스",
+        "수신 대기"
+      ],
+      "aliases": [
+        "port check",
+        "port test",
+        "tcp connect",
+        "is port open"
+      ],
+      "note": "호스트 하나에 대해 한 번에 최대 256개 포트를 일반 TCP 연결로 확인합니다. 스캐너가 아닙니다: 은밀 모드도, 서비스 탐지도, 취약점 탐색도 없습니다."
+    },
+    "network-lan": {
+      "name": "로컬 네트워크 기기 찾기",
+      "description": "서브넷에서 응답하는 기기를 목록으로 보여 줍니다.",
+      "keywords": [
+        "로컬 네트워크",
+        "lan",
+        "기기",
+        "장치",
+        "컴퓨터",
+        "로컬 네트워크 스캔",
+        "탐색",
+        "프린터",
+        "ip 주소",
+        "mac"
+      ],
+      "aliases": [
+        "lan discovery",
+        "network scan",
+        "find devices",
+        "arp table"
+      ],
+      "note": "직접 연결된 서브넷과 256개 주소로 제한됩니다. 보내기 전에 정확한 범위를 알려 주며, 확인 없이는 아무것도 보내지 않습니다."
+    },
+    "file-diagnose": {
+      "name": "파일 진단",
+      "description": "파일이 실제로 무엇인지, 무엇이 빠져 있는지 파악합니다.",
+      "keywords": [
+        "파일 진단",
+        "손상된 파일",
+        "깨진 파일",
+        "읽을 수 없는 파일",
+        "파일 형식",
+        "확장자",
+        "잘린 파일",
+        "시그니처",
+        "분석"
+      ],
+      "aliases": [
+        "file diagnosis",
+        "corrupt file",
+        "file check",
+        "inspect file"
+      ],
+      "note": "원본 파일은 절대 수정하지 않습니다. FourTout는 ZIP, PDF, PNG, JPEG의 내부 구조를 분석하며, 다른 형식에 대해서는 솔직하게 그렇다고 알려 줍니다."
+    },
+    "archive-repair": {
+      "name": "손상된 ZIP 압축 파일",
+      "description": "읽을 수 없는 압축 파일을 진단하고 아직 남아 있는 내용을 살려 냅니다.",
+      "keywords": [
+        "zip 복구",
+        "깨진 zip",
+        "손상된 zip",
+        "손상된 압축 파일",
+        "압축 파일 복구",
+        "읽을 수 없는 압축 파일",
+        "중앙 디렉터리",
+        "그래도 풀기"
+      ],
+      "aliases": [
+        "repair zip",
+        "recover zip",
+        "broken archive",
+        "zip repair"
+      ],
+      "note": "중앙 디렉터리가 없어도 로컬 헤더를 훑어 복구합니다. 데이터가 잘린 항목은 손실로 표시하며 절대 재구성하지 않습니다. 원본 압축 파일은 건드리지 않습니다."
+    },
+    "pdf-repair": {
+      "name": "손상된 PDF",
+      "description": "읽을 수 없는 PDF를 진단하고, 입증할 수 있을 때 복구합니다.",
+      "keywords": [
+        "pdf 복구",
+        "손상된 pdf",
+        "깨진 pdf",
+        "읽을 수 없는 pdf",
+        "pdf xref",
+        "startxref",
+        "잘린 pdf",
+        "pdf 재구성"
+      ],
+      "aliases": [
+        "repair pdf",
+        "fix pdf",
+        "broken pdf",
+        "pdf recovery"
+      ],
+      "note": "만든 파일은 모두 PDF 엔진으로 다시 열어 페이지 수를 셉니다. 엔진이 거부하면 복구 실패로 표시하고 파일을 지웁니다. 다시 쓰면 모든 디지털 서명이 무효가 됩니다."
+    },
+    "image-repair": {
+      "name": "손상된 이미지",
+      "description": "손상된 PNG나 JPEG를 진단하고 읽을 수 있는 픽셀을 살려 냅니다.",
+      "keywords": [
+        "이미지 복구",
+        "손상된 이미지",
+        "깨진 jpeg",
+        "손상된 png",
+        "망가진 사진",
+        "읽을 수 없는 이미지",
+        "잘린 이미지",
+        "png crc"
+      ],
+      "aliases": [
+        "repair image",
+        "recover photo",
+        "broken jpeg",
+        "png repair"
+      ],
+      "note": "잘못된 체크섬을 다시 계산하지 않으며, 잘린 이미지의 빠진 줄을 지어내지 않습니다. 시각적 복구는 디코딩한 픽셀을 다시 인코딩하므로, 살리는 것은 파일이 아니라 그림입니다."
+    },
+    "disk-inspect": {
+      "name": "디스크와 파티션 살펴보기",
+      "description": "시스템의 디스크, 파티션, 볼륨, 상태 지표를 확인합니다.",
+      "keywords": [
+        "디스크",
+        "드라이브",
+        "파티션",
+        "파일 시스템",
+        "디스크 공간",
+        "볼륨",
+        "smart",
+        "디스크 상태",
+        "ssd",
+        "nvme",
+        "usb",
+        "마운트"
+      ],
+      "aliases": [
+        "disk info",
+        "partitions",
+        "smart health",
+        "drive inspector",
+        "storage"
+      ],
+      "note": "예외 없이 읽기 전용입니다. FourTout는 디스크를 분할, 포맷, 마운트, 복제, 삭제할 수 없습니다. 자세한 상태 지표는 FourTout에 포함되지 않은 `smartctl`에 의존합니다."
+    },
+    "password-generate": {
+      "name": "비밀번호 만들기",
+      "description": "강력한 비밀번호나 기억하기 쉬운 암호 문구를 만듭니다.",
+      "keywords": [
+        "비밀번호",
+        "생성",
+        "무작위",
+        "안전한",
+        "암호 문구",
+        "강한 비밀번호",
+        "비밀번호 만들기"
+      ],
+      "aliases": [
+        "password generator",
+        "generate password",
+        "passphrase"
+      ]
+    },
+    "password-strength": {
+      "name": "비밀번호 강도 확인",
+      "description": "비밀번호를 깨는 데 걸리는 시간을 오프라인으로 추정합니다.",
+      "keywords": [
+        "강도",
+        "강한 비밀번호",
+        "보안",
+        "내 비밀번호 괜찮나",
+        "엔트로피",
+        "비밀번호 확인"
+      ],
+      "aliases": [
+        "password strength",
+        "password checker"
+      ],
+      "note": "분석은 완전히 로컬에서 이루어지며, 입력한 비밀번호는 절대 전송되지 않습니다."
+    },
+    "file-encrypt": {
+      "name": "파일 암호화",
+      "description": "최신 암호화 방식으로 파일을 비밀번호로 보호합니다.",
+      "keywords": [
+        "암호화",
+        "보호",
+        "비밀번호",
+        "aes",
+        "기밀",
+        "파일 보호"
+      ],
+      "aliases": [
+        "encrypt file",
+        "file encryption",
+        "aes encrypt"
+      ]
+    },
+    "file-decrypt": {
+      "name": "파일 복호화",
+      "description": "FourTout로 암호화한 파일의 내용을 되찾습니다.",
+      "keywords": [
+        "복호화",
+        "암호 해제",
+        "암호화된 파일 열기",
+        "복원"
+      ],
+      "aliases": [
+        "decrypt file",
+        "file decryption"
+      ]
+    },
+    "metadata-strip-any": {
+      "name": "파일 메타데이터 제거",
+      "description": "문서를 공유하기 전에 작성자, 날짜, 기기, 위치 정보를 지웁니다.",
+      "keywords": [
+        "메타데이터",
+        "익명화",
+        "공유 전",
+        "개인정보",
+        "작성자 제거",
+        "흔적",
+        "문서 정리"
+      ],
+      "aliases": [
+        "strip metadata",
+        "remove metadata",
+        "anonymize file"
+      ]
+    }
+  }
+}

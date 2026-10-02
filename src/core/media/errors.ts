@@ -1,4 +1,5 @@
 import { JobCancelledError } from "@/core/jobs/types";
+import { localized, msg, t } from "@/i18n";
 
 /**
  * Traduction des échecs FFmpeg en phrases exploitables.
@@ -33,7 +34,7 @@ export function isEncoderUnavailable(message: string): boolean {
   return ENCODER_UNAVAILABLE.test(message);
 }
 
-const RULES: Rule[] = [
+const RULES: Rule[] = localized(() => [
   {
     // Placé en tête : un encodeur matériel injoignable produit aussi des
     // lignes génériques (« Operation not permitted ») qu'il ne faut pas
@@ -47,52 +48,52 @@ const RULES: Rule[] = [
   {
     match: /invalid data found|moov atom not found|could not find codec parameters|end of file/i,
     message:
-      "Ce fichier n'a pas pu être lu : il est peut-être incomplet, endommagé, ou dans un format que le moteur ne reconnaît pas.",
+      t("Ce fichier n'a pas pu être lu : il est peut-être incomplet, endommagé, ou dans un format que le moteur ne reconnaît pas."),
   },
   {
     match: /(unknown encoder|encoder .* not found|unknown decoder|decoder .* not found)/i,
     message:
-      "Le codec demandé n'est pas disponible dans le moteur installé. Choisissez un autre format de sortie.",
+      t("Le codec demandé n'est pas disponible dans le moteur installé. Choisissez un autre format de sortie."),
   },
   {
     match: /does not support|incompatible|could not write header|automatic encoder selection failed/i,
     message:
-      "Ce conteneur n'accepte pas cette combinaison de codecs. Changez de format de sortie ou de codec.",
+      t("Ce conteneur n'accepte pas cette combinaison de codecs. Changez de format de sortie ou de codec."),
   },
   {
     match: /stream map .* matches no streams|does not contain any stream|matches no streams/i,
     message:
-      "La piste demandée n'existe pas dans ce fichier. Vérifiez qu'il contient bien de l'audio ou des sous-titres.",
+      t("La piste demandée n'existe pas dans ce fichier. Vérifiez qu'il contient bien de l'audio ou des sous-titres."),
   },
   {
     match: /no space left on device|disk full/i,
-    message: "Il n'y a plus assez d'espace disque pour écrire le résultat.",
+    message: t("Il n'y a plus assez d'espace disque pour écrire le résultat."),
   },
   {
     match: /permission denied|read-only file system/i,
-    message: "L'accès au fichier a été refusé par le système.",
+    message: t("L'accès au fichier a été refusé par le système."),
   },
   {
     match: /no such file or directory/i,
-    message: "Un fichier nécessaire au traitement est introuvable.",
+    message: t("Un fichier nécessaire au traitement est introuvable."),
   },
   {
     match: /ffmpeg introuvable|ffprobe introuvable/i,
     message:
-      "Le moteur média local (FFmpeg) est introuvable. Cet outil nécessite l'application FourTout installée.",
+      t("Le moteur média local (FFmpeg) est introuvable. Cet outil nécessite l'application FourTout installée."),
   },
   {
     match: /error (while )?(opening|initializing) (the )?(output|encoder|filter)/i,
-    message: "Les paramètres demandés n'ont pas pu être appliqués à ce fichier.",
+    message: t("Les paramètres demandés n'ont pas pu être appliqués à ce fichier."),
   },
   {
     match: /invalid argument|option .* not found|error parsing/i,
-    message: "Les paramètres demandés sont incompatibles entre eux pour ce fichier.",
+    message: t("Les paramètres demandés sont incompatibles entre eux pour ce fichier."),
   },
-];
+]);
 
 /** Message affiché quand l'utilisateur a arrêté le traitement lui-même. */
-export const MEDIA_CANCELLED = "Traitement annulé.";
+export const MEDIA_CANCELLED = msg("Traitement annulé.");
 
 export interface MediaErrorDescription {
   /** Phrase destinée à l'utilisateur. */
@@ -117,7 +118,7 @@ export function describeMediaError(error: unknown): MediaErrorDescription {
     }
   }
   return {
-    message: raw.trim() === "" ? "Le traitement a échoué." : raw.trim(),
+    message: raw.trim() === "" ? t("Le traitement a échoué.") : raw.trim(),
     detail: raw.trim() === "" ? undefined : raw,
     cancelled: false,
   };

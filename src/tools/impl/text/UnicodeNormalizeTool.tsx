@@ -9,9 +9,10 @@ import {
   type UnicodeForm,
 } from "@/core/text/unicode";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { msg, t, tx } from "@/i18n";
 
 /** « é » composé, puis « e » + accent combinant : visuellement identiques. */
-const SAMPLE = "Café vs Café — ﬁchier № 1 ½";
+const SAMPLE = msg("Café vs Café — ﬁchier № 1 ½");
 
 export function UnicodeNormalizeTool(_props: ToolComponentProps) {
   const [input, setInput] = useState("");
@@ -25,26 +26,23 @@ export function UnicodeNormalizeTool(_props: ToolComponentProps) {
       input={input}
       onInputChange={setInput}
       output={result.text}
-      inputLabel="Texte d'origine"
-      outputLabel={`Texte normalisé (${form})`}
+      inputLabel={t("Texte d'origine")}
+      outputLabel={t("Texte normalisé ({form})", { form })}
       downloadName={`texte-${form.toLowerCase()}.txt`}
       layout="side-by-side"
       sample={SAMPLE}
       summary={
         input.length > 0 ? (
           <span className="tabular-nums">
-            {result.before.units} → {result.after.units} unités UTF-16 ·{" "}
-            {result.before.codePoints} → {result.after.codePoints} points de code ·{" "}
-            {result.before.bytes} → {result.after.bytes} octets UTF-8
-            {result.alreadyNormalized && " · déjà normalisé"}
+            {t("{units} → {units2} unités UTF-16 · {codePoints} → {codePoints2} points de code · {bytes} → {bytes2} octets UTF-8{value}", { units: result.before.units, units2: result.after.units, codePoints: result.before.codePoints, codePoints2: result.after.codePoints, bytes: result.before.bytes, bytes2: result.after.bytes, value: result.alreadyNormalized && t(" · déjà normalisé") })}
           </span>
         ) : undefined
       }
     >
       <Fieldset columns={1}>
-        <Field label="Forme de normalisation" hint={UNICODE_FORM_LABELS[form]}>
+        <Field label={t("Forme de normalisation")} hint={tx(UNICODE_FORM_LABELS[form])}>
           <OptionGroup
-            ariaLabel="Forme de normalisation"
+            ariaLabel={t("Forme de normalisation")}
             value={form}
             onChange={setForm}
             options={(Object.keys(UNICODE_FORM_LABELS) as UnicodeForm[]).map((value) => ({
@@ -59,8 +57,7 @@ export function UnicodeNormalizeTool(_props: ToolComponentProps) {
       {points.length > 0 && (
         <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-3">
           <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-[var(--ft-text-muted)]">
-            <Icon name="ScanText" size={13} /> Points de code du texte d'origine
-            {points.length === 120 && " (120 premiers)"}
+            <Icon name="ScanText" size={13} />{" "}{t("Points de code du texte d'origine{value}", { value: points.length === 120 && " (120 premiers)" })}
           </p>
           <div className="flex flex-wrap gap-1">
             {points.map((point, index) => (

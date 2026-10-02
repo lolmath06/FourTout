@@ -2,6 +2,7 @@ import clsx from "clsx";
 import type { NetworkReach, ToolCapability, ToolDefinition } from "@/core/tools/types";
 import { networkReach } from "@/core/tools/types";
 import { Icon } from "@/components/ui/Icon";
+import { localized, t, tx } from "@/i18n";
 
 /**
  * Propriétés d'un outil, en **ligne de métadonnées** plutôt qu'en pastilles.
@@ -23,31 +24,31 @@ interface Descriptor {
   title: string;
 }
 
-const DESCRIPTORS: Partial<Record<ToolCapability, Descriptor>> = {
-  local: { label: "Local", icon: "ShieldCheck", title: "Traitement entièrement local" },
-  batch: { label: "Par lots", icon: "Layers", title: "Accepte plusieurs fichiers" },
+const DESCRIPTORS: Partial<Record<ToolCapability, Descriptor>> = localized(() => ({
+  local: { label: t("Local"), icon: "ShieldCheck", title: t("Traitement entièrement local") },
+  batch: { label: t("Par lots"), icon: "Layers", title: t("Accepte plusieurs fichiers") },
   "long-running": {
-    label: "Peut être long",
+    label: t("Peut être long"),
     icon: "Clock3",
-    title: "Opération potentiellement longue, avec progression et annulation",
+    title: t("Opération potentiellement longue, avec progression et annulation"),
   },
   destructive: {
-    label: "Irréversible",
+    label: t("Irréversible"),
     icon: "TriangleAlert",
     tone: "danger",
-    title: "Cette opération modifie ou supprime des données de façon définitive",
+    title: t("Cette opération modifie ou supprime des données de façon définitive"),
   },
   "needs-sidecar": {
-    label: "Moteur embarqué",
+    label: t("Moteur embarqué"),
     icon: "Cpu",
-    title: "S'appuie sur un moteur fourni avec l'application",
+    title: t("S'appuie sur un moteur fourni avec l'application"),
   },
   "needs-device": {
-    label: "Micro / caméra",
+    label: t("Micro / caméra"),
     icon: "Mic",
-    title: "Demande l'accès à un périphérique",
+    title: t("Demande l'accès à un périphérique"),
   },
-};
+}));
 
 /**
  * Une seule mention réseau par outil, dérivée de `networkReach`.
@@ -56,24 +57,24 @@ const DESCRIPTORS: Partial<Record<ToolCapability, Descriptor>> = {
  * `internet`, `network` + `local-network`) : les rendre une par une afficherait
  * « Réseau » et « Internet requis » côte à côte, pour dire une seule chose.
  */
-const REACH_DESCRIPTORS: Record<Exclude<NetworkReach, "none">, Descriptor> = {
+const REACH_DESCRIPTORS: Record<Exclude<NetworkReach, "none">, Descriptor> = localized(() => ({
   "local-network": {
-    label: "Réseau local",
+    label: t("Réseau local"),
     icon: "Network",
-    title: "Ouvre des connexions sur votre réseau local, jamais vers Internet",
+    title: t("Ouvre des connexions sur votre réseau local, jamais vers Internet"),
   },
   network: {
-    label: "Réseau",
+    label: t("Réseau"),
     icon: "Network",
-    title: "Ouvre de vraies connexions réseau, sans exiger Internet",
+    title: t("Ouvre de vraies connexions réseau, sans exiger Internet"),
   },
   internet: {
-    label: "Internet requis",
+    label: t("Internet requis"),
     icon: "Wifi",
     tone: "warn",
-    title: "Cet outil ne fonctionne pas sans connexion Internet",
+    title: t("Cet outil ne fonctionne pas sans connexion Internet"),
   },
-};
+}));
 
 const TONE_CLASS = {
   warn: "text-[var(--ft-warn)]",
@@ -101,14 +102,14 @@ export function CapabilityList({
       {visible.map((descriptor) => (
         <span
           key={descriptor.label}
-          title={descriptor.title}
+          title={tx(descriptor.title)}
           className={clsx(
             "inline-flex items-center gap-1",
             descriptor.tone ? TONE_CLASS[descriptor.tone] : "text-[var(--ft-text-faint)]",
           )}
         >
           <Icon name={descriptor.icon} size={12} />
-          {descriptor.label}
+          {tx(descriptor.label)}
         </span>
       ))}
     </div>

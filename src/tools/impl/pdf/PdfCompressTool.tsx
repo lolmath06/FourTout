@@ -9,6 +9,7 @@ import {
   type CompressionLevel,
 } from "@/core/pdf/operations/compress";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 export function PdfCompressTool({ tool }: ToolComponentProps) {
   const [level, setLevel] = useState<CompressionLevel>("balanced");
@@ -24,14 +25,12 @@ export function PdfCompressTool({ tool }: ToolComponentProps) {
     <div className="space-y-4">
       <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2.5 text-xs text-[var(--ft-text-muted)]">
         <Icon name="Info" size={14} className="mt-px shrink-0" />
-        Le gain dépend entièrement du contenu. Un document rempli de photos ou de pages scannées
-        peut perdre beaucoup de poids ; un document uniquement textuel, déjà bien optimisé, ne
-        gagnera presque rien. Le texte reste du texte : il demeure sélectionnable.
+        {t("Le gain dépend entièrement du contenu. Un document rempli de photos ou de pages scannées peut perdre beaucoup de poids ; un document uniquement textuel, déjà bien optimisé, ne gagnera presque rien. Le texte reste du texte : il demeure sélectionnable.")}
       </p>
 
       <PdfToolShell
         tool={tool}
-        actionLabel="Compresser"
+        actionLabel={t("Compresser")}
         run={async ({ documents, context }) => {
           const result = await compressPdf(documents[0].source, level, context);
           setReport({
@@ -41,15 +40,15 @@ export function PdfCompressTool({ tool }: ToolComponentProps) {
           });
 
           const summary = result.improved
-            ? `${formatFileSize(result.originalSize)} → ${formatFileSize(result.compressedSize)} (${result.savedPercent.toFixed(1)} % de gain).`
-            : `${formatFileSize(result.originalSize)} → ${formatFileSize(result.compressedSize)} : aucun gain sur ce document.`;
+            ? t("{size} → {size2} ({percent} % de gain).", { size: formatFileSize(result.originalSize), size2: formatFileSize(result.compressedSize), percent: result.savedPercent.toFixed(1) })
+            : t("{size} → {size2} : aucun gain sur ce document.", { size: formatFileSize(result.originalSize), size2: formatFileSize(result.compressedSize) });
 
           const details: string[] = [];
           if (result.imagesRecompressed > 0) {
-            details.push(`${result.imagesRecompressed} image(s) réencodée(s)`);
+            details.push(t("{imagesRecompressed} image(s) réencodée(s)", { imagesRecompressed: result.imagesRecompressed }));
           }
           if (result.imagesSkipped > 0) {
-            details.push(`${result.imagesSkipped} image(s) laissée(s) telle(s) quelle(s)`);
+            details.push(t("{imagesSkipped} image(s) laissée(s) telle(s) quelle(s)", { imagesSkipped: result.imagesSkipped }));
           }
 
           return {
@@ -57,15 +56,15 @@ export function PdfCompressTool({ tool }: ToolComponentProps) {
             summary: [summary, details.join(", ")].filter(Boolean).join(" "),
             warning: result.improved
               ? undefined
-              : "Le fichier produit n'est pas plus petit que l'original : conservez plutôt votre document de départ.",
+              : t("Le fichier produit n'est pas plus petit que l'original : conservez plutôt votre document de départ."),
           };
         }}
       >
         {() => (
           <Fieldset columns={1}>
-            <Field label="Niveau de compression" hint={hint}>
+            <Field label={t("Niveau de compression")} hint={tx(hint)}>
               <OptionGroup
-                ariaLabel="Niveau de compression"
+                ariaLabel={t("Niveau de compression")}
                 value={level}
                 onChange={setLevel}
                 options={COMPRESSION_LEVELS.map((entry) => ({
@@ -81,10 +80,10 @@ export function PdfCompressTool({ tool }: ToolComponentProps) {
 
       {report && (
         <div className="grid gap-1.5 sm:grid-cols-3">
-          <Metric label="Taille d'origine" value={formatFileSize(report.original)} />
-          <Metric label="Après compression" value={formatFileSize(report.compressed)} />
+          <Metric label={t("Taille d'origine")} value={formatFileSize(report.original)} />
+          <Metric label={t("Après compression")} value={formatFileSize(report.compressed)} />
           <Metric
-            label="Gain"
+            label={t("Gain")}
             value={`${report.percent > 0 ? "−" : "+"}${Math.abs(report.percent).toFixed(1)} %`}
             tone={report.percent > 0 ? "good" : "bad"}
           />
@@ -112,7 +111,7 @@ function Metric({
   return (
     <div className="rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface)] px-3 py-2">
       <p className={`text-lg font-semibold tabular-nums leading-6 ${color}`}>{value}</p>
-      <p className="text-[11px] text-[var(--ft-text-muted)]">{label}</p>
+      <p className="text-[11px] text-[var(--ft-text-muted)]">{tx(label)}</p>
     </div>
   );
 }

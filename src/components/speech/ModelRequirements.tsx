@@ -13,6 +13,7 @@ import {
   type SpeechAsset,
 } from "@/core/speech/models";
 import { notify } from "@/features/notifications/store";
+import { t, tx } from "@/i18n";
 
 /**
  * Installation explicite des moteurs et modèles de parole.
@@ -26,9 +27,8 @@ import { notify } from "@/features/notifications/store";
 /** Message affiché hors application (aucun modèle installé dans un navigateur). */
 function NativeOnly({ what }: { what: string }) {
   return (
-    <Callout tone="info" title="Application installée requise">
-      {what} s'appuie sur un modèle local, installé par FourTout. Ce n'est pas disponible dans
-      l'aperçu navigateur.
+    <Callout tone="info" title={t("Application installée requise")}>
+      {t("{what} s'appuie sur un modèle local, installé par FourTout. Ce n'est pas disponible dans l'aperçu navigateur.", { what })}
     </Callout>
   );
 }
@@ -52,8 +52,8 @@ export interface ModelRequirementsProps {
 export function ModelRequirements({
   required,
   optional = [],
-  what = "Cette fonction",
-  manageLabel = "Gérer les moteurs, voix et modèles",
+  what = t("Cette fonction"),
+  manageLabel = t("Gérer les moteurs, voix et modèles"),
   children,
 }: ModelRequirementsProps) {
   const [assets, setAssets] = useState<SpeechAsset[] | undefined>(undefined);
@@ -78,7 +78,7 @@ export function ModelRequirements({
     return () => abortRef.current?.abort();
   }, [refresh]);
 
-  if (!isTauri()) return <NativeOnly what={what} />;
+  if (!isTauri()) return <NativeOnly what={tx(what)} />;
   if (!assets) return null;
 
   const missing = missingAssets(assets, required);
@@ -91,11 +91,11 @@ export function ModelRequirements({
     setProgress({ received: 0, total: asset.size });
     try {
       await installAsset(asset.id, { onProgress: setProgress, signal: controller.signal });
-      notify.success("Installation terminée", asset.label);
+      notify.success(t("Installation terminée"), asset.label);
     } catch (error) {
       const message = String(error);
-      if (message.includes("cancelled")) notify.info("Installation annulée", asset.label);
-      else notify.error("Installation impossible", message.replace(/^Error:\s*/, ""));
+      if (message.includes("cancelled")) notify.info(t("Installation annulée"), asset.label);
+      else notify.error(t("Installation impossible"), message.replace(/^Error:\s*/, ""));
     } finally {
       abortRef.current = null;
       setBusy(undefined);
@@ -107,9 +107,9 @@ export function ModelRequirements({
   const uninstall = async (asset: SpeechAsset) => {
     try {
       await removeAsset(asset.id);
-      notify.success("Élément supprimé", asset.label);
+      notify.success(t("Élément supprimé"), asset.label);
     } catch (error) {
-      notify.error("Suppression impossible", String(error));
+      notify.error(t("Suppression impossible"), String(error));
     }
     await refresh();
   };
@@ -125,9 +125,9 @@ export function ModelRequirements({
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="flex items-center gap-2 font-medium">
             {asset.installed && <Icon name="Check" size={14} className="text-[var(--ft-ok)]" />}
-            {asset.label}
+            {tx(asset.label)}
           </span>
-          <span className="text-xs text-[var(--ft-text-muted)]">{asset.detail}</span>
+          <span className="text-xs text-[var(--ft-text-muted)]">{tx(asset.detail)}</span>
           <span className="text-[11px] text-[var(--ft-text-faint)]">
             {formatSize(asset.size)} · {asset.license}
           </span>
@@ -145,19 +145,19 @@ export function ModelRequirements({
               {Math.round(ratio * 100)} %
             </span>
             <Button size="sm" variant="ghost" onClick={() => abortRef.current?.abort()}>
-              Annuler
+              {t("Annuler")}
             </Button>
           </span>
         ) : asset.installed ? (
           <Button size="sm" variant="ghost" onClick={() => void uninstall(asset)} disabled={!!busy}>
-            <Icon name="Trash2" size={14} /> Supprimer
+            <Icon name="Trash2" size={14} />{" "}{t("Supprimer")}
           </Button>
         ) : asset.available ? (
           <Button size="sm" variant="primary" onClick={() => void install(asset)} disabled={!!busy}>
-            <Icon name="Download" size={14} /> Installer
+            <Icon name="Download" size={14} />{" "}{t("Installer")}
           </Button>
         ) : (
-          <span className="text-xs text-[var(--ft-text-faint)]">Indisponible sur ce système</span>
+          <span className="text-xs text-[var(--ft-text-faint)]">{t("Indisponible sur ce système")}</span>
         )}
       </li>
     );
@@ -167,15 +167,14 @@ export function ModelRequirements({
     return (
       <div className="space-y-3 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-4">
         <p className="flex items-center gap-2 text-sm font-medium">
-          <Icon name="Download" size={16} /> Installation nécessaire
+          <Icon name="Download" size={16} />{" "}{t("Installation nécessaire")}
         </p>
         <p className="text-sm text-[var(--ft-text-muted)]">
-          Cet outil a besoin des éléments ci-dessous. Ils sont téléchargés une seule fois depuis
-          leur source officielle, vérifiés par empreinte, puis fonctionnent hors ligne.
+          {t("Cet outil a besoin des éléments ci-dessous. Ils sont téléchargés une seule fois depuis leur source officielle, vérifiés par empreinte, puis fonctionnent hors ligne.")}
         </p>
         <ul className="flex flex-col gap-2">{shown.map(row)}</ul>
         {directory && (
-          <p className="text-[11px] text-[var(--ft-text-faint)]">Stockés dans {directory}</p>
+          <p className="text-[11px] text-[var(--ft-text-faint)]">{t("Stockés dans {directory}", { directory })}</p>
         )}
       </div>
     );
@@ -197,7 +196,7 @@ export function ModelRequirements({
           <div className="mt-2 space-y-2">
             <ul className="flex flex-col gap-2">{shown.map(row)}</ul>
             {directory && (
-              <p className="text-[11px] text-[var(--ft-text-faint)]">Stockés dans {directory}</p>
+              <p className="text-[11px] text-[var(--ft-text-faint)]">{t("Stockés dans {directory}", { directory })}</p>
             )}
           </div>
         )}

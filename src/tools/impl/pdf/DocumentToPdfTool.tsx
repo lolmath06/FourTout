@@ -11,6 +11,7 @@ import { extensionOf } from "@/core/files";
 import { toPdfError } from "@/core/pdf/errors";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 function detectKind(name: string): DocumentKind {
   const ext = extensionOf(name);
@@ -46,11 +47,11 @@ export function DocumentToPdfTool({ tool }: ToolComponentProps) {
         report: context.report,
         signal: context.signal,
       });
-      return { files: [output], summary: `PDF généré depuis ${kind === "markdown" ? "Markdown" : kind === "html" ? "HTML" : "texte"}.` };
+      return { files: [output], summary: t("PDF généré depuis {value}.", { value: kind === "markdown" ? t("Markdown") : kind === "html" ? "HTML" : "texte" }) };
     });
     if (result) {
       setOutcome(result);
-      notify.success("Fichier prêt", result.summary);
+      notify.success(t("Fichier prêt"), result.summary);
     }
   };
 
@@ -62,29 +63,29 @@ export function DocumentToPdfTool({ tool }: ToolComponentProps) {
         constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
         files={files}
         onChange={setFiles}
-        label="Déposez un fichier .txt, .md ou .html"
+        label={t("Déposez un fichier .txt, .md ou .html")}
         disabled={job.isRunning}
       />
 
       {file && (
         <>
           <Fieldset>
-            <Field label="Type de contenu">
+            <Field label={t("Type de contenu")}>
               <OptionGroup
-                ariaLabel="Type"
+                ariaLabel={t("Type")}
                 value={kind}
                 onChange={setKind}
                 options={[
-                  { value: "text", label: "Texte" },
-                  { value: "markdown", label: "Markdown" },
+                  { value: "text", label: t("Texte") },
+                  { value: "markdown", label: t("Markdown") },
                   { value: "html", label: "HTML" },
                 ]}
               />
             </Field>
-            <Field label="Titre (facultatif)">
-              <TextInput value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titre en tête du document" />
+            <Field label={t("Titre (facultatif)")}>
+              <TextInput value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("Titre en tête du document")} />
             </Field>
-            <Field label="Taille du texte (pt)">
+            <Field label={t("Taille du texte (pt)")}>
               <NumberInput value={fontSize} min={8} max={24} onChange={(e) => setFontSize(Number(e.target.value) || 11)} />
             </Field>
           </Fieldset>
@@ -97,12 +98,12 @@ export function DocumentToPdfTool({ tool }: ToolComponentProps) {
           )}
 
           <div className="flex items-center justify-end gap-2">
-            {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>Annuler</Button>}
+            {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>{t("Annuler")}</Button>}
             <Button size="md" variant="primary" onClick={run} disabled={job.isRunning || content.trim().length === 0}>
               {job.isRunning ? (
-                <><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? "Génération…"}</>
+                <><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? t("Génération…")}</>
               ) : (
-                <><Icon name="FileType2" size={15} />Créer le PDF</>
+                <><Icon name="FileType2" size={15} />{t("Créer le PDF")}</>
               )}
             </Button>
           </div>

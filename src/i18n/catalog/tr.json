@@ -1,0 +1,3741 @@
+{
+  "categories": {
+    "pdf": {
+      "name": "PDF",
+      "description": "PDF birleştirme, bölme, sıkıştırma, dönüştürme ve koruma.",
+      "keywords": [
+        "pdf",
+        "belge",
+        "acrobat"
+      ]
+    },
+    "images": {
+      "name": "Görseller",
+      "description": "Görselleri dönüştürme, sıkıştırma, yeniden boyutlandırma ve temizleme.",
+      "keywords": [
+        "görsel",
+        "resim",
+        "fotoğraf",
+        "png",
+        "jpg",
+        "jpeg",
+        "webp"
+      ]
+    },
+    "audio": {
+      "name": "Ses",
+      "description": "Sesi dönüştürme, kırpma, normalleştirme, yazıya dökme ve sentezleme.",
+      "keywords": [
+        "ses",
+        "müzik",
+        "mp3",
+        "audio",
+        "konuşma"
+      ]
+    },
+    "video": {
+      "name": "Video",
+      "description": "Videoları dönüştürme, sıkıştırma, kırpma ve altyazılama.",
+      "keywords": [
+        "video",
+        "film",
+        "mp4",
+        "klip"
+      ]
+    },
+    "text": {
+      "name": "Metin ve belgeler",
+      "description": "Metni analiz etme, temizleme, karşılaştırma ve dönüştürme.",
+      "keywords": [
+        "metin",
+        "belge",
+        "markdown",
+        "sözcükler",
+        "yazı"
+      ]
+    },
+    "files": {
+      "name": "Dosyalar ve arşivler",
+      "description": "Dosyaları sıkıştırma, çıkarma, karşılaştırma, yeniden adlandırma ve düzenleme.",
+      "keywords": [
+        "dosya",
+        "arşiv",
+        "zip",
+        "klasör"
+      ]
+    },
+    "converters": {
+      "name": "Dönüştürücüler",
+      "description": "Dosya türü ne olursa olsun bir biçimden diğerine geçin.",
+      "keywords": [
+        "dönüştür",
+        "dönüştürme",
+        "dönüştürücü",
+        "biçim",
+        "format"
+      ]
+    },
+    "developer": {
+      "name": "Geliştirici",
+      "description": "Teknik biçimleri biçimlendirme, kodlama, üretme ve inceleme.",
+      "keywords": [
+        "dev",
+        "geliştirici",
+        "json",
+        "kod",
+        "programlama"
+      ]
+    },
+    "calculators": {
+      "name": "Hesaplayıcılar",
+      "description": "Birimler, yüzdeler, tarihler, süreler ve günlük hesaplar.",
+      "keywords": [
+        "hesapla",
+        "hesap makinesi",
+        "birim",
+        "çevirme",
+        "ölçü",
+        "matematik"
+      ]
+    },
+    "network": {
+      "name": "Ağ",
+      "description": "Bir bağlantıyı tanılayın, portları test edin, evde neyin bağlı olduğunu görün.",
+      "keywords": [
+        "ağ",
+        "network",
+        "lan",
+        "ip",
+        "ping",
+        "port",
+        "bağlantı",
+        "wifi"
+      ]
+    },
+    "diagnostics": {
+      "name": "Tanılama ve kurtarma",
+      "description": "Hasarlı bir dosyada neyin bozuk olduğunu anlayın ve kurtarılabileni kurtarın.",
+      "keywords": [
+        "tanılama",
+        "bozuk",
+        "hasarlı",
+        "onar",
+        "kurtar",
+        "disk",
+        "bölüm",
+        "smart"
+      ]
+    },
+    "security": {
+      "name": "Güvenlik ve gizlilik",
+      "description": "Parolalar, şifreleme, özetler ve veri silme.",
+      "keywords": [
+        "güvenlik",
+        "gizlilik",
+        "şifreleme",
+        "parola",
+        "şifre",
+        "hash"
+      ]
+    }
+  },
+  "tools": {
+    "pdf-merge": {
+      "name": "PDF birleştir",
+      "description": "Birden çok PDF'yi istediğiniz sırayla tek bir belgede birleştirin.",
+      "keywords": [
+        "birleştir",
+        "birleştirme",
+        "bir araya getir",
+        "birden çok pdf",
+        "tek pdf",
+        "iki pdf birleştir"
+      ],
+      "aliases": [
+        "merge pdf",
+        "combine pdf",
+        "pdf birleştir"
+      ]
+    },
+    "pdf-split": {
+      "name": "PDF böl",
+      "description": "Bir PDF'yi sayfa aralıklarına göre birden çok dosyaya bölün.",
+      "keywords": [
+        "böl",
+        "ayır",
+        "kes",
+        "parçala",
+        "ikiye böl"
+      ],
+      "aliases": [
+        "split pdf",
+        "pdf böl"
+      ]
+    },
+    "pdf-extract-pages": {
+      "name": "Sayfaları çıkar",
+      "description": "Seçilen sayfalardan yeni bir PDF oluşturun.",
+      "keywords": [
+        "çıkar",
+        "seç",
+        "sayfaları al",
+        "bazı sayfaları tut"
+      ],
+      "aliases": [
+        "extract pages",
+        "pdf sayfa çıkar"
+      ]
+    },
+    "pdf-remove-pages": {
+      "name": "Sayfaları sil",
+      "description": "Bir PDF'den bazı sayfaları kalıcı olarak kaldırın.",
+      "keywords": [
+        "sil",
+        "kaldır",
+        "sayfaları sil",
+        "bir sayfayı sil",
+        "son sayfayı kaldır"
+      ],
+      "aliases": [
+        "delete pages",
+        "remove pages pdf"
+      ]
+    },
+    "pdf-reorder-pages": {
+      "name": "Sayfaları yeniden sırala",
+      "description": "Sayfa sırasını sürükleyip bırakarak değiştirin.",
+      "keywords": [
+        "yeniden sırala",
+        "sıra",
+        "sayfaları sırala",
+        "sayfayı taşı",
+        "ters çevir"
+      ],
+      "aliases": [
+        "reorder pages",
+        "organize pdf"
+      ]
+    },
+    "pdf-rotate": {
+      "name": "Sayfaları döndür",
+      "description": "Tüm sayfaları veya bazılarını 90, 180 ya da 270 derece döndürün.",
+      "keywords": [
+        "döndür",
+        "çevir",
+        "döndürme",
+        "düzelt",
+        "ters sayfa",
+        "yön"
+      ],
+      "aliases": [
+        "rotate pdf",
+        "pdf döndür"
+      ]
+    },
+    "pdf-compress": {
+      "name": "PDF sıkıştır",
+      "description": "Okunabilirliği koruyarak bir PDF'nin boyutunu küçültün.",
+      "keywords": [
+        "sıkıştır",
+        "küçült",
+        "boyutu küçült",
+        "boyut azalt",
+        "optimize et",
+        "çok büyük",
+        "büyük dosya",
+        "daha az mb"
+      ],
+      "aliases": [
+        "compress pdf",
+        "reduce pdf size",
+        "pdf küçült",
+        "pdf sıkıştır"
+      ]
+    },
+    "images-to-pdf": {
+      "name": "Görsellerden PDF'ye",
+      "description": "Bir dizi görseli sayfalı bir PDF belgesine dönüştürün.",
+      "keywords": [
+        "görselden pdf",
+        "fotoğraftan pdf",
+        "jpg'den pdf",
+        "png'den pdf",
+        "tarayıcı"
+      ],
+      "aliases": [
+        "image to pdf",
+        "jpg to pdf",
+        "png to pdf"
+      ]
+    },
+    "pdf-to-images": {
+      "name": "PDF'den görsellere",
+      "description": "Bir PDF'nin her sayfasını istediğiniz çözünürlükte PNG veya JPEG olarak dışa aktarın.",
+      "keywords": [
+        "pdf'den görsele",
+        "pdf'den png",
+        "pdf'den jpg",
+        "pdf'den jpeg",
+        "sayfaları dışa aktar",
+        "pdf'yi png'ye çevir"
+      ],
+      "aliases": [
+        "pdf to image",
+        "pdf to jpg",
+        "pdf to png"
+      ]
+    },
+    "document-to-pdf": {
+      "name": "Belgeden PDF'ye",
+      "description": "Bir metin, Markdown veya HTML dosyasını PDF'ye dönüştürün.",
+      "keywords": [
+        "metinden pdf",
+        "markdown'dan pdf",
+        "html'den pdf",
+        "txt'den pdf",
+        "docx'ten pdf"
+      ],
+      "aliases": [
+        "text to pdf",
+        "markdown to pdf",
+        "html to pdf"
+      ]
+    },
+    "pdf-add-text": {
+      "name": "Metin ekle",
+      "description": "Bir formu doldurmak veya not almak için PDF'ye metin yazın.",
+      "keywords": [
+        "yaz",
+        "açıklama ekle",
+        "doldur",
+        "form",
+        "yorum",
+        "pdf'ye metin"
+      ],
+      "aliases": [
+        "add text to pdf",
+        "pdf doldur"
+      ]
+    },
+    "pdf-add-image": {
+      "name": "Görsel veya imza ekle",
+      "description": "Bir görseli, damgayı veya imzayı tam istediğiniz yere ekleyin.",
+      "keywords": [
+        "imzala",
+        "imza",
+        "damga",
+        "kaşe",
+        "logo",
+        "görsel yapıştır"
+      ],
+      "aliases": [
+        "sign pdf",
+        "add signature",
+        "pdf imzala"
+      ]
+    },
+    "pdf-watermark": {
+      "name": "Filigran ekle",
+      "description": "Tüm sayfalara veya bazılarına metin filigranı yerleştirin.",
+      "keywords": [
+        "filigran",
+        "watermark",
+        "gizli",
+        "işaretle",
+        "taslak"
+      ],
+      "aliases": [
+        "watermark pdf"
+      ]
+    },
+    "pdf-page-numbers": {
+      "name": "Sayfaları numaralandır",
+      "description": "Üst veya alt bilgiye özelleştirilebilir sayfa numaraları ekleyin.",
+      "keywords": [
+        "numaralandır",
+        "sayfa numarası",
+        "sayfalama",
+        "numara"
+      ],
+      "aliases": [
+        "page numbers",
+        "pdf numaralandır"
+      ]
+    },
+    "pdf-protect": {
+      "name": "Parolayla koru",
+      "description": "Bir PDF'yi yalnızca parolayla açılacak şekilde şifreleyin.",
+      "keywords": [
+        "koru",
+        "parola",
+        "şifre",
+        "şifrele",
+        "kilitle",
+        "pdf'ye şifre koy",
+        "gizli pdf"
+      ],
+      "aliases": [
+        "protect pdf",
+        "encrypt pdf",
+        "password pdf"
+      ]
+    },
+    "pdf-unlock": {
+      "name": "PDF kilidini aç",
+      "description": "Parolasını bildiğiniz bir PDF'nin korumasını kaldırın.",
+      "keywords": [
+        "kilidi aç",
+        "parolayı kaldır",
+        "şifreyi kaldır",
+        "korumayı kaldır",
+        "şifre çöz"
+      ],
+      "aliases": [
+        "unlock pdf",
+        "remove pdf password",
+        "decrypt pdf"
+      ],
+      "note": "FourTout korumaları kırmaz: parolayı bilmeniz gerekir. Unutulmuş bir parola için “PDF parolasını kurtar” aracına bakın."
+    },
+    "pdf-recover-password": {
+      "name": "PDF parolasını kurtar",
+      "description": "Parolasını unuttuğunuz bir PDF'yi yeniden açmak için olası parolaları deneyin.",
+      "keywords": [
+        "parolamı unuttum",
+        "şifremi unuttum",
+        "parolayı kurtar",
+        "kurtarma",
+        "kilitli pdf",
+        "parolayı kaybettim",
+        "korumalı pdf aç",
+        "sözlük"
+      ],
+      "aliases": [
+        "recover pdf password",
+        "forgot pdf password",
+        "pdf password recovery"
+      ],
+      "note": "Açmaya yetkili olduğunuz bir belgede sözlük ve kurallarla yerel kurtarma. Bu kapsamlı bir arama değildir: listede olmayan bir parola bulunamaz."
+    },
+    "pdf-metadata": {
+      "name": "PDF meta verileri",
+      "description": "Bir PDF'nin başlığını, yazarını, konusunu ve anahtar sözcüklerini okuyun ve değiştirin.",
+      "keywords": [
+        "meta veri",
+        "özellikler",
+        "yazar",
+        "başlık",
+        "belge bilgileri"
+      ],
+      "aliases": [
+        "pdf metadata",
+        "edit pdf properties"
+      ]
+    },
+    "pdf-extract-images": {
+      "name": "PDF'deki görselleri çıkar",
+      "description": "Bir PDF'ye gömülü tüm görselleri geri alın.",
+      "keywords": [
+        "görselleri çıkar",
+        "fotoğrafları al",
+        "resimleri kaydet"
+      ],
+      "aliases": [
+        "extract images from pdf"
+      ]
+    },
+    "pdf-extract-text": {
+      "name": "PDF'deki metni çıkar",
+      "description": "Bir PDF'nin seçilebilir metnini sayfa sayfa alın.",
+      "keywords": [
+        "metni çıkar",
+        "metni kopyala",
+        "pdf'den metne",
+        "içeriği al"
+      ],
+      "aliases": [
+        "pdf to text",
+        "extract text"
+      ]
+    },
+    "pdf-edit-text": {
+      "name": "PDF metnini düzenle",
+      "description": "Metni doğrudan sayfada düzeltin: bir sözcüğe çift tıklayıp değiştirin.",
+      "keywords": [
+        "pdf metni düzenle",
+        "pdf metni değiştir",
+        "pdf'de metin düzelt",
+        "metni değiştir",
+        "pdf düzenle",
+        "yazım hatası düzelt",
+        "tarih değiştir",
+        "tutar değiştir"
+      ],
+      "aliases": [
+        "edit pdf text",
+        "modify pdf text",
+        "change text pdf",
+        "edit text in pdf"
+      ],
+      "note": "Değiştirerek görsel düzenleme: özgün metin, örneklenen arka plan rengiyle örtülür ve yeniden çizilir. Düz arka plandaki yatay metin (belgeler, faturalar, raporlar) için idealdir. Düz olmayan arka plandaki veya döndürülmüş alanlar işaretlenir ve değiştirilmez."
+    },
+    "ocr-document": {
+      "name": "Taranmış PDF'de OCR",
+      "description": "Taranmış bir PDF'deki metni sayfa sayfa, Fransızca veya İngilizce olarak tanıyın.",
+      "keywords": [
+        "ocr",
+        "metin tanıma",
+        "tarama",
+        "taranmış",
+        "fotoğraftan metne",
+        "taramayı oku",
+        "seçilemeyen pdf",
+        "görselden metne"
+      ],
+      "aliases": [
+        "ocr",
+        "optical character recognition",
+        "image to text",
+        "scan to text"
+      ],
+      "note": "Yerleşik yerel OCR motoru (tesseract.js): ağ üzerinden hiçbir veri gönderilmez. Tek bir görsel için “Görseldeki metni çıkar” aracına bakın."
+    },
+    "pdf-compare": {
+      "name": "İki PDF'yi karşılaştır",
+      "description": "Bir belgenin iki sürümü arasındaki farkları vurgulayın.",
+      "keywords": [
+        "karşılaştır",
+        "farklar",
+        "diff",
+        "iki sürüm",
+        "değişiklikler"
+      ],
+      "aliases": [
+        "compare pdf",
+        "pdf diff"
+      ]
+    },
+    "pdf-redact": {
+      "name": "PDF'yi karart",
+      "description": "Hassas alanları kalıcı olarak gizleyin: içerik yalnızca örtülmez, silinir.",
+      "keywords": [
+        "karart",
+        "gizle",
+        "anonimleştir",
+        "sansürle",
+        "hassas veri"
+      ],
+      "aliases": [
+        "redact pdf",
+        "karartma"
+      ]
+    },
+    "pdf-searchable": {
+      "name": "Taranmış PDF'den aranabilir PDF'ye",
+      "description": "Taranmış bir PDF'deki metni tanıyıp görünmez bir katman olarak ekleyin: Ctrl+F, seçme ve kopyalama çalışır, görünüm değişmez.",
+      "keywords": [
+        "aranabilir pdf",
+        "ocr pdf",
+        "pdf tara",
+        "taranmış pdf",
+        "pdf'yi aranabilir yap",
+        "pdf metin tanıma",
+        "metin katmanı",
+        "seçilemeyen pdf"
+      ],
+      "aliases": [
+        "searchable pdf",
+        "ocr pdf",
+        "make pdf searchable",
+        "scanned pdf"
+      ],
+      "note": "Tanıma tamamen yereldir. Özgün sayfalar rasterleştirilmez veya yeniden sıkıştırılmaz: yalnızca görünmez bir metin katmanı eklenir. Sonucun kalitesi taramanın kalitesine bağlıdır."
+    },
+    "pdf-extract-tables": {
+      "name": "PDF'deki tabloları çıkar",
+      "description": "Metnin konumundan satır ve sütunları yeniden oluşturup CSV veya XLSX çalışma kitabı olarak dışa aktarın.",
+      "keywords": [
+        "pdf tablo çıkar",
+        "pdf tablo",
+        "pdf'den excel'e",
+        "pdf'den csv",
+        "tabloyu al",
+        "pdf xlsx",
+        "elektronik tablo",
+        "sütunlar",
+        "satırlar"
+      ],
+      "aliases": [
+        "pdf to excel",
+        "extract tables",
+        "pdf table to csv",
+        "pdf to csv"
+      ],
+      "note": "PDF tablo içermez, yalnızca konumlandırılmış metin içerir: FourTout satır ve sütunları bu konumlardan yeniden oluşturur. Karmaşık tablolar — birleştirilmiş hücreler, birkaç satıra yayılan metin — dışa aktarmadan önce düzeltme gerektirebilir."
+    },
+    "scans-to-pdf": {
+      "name": "Taramalar ve fotoğraflardan PDF'ye",
+      "description": "Taranmış veya fotoğraflanmış sayfaları temizleyip sıralayarak tek bir PDF'de birleştirin.",
+      "keywords": [
+        "taramalardan pdf",
+        "fotoğraflardan pdf",
+        "taramaları birleştir",
+        "sayfaları ciltle",
+        "taranmış sayfalardan pdf",
+        "belge fotoğrafı pdf",
+        "temizle ve birleştir"
+      ],
+      "aliases": [
+        "scans to pdf",
+        "photos to pdf",
+        "scan to pdf"
+      ],
+      "note": "Temizleme tüm sayfalara aynı ayarlarla uygulanır; birleştirme “Görsellerden PDF'ye” motorunu kullanır."
+    },
+    "image-convert": {
+      "name": "Görsel dönüştür",
+      "description": "Bir biçimden diğerine: PNG, JPG, WebP. GIF, BMP, TIFF ve SVG de okunur.",
+      "keywords": [
+        "dönüştür",
+        "biçim değiştir",
+        "png'den jpg",
+        "jpg'den png",
+        "png'den webp",
+        "jpg'den webp",
+        "webp'den png",
+        "webp'den jpg",
+        "webp",
+        "svg'den png",
+        "gif'ten png",
+        "bmp",
+        "tiff",
+        "heic",
+        "avif"
+      ],
+      "aliases": [
+        "convert image",
+        "png to jpg",
+        "jpg to png",
+        "jpg to webp",
+        "webp to png",
+        "image converter"
+      ]
+    },
+    "image-compress": {
+      "name": "Görsel sıkıştır",
+      "description": "Kalite kaybını denetleyerek bir görselin boyutunu küçültün.",
+      "keywords": [
+        "sıkıştır",
+        "fotoğraf sıkıştır",
+        "boyutu küçült",
+        "optimize et",
+        "fotoğraf çok büyük",
+        "daha az kb"
+      ],
+      "aliases": [
+        "compress image",
+        "optimize image",
+        "reduce image size"
+      ]
+    },
+    "image-resize": {
+      "name": "Görseli yeniden boyutlandır",
+      "description": "Boyutları piksel veya yüzde olarak, oranı koruyarak ya da korumadan değiştirin.",
+      "keywords": [
+        "yeniden boyutlandır",
+        "boyut değiştir",
+        "fotoğraf boyutu",
+        "büyüt",
+        "küçült",
+        "piksel",
+        "genişlik",
+        "yükseklik",
+        "1920",
+        "1080"
+      ],
+      "aliases": [
+        "resize image",
+        "scale image"
+      ]
+    },
+    "image-crop": {
+      "name": "Görseli kırp",
+      "description": "Bir görseli serbestçe veya bir orana göre (1:1, 4:3, 16:9, 3:2) görsel olarak kırpın.",
+      "keywords": [
+        "kırp",
+        "fotoğraf kırp",
+        "kes",
+        "çerçeve",
+        "oran",
+        "kare",
+        "crop"
+      ],
+      "aliases": [
+        "crop image"
+      ]
+    },
+    "image-rotate": {
+      "name": "Döndür ve aynala",
+      "description": "Çeyrek turlarla döndürün ve aynalayın, anında önizlemeyle.",
+      "keywords": [
+        "döndür",
+        "çevir",
+        "döndürme",
+        "düzelt",
+        "eğri fotoğraf",
+        "ayna",
+        "aynala",
+        "90 derece"
+      ],
+      "aliases": [
+        "rotate image",
+        "rotate and flip"
+      ]
+    },
+    "image-flip": {
+      "name": "Yatay veya dikey aynala",
+      "description": "Bir görseli aynadaki gibi ters çevirin.",
+      "keywords": [
+        "ayna",
+        "aynala",
+        "simetri",
+        "flip",
+        "ters çevir"
+      ],
+      "aliases": [
+        "flip image",
+        "mirror image"
+      ]
+    },
+    "image-grayscale": {
+      "name": "Siyah beyaz",
+      "description": "Gri tonlamaya veya ayarlanabilir bir eşikle saf siyah beyaza dönüştürün.",
+      "keywords": [
+        "siyah beyaz",
+        "gri tonlama",
+        "grayscale",
+        "tek renk",
+        "eşik",
+        "rengi al"
+      ],
+      "aliases": [
+        "grayscale",
+        "black and white"
+      ]
+    },
+    "image-adjust": {
+      "name": "Görseli ayarla",
+      "description": "Parlaklık, kontrast, doygunluk ve gamayı canlı önizlemeyle ayarlayın.",
+      "keywords": [
+        "ayarla",
+        "parlaklık",
+        "kontrast",
+        "doygunluk",
+        "gama",
+        "aydınlat",
+        "karart",
+        "düzelt"
+      ],
+      "aliases": [
+        "adjust image",
+        "brightness contrast"
+      ]
+    },
+    "image-blur": {
+      "name": "Bulanıklaştır veya pikselleştir",
+      "description": "Bir bilgiyi gizleyin: tüm görselde veya çizilen bir alanda bulanıklık ya da mozaik.",
+      "keywords": [
+        "bulanıklaştır",
+        "bulanık",
+        "pikselleştir",
+        "mozaik",
+        "gizle",
+        "sansürle"
+      ],
+      "aliases": [
+        "blur image",
+        "pixelate"
+      ]
+    },
+    "image-remove-transparency": {
+      "name": "Saydamlığı kaldır",
+      "description": "Saydam bir PNG veya WebP'yi düz bir arka plana (beyaz, siyah veya renkli) yassılaştırın.",
+      "keywords": [
+        "saydamlığı kaldır",
+        "yassılaştır",
+        "beyaz arka plan",
+        "düz arka plan",
+        "alfayı kaldır",
+        "opak"
+      ],
+      "aliases": [
+        "remove transparency",
+        "flatten image"
+      ]
+    },
+    "image-remove-background": {
+      "name": "Arka planı kaldır",
+      "description": "Bir fotoğraftaki konuyu otomatik olarak kesip arka planı saydam yapın.",
+      "keywords": [
+        "arka planı kaldır",
+        "arka planı sil",
+        "saydam arka plan",
+        "fotoğrafı dekupe et",
+        "dekupe",
+        "konuyu ayır",
+        "profil fotoğrafı",
+        "saydam png"
+      ],
+      "aliases": [
+        "remove background",
+        "background remover",
+        "cutout"
+      ],
+      "note": "Dekupe modeli Ayarlar → Modeller'den bir kez kurulur, ardından çevrimdışı çalışır: görsel hiçbir zaman bir sunucuya gönderilmez. Net ve ayrık bir ana konuyu tanır; belirgin konusu olmayan sahnelerde ve çok ince ayrıntılarda yanılır."
+    },
+    "image-color-transparent": {
+      "name": "Bir rengi saydam yap",
+      "description": "Düz bir rengi (arka planı) silip yerine saydamlık koyun.",
+      "keywords": [
+        "saydam yap",
+        "dekupe",
+        "arka planı kaldır",
+        "saydam renk",
+        "saydam arka plan",
+        "chroma key"
+      ],
+      "aliases": [
+        "color to transparent",
+        "remove background color"
+      ]
+    },
+    "image-ocr": {
+      "name": "Görseldeki metni çıkar (OCR)",
+      "description": "Bir görseldeki metni Fransızca veya İngilizce olarak, %100 yerel tanıyın.",
+      "keywords": [
+        "ocr",
+        "metni çıkar",
+        "fotoğraftan metin",
+        "görselden metne",
+        "metni oku",
+        "metin tanıma",
+        "dijitalleştir",
+        "resimden metin"
+      ],
+      "aliases": [
+        "ocr",
+        "image to text",
+        "extract text"
+      ]
+    },
+    "image-add-text": {
+      "name": "Görsele metin",
+      "description": "Bir görsele metin yazın — açıklama, mim, not — ve elle yerleştirin.",
+      "keywords": [
+        "görsele metin",
+        "açıklama",
+        "mim",
+        "meme",
+        "yaz",
+        "fotoğrafa not ekle"
+      ],
+      "aliases": [
+        "add text to image",
+        "meme generator"
+      ]
+    },
+    "image-metadata-read": {
+      "name": "Görsel meta verilerini oku",
+      "description": "EXIF, GPS, fotoğraf makinesi ve çekim tarihini gösterin.",
+      "keywords": [
+        "exif",
+        "meta veri",
+        "gps",
+        "fotoğraf nerede çekildi",
+        "fotoğraf makinesi",
+        "çekim tarihi"
+      ],
+      "aliases": [
+        "exif viewer",
+        "image metadata"
+      ]
+    },
+    "image-metadata-strip": {
+      "name": "Görsel meta verilerini kaldır",
+      "description": "Bir fotoğrafı paylaşmadan önce EXIF ve GPS verilerini silin.",
+      "keywords": [
+        "exif kaldır",
+        "exif sil",
+        "meta verileri kaldır",
+        "fotoğrafı anonimleştir",
+        "gps kaldır",
+        "paylaşmadan önce",
+        "gizlilik"
+      ],
+      "aliases": [
+        "strip exif",
+        "remove metadata",
+        "anonymize image"
+      ]
+    },
+    "image-batch-convert": {
+      "name": "Toplu görsel dönüştürme",
+      "description": "Aynı dönüştürmeyi bütün bir görsel klasörüne uygulayın.",
+      "keywords": [
+        "toplu",
+        "hepsini",
+        "birden çok görsel",
+        "görsel klasörü",
+        "batch",
+        "tüm fotoğraflarım"
+      ],
+      "aliases": [
+        "batch convert",
+        "bulk image convert"
+      ]
+    },
+    "image-watermark": {
+      "name": "Görsele filigran",
+      "description": "Tek tek veya toplu olarak logo ya da metin filigranı ekleyin.",
+      "keywords": [
+        "filigran",
+        "watermark",
+        "logo",
+        "imza",
+        "fotoğraflarımı koru"
+      ],
+      "aliases": [
+        "watermark image"
+      ]
+    },
+    "image-favicon": {
+      "name": "Favicon oluştur",
+      "description": "Bir görselden çok boyutlu bir favicon ve .ico dosyası üretin.",
+      "keywords": [
+        "favicon",
+        "site simgesi",
+        "ico",
+        "tarayıcı sekmesi",
+        "web sitesi logosu"
+      ],
+      "aliases": [
+        "favicon generator",
+        "ico"
+      ]
+    },
+    "image-icon-sizes": {
+      "name": "Birden çok boyut oluştur",
+      "description": "Gerekli tüm simge veya küçük resim boyutlarını tek seferde dışa aktarın.",
+      "keywords": [
+        "boyutlar",
+        "simgeler",
+        "ikonlar",
+        "uygulama simgesi",
+        "küçük resimler",
+        "thumbnails",
+        "tüm çözünürlükler"
+      ],
+      "aliases": [
+        "icon generator",
+        "app icon sizes"
+      ]
+    },
+    "color-picker": {
+      "name": "Rengi analiz et ve dönüştür",
+      "description": "Bir görselin baskın renkleri, piksel hassasiyetinde damlalık, HEX / RGB / HSL / HSV gösterimleri ve metin ile arka planı arasındaki WCAG kontrastı.",
+      "keywords": [
+        "palet",
+        "baskın renkler",
+        "renk",
+        "hex",
+        "rgb",
+        "hsl",
+        "hsv",
+        "renkleri çıkar",
+        "renk örnekleri",
+        "damlalık",
+        "rgb'den hex",
+        "hex'ten rgb",
+        "rengi dönüştür",
+        "renk kodu",
+        "wcag kontrastı",
+        "kontrast",
+        "erişilebilirlik",
+        "kontrast oranı",
+        "okunabilirlik"
+      ],
+      "aliases": [
+        "color picker",
+        "hex to rgb",
+        "color converter",
+        "eyedropper",
+        "wcag contrast",
+        "contrast checker"
+      ]
+    },
+    "document-perspective": {
+      "name": "Belgenin perspektifini düzelt",
+      "description": "Açılı çekilmiş bir sayfanın fotoğrafını düzeltin: dört köşeyi yerleştirin, FourTout onu karşıdan görülen bir dikdörtgene dönüştürsün.",
+      "keywords": [
+        "perspektif düzelt",
+        "belgeyi düzelt",
+        "belge fotoğrafı",
+        "eğik sayfa",
+        "eğri fotoğraf",
+        "dört köşe",
+        "telefonla tara",
+        "düzleştir",
+        "bozulma"
+      ],
+      "aliases": [
+        "perspective correction",
+        "dewarp",
+        "document scanner",
+        "deskew photo"
+      ],
+      "note": "Dört köşe elle yerleştirilir: otomatik algılamanın yanıldığı yerde bu her zaman kesindir. Köşelerden çıkarılan oranlar yaklaşıktır — kesin sonuç için A4 veya Letter seçin."
+    },
+    "scan-clean": {
+      "name": "Taramayı temizle",
+      "description": "Hafifçe eğik bir belgeyi düzeltin, kontrastı artırın, gri veya sararmış arka planı beyazlatın, gri tonlamaya veya siyah beyaza geçin.",
+      "keywords": [
+        "taramayı temizle",
+        "taranmış belgeyi temizle",
+        "taramayı düzelt",
+        "deskew",
+        "eğik tarama",
+        "gri arka plan",
+        "sararmış kâğıt",
+        "belge kontrastı",
+        "okunaksız tarama",
+        "taramayı iyileştir"
+      ],
+      "aliases": [
+        "clean scan",
+        "deskew",
+        "enhance scan",
+        "document cleanup"
+      ],
+      "note": "Her ayar isteğe bağlıdır ve önce/sonra önizlemesinde görünür. Beyazlatma koyu piksellere asla dokunmaz: ince metin yoğunluğunu korur."
+    },
+    "image-compare": {
+      "name": "İki görseli karşılaştır",
+      "description": "İki görsel arasında neyin değiştiğini görün ve ölçün: yan yana, üst üste veya fark olarak; farklı pikseller, PSNR ve SSIM ile.",
+      "keywords": [
+        "görselleri karşılaştır",
+        "iki görseli karşılaştır",
+        "görsel farkı",
+        "image diff",
+        "piksel farkı",
+        "psnr",
+        "ssim",
+        "iki fotoğraf arasındaki fark",
+        "önce sonra",
+        "sıkıştırma kalitesi",
+        "bindirme",
+        "farkları bul"
+      ],
+      "aliases": [
+        "compare images",
+        "image diff",
+        "pixel diff",
+        "psnr",
+        "ssim",
+        "image comparison"
+      ],
+      "note": "Farklı boyuttaki iki görsel, izniniz olmadan asla yeniden boyutlandırılmaz: yeniden örnekleme, dosyalarda olmayan farklar yaratırdı."
+    },
+    "image-contact-sheet": {
+      "name": "Kontakt baskı oluştur",
+      "description": "Birkaç görseli her dosyanın adıyla birlikte tek bir sayfada ızgara halinde dizin.",
+      "keywords": [
+        "kontakt baskı",
+        "contact sheet",
+        "görsel ızgarası",
+        "mozaik",
+        "küçük resimler",
+        "görselleri birleştir",
+        "fotoğraf montajı",
+        "görsel kataloğu",
+        "bir sayfada birkaç görsel"
+      ],
+      "aliases": [
+        "contact sheet",
+        "photo grid",
+        "thumbnail sheet"
+      ]
+    },
+    "audio-record": {
+      "name": "Mikrofonla kaydet",
+      "description": "Mikrofondan ses kaydedip yerel olarak saklayın.",
+      "keywords": [
+        "kaydet",
+        "mikrofon",
+        "ses kaydedici",
+        "sesimi kaydet",
+        "sesli not"
+      ],
+      "aliases": [
+        "record audio",
+        "voice recorder"
+      ]
+    },
+    "audio-trim": {
+      "name": "Sesi kırp",
+      "description": "Bir ses dosyasının belirli bir bölümünü tutun.",
+      "keywords": [
+        "kırp",
+        "kes",
+        "bölüm",
+        "kısalt",
+        "bir kısmını tut"
+      ],
+      "aliases": [
+        "trim audio",
+        "cut audio",
+        "split audio"
+      ]
+    },
+    "audio-merge": {
+      "name": "Sesleri birleştir",
+      "description": "Birden çok parçayı art arda tek bir dosyada birleştirin.",
+      "keywords": [
+        "birleştir",
+        "ekle",
+        "art arda",
+        "parçaları birleştir"
+      ],
+      "aliases": [
+        "merge audio",
+        "join audio",
+        "concat audio"
+      ]
+    },
+    "audio-convert": {
+      "name": "Ses dönüştür",
+      "description": "Bir biçimden diğerine: MP3, WAV, FLAC, OGG, M4A, OPUS.",
+      "keywords": [
+        "dönüştür",
+        "biçim değiştir",
+        "wav'dan mp3",
+        "mp3'ten wav",
+        "flac",
+        "ogg",
+        "m4a",
+        "opus",
+        "aac"
+      ],
+      "aliases": [
+        "convert audio",
+        "wav to mp3",
+        "audio converter"
+      ]
+    },
+    "audio-compress": {
+      "name": "Ses sıkıştır",
+      "description": "Bit hızını ayarlayarak bir ses dosyasının boyutunu küçültün.",
+      "keywords": [
+        "sıkıştır",
+        "boyutu küçült",
+        "bit hızı",
+        "bitrate",
+        "çok büyük"
+      ],
+      "aliases": [
+        "compress audio",
+        "reduce audio size"
+      ]
+    },
+    "audio-volume": {
+      "name": "Ses düzeyini ayarla",
+      "description": "Bir ses dosyasının genel ses düzeyini artırın veya azaltın.",
+      "keywords": [
+        "ses düzeyi",
+        "sesi aç",
+        "sesi kıs",
+        "yükselt",
+        "güçlendir",
+        "çok kısık"
+      ],
+      "aliases": [
+        "change volume",
+        "amplify audio"
+      ]
+    },
+    "audio-normalize": {
+      "name": "Sesi normalleştir",
+      "description": "Birkaç dosyanın ses yüksekliğini eşitleyin (loudness).",
+      "keywords": [
+        "normalleştir",
+        "eşitle",
+        "loudness",
+        "aynı ses düzeyi",
+        "lufs"
+      ],
+      "aliases": [
+        "normalize audio",
+        "loudness"
+      ]
+    },
+    "audio-speed": {
+      "name": "Hızı değiştir",
+      "description": "Bir sesi, perde düzeltmesiyle ya da onsuz hızlandırın veya yavaşlatın.",
+      "keywords": [
+        "hız",
+        "hızlandır",
+        "yavaşlat",
+        "tempo",
+        "perde",
+        "daha hızlı"
+      ],
+      "aliases": [
+        "audio speed",
+        "speed up audio",
+        "slow down audio"
+      ]
+    },
+    "audio-remove-silence": {
+      "name": "Sessizlikleri kaldır",
+      "description": "Bir kayıttaki boşlukları otomatik olarak algılayıp kesin.",
+      "keywords": [
+        "sessizlik",
+        "boşluklar",
+        "duraklamaları kes",
+        "kaydı temizle",
+        "podcast"
+      ],
+      "aliases": [
+        "remove silence",
+        "trim silence"
+      ]
+    },
+    "video-extract-audio": {
+      "name": "Videodan sesi çıkar",
+      "description": "Bir videonun ses parçasını istediğiniz biçimde alın.",
+      "keywords": [
+        "sesi çıkar",
+        "ses parçası",
+        "videodan mp3",
+        "mp4'ten mp3",
+        "sesi al",
+        "videonun sesi"
+      ],
+      "aliases": [
+        "extract audio",
+        "video to mp3",
+        "mp4 to mp3"
+      ]
+    },
+    "audio-transcribe": {
+      "name": "Ses dökümü",
+      "description": "Bir ses veya video dosyasındaki konuşmayı yerel olarak metne dönüştürün.",
+      "keywords": [
+        "yazıya dök",
+        "döküm",
+        "sesten metne",
+        "konuşmadan metne",
+        "toplantı",
+        "röportaj",
+        "dikte",
+        "altyazı",
+        "mp3 yazıya dök",
+        "videoyu yazıya dök"
+      ],
+      "aliases": [
+        "transcribe",
+        "speech to text",
+        "audio to text",
+        "stt"
+      ],
+      "note": "Bilgisayarınızda çalışan, istek üzerine kurulan konuşma tanıma modeli."
+    },
+    "audio-generate-srt": {
+      "name": "SRT altyazı oluştur",
+      "description": "Bir ses veya videodan zaman damgalı bir altyazı dosyası üretin.",
+      "keywords": [
+        "srt",
+        "altyazı",
+        "vtt",
+        "zaman damgası",
+        "captions",
+        "altyazı oluştur",
+        "altyazı yap"
+      ],
+      "aliases": [
+        "generate subtitles",
+        "srt generator"
+      ]
+    },
+    "text-to-speech": {
+      "name": "Metinden sese",
+      "description": "Bir metni sesli okuyun ve çevrimiçi hizmet olmadan ses dosyası olarak kaydedin.",
+      "keywords": [
+        "konuşma sentezi",
+        "tts",
+        "sesli oku",
+        "metinden sese",
+        "yapay ses",
+        "metni dinle",
+        "metnimden mp3"
+      ],
+      "aliases": [
+        "text to speech",
+        "tts",
+        "seslendirme"
+      ]
+    },
+    "pdf-to-audio": {
+      "name": "PDF'den sese",
+      "description": "Yerel konuşma sentezi ile bir PDF'yi sesli kitaba dönüştürün.",
+      "keywords": [
+        "pdf'den sese",
+        "sesli kitap",
+        "pdf dinle",
+        "pdf'imi oku",
+        "ders dinle"
+      ],
+      "aliases": [
+        "pdf to audio",
+        "pdf to speech",
+        "audiobook"
+      ]
+    },
+    "text-file-to-audio": {
+      "name": "Metin dosyasından sese",
+      "description": "Bir TXT veya Markdown dosyasını seslendirilmiş bir ses dosyasına dönüştürün.",
+      "keywords": [
+        "txt'den sese",
+        "sesli kitap",
+        "anlatım",
+        "metni dinle",
+        "metnimden mp3"
+      ],
+      "aliases": [
+        "txt to audio",
+        "text file to audio"
+      ]
+    },
+    "audio-channels": {
+      "name": "Ses kanallarını dönüştür",
+      "description": "Bir dosyayı mono veya stereoya geçirin ya da olduğu gibi bırakın. Çok kanallı bir dosya, siz istemedikçe asla indirgenmez.",
+      "keywords": [
+        "mono stereo",
+        "ses kanalları",
+        "mono",
+        "stereo",
+        "monoya geç",
+        "stereoya geç",
+        "downmix",
+        "kanalları karıştır",
+        "5.1'den stereoya"
+      ],
+      "aliases": [
+        "audio channels",
+        "mono to stereo",
+        "stereo to mono",
+        "downmix"
+      ],
+      "note": "Monodan stereoya geçerken kanal çoğaltılır: iki taraf da aynı sinyali taşır. Hiçbir uzamsallık uydurulmaz."
+    },
+    "audio-metadata": {
+      "name": "Ses etiketlerini düzenle",
+      "description": "Başlık, sanatçı, albüm, yıl, tür, parça numarası ve yorumu okuyun ve düzeltin — sesi yeniden kodlamadan.",
+      "keywords": [
+        "ses meta verisi",
+        "etiketler",
+        "mp3 etiketleri",
+        "id3",
+        "başlık sanatçı albüm",
+        "başlığı düzelt",
+        "yıl tür parça",
+        "mp3 bilgilerini düzenle"
+      ],
+      "aliases": [
+        "audio metadata",
+        "id3 tags",
+        "edit tags",
+        "music tags"
+      ],
+      "note": "Yazma işlemi ses akışını olduğu gibi kopyalar (-c copy): ortaya çıkan ses bit düzeyinde aynıdır."
+    },
+    "media-info": {
+      "name": "Medyayı incele",
+      "description": "Bir ses veya video dosyasının bildirdiği her şey: kapsayıcı, kodekler, çözünürlük, kare hızı, bit hızları, kanallar, etiketler.",
+      "keywords": [
+        "video meta verisi",
+        "ses meta verisi",
+        "medya bilgisi",
+        "kodek",
+        "bit hızı",
+        "video çözünürlüğü",
+        "kare hızı",
+        "fps",
+        "kanallar",
+        "örnekleme hızı",
+        "videoyu incele",
+        "ffprobe"
+      ],
+      "aliases": [
+        "media info",
+        "media metadata",
+        "video metadata",
+        "ffprobe",
+        "mediainfo"
+      ]
+    },
+    "video-convert": {
+      "name": "Video dönüştür",
+      "description": "Bir biçimden diğerine: MP4, MKV, WebM, MOV.",
+      "keywords": [
+        "dönüştür",
+        "biçim değiştir",
+        "mkv'den mp4",
+        "avi'den mp4",
+        "webm",
+        "mov"
+      ],
+      "aliases": [
+        "convert video",
+        "mkv to mp4",
+        "video converter"
+      ],
+      "note": "Yalnızca kurulu motorda gerçekten bulunan kodekler sunulur."
+    },
+    "video-compress": {
+      "name": "Video sıkıştır",
+      "description": "Hedef kaliteyi seçerek bir videonun boyutunu büyük ölçüde küçültün.",
+      "keywords": [
+        "sıkıştır",
+        "boyutu küçült",
+        "çok büyük",
+        "e-postayla gönder",
+        "daha az mb",
+        "optimize et"
+      ],
+      "aliases": [
+        "compress video",
+        "reduce video size"
+      ]
+    },
+    "video-resolution": {
+      "name": "Çözünürlüğü değiştir",
+      "description": "Bir videoyu 1080p, 720p, 480p veya özel bir boyuta getirin.",
+      "keywords": [
+        "çözünürlük",
+        "1080p",
+        "720p",
+        "480p",
+        "4k",
+        "yeniden boyutlandır",
+        "tanım"
+      ],
+      "aliases": [
+        "resize video",
+        "change resolution",
+        "downscale video"
+      ]
+    },
+    "video-trim": {
+      "name": "Videoyu kırp",
+      "description": "Mümkünse yeniden kodlamadan yalnızca bir bölümü tutun.",
+      "keywords": [
+        "kırp",
+        "kes",
+        "bölüm",
+        "kısalt",
+        "başını kes",
+        "sonunu kes",
+        "klip"
+      ],
+      "aliases": [
+        "trim video",
+        "cut video"
+      ]
+    },
+    "video-merge": {
+      "name": "Videoları birleştir",
+      "description": "Birden çok videoyu art arda tek bir dosyada birleştirin.",
+      "keywords": [
+        "birleştir",
+        "ekle",
+        "art arda",
+        "klipleri birleştir"
+      ],
+      "aliases": [
+        "merge video",
+        "concat video",
+        "join video"
+      ]
+    },
+    "video-crop": {
+      "name": "Video görüntüsünü kırp",
+      "description": "Tutulacak alanı sabit oranlarla görsel olarak seçin.",
+      "keywords": [
+        "kırp",
+        "yeniden çerçevele",
+        "crop",
+        "kenarları kes",
+        "dikey biçim",
+        "9:16",
+        "kare",
+        "siyah bantları kaldır"
+      ],
+      "aliases": [
+        "crop video",
+        "vertical video",
+        "reframe"
+      ]
+    },
+    "video-to-gif": {
+      "name": "Videodan GIF'e",
+      "description": "Bir video bölümünü optimize edilmiş animasyonlu GIF'e dönüştürün.",
+      "keywords": [
+        "gif",
+        "videodan gif",
+        "animasyon",
+        "döngü",
+        "mp4'ten gif"
+      ],
+      "aliases": [
+        "video to gif",
+        "mp4 to gif",
+        "gif maker"
+      ]
+    },
+    "gif-to-video": {
+      "name": "GIF'ten videoya",
+      "description": "Animasyonlu bir GIF'i çok daha hafif olan MP4 veya WebM'e dönüştürün.",
+      "keywords": [
+        "gif'ten videoya",
+        "gif'ten mp4",
+        "gif dönüştür",
+        "animasyondan videoya",
+        "gif çok büyük"
+      ],
+      "aliases": [
+        "gif to video",
+        "gif to mp4",
+        "gif to webm"
+      ]
+    },
+    "video-extract-frame": {
+      "name": "Videodan kare çıkar",
+      "description": "Belirli bir kareyi yakalayın veya düzenli aralıklarla görüntü alın.",
+      "keywords": [
+        "kare",
+        "görüntü yakala",
+        "videodan resim",
+        "ekran görüntüsü",
+        "durağan kare",
+        "küçük resim"
+      ],
+      "aliases": [
+        "extract frame",
+        "video screenshot",
+        "video to image"
+      ]
+    },
+    "video-speed": {
+      "name": "Video hızını değiştir",
+      "description": "Sesiyle birlikte hızlandırılmış veya ağır çekim video oluşturun.",
+      "keywords": [
+        "hız",
+        "hızlandırılmış",
+        "ağır çekim",
+        "timelapse",
+        "slow motion",
+        "daha hızlı"
+      ],
+      "aliases": [
+        "video speed",
+        "timelapse",
+        "slow motion"
+      ]
+    },
+    "video-rotate": {
+      "name": "Videoyu döndür",
+      "description": "Yanlış yönde çekilmiş bir videoyu düzeltin veya aynalayın.",
+      "keywords": [
+        "döndür",
+        "çevir",
+        "döndürme",
+        "ters",
+        "dikey çekilmiş",
+        "düzelt",
+        "aynala"
+      ],
+      "aliases": [
+        "rotate video",
+        "flip video",
+        "mirror video"
+      ]
+    },
+    "video-remove-audio": {
+      "name": "Videonun sesini kaldır",
+      "description": "Görüntüyü yeniden kodlamadan videonun sessiz bir sürümünü oluşturun.",
+      "keywords": [
+        "sesi kaldır",
+        "sessiz",
+        "sessiz video",
+        "müziği kaldır",
+        "sesi kapat"
+      ],
+      "aliases": [
+        "remove audio",
+        "mute video"
+      ]
+    },
+    "video-replace-audio": {
+      "name": "Ses parçasını değiştir",
+      "description": "Bir videonun ses parçasını değiştirin veya ek bir parça ekleyin.",
+      "keywords": [
+        "sesi değiştir",
+        "müzik ekle",
+        "seslendirme",
+        "dublaj",
+        "ses parçası",
+        "ikinci ses parçası"
+      ],
+      "aliases": [
+        "replace audio",
+        "add audio track",
+        "dub video"
+      ],
+      "note": "Videoyu ve ses dosyasını birlikte bırakın."
+    },
+    "video-volume": {
+      "name": "Video ses düzeyini ayarla",
+      "description": "Görüntüye dokunmadan bir videonun sesini açın veya kısın.",
+      "keywords": [
+        "ses düzeyi",
+        "ses çok kısık",
+        "ses çok yüksek",
+        "sesi aç",
+        "sesi kıs",
+        "yükselt",
+        "ses düzeyini normalleştir"
+      ],
+      "aliases": [
+        "video volume",
+        "boost audio",
+        "louder video"
+      ]
+    },
+    "video-add-subtitles": {
+      "name": "Altyazı parçası ekle",
+      "description": "Videoya, oynatıcıda açılabilen bir SRT veya VTT dosyası ekleyin.",
+      "keywords": [
+        "altyazı",
+        "srt",
+        "vtt",
+        "altyazı parçası",
+        "softsub",
+        "ekle"
+      ],
+      "aliases": [
+        "add subtitles",
+        "soft subtitles",
+        "mux srt"
+      ],
+      "note": "Videoyu ve altyazı dosyasını birlikte bırakın."
+    },
+    "video-burn-subtitles": {
+      "name": "Altyazıyı göm",
+      "description": "Altyazıları görüntüye yakın: her oynatıcıda görünürler.",
+      "keywords": [
+        "göm",
+        "hardsub",
+        "altyazıyı yak",
+        "görüntüde altyazı",
+        "gömülü srt",
+        "her yerde görünen altyazı"
+      ],
+      "aliases": [
+        "burn subtitles",
+        "hardcode srt",
+        "hardsub"
+      ],
+      "note": "Videoyu ve altyazı dosyasını birlikte bırakın."
+    },
+    "video-extract-subtitles": {
+      "name": "Videodaki altyazıları çıkar",
+      "description": "Mevcut altyazı parçalarını SRT veya VTT olarak dışa aktarın.",
+      "keywords": [
+        "altyazı çıkar",
+        "altyazıları al",
+        "srt'yi çıkar",
+        "altyazı parçası",
+        "mkv altyazı"
+      ],
+      "aliases": [
+        "extract subtitles",
+        "rip subtitles",
+        "demux srt"
+      ],
+      "note": "Yalnızca metin parçaları dışa aktarılabilir; grafik parçalar (PGS, DVD) görüntüdür."
+    },
+    "video-generate-subtitles": {
+      "name": "Video için altyazı oluştur",
+      "description": "Bir videodaki konuşmayı otomatik olarak yazıya döküp dışa aktarın veya gömün.",
+      "keywords": [
+        "altyazı oluştur",
+        "video dökümü",
+        "otomatik altyazı",
+        "otomatik srt",
+        "konuşma tanıma"
+      ],
+      "aliases": [
+        "auto subtitles",
+        "generate subtitles"
+      ],
+      "note": "Zaten kurulu olan yerel döküm modelini kullanır (ağ üzerinden hiçbir şey gönderilmez)."
+    },
+    "video-batch": {
+      "name": "Toplu video işleme",
+      "description": "Birden çok videoyu dönüştürün, sıkıştırın, yeniden boyutlandırın, döndürün veya sesini çıkarın.",
+      "keywords": [
+        "toplu",
+        "hepsini",
+        "tüm videolarım",
+        "klasör",
+        "batch"
+      ],
+      "aliases": [
+        "batch video",
+        "bulk video"
+      ]
+    },
+    "video-frame-rate": {
+      "name": "Kare hızını değiştir",
+      "description": "Kare çoğaltıp silerek bir videoyu 24, 25, 30, 60 fps veya özel bir hıza dönüştürün.",
+      "keywords": [
+        "video fps",
+        "fps değiştir",
+        "kare hızı",
+        "saniyedeki kare",
+        "24 fps",
+        "25 fps",
+        "30 fps",
+        "60 fps",
+        "29.97",
+        "23.976",
+        "ntsc",
+        "pal"
+      ],
+      "aliases": [
+        "frame rate",
+        "change fps",
+        "fps converter",
+        "framerate"
+      ],
+      "note": "Ara kare hesaplanmaz: kareler çoğaltılır veya silinir. Çıktının kare hızı sabittir."
+    },
+    "text-statistics": {
+      "name": "Sözcük ve karakter sayacı",
+      "description": "Sözcükler, karakterler, cümleler, paragraflar ve tahmini okuma süresi.",
+      "keywords": [
+        "say",
+        "sözcük sayısı",
+        "kelime sayısı",
+        "karakterler",
+        "cümleler",
+        "okuma süresi",
+        "metin uzunluğu",
+        "istatistik"
+      ],
+      "aliases": [
+        "word count",
+        "character count",
+        "reading time",
+        "kelime sayacı"
+      ]
+    },
+    "text-case": {
+      "name": "Büyük/küçük harf değiştir",
+      "description": "BÜYÜK HARF, küçük harf, Her Sözcüğün İlk Harfi Büyük, camelCase, snake_case, kebab-case.",
+      "keywords": [
+        "büyük harf",
+        "küçük harf",
+        "harf durumu",
+        "tümü büyük",
+        "camelcase",
+        "snake case",
+        "kebab case",
+        "title case"
+      ],
+      "aliases": [
+        "uppercase",
+        "lowercase",
+        "change case",
+        "text case"
+      ]
+    },
+    "text-clean": {
+      "name": "Metni temizle",
+      "description": "Gereksiz boşlukları, boş satırları, sekmeleri ve görünmez karakterleri kaldırın.",
+      "keywords": [
+        "temizle",
+        "boşluklar",
+        "boş satırlar",
+        "sekmeler",
+        "trim",
+        "satır sonlarını kaldır",
+        "biçimlendirme",
+        "kopyalanmış metin"
+      ],
+      "aliases": [
+        "clean text",
+        "trim whitespace",
+        "remove empty lines"
+      ]
+    },
+    "text-find-replace": {
+      "name": "Bul ve değiştir",
+      "description": "Metni düzenli ifadeyle ya da onsuz toplu olarak değiştirin.",
+      "keywords": [
+        "değiştir",
+        "bul",
+        "ara",
+        "regex",
+        "bul ve değiştir"
+      ],
+      "aliases": [
+        "find and replace",
+        "search replace"
+      ]
+    },
+    "text-compare": {
+      "name": "İki metni karşılaştır",
+      "description": "Satır satır neyin eklendiğini, silindiğini veya değiştiğini görün.",
+      "keywords": [
+        "karşılaştır",
+        "farklar",
+        "diff",
+        "iki sürüm",
+        "değişiklikler"
+      ],
+      "aliases": [
+        "diff",
+        "compare text",
+        "text diff"
+      ]
+    },
+    "text-deduplicate": {
+      "name": "Yinelenenleri kaldır",
+      "description": "Her satırdan yalnızca birini tutun; isteğe bağlı olarak büyük/küçük harfi yok sayın.",
+      "keywords": [
+        "yinelenen",
+        "tekrarları kaldır",
+        "yinelenen satırlar",
+        "benzersiz",
+        "tekrar eden"
+      ],
+      "aliases": [
+        "remove duplicates",
+        "dedupe lines",
+        "unique lines"
+      ]
+    },
+    "text-sort-lines": {
+      "name": "Satırları sırala",
+      "description": "Satırları alfabetik, sayısal veya rastgele sıralayın.",
+      "keywords": [
+        "sırala",
+        "düzenle",
+        "alfabetik sıra",
+        "liste",
+        "rastgele"
+      ],
+      "aliases": [
+        "sort lines",
+        "sort list"
+      ]
+    },
+    "markdown-convert": {
+      "name": "Markdown ↔ HTML / metin",
+      "description": "Markdown'ı HTML'ye veya düz metne dönüştürün, tersini de yapın.",
+      "keywords": [
+        "markdown",
+        "md",
+        "html",
+        "markdown dönüştür",
+        "düz metin",
+        "işle"
+      ],
+      "aliases": [
+        "markdown to html",
+        "html to markdown",
+        "md converter"
+      ]
+    },
+    "text-extract-urls": {
+      "name": "URL'leri çıkar",
+      "description": "Bir metindeki tüm web adreslerini alın.",
+      "keywords": [
+        "url",
+        "bağlantılar",
+        "linkler",
+        "web adresleri",
+        "bağlantıları çıkar",
+        "http"
+      ],
+      "aliases": [
+        "extract urls",
+        "link extractor"
+      ]
+    },
+    "text-extract-emails": {
+      "name": "E-posta adreslerini çıkar",
+      "description": "Bir metindeki tüm e-posta adreslerini ayırın.",
+      "keywords": [
+        "e-postalar",
+        "e-posta adresleri",
+        "mail adresleri",
+        "e-postaları çıkar",
+        "kişiler"
+      ],
+      "aliases": [
+        "extract emails",
+        "email extractor"
+      ]
+    },
+    "text-extract-numbers": {
+      "name": "Sayıları çıkar",
+      "description": "Bir metindeki tüm sayıları çıkarıp toplamını hesaplayın.",
+      "keywords": [
+        "sayılar",
+        "rakamlar",
+        "tutarları çıkar",
+        "toplam",
+        "değerler"
+      ],
+      "aliases": [
+        "extract numbers",
+        "number extractor"
+      ]
+    },
+    "lorem-ipsum": {
+      "name": "Lorem Ipsum",
+      "description": "Yer tutucu metin oluşturun: sözcükler, cümleler veya paragraflar.",
+      "keywords": [
+        "lorem",
+        "sahte metin",
+        "yer tutucu metin",
+        "placeholder",
+        "maket"
+      ],
+      "aliases": [
+        "lorem ipsum",
+        "dummy text",
+        "placeholder text"
+      ]
+    },
+    "text-unicode-normalize": {
+      "name": "Unicode'u normalleştir",
+      "description": "Aksanlı karakterlerin yazımını sistemler arasında eşitleyin (NFC, NFD, NFKC, NFKD).",
+      "keywords": [
+        "unicode",
+        "aksanlar",
+        "türkçe karakterler",
+        "nfc",
+        "nfd",
+        "nfkc",
+        "nfkd",
+        "normalleştir",
+        "garip karakterler",
+        "mac windows"
+      ],
+      "aliases": [
+        "unicode normalization",
+        "normalize unicode",
+        "nfc nfd"
+      ]
+    },
+    "text-line-endings": {
+      "name": "Satır sonlarını dönüştür",
+      "description": "Önceden algılayarak CRLF'den (Windows) LF'ye (Unix) ve tersine geçin.",
+      "keywords": [
+        "crlf",
+        "lf",
+        "satır sonları",
+        "satır başı",
+        "windows unix",
+        "^M",
+        "dos2unix",
+        "unix2dos",
+        "yeni satır"
+      ],
+      "aliases": [
+        "line endings",
+        "crlf to lf",
+        "dos2unix",
+        "unix2dos"
+      ]
+    },
+    "docx-extract": {
+      "name": "Word'den (DOCX) metne, Markdown'a veya HTML'ye",
+      "description": "Bir Word belgesinin içeriğini çıkarın: başlıklar, paragraflar, listeler ve tablolar.",
+      "keywords": [
+        "docx",
+        "word",
+        "word belgesi",
+        "word'den metin",
+        "docx'ten metne",
+        "docx'ten html",
+        "docx'ten markdown",
+        "docx oku"
+      ],
+      "aliases": [
+        "docx to text",
+        "word to text",
+        "docx to html",
+        "docx to markdown"
+      ],
+      "note": "Karmaşık düzen (sütunlar, görseller, stiller) yeniden üretilmez: FourTout içeriği ve yapısını çıkarır."
+    },
+    "docx-to-pdf": {
+      "name": "Word'den (DOCX) PDF'ye",
+      "description": "Bir Word belgesini PDF'ye dönüştürün: başlıklar, paragraflar, listeler ve basit tablolar.",
+      "keywords": [
+        "docx'ten pdf",
+        "word'den pdf",
+        "word dönüştür",
+        "belgeden pdf"
+      ],
+      "aliases": [
+        "docx to pdf",
+        "word to pdf"
+      ],
+      "note": "FourTout içeriği ve yapısını korur — başlıklar, paragraflar, kalın, italik, listeler, basit tablolar — ancak Word düzenini korumaz: sütunlar, kayan kutular, üst ve alt bilgiler, özel yazı tipleri ve görseller farklı olabilir veya kaybolabilir. Piksel düzeyinde aynı bir sonuç için Word veya LibreOffice'ten PDF olarak dışa aktarın."
+    },
+    "document-compare": {
+      "name": "İki belgeyi karşılaştır",
+      "description": "İki belgenin içeriğini — PDF, Word, metin, Markdown veya HTML — farklı biçimlerde olsalar bile satır satır ve sözcük sözcük karşılaştırın.",
+      "keywords": [
+        "belgeleri karşılaştır",
+        "iki belgeyi karşılaştır",
+        "pdf ve word karşılaştır",
+        "iki belge arasındaki fark",
+        "belge farkı",
+        "iki sürüm",
+        "ne değişti",
+        "sözleşmeleri karşılaştır"
+      ],
+      "aliases": [
+        "compare documents",
+        "document diff",
+        "compare pdf docx"
+      ],
+      "note": "Karşılaştırma düzene değil metne dayanır: iki farklı biçim arasında bile içerikte neyin değiştiğini söyler. Taranmış bir PDF önce “Taranmış PDF'den aranabilir PDF'ye” aracından geçmelidir."
+    },
+    "text-encoding-detect": {
+      "name": "Metin dosyasının kodlamasını algıla",
+      "description": "Bir dosyanın kodlamasını, bayt sırası işaretini ve satır sonu düzenini gerçek kesinlik derecesiyle belirleyin.",
+      "keywords": [
+        "metin kodlaması",
+        "kodlamayı algıla",
+        "hangi kodlama",
+        "garip karakterler",
+        "bozuk türkçe karakterler",
+        "mojibake",
+        "utf8 mi latin1 mi",
+        "bom",
+        "satır sonu",
+        "okunamayan dosya",
+        "charset"
+      ],
+      "aliases": [
+        "detect encoding",
+        "charset detection",
+        "what encoding",
+        "bom"
+      ],
+      "note": "Bayt sırası işareti dışında hiçbir dosya kodlamasını bildirmez: algılama bir varsayım olarak kalır ve FourTout yanıltıcı bir hüküm yerine gerçek kesinliğini gösterir."
+    },
+    "text-encoding-convert": {
+      "name": "Metin dosyasının kodlamasını dönüştür",
+      "description": "Bir kodlamadan diğerine geçin — UTF-8, BOM'lu UTF-8, UTF-16 LE/BE, Windows-1252, Latin-1 — habersizce tek bir karakter kaybetmeden.",
+      "keywords": [
+        "kodlama dönüştür",
+        "utf16 utf8",
+        "latin1 utf8",
+        "windows 1254 utf8",
+        "kodlamayı değiştir",
+        "türkçe karakterleri düzelt",
+        "ansi'den utf8",
+        "iso 8859",
+        "bom",
+        "dönüştür"
+      ],
+      "aliases": [
+        "convert encoding",
+        "utf16 to utf8",
+        "latin1 to utf8",
+        "transcode"
+      ],
+      "note": "Hedef kodlama bazı karakterleri yazamıyorsa dönüştürme reddedilir ve bu karakterler listelenir. Değiştirme yalnızca açıkça isterseniz yapılır."
+    },
+    "subtitle-edit": {
+      "name": "Altyazıları düzenle",
+      "description": "SRT ve WebVTT arasında dönüştürün, zaman damgalarını kaydırın, iki dosyayı birleştirin, denetleyin ve onarın.",
+      "keywords": [
+        "altyazı",
+        "srt",
+        "vtt",
+        "webvtt",
+        "srt'den vtt",
+        "vtt'den srt",
+        "altyazıyı kaydır",
+        "altyazıyı senkronize et",
+        "altyazı gecikiyor",
+        "altyazıları birleştir",
+        "srt onar",
+        "çakışma"
+      ],
+      "aliases": [
+        "subtitles",
+        "srt to vtt",
+        "vtt to srt",
+        "shift subtitles",
+        "merge subtitles",
+        "fix srt"
+      ],
+      "note": "Mekanik olarak güvenli olan düzeltilir (sıra, numaralandırma, satır sonları); çakışmalar bildirilir ama asla kendiliğinden kısaltılmaz."
+    },
+    "archive-create": {
+      "name": "Arşiv oluştur",
+      "description": "Dosyaları veya klasörleri klasör yapısını koruyarak ZIP, 7z, TAR, TAR.GZ veya TAR.XZ olarak sıkıştırın.",
+      "keywords": [
+        "zip",
+        "sıkıştır",
+        "arşivle",
+        "7z",
+        "tar",
+        "tar.gz",
+        "zip'e koy",
+        "dosyaları topla"
+      ],
+      "aliases": [
+        "create zip",
+        "compress files",
+        "make archive"
+      ],
+      "note": "Burada oluşturulan 7z şifreli değildir: parola korumalı bir arşiv için, AES-256 ZIP'i 7-Zip, WinRAR, Keka ve Windows Gezgini ile açılan “Parola korumalı arşiv” aracını kullanın."
+    },
+    "archive-extract": {
+      "name": "Arşivi çıkar",
+      "description": "Bir ZIP, 7z, TAR, TAR.GZ veya TAR.XZ arşivini seçtiğiniz klasöre açın.",
+      "keywords": [
+        "arşivi aç",
+        "zip'i aç",
+        "çıkar",
+        "sıkıştırmayı aç",
+        "unzip"
+      ],
+      "aliases": [
+        "unzip",
+        "extract archive",
+        "decompress"
+      ],
+      "note": "Seçilen klasörün dışına hiçbir dosya yazılmaz: yolu yukarı çıkan girdiler (“../”), mutlak yollar ve sembolik bağlantılar reddedilir ve listelenir. RAR biçimi desteklenmez."
+    },
+    "archive-encrypted": {
+      "name": "Parola korumalı arşiv",
+      "description": "Parolayla şifrelenmiş bir arşiv oluşturun veya açın.",
+      "keywords": [
+        "korumalı arşiv",
+        "şifreli zip",
+        "parolalı zip",
+        "şifreli 7z",
+        "dosyaları koru",
+        "güvenli arşiv"
+      ],
+      "aliases": [
+        "encrypted zip",
+        "password protected archive"
+      ],
+      "note": "WinZip AES-256 şifrelemesi: arşiv 7-Zip, WinRAR, PeaZip, Keka ve Windows Gezgini ile açılır. Birkaç saniyede kırılabilen eski “ZipCrypto” asla kullanılmaz. Ancak dosya adları parola olmadan da okunabilir kalır — bu ZIP biçiminin bir sınırıdır."
+    },
+    "file-hash": {
+      "name": "Özet (hash) hesapla",
+      "description": "Boyutu ne olursa olsun bir veya daha fazla dosyanın SHA-256, SHA-512, SHA-1 veya MD5 değerini alın.",
+      "keywords": [
+        "hash",
+        "özet",
+        "parmak izi",
+        "md5",
+        "sha256",
+        "sha1",
+        "sağlama toplamı",
+        "checksum"
+      ],
+      "aliases": [
+        "file hash",
+        "checksum",
+        "md5",
+        "sha256"
+      ]
+    },
+    "file-verify-hash": {
+      "name": "Özeti doğrula",
+      "description": "Bir dosyanın özetini kaynağının bildirdiği özetle karşılaştırın.",
+      "keywords": [
+        "doğrula",
+        "bütünlük",
+        "sağlama toplamı",
+        "dosya bozuk mu",
+        "hash karşılaştır",
+        "özgünlük"
+      ],
+      "aliases": [
+        "verify checksum",
+        "check integrity",
+        "hash compare"
+      ]
+    },
+    "file-find-duplicates": {
+      "name": "Yinelenen dosyaları bul",
+      "description": "Bir klasördeki yinelenenleri ada göre değil içeriğe göre bulun.",
+      "keywords": [
+        "yinelenen",
+        "aynı dosyalar",
+        "yer aç",
+        "temizle",
+        "yinelenen fotoğraflar"
+      ],
+      "aliases": [
+        "find duplicates",
+        "duplicate finder"
+      ]
+    },
+    "file-compare": {
+      "name": "İki dosyayı karşılaştır",
+      "description": "İki dosyanın bayt bayt veya satır satır aynı olup olmadığını denetleyin.",
+      "keywords": [
+        "karşılaştır",
+        "aynı",
+        "farklar",
+        "ikili",
+        "dosya farkı"
+      ],
+      "aliases": [
+        "compare files",
+        "file diff"
+      ]
+    },
+    "file-bulk-rename": {
+      "name": "Toplu yeniden adlandır",
+      "description": "Yüzlerce dosyayı bir desen, numaralandırma veya regex ile yeniden adlandırın.",
+      "keywords": [
+        "yeniden adlandır",
+        "toplu",
+        "toplu ad değiştir",
+        "dosyaları numaralandır",
+        "ön ek",
+        "son ek",
+        "tüm dosyalarım"
+      ],
+      "aliases": [
+        "bulk rename",
+        "batch rename"
+      ]
+    },
+    "file-clean-names": {
+      "name": "Dosya adlarını temizle",
+      "description": "Dosya adlarından aksanları, boşlukları ve sorunlu karakterleri kaldırın.",
+      "keywords": [
+        "aksanlar",
+        "türkçe karakterler",
+        "adlardaki boşluklar",
+        "özel karakterler",
+        "slug",
+        "normalleştir"
+      ],
+      "aliases": [
+        "clean filenames",
+        "sanitize filenames"
+      ]
+    },
+    "file-organize": {
+      "name": "Klasörü düzenle",
+      "description": "Dosyaları uzantıya, tarihe veya türe göre otomatik olarak düzenleyin.",
+      "keywords": [
+        "düzenle",
+        "topla",
+        "sınıflandır",
+        "uzantıya göre",
+        "tarihe göre",
+        "indirilenler klasörünü düzenle",
+        "düzene sok"
+      ],
+      "aliases": [
+        "organize folder",
+        "sort files"
+      ]
+    },
+    "folder-size": {
+      "name": "Klasör alanını analiz et",
+      "description": "Alanı gerçekte neyin kapladığını görün: en büyük dosyalar, en büyük alt klasörler, türe göre dağılım.",
+      "keywords": [
+        "boyut",
+        "disk alanı",
+        "yer kaplayan ne",
+        "büyük dosyalar",
+        "disk dolu",
+        "analiz"
+      ],
+      "aliases": [
+        "folder size",
+        "disk usage",
+        "disk analyzer",
+        "space analyzer"
+      ],
+      "note": "Yalnızca dosya sistemi meta verileri okunur: dosyaların içeriği asla açılmaz. Okunamayan klasörler sıfır sayılmak yerine bildirilir ve sembolik bağlantılar izlenmez (hedefleri iki kez sayılırdı)."
+    },
+    "file-secure-delete": {
+      "name": "Güvenli silme",
+      "description": "Bir dosyanın içeriğini silmeden önce üzerine yazarak yazılımla kurtarılmasını çok olası dışı hale getirin.",
+      "keywords": [
+        "kalıcı olarak sil",
+        "güvenli silme",
+        "kurtarılamaz",
+        "shred",
+        "dosyayı yok et",
+        "gerçekten sil"
+      ],
+      "aliases": [
+        "secure delete",
+        "shred",
+        "wipe file"
+      ],
+      "note": "Güçlendirilmiş yazılımsal silme, fiziksel imha değil: SSD, bellek kartı, Btrfs/ZFS/APFS üzerinde ya da anlık görüntüler ve yedekler varsa hiçbir yazılım önceki tüm kopyaların yok olduğunu garanti edemez."
+    },
+    "file-split": {
+      "name": "Büyük dosyayı böl",
+      "description": "Büyük bir dosyayı doğrulama bildirgesiyle numaralı parçalara ayırın.",
+      "keywords": [
+        "böl",
+        "parçala",
+        "split",
+        "parçalar",
+        "dosya çok büyük",
+        "usb bellek",
+        "fat32",
+        "büyük dosya gönder",
+        "part001"
+      ],
+      "aliases": [
+        "split file",
+        "file splitter"
+      ]
+    },
+    "file-join": {
+      "name": "Dosyayı birleştir",
+      "description": "Bir dosyayı .part001 parçalarından özet doğrulamasıyla yeniden oluşturun.",
+      "keywords": [
+        "birleştir",
+        "yeniden birleştir",
+        "join",
+        "parçaları birleştir",
+        "part001",
+        "dosyayı yeniden oluştur"
+      ],
+      "aliases": [
+        "join files",
+        "merge parts",
+        "reassemble"
+      ]
+    },
+    "folder-tree": {
+      "name": "Klasör ağacı oluştur",
+      "description": "Bir klasörün README'ye yapıştırmaya hazır metin ağacını üretin.",
+      "keywords": [
+        "ağaç",
+        "yapı",
+        "tree",
+        "klasör haritası",
+        "hiyerarşi",
+        "readme",
+        "klasör listesi"
+      ],
+      "aliases": [
+        "folder tree",
+        "directory tree"
+      ]
+    },
+    "file-info": {
+      "name": "Dosyayı incele",
+      "description": "İmzadan algılanan gerçek tür, uzantı tutarlılığı, kodlama, tarihler, özetler ve ilk baytlar.",
+      "keywords": [
+        "bilgi",
+        "özellikler",
+        "ayrıntılar",
+        "dosya türü",
+        "incele",
+        "hangi biçim",
+        "mime",
+        "oluşturma tarihi",
+        "bu dosya ne",
+        "magic bytes",
+        "imza",
+        "yanıltıcı uzantı",
+        "gerçek biçim",
+        "kodlama"
+      ],
+      "aliases": [
+        "file info",
+        "file properties",
+        "file details",
+        "inspect file",
+        "magic bytes"
+      ],
+      "note": "Gösterilen tür uzantıdan değil ilk baytlardan gelir: PNG içeren bir “.jpg” öyle bildirilir. Hiçbir şey otomatik olarak yeniden adlandırılmaz — düzeltme sizin isteyeceğiniz bir eylem olarak kalır."
+    },
+    "folder-compare": {
+      "name": "İki klasörü karşılaştır",
+      "description": "İki klasör ağacı arasında neyin aynı, değişmiş veya yalnızca bir tarafta olduğunu görün.",
+      "keywords": [
+        "klasörleri karşılaştır",
+        "klasör farkı",
+        "iki klasör arasındaki farklar",
+        "ne değişti",
+        "bir klasörün iki sürümü",
+        "önce sonra",
+        "kopyayı denetle",
+        "yedek güncel mi"
+      ],
+      "aliases": [
+        "compare folders",
+        "folder diff",
+        "directory compare",
+        "diff directories"
+      ],
+      "note": "Hızlı mod hiçbir şey okumadan türü ve boyutu karşılaştırır: aynı boyuttaki iki dosya “muhtemelen aynı” sayılır. Yalnızca güvenilir mod eşitliği içerikle doğrular — ve yalnızca aynı boyuttaki dosyaları okur, çünkü farklı boyut sonuca varmak için yeterlidir."
+    },
+    "folder-sync": {
+      "name": "Klasörleri eşitle",
+      "description": "Bir hedefi kaynaktan, her yazmadan önce ayrıntılı bir planla güncelleyin.",
+      "keywords": [
+        "eşitle",
+        "senkronize et",
+        "ayna",
+        "klasör kopyala",
+        "klasörü güncelle",
+        "harici diske yedek",
+        "usb bellek",
+        "çoğalt",
+        "mirror",
+        "rsync"
+      ],
+      "aliases": [
+        "sync folders",
+        "mirror folder",
+        "folder sync",
+        "one-way sync"
+      ],
+      "note": "Tek yönlü eşitleme: kaynak esastır, hedef onu izler. Planı okumadan hiçbir şey yazılmaz. Ayna modu, kaynakta artık bulunmayanı hedeften siler ve ayrı bir onay ister."
+    },
+    "file-search": {
+      "name": "Dosyalarda ara",
+      "description": "Dosyaları ada, türe, boyuta veya tarihe göre — ya da içerdikleri metne göre — bulun.",
+      "keywords": [
+        "ara",
+        "dosyalarda ara",
+        "dosya bul",
+        "grep",
+        "belgeyi bul",
+        "bu dosya nerede",
+        "sözcük ara",
+        "içerik araması",
+        "tarihe göre",
+        "boyuta göre"
+      ],
+      "aliases": [
+        "search files",
+        "find files",
+        "grep",
+        "search in files"
+      ],
+      "note": "İstek üzerine arama: FourTout arka planda hiçbir şey dizinlemez ve iki arama arasında hiçbir şey saklamaz. İçerik araması yalnızca gerçekten metne benzeyenleri açar — ikili bir dosya asla metin olarak yorumlanmaz."
+    },
+    "file-preview": {
+      "name": "Dosyayı önizle",
+      "description": "Herhangi bir dosyayı uygulaması olmadan açın: metin, görsel, PDF, ses, video, arşiv veya ham baytlar.",
+      "keywords": [
+        "önizle",
+        "önizleme",
+        "programsız aç",
+        "içeriği gör",
+        "quick look",
+        "dosyaya bak",
+        "dosyayı oku"
+      ],
+      "aliases": [
+        "preview file",
+        "quick look",
+        "file viewer"
+      ],
+      "note": "Önizleme uzantıya göre değil gerçek içeriğe göre seçilir. Büyük metin dosyaları yalnızca kısmen yüklenir ve önizleme bunu belirtir."
+    },
+    "file-hex-edit": {
+      "name": "Onaltılık düzenleyici",
+      "description": "Bir dosyanın baytlarını, hiçbir zaman tamamını yüklemeden pencere pencere okuyun ve düzeltin.",
+      "keywords": [
+        "onaltılık",
+        "hex editor",
+        "hex düzenleyici",
+        "baytlar",
+        "ikili",
+        "baytları değiştir",
+        "offset",
+        "ascii",
+        "döküm"
+      ],
+      "aliases": [
+        "hex editor",
+        "hex edit",
+        "binary editor"
+      ],
+      "note": "Bilerek sınırlandırılmış düzenleyici: ikili şablon yok, betik yok, bayt ekleme ya da silme yok — yalnızca dosya boyutunu asla değiştirmeyen yerinde düzeltmeler. Varsayılan olarak sonuç yeni bir dosyaya kaydedilir."
+    },
+    "folder-backup": {
+      "name": "Klasörü yedekle",
+      "description": "Bir klasörü, sonradan doğrulayıp geri yükleyebilmek için özet bildirgesiyle kopyalayın.",
+      "keywords": [
+        "yedek",
+        "yedekle",
+        "backup",
+        "güvenlik kopyası",
+        "belgelerimi arşivle",
+        "yeniden kurmadan önce",
+        "harici disk",
+        "dosyalarımı koru"
+      ],
+      "aliases": [
+        "backup folder",
+        "create backup"
+      ],
+      "note": "Şeffaf biçim: klasör yapınızı yansıtan bir “donnees” klasörü ve okunabilir bir “manifeste.json”. Kapalı kapsayıcı yok — FourTout olmadan bile dosyalarınız erişilebilir kalır. Sürümlü bir yedek değildir: her yedek tam ve tarihli bir kopyadır."
+    },
+    "folder-restore": {
+      "name": "Yedeği geri yükle",
+      "description": "Bir FourTout yedeğini doğrulayın, ardından seçmediğiniz hiçbir şeyin üzerine yazmadan geri yükleyin.",
+      "keywords": [
+        "geri yükle",
+        "yedeği kurtar",
+        "dosyalarımı geri al",
+        "restore",
+        "geri dön",
+        "yedeği doğrula"
+      ],
+      "aliases": [
+        "restore backup",
+        "verify backup"
+      ],
+      "note": "Bütünlük her yazmadan önce doğrulanır: yedekteki hasarlı bir dosya sessizce geri yüklenmez, adıyla belirtilir. Geri yükleme hedefte asla hiçbir şey silmez."
+    },
+    "checksum-manifest": {
+      "name": "Özet bildirgesi oluştur",
+      "description": "Bir klasördeki her dosyanın özetini listeleyen bir .sha256 dosyası üretin.",
+      "keywords": [
+        "bildirge",
+        "manifest",
+        "sağlama toplamları",
+        "checksums",
+        "sha256sum",
+        "özet listesi",
+        "yazdırmadan önce",
+        "göndermeden önce",
+        "bütünlük denetimi",
+        "sfv"
+      ],
+      "aliases": [
+        "checksum manifest",
+        "create checksums",
+        "sha256sum"
+      ],
+      "note": "Üretilen metin biçimi sha256sum'ınkidir: herhangi bir bilgisayarda sistem araçlarıyla doğrulanabilir. MD5 ve SHA-1 eski özetleri doğrulamak için sunulmaya devam eder, ancak güvenlik amaçlı kullanıma uygun olmadıkları belirtilir."
+    },
+    "checksum-verify": {
+      "name": "Özet bildirgesini doğrula",
+      "description": "Bir klasörü sağlama toplamı dosyasıyla karşılaştırın: sağlam, değişmiş, eksik veya okunamaz, dosya dosya.",
+      "keywords": [
+        "sağlama toplamlarını doğrula",
+        "bildirgeyi denetle",
+        "sha256sum -c",
+        "dosyalarım değişti mi",
+        "klasör bütünlüğü",
+        "bit rot"
+      ],
+      "aliases": [
+        "verify checksums",
+        "check manifest",
+        "sha256sum -c"
+      ],
+      "note": "Bildirge bir talimat değil, bir veridir: doğrulanan klasörün dışına çıkacak bir girdi (“../”, mutlak yol) reddedilir ve listelenir, asla izlenmez."
+    },
+    "hmac": {
+      "name": "HMAC hesapla",
+      "description": "Bir metni veya dosyayı gizli bir anahtarla HMAC-SHA-256 veya SHA-512 olarak imzalayın.",
+      "keywords": [
+        "hmac",
+        "imza",
+        "gizli anahtar",
+        "webhook",
+        "api",
+        "kimlik doğrula",
+        "isteği imzala",
+        "mesaj kimlik doğrulama kodu"
+      ],
+      "aliases": [
+        "hmac",
+        "message authentication code"
+      ],
+      "note": "Anahtar kaydedilmez, günlüğe yazılmaz ve son kullanılanlara eklenmez: hesaplama için kullanılır ve kaybolur. Araçtan çıktığınız anda ekrandan silinir."
+    },
+    "file-compress": {
+      "name": "Dosya sıkıştır (GZ, XZ)",
+      "description": "Tek bir dosyayı arşive dönüştürmeden .gz veya .xz olarak küçültün.",
+      "keywords": [
+        "gzip",
+        "gz",
+        "xz",
+        "dosya sıkıştır",
+        "lzma",
+        "dosyayı küçült",
+        "sıkıştırma",
+        "büyük log"
+      ],
+      "aliases": [
+        "gzip",
+        "xz compress",
+        "compress file"
+      ],
+      "note": "“.gz” ve “.xz” klasör adı veya yapı olmadan yalnızca tek bir dosya içerir. Birden çok dosyayı düzenini koruyarak sıkıştırmak için TAR.GZ veya TAR.XZ biçimiyle “Arşiv oluştur” aracını kullanın."
+    },
+    "file-decompress": {
+      "name": "Dosyanın sıkıştırmasını aç (GZ, XZ)",
+      "description": "Bir .gz veya .xz dosyasından özgün dosyayı geri alın.",
+      "keywords": [
+        "gunzip",
+        "unxz",
+        ".gz aç",
+        ".xz aç",
+        "gz çıkar",
+        "gz sıkıştırmasını aç",
+        "xz sıkıştırmasını aç"
+      ],
+      "aliases": [
+        "gunzip",
+        "unxz",
+        "decompress file"
+      ],
+      "note": "Bir “.tar.gz” klasör yapısı içerir: bu yapıyı geri getirecek “Arşivi çıkar” aracını tercih edin. Burada bir .tar.gz yalnızca .tar dosyasını verir."
+    },
+    "archive-inspect": {
+      "name": "Arşivi incele",
+      "description": "Bir arşivin içeriğini açmadan listeleyin: yollar, boyutlar, sıkıştırma oranları, şüpheli girdiler.",
+      "keywords": [
+        "zip içeriğini gör",
+        "arşivi listele",
+        "açmadan",
+        "içinde ne var",
+        "zip incele",
+        "7z içeriği",
+        "arşive göz at"
+      ],
+      "aliases": [
+        "inspect archive",
+        "list archive",
+        "browse archive"
+      ],
+      "note": "Hiçbir şey açılmaz: yalnızca arşivin içindekiler tablosu okunur. Yolu çıkarma klasörünün dışına çıkacak girdiler, çıkarmayı düşünmeden önce bile işaretlenir."
+    },
+    "archive-test": {
+      "name": "Arşivi test et",
+      "description": "Bir arşivin sağlam olduğunu, diske hiçbir şey yazmadan tamamen açarak doğrulayın.",
+      "keywords": [
+        "arşivi test et",
+        "bozuk arşiv",
+        "hasarlı zip",
+        "zip denetle",
+        "eksik indirme",
+        "arşiv bütünlüğü",
+        "crc"
+      ],
+      "aliases": [
+        "test archive",
+        "verify archive",
+        "check archive"
+      ],
+      "note": "İçerik gerçekten açılır ve sağlama toplamları doğrulanır — arşivi listelemek hiçbir şey kanıtlamazdı, yalnızca başlığı okunurdu. Hiçbir şey yazılmaz: baytlar sayılır ve atılır."
+    },
+    "universal-converter": {
+      "name": "Evrensel dönüştürücü",
+      "description": "Bir dosya bırakın: FourTout uyumlu biçimlere olası dönüştürmeleri önersin.",
+      "keywords": [
+        "dönüştür",
+        "dönüştürme",
+        "biçim değiştir",
+        "herhangi bir dosya",
+        "hangi biçim",
+        "dönüştürücü"
+      ],
+      "aliases": [
+        "universal converter",
+        "convert anything",
+        "file converter"
+      ],
+      "note": "Önerilen dönüştürmeler, kayıttaki araçların bildirdiği girdi ve çıktılardan türetilir: bakımı yapılacak ayrı bir tablo yoktur ve arkasında bir araç olmayan dönüştürme asla duyurulmaz."
+    },
+    "json-tools": {
+      "name": "JSON — biçimlendir ve doğrula",
+      "description": "Bir JSON'u girintileyin, küçültün ve kesin bir hata iletisiyle doğrulayın.",
+      "keywords": [
+        "json",
+        "biçimlendir",
+        "girintile",
+        "doğrula",
+        "prettify",
+        "küçült",
+        "ayrıştır"
+      ],
+      "aliases": [
+        "json formatter",
+        "json validator",
+        "json beautifier",
+        "prettify json"
+      ]
+    },
+    "xml-format": {
+      "name": "XML — biçimlendir",
+      "description": "Bir XML belgesini girintileyin ve doğrulayın.",
+      "keywords": [
+        "xml",
+        "biçimlendir",
+        "girintile",
+        "doğrula",
+        "etiketler"
+      ],
+      "aliases": [
+        "xml formatter",
+        "xml beautifier"
+      ]
+    },
+    "yaml-format": {
+      "name": "YAML — biçimlendir ve dönüştür",
+      "description": "YAML'ı biçimlendirin ve JSON'dan ya da JSON'a dönüştürün.",
+      "keywords": [
+        "yaml",
+        "yml",
+        "biçimlendir",
+        "yaml'dan json",
+        "json'dan yaml",
+        "yapılandırma"
+      ],
+      "aliases": [
+        "yaml formatter",
+        "yaml to json",
+        "json to yaml"
+      ]
+    },
+    "sql-format": {
+      "name": "SQL — biçimlendir",
+      "description": "Sıkışık veya üretilmiş bir SQL sorgusunu okunur hale getirin.",
+      "keywords": [
+        "sql",
+        "sorgu",
+        "biçimlendir",
+        "girintile",
+        "okunur",
+        "query"
+      ],
+      "aliases": [
+        "sql formatter",
+        "sql beautifier"
+      ]
+    },
+    "base64": {
+      "name": "Base64 — kodla ve çöz",
+      "description": "Metni Base64'e ve tersine dönüştürün, base64url dahil.",
+      "keywords": [
+        "base64",
+        "kodla",
+        "çöz",
+        "b64",
+        "kodlama",
+        "data uri"
+      ],
+      "aliases": [
+        "base64 encode",
+        "base64 decode",
+        "b64"
+      ]
+    },
+    "url-encode": {
+      "name": "URL — kodla ve çöz",
+      "description": "Bir URL'yi ve parametrelerini kodlayın veya çözün (yüzde kodlama).",
+      "keywords": [
+        "url",
+        "kodla",
+        "çöz",
+        "yüzde kodlama",
+        "querystring",
+        "özel karakterler"
+      ],
+      "aliases": [
+        "url encode",
+        "url decode",
+        "uri encode"
+      ]
+    },
+    "jwt-decode": {
+      "name": "JWT — çöz",
+      "description": "Bir JWT belirtecinin başlığını ve yükünü hiçbir yere göndermeden okuyun.",
+      "keywords": [
+        "jwt",
+        "token",
+        "belirteç",
+        "çöz",
+        "bearer",
+        "payload",
+        "claims"
+      ],
+      "aliases": [
+        "jwt decoder",
+        "decode token"
+      ],
+      "note": "Belirteç yerel olarak çözülür: bilgisayarınızdan asla çıkmaz."
+    },
+    "uuid-generate": {
+      "name": "UUID oluştur",
+      "description": "Tek tek veya toplu olarak benzersiz v4 veya v7 kimlikleri üretin.",
+      "keywords": [
+        "uuid",
+        "guid",
+        "benzersiz kimlik",
+        "kimlik oluştur",
+        "v4",
+        "v7"
+      ],
+      "aliases": [
+        "uuid generator",
+        "guid generator"
+      ]
+    },
+    "regex-tester": {
+      "name": "Düzenli ifade test aracı",
+      "description": "Bir regex'i canlı test edin, eşleşmeleri ve grupları görün.",
+      "keywords": [
+        "regex",
+        "düzenli ifade",
+        "test et",
+        "eşleşme",
+        "desen",
+        "match"
+      ],
+      "aliases": [
+        "regex tester",
+        "regexp",
+        "regex101"
+      ]
+    },
+    "timestamp-convert": {
+      "name": "Unix zaman damgası",
+      "description": "Bir zaman damgasını saat dilimleriyle okunur bir tarihe ve tersine dönüştürün.",
+      "keywords": [
+        "zaman damgası",
+        "timestamp",
+        "unix",
+        "epoch",
+        "saniye cinsinden tarih",
+        "milisaniye",
+        "tarihi dönüştür"
+      ],
+      "aliases": [
+        "unix timestamp",
+        "epoch converter"
+      ]
+    },
+    "hash-text": {
+      "name": "Metin özeti oluştur",
+      "description": "Bir karakter dizisinin MD5, SHA-1, SHA-256 veya SHA-512 değerini hesaplayın.",
+      "keywords": [
+        "hash",
+        "özet",
+        "md5",
+        "sha256",
+        "parmak izi",
+        "metni hashle",
+        "digest"
+      ],
+      "aliases": [
+        "hash generator",
+        "md5 text",
+        "sha256 text"
+      ]
+    },
+    "qr-generate": {
+      "name": "QR kod oluştur",
+      "description": "Bir URL, metin, kişi veya Wi-Fi ağı için QR kod oluşturun.",
+      "keywords": [
+        "qr kod",
+        "qrcode",
+        "barkod",
+        "qr oluştur",
+        "wifi",
+        "vcard"
+      ],
+      "aliases": [
+        "qr code generator",
+        "make qr code"
+      ]
+    },
+    "qr-read": {
+      "name": "QR kod oku",
+      "description": "Bir görselden veya ekran görüntüsünden QR kodu çözün.",
+      "keywords": [
+        "qr oku",
+        "tara",
+        "qr kodu çöz",
+        "görselden qr"
+      ],
+      "aliases": [
+        "qr code reader",
+        "scan qr code",
+        "decode qr"
+      ]
+    },
+    "number-base-convert": {
+      "name": "Onaltılık, onluk, ikili dönüştür",
+      "description": "Tabanlar arasında geçin: ikili, sekizli, onluk, onaltılık.",
+      "keywords": [
+        "onaltılık",
+        "ikili",
+        "onluk",
+        "sekizli",
+        "taban 16",
+        "taban 2",
+        "sayı dönüştür",
+        "hex"
+      ],
+      "aliases": [
+        "hex to decimal",
+        "binary converter",
+        "base converter"
+      ]
+    },
+    "code-diff": {
+      "name": "Kod farkı",
+      "description": "İki kod bloğunu, eklemeleri ve silmeleri vurgulayarak karşılaştırın.",
+      "keywords": [
+        "diff",
+        "kod karşılaştır",
+        "farklar",
+        "merge",
+        "sürümler"
+      ],
+      "aliases": [
+        "code diff",
+        "compare code"
+      ]
+    },
+    "web-minify": {
+      "name": "HTML, CSS, JS küçült",
+      "description": "Boşlukları ve yorumları kaldırarak kod boyutunu küçültün.",
+      "keywords": [
+        "küçült",
+        "minify",
+        "kodu sıkıştır",
+        "azalt",
+        "uglify",
+        "üretim"
+      ],
+      "aliases": [
+        "minify",
+        "minify css",
+        "minify js",
+        "minify html"
+      ]
+    },
+    "web-beautify": {
+      "name": "HTML, CSS, JS biçimlendir",
+      "description": "Küçültülmüş veya kötü biçimlendirilmiş kodu okunur olması için yeniden girintileyin.",
+      "keywords": [
+        "biçimlendir",
+        "girintile",
+        "beautify",
+        "prettify",
+        "okunmaz kod",
+        "yeniden girintile"
+      ],
+      "aliases": [
+        "beautify",
+        "format code",
+        "prettify html"
+      ]
+    },
+    "cron-helper": {
+      "name": "Cron yardımcısı",
+      "description": "Bir cron ifadesi oluşturun ve anlaşılır dille açıklayın.",
+      "keywords": [
+        "cron",
+        "crontab",
+        "zamanlama",
+        "zamanlanmış görev",
+        "cron ifadesi",
+        "schedule"
+      ],
+      "aliases": [
+        "cron generator",
+        "crontab helper",
+        "cron expression"
+      ]
+    },
+    "toml-format": {
+      "name": "TOML — biçimlendir ve doğrula",
+      "description": "Bir TOML dosyasını denetleyip standart biçimde yeniden yazın.",
+      "keywords": [
+        "toml",
+        "biçimlendir",
+        "doğrula",
+        "yapılandırma",
+        "cargo",
+        "pyproject",
+        "girintile",
+        "sözdizimi hatası"
+      ],
+      "aliases": [
+        "toml formatter",
+        "toml validator",
+        "toml linter",
+        "format toml"
+      ],
+      "note": "Yeniden biçimlendirme belgeyi verilerinden yeniden kurar: yorumlar ve özgün yazım sırası kaybolur. Doğrulama ise hiçbir şeye dokunmaz."
+    },
+    "base32": {
+      "name": "Base32 — kodla ve çöz",
+      "description": "Metni RFC 4648'e göre Base32'ye ve tersine dönüştürün.",
+      "keywords": [
+        "base32",
+        "kodla",
+        "çöz",
+        "rfc 4648",
+        "totp",
+        "kodlama",
+        "dolgu",
+        "alfabe"
+      ],
+      "aliases": [
+        "base32 encode",
+        "base32 decode",
+        "b32"
+      ]
+    },
+    "sqlite-explorer": {
+      "name": "SQLite veritabanı — keşfet",
+      "description": "Bir SQLite veritabanını salt okunur açın: şema, veriler, sorgular, CSV dışa aktarma.",
+      "keywords": [
+        "sqlite",
+        "veritabanı",
+        "db",
+        "keşfet",
+        "şema",
+        "tablo",
+        "sorgu",
+        "select",
+        "sql",
+        "salt okunur"
+      ],
+      "aliases": [
+        "sqlite browser",
+        "sqlite explorer",
+        "db browser",
+        "open sqlite"
+      ],
+      "note": "Kesinlikle salt okunur gezgin: veritabanı salt okunur açılır ve hiçbir sorgu onu değiştiremez."
+    },
+    "unit-length": {
+      "name": "Dönüştürücü — uzunluk",
+      "description": "Metre, kilometre, mil, fit, inç, deniz mili.",
+      "keywords": [
+        "çevir",
+        "dönüştürme",
+        "birimler",
+        "uzunluk",
+        "mesafe",
+        "metre",
+        "km",
+        "mil",
+        "inç",
+        "fit",
+        "santimetre"
+      ],
+      "aliases": [
+        "length converter",
+        "cm to inches",
+        "km to miles"
+      ]
+    },
+    "unit-weight": {
+      "name": "Dönüştürücü — ağırlık ve kütle",
+      "description": "Gram, kilogram, ton, libre, ons.",
+      "keywords": [
+        "çevir",
+        "dönüştürme",
+        "birimler",
+        "ağırlık",
+        "kütle",
+        "kilo",
+        "gram",
+        "libre",
+        "pound",
+        "ons",
+        "ton",
+        "lbs"
+      ],
+      "aliases": [
+        "weight converter",
+        "kg to lbs",
+        "pounds to kg"
+      ]
+    },
+    "unit-temperature": {
+      "name": "Dönüştürücü — sıcaklık",
+      "description": "Celsius, Fahrenheit, Kelvin.",
+      "keywords": [
+        "çevir",
+        "dönüştürme",
+        "birimler",
+        "sıcaklık",
+        "santigrat",
+        "celsius",
+        "fahrenheit",
+        "kelvin",
+        "derece",
+        "°c",
+        "°f"
+      ],
+      "aliases": [
+        "temperature converter",
+        "celsius to fahrenheit"
+      ]
+    },
+    "unit-volume": {
+      "name": "Dönüştürücü — hacim",
+      "description": "Litre, mililitre, galon, pint, fincan, kaşık.",
+      "keywords": [
+        "çevir",
+        "dönüştürme",
+        "birimler",
+        "hacim",
+        "litre",
+        "ml",
+        "galon",
+        "pint",
+        "fincan",
+        "kaşık",
+        "tarif"
+      ],
+      "aliases": [
+        "volume converter",
+        "cups to ml",
+        "gallons to liters"
+      ]
+    },
+    "unit-area": {
+      "name": "Dönüştürücü — alan",
+      "description": "Metrekare, hektar, akre, fitkare.",
+      "keywords": [
+        "çevir",
+        "dönüştürme",
+        "birimler",
+        "alan",
+        "yüzey",
+        "m2",
+        "metrekare",
+        "hektar",
+        "dönüm",
+        "akre",
+        "arsa"
+      ],
+      "aliases": [
+        "area converter",
+        "sqft to m2"
+      ]
+    },
+    "unit-speed": {
+      "name": "Dönüştürücü — hız",
+      "description": "km/sa, m/s, mph, knot.",
+      "keywords": [
+        "çevir",
+        "dönüştürme",
+        "birimler",
+        "hız",
+        "km/sa",
+        "km/h",
+        "mph",
+        "m/s",
+        "knot",
+        "deniz mili"
+      ],
+      "aliases": [
+        "speed converter",
+        "kmh to mph"
+      ]
+    },
+    "unit-pressure": {
+      "name": "Dönüştürücü — basınç",
+      "description": "Pascal, bar, PSI, atmosfer, mmHg.",
+      "keywords": [
+        "çevir",
+        "dönüştürme",
+        "birimler",
+        "basınç",
+        "bar",
+        "psi",
+        "pascal",
+        "atmosfer",
+        "lastik"
+      ],
+      "aliases": [
+        "pressure converter",
+        "bar to psi"
+      ]
+    },
+    "unit-energy": {
+      "name": "Dönüştürücü — enerji",
+      "description": "Joule, kalori, kWh, BTU.",
+      "keywords": [
+        "çevir",
+        "dönüştürme",
+        "birimler",
+        "enerji",
+        "joule",
+        "kalori",
+        "kwh",
+        "btu",
+        "kcal"
+      ],
+      "aliases": [
+        "energy converter",
+        "kwh to joules"
+      ]
+    },
+    "unit-power": {
+      "name": "Dönüştürücü — güç",
+      "description": "Watt, kilovat, beygir gücü.",
+      "keywords": [
+        "çevir",
+        "dönüştürme",
+        "birimler",
+        "güç",
+        "watt",
+        "kw",
+        "kilovat",
+        "beygir gücü",
+        "hp"
+      ],
+      "aliases": [
+        "power converter",
+        "watts to hp",
+        "kw to hp"
+      ]
+    },
+    "unit-data": {
+      "name": "Dönüştürücü — veri boyutu",
+      "description": "Bayt, KB, MB, GB, TB ve ikili karşılıkları (KiB, MiB).",
+      "keywords": [
+        "çevir",
+        "dönüştürme",
+        "birimler",
+        "bayt",
+        "mb",
+        "gb",
+        "tb",
+        "megabayt",
+        "gigabayt",
+        "bit",
+        "kib",
+        "mib"
+      ],
+      "aliases": [
+        "data converter",
+        "mb to gb",
+        "bytes converter"
+      ]
+    },
+    "calc-percentage": {
+      "name": "Yüzde hesapları",
+      "description": "Bir sayının yüzdesi, değişim, indirim, KDV, toplam içindeki pay.",
+      "keywords": [
+        "yüzde",
+        "%",
+        "indirim",
+        "kdv",
+        "artış",
+        "değişim",
+        "indirimi hesapla",
+        "zam",
+        "düşüş"
+      ],
+      "aliases": [
+        "percentage calculator",
+        "percent change",
+        "discount calculator"
+      ]
+    },
+    "calc-proportion": {
+      "name": "Orantı (üçlü kural)",
+      "description": "Bir orantıyı çözün: A, B ise C nedir?",
+      "keywords": [
+        "orantı",
+        "doğru orantı",
+        "içler dışlar çarpımı",
+        "oran",
+        "ölçek"
+      ],
+      "aliases": [
+        "rule of three",
+        "cross multiplication",
+        "proportion calculator"
+      ]
+    },
+    "calc-date-difference": {
+      "name": "Tarih hesapları",
+      "description": "İki tarih arasındaki gün sayısı; bir süre ekleyin veya çıkarın.",
+      "keywords": [
+        "tarihler",
+        "arasındaki gün",
+        "kaç gün",
+        "gün ekle",
+        "iş günü",
+        "vade",
+        "süre"
+      ],
+      "aliases": [
+        "date calculator",
+        "days between dates",
+        "date difference"
+      ]
+    },
+    "calc-duration": {
+      "name": "Süre hesapları",
+      "description": "Saat, dakika ve saniye toplayın ve çıkarın.",
+      "keywords": [
+        "süre",
+        "saat",
+        "dakika",
+        "saat topla",
+        "çalışma süresi",
+        "ss:dd",
+        "hh:mm"
+      ],
+      "aliases": [
+        "duration calculator",
+        "time calculator",
+        "add hours"
+      ]
+    },
+    "calc-age": {
+      "name": "Yaş hesapla",
+      "description": "Doğum tarihinden yıl, ay ve gün olarak tam yaş.",
+      "keywords": [
+        "yaş",
+        "doğum tarihi",
+        "kaç yaşında",
+        "doğum günü",
+        "yıl"
+      ],
+      "aliases": [
+        "age calculator",
+        "how old"
+      ]
+    },
+    "calc-scientific": {
+      "name": "Bilimsel hesap makinesi",
+      "description": "Gelişmiş işlemler: üsler, kökler, trigonometri, logaritmalar.",
+      "keywords": [
+        "hesap makinesi",
+        "bilimsel",
+        "karekök",
+        "üs",
+        "trigonometri",
+        "logaritma",
+        "sin",
+        "cos",
+        "hesapla"
+      ],
+      "aliases": [
+        "scientific calculator",
+        "calculator"
+      ]
+    },
+    "calc-currency": {
+      "name": "Döviz çevirici",
+      "description": "Tutarları güncel kurlarla para birimleri arasında çevirin.",
+      "keywords": [
+        "döviz",
+        "para birimi",
+        "lira",
+        "euro",
+        "dolar",
+        "kur",
+        "kambiyo",
+        "para",
+        "euro çevir"
+      ],
+      "aliases": [
+        "currency converter",
+        "eur to usd",
+        "exchange rate"
+      ],
+      "note": "FourTout'ta İnternet gerektiren tek araç; yalnızca günün kurlarını almak için. Çevrimdışıyken bilinen son kurlar yeniden kullanılır."
+    },
+    "calc-timezone": {
+      "name": "Saat dilimleri arasında çevir",
+      "description": "Bir yerel saati başka birine, yaz saati dahil, çevirin.",
+      "keywords": [
+        "saat dilimi",
+        "saat dilimleri",
+        "timezone",
+        "saat",
+        "saat farkı",
+        "utc",
+        "gmt",
+        "istanbul tokyo saati",
+        "new york saati",
+        "yaz saati",
+        "dst"
+      ],
+      "aliases": [
+        "timezone converter",
+        "time zone",
+        "convert time",
+        "world clock"
+      ],
+      "note": "Farklar, istenen tarih için sistemin saat dilimi veritabanından gelir: saat değişiklikleri dikkate alınır, belirsiz veya var olmayan saatler bildirilir."
+    },
+    "calc-bandwidth": {
+      "name": "Bant genişliği hesapla",
+      "description": "Aktarılan miktar ve süreden ortalama hızı çıkarın.",
+      "keywords": [
+        "bant genişliği",
+        "hız",
+        "bandwidth",
+        "mbps",
+        "saniyede mb",
+        "bit",
+        "bayt",
+        "bağlantı"
+      ],
+      "aliases": [
+        "bandwidth calculator",
+        "throughput",
+        "data rate"
+      ]
+    },
+    "calc-transfer-time": {
+      "name": "Aktarım süresini hesapla",
+      "description": "Boyut ve hızdan bir aktarımın ne kadar süreceğini tahmin edin.",
+      "keywords": [
+        "aktarım süresi",
+        "süre",
+        "indirme",
+        "yükleme",
+        "aktarım",
+        "ne kadar sürer",
+        "hız",
+        "boyut",
+        "eta"
+      ],
+      "aliases": [
+        "transfer time",
+        "download time",
+        "upload time"
+      ],
+      "note": "Kuramsal hesap: boyut ÷ hız. Protokol ek yükünü, gecikmeyi ve tıkanıklığı yok sayar — gerçek bir aktarım her zaman daha uzun sürer."
+    },
+    "calc-interest": {
+      "name": "Faiz hesapla",
+      "description": "İsteğe bağlı düzenli yatırımlarla basit veya bileşik faiz.",
+      "keywords": [
+        "faiz",
+        "bileşik faiz",
+        "basit faiz",
+        "anapara",
+        "birikim",
+        "yatırım",
+        "faiz oranı",
+        "getiri",
+        "mevduat"
+      ],
+      "aliases": [
+        "compound interest",
+        "simple interest",
+        "savings calculator"
+      ],
+      "note": "Matematiksel bir araçtır, finansal tavsiye değildir: vergiler, enflasyon ve ücretler hesaba katılmaz."
+    },
+    "network-ping": {
+      "name": "Ping",
+      "description": "Bir ana bilgisayarın yanıt verip vermediğini ve ne kadar sürede verdiğini ölçün.",
+      "keywords": [
+        "ping",
+        "gecikme",
+        "icmp",
+        "yanıt veriyor",
+        "erişilebilir",
+        "paket kaybı",
+        "yanıt süresi",
+        "tanılama"
+      ],
+      "aliases": [
+        "ping",
+        "icmp echo",
+        "latency test"
+      ],
+      "note": "Varsayılan olarak dört gerçek ICMP paketi gönderir. Sistem ICMP soketlerini reddederse araç başka bir şey ölçmek yerine bunu söyler."
+    },
+    "network-ports": {
+      "name": "Portları test et",
+      "description": "Bir ana bilgisayarın hangi TCP portlarının bağlantı kabul ettiğini görün.",
+      "keywords": [
+        "port",
+        "portlar",
+        "tcp",
+        "port test",
+        "açık port",
+        "kapalı port",
+        "bağlantı",
+        "güvenlik duvarı",
+        "hizmet",
+        "dinliyor"
+      ],
+      "aliases": [
+        "port check",
+        "port test",
+        "tcp connect",
+        "is port open"
+      ],
+      "note": "Tek bir ana bilgisayar, çalıştırma başına en fazla 256 port, sıradan TCP bağlantılarıyla. Bu bir tarayıcı değildir: gizlilik yok, hizmet algılama yok, güvenlik açığı araması yok."
+    },
+    "network-lan": {
+      "name": "Yerel ağdaki cihazları keşfet",
+      "description": "Alt ağınızda görünen cihazları listeleyin.",
+      "keywords": [
+        "yerel ağ",
+        "lan",
+        "cihazlar",
+        "bilgisayarlar",
+        "yerel ağı tara",
+        "keşif",
+        "yazıcı",
+        "ip adresi",
+        "mac"
+      ],
+      "aliases": [
+        "lan discovery",
+        "network scan",
+        "find devices",
+        "arp table"
+      ],
+      "note": "Doğrudan bağlı alt ağ ve 256 adresle sınırlıdır. Tam aralık her gönderimden önce bildirilir ve onay olmadan hiçbir şey gönderilmez."
+    },
+    "file-diagnose": {
+      "name": "Dosyayı tanıla",
+      "description": "Bir dosyanın gerçekte ne olduğunu ve neyinin eksik olduğunu anlayın.",
+      "keywords": [
+        "dosya tanıla",
+        "bozuk dosya",
+        "hasarlı dosya",
+        "okunamayan dosya",
+        "dosya türü",
+        "uzantı",
+        "kesik",
+        "imza",
+        "analiz"
+      ],
+      "aliases": [
+        "file diagnosis",
+        "corrupt file",
+        "file check",
+        "inspect file"
+      ],
+      "note": "Özgün dosya asla değiştirilmez. FourTout ZIP, PDF, PNG ve JPEG dosyalarının iç yapısını analiz eder; diğer biçimler için bunu açıkça söyler."
+    },
+    "archive-repair": {
+      "name": "Hasarlı ZIP arşivi",
+      "description": "Okunamayan bir arşivi tanılayın ve hâlâ içerdiklerini kurtarın.",
+      "keywords": [
+        "zip onar",
+        "bozuk zip",
+        "hasarlı zip",
+        "hasarlı arşiv",
+        "arşivi kurtar",
+        "okunamayan arşiv",
+        "merkezi dizin",
+        "yine de çıkar"
+      ],
+      "aliases": [
+        "repair zip",
+        "recover zip",
+        "broken archive",
+        "zip repair"
+      ],
+      "note": "Merkezi dizin olmasa bile yerel başlıkları tarayarak kurtarır. Verisi kesik girdiler kayıp olarak bildirilir — asla yeniden oluşturulmaz. Özgün arşive dokunulmaz."
+    },
+    "pdf-repair": {
+      "name": "Hasarlı PDF",
+      "description": "Okunamayan bir PDF'yi tanılayın ve kanıtlanabildiğinde onarın.",
+      "keywords": [
+        "pdf onar",
+        "bozuk pdf",
+        "hasarlı pdf",
+        "okunamayan pdf",
+        "pdf xref",
+        "startxref",
+        "kesik pdf",
+        "pdf'yi yeniden oluştur"
+      ],
+      "aliases": [
+        "repair pdf",
+        "fix pdf",
+        "broken pdf",
+        "pdf recovery"
+      ],
+      "note": "Üretilen her dosya PDF motoru tarafından yeniden açılır ve sayfaları sayılır: motor reddederse onarım başarısız sayılır ve dosya silinir. Yeniden yazma her dijital imzayı geçersiz kılar."
+    },
+    "image-repair": {
+      "name": "Hasarlı görsel",
+      "description": "Hasarlı bir PNG veya JPEG'i tanılayın ve okunabilir pikselleri kurtarın.",
+      "keywords": [
+        "görseli kurtar",
+        "bozuk görsel",
+        "bozuk jpeg",
+        "bozuk png",
+        "hasarlı fotoğraf",
+        "okunamayan görsel",
+        "kesik görsel",
+        "png crc"
+      ],
+      "aliases": [
+        "repair image",
+        "recover photo",
+        "broken jpeg",
+        "png repair"
+      ],
+      "note": "Yanlış bir sağlama toplamı asla yeniden hesaplanmaz ve kesik bir görselin eksik satırları asla uydurulmaz. Görsel kurtarma, çözülen pikselleri yeniden kodlar: dosyayı değil görüntüyü kurtarır."
+    },
+    "disk-inspect": {
+      "name": "Diskleri ve bölümleri incele",
+      "description": "Sistemin disklerini, bölümlerini, birimlerini ve sağlık göstergelerini görün.",
+      "keywords": [
+        "disk",
+        "diskler",
+        "bölümler",
+        "dosya sistemi",
+        "disk alanı",
+        "birim",
+        "smart",
+        "disk sağlığı",
+        "ssd",
+        "nvme",
+        "usb",
+        "bağlama"
+      ],
+      "aliases": [
+        "disk info",
+        "partitions",
+        "smart health",
+        "drive inspector",
+        "storage"
+      ],
+      "note": "İstisnasız salt okunur: FourTout bir diski bölümlendiremez, biçimlendiremez, bağlayamaz, kopyalayamaz veya silemez. Ayrıntılı sağlık göstergeleri, FourTout'un içermediği `smartctl` aracına bağlıdır."
+    },
+    "password-generate": {
+      "name": "Parola oluştur",
+      "description": "Güçlü parolalar veya akılda kalıcı parola cümleleri oluşturun.",
+      "keywords": [
+        "parola",
+        "şifre",
+        "oluştur",
+        "rastgele",
+        "güvenli",
+        "parola cümlesi",
+        "güçlü şifre",
+        "şifre oluştur"
+      ],
+      "aliases": [
+        "password generator",
+        "generate password",
+        "passphrase"
+      ]
+    },
+    "password-strength": {
+      "name": "Parola gücünü test et",
+      "description": "Bir parolanın kırılmasının ne kadar süreceğini çevrimdışı tahmin edin.",
+      "keywords": [
+        "güç",
+        "güçlü parola",
+        "güvenlik",
+        "şifrem iyi mi",
+        "entropi",
+        "parolayı denetle"
+      ],
+      "aliases": [
+        "password strength",
+        "password checker"
+      ],
+      "note": "Analiz tamamen yereldir: yazılan parola asla iletilmez."
+    },
+    "file-encrypt": {
+      "name": "Dosyaları şifrele",
+      "description": "Dosyaları modern şifrelemeyle parola ile koruyun.",
+      "keywords": [
+        "şifrele",
+        "koru",
+        "parola",
+        "aes",
+        "gizli",
+        "dosyayı güvenceye al"
+      ],
+      "aliases": [
+        "encrypt file",
+        "file encryption",
+        "aes encrypt"
+      ]
+    },
+    "file-decrypt": {
+      "name": "Dosyaların şifresini çöz",
+      "description": "FourTout ile şifrelenmiş bir dosyanın içeriğini geri alın.",
+      "keywords": [
+        "şifre çöz",
+        "şifreli dosyayı aç",
+        "geri yükle"
+      ],
+      "aliases": [
+        "decrypt file",
+        "file decryption"
+      ]
+    },
+    "metadata-strip-any": {
+      "name": "Dosyanın meta verilerini kaldır",
+      "description": "Bir belgeyi paylaşmadan önce yazar, tarih, cihaz ve konum bilgilerini temizleyin.",
+      "keywords": [
+        "meta veri",
+        "anonimleştir",
+        "paylaşmadan önce",
+        "gizlilik",
+        "yazarı kaldır",
+        "izler",
+        "belgeyi temizle"
+      ],
+      "aliases": [
+        "strip metadata",
+        "remove metadata",
+        "anonymize file"
+      ]
+    }
+  }
+}

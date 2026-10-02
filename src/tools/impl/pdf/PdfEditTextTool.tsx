@@ -27,6 +27,7 @@ import { saveFile } from "@/core/output/save";
 import { notify } from "@/features/notifications/store";
 import type { PdfSource } from "@/core/pdf/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, t } from "@/i18n";
 
 /**
  * Éditeur visuel du texte d'un PDF.
@@ -65,8 +66,8 @@ export function PdfEditTextTool({ tool }: ToolComponentProps) {
         constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
         files={files}
         onChange={setFiles}
-        label="Déposez votre PDF ici"
-        hint="Double-cliquez un texte de la page pour le modifier."
+        label={t("Déposez votre PDF ici")}
+        hint={t("Double-cliquez un texte de la page pour le modifier.")}
       />
 
       {loaded.length > 0 && (
@@ -76,7 +77,7 @@ export function PdfEditTextTool({ tool }: ToolComponentProps) {
       {isLoading && (
         <p className="flex items-center gap-2 text-sm text-[var(--ft-text-muted)]">
           <Icon name="Loader" size={15} className="animate-spin" />
-          Ouverture du document…
+          {t("Ouverture du document…")}
         </p>
       )}
 
@@ -258,8 +259,8 @@ function Editor({
 
       if (!uniform || item.rotated || item.vertical) {
         notify.warning(
-          "Zone difficile à modifier proprement",
-          "Le fond n'est pas uni (photo, dégradé) ou le texte est pivoté : cette modification ne sera pas appliquée à l'export.",
+          t("Zone difficile à modifier proprement"),
+          t("Le fond n'est pas uni (photo, dégradé) ou le texte est pivoté : cette modification ne sera pas appliquée à l'export."),
         );
       }
     },
@@ -274,13 +275,13 @@ function Editor({
       const result = await applyTextEdits(source, list);
       const saved = await saveFile(result.file);
       if (saved.saved) {
-        const parts = [`${result.applied} modification${result.applied > 1 ? "s" : ""} appliquée${result.applied > 1 ? "s" : ""}`];
-        if (result.refused > 0) parts.push(`${result.refused} refusée${result.refused > 1 ? "s" : ""} (fond non uni)`);
-        if (result.overflowed > 0) parts.push(`${result.overflowed} texte(s) ajusté(s) au plus petit`);
-        notify.success("Copie enregistrée", parts.join(" · "));
+        const parts = [t("{applied} {applied, plural, one {modification} other {modifications}} {applied, plural, one {appliquée} other {appliquées}}", { applied: result.applied })];
+        if (result.refused > 0) parts.push(t("{refused} {refused, plural, one {refusée} other {refusées}} (fond non uni)", { refused: result.refused }));
+        if (result.overflowed > 0) parts.push(t("{overflowed} texte(s) ajusté(s) au plus petit", { overflowed: result.overflowed }));
+        notify.success(t("Copie enregistrée"), parts.join(" · "));
       }
     } catch (error) {
-      notify.error("Export impossible", toPdfError(error).message);
+      notify.error(t("Export impossible"), toPdfError(error).message);
     } finally {
       setExporting(false);
     }
@@ -297,9 +298,7 @@ function Editor({
           <Button size="sm" variant="ghost" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1}>
             <Icon name="ChevronLeft" size={15} />
           </Button>
-          <span className="min-w-[92px] text-center text-xs tabular-nums text-[var(--ft-text-muted)]">
-            Page {page} / {pageCount}
-          </span>
+          <Trans source={"<0>Page {page} / {pageCount}</0>"} values={{ page, pageCount }} components={[<span className="min-w-[92px] text-center text-xs tabular-nums text-[var(--ft-text-muted)]" />]} />
           <Button size="sm" variant="ghost" onClick={() => setPage((p) => Math.min(pageCount, p + 1))} disabled={page >= pageCount}>
             <Icon name="ChevronRight" size={15} />
           </Button>
@@ -315,16 +314,16 @@ function Editor({
           <Button size="sm" variant="ghost" onClick={() => setZoom((z) => Math.min(3, +(z + 0.2).toFixed(2)))} disabled={zoom >= 3}>
             <Icon name="ZoomIn" size={15} />
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => setZoom(1)} title="Ajuster">
+          <Button size="sm" variant="ghost" onClick={() => setZoom(1)} title={t("Ajuster")}>
             <Icon name="Maximize" size={15} />
           </Button>
         </div>
 
         <div className="flex items-center gap-1">
-          <Button size="sm" variant="ghost" onClick={onUndo} disabled={!canUndo} title="Annuler (Ctrl+Z)">
+          <Button size="sm" variant="ghost" onClick={onUndo} disabled={!canUndo} title={t("Annuler (Ctrl+Z)")}>
             <Icon name="Undo2" size={15} />
           </Button>
-          <Button size="sm" variant="ghost" onClick={onRedo} disabled={!canRedo} title="Rétablir (Ctrl+Maj+Z)">
+          <Button size="sm" variant="ghost" onClick={onRedo} disabled={!canRedo} title={t("Rétablir (Ctrl+Maj+Z)")}>
             <Icon name="Redo2" size={15} />
           </Button>
           {editCount > 0 && (
@@ -336,7 +335,7 @@ function Editor({
 
         <Button size="sm" variant="primary" onClick={exportCopy} disabled={editCount === 0 || exporting}>
           <Icon name={exporting ? "Loader" : "Save"} size={15} className={exporting ? "animate-spin" : undefined} />
-          Enregistrer une copie
+          {t("Enregistrer une copie")}
         </Button>
       </div>
 
@@ -350,7 +349,7 @@ function Editor({
       {noText && (
         <p className="flex items-start gap-2 rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2.5 text-sm text-[var(--ft-text-muted)]">
           <Icon name="ScanText" size={16} className="mt-0.5 shrink-0" />
-          Aucun texte éditable détecté sur cette page. Le document est peut-être scanné.
+          {t("Aucun texte éditable détecté sur cette page. Le document est peut-être scanné.")}
         </p>
       )}
 
@@ -360,7 +359,7 @@ function Editor({
           {imageUrl && (
             <img
               src={imageUrl}
-              alt={`Page ${page}`}
+              alt={t("Page {page}", { page })}
               draggable={false}
               className="block select-none"
               style={{ width: cssWidth, height: cssHeight }}
@@ -414,7 +413,7 @@ function Editor({
                   <div
                     key={item.index}
                     onDoubleClick={() => beginEdit(item)}
-                    title={clean ? "Double-cliquez pour modifier" : "Cette zone ne peut pas être modifiée proprement (fond non uni ou texte pivoté)"}
+                    title={clean ? t("Double-cliquez pour modifier") : t("Cette zone ne peut pas être modifiée proprement (fond non uni ou texte pivoté)")}
                     className="absolute z-10 flex cursor-text items-center overflow-hidden whitespace-pre"
                     style={{
                       left: box.left,
@@ -440,7 +439,7 @@ function Editor({
                 <div
                   key={item.index}
                   onDoubleClick={() => beginEdit(item)}
-                  title="Double-cliquez pour modifier"
+                  title={t("Double-cliquez pour modifier")}
                   className="absolute cursor-text rounded-[2px] hover:bg-[color-mix(in_oklch,var(--ft-accent)_18%,transparent)]"
                   style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
                 />
@@ -451,9 +450,7 @@ function Editor({
 
       <p className="flex items-center gap-1.5 text-xs text-[var(--ft-text-faint)]">
         <Icon name="Info" size={13} />
-        Double-clic pour éditer · Entrée valide · Échap annule. L'export crée une copie ; le texte est
-        remplacé visuellement (voir l'aide).
-        {editedItems.length > 0 && ` ${editedItems.length} zone(s) modifiée(s) sur cette page.`}
+        {t("Double-clic pour éditer · Entrée valide · Échap annule. L'export crée une copie ; le texte est remplacé visuellement (voir l'aide).{value}", { value: editedItems.length > 0 && t(" {count} zone(s) modifiée(s) sur cette page.", { count: editedItems.length }) })}
       </p>
     </div>
   );

@@ -7,6 +7,7 @@
  */
 
 /** Encodage UTF-8 sûr (btoa seul échoue sur les caractères non latins). */
+import { t } from "@/i18n";
 export function encodeBase64(input: string, urlSafe = false): string {
   return bytesToBase64(new TextEncoder().encode(input), urlSafe);
 }
@@ -31,7 +32,7 @@ export function base64ToBytes(input: string): Uint8Array {
   const compact = input.replace(/\s+/g, "");
   const normalized = compact.replace(/-/g, "+").replace(/_/g, "/");
   if (normalized.length === 0 || !/^[A-Za-z0-9+/]*={0,2}$/.test(normalized)) {
-    throw new Error("Entrée Base64 invalide.");
+    throw new Error(t("Entrée Base64 invalide."));
   }
   const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
   const binary = atob(padded);

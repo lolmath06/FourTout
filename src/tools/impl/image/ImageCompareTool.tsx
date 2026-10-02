@@ -21,6 +21,7 @@ import {
 } from "@/core/image/compare";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { formatNumber, localized, t, tx } from "@/i18n";
 
 /**
  * Comparer deux images.
@@ -38,11 +39,11 @@ import type { ToolComponentProps } from "@/tools/implementations";
 
 type ViewMode = "side-by-side" | "overlay" | "diff";
 
-const VIEW_MODES: { value: ViewMode; label: string }[] = [
-  { value: "side-by-side", label: "Côte à côte" },
-  { value: "overlay", label: "Superposition" },
-  { value: "diff", label: "Différence" },
-];
+const VIEW_MODES: { value: ViewMode; label: string }[] = localized(() => [
+  { value: "side-by-side", label: t("Côte à côte") },
+  { value: "overlay", label: t("Superposition") },
+  { value: "diff", label: t("Différence") },
+]);
 
 export function ImageCompareTool({ tool }: ToolComponentProps) {
   // Deux emplacements nommés, pas une liste de deux : « A » et « B » ont des
@@ -81,9 +82,9 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
   const compare = async () => {
     if (!a.full || !b.full) return;
     const computed = await job.run(async (context) => {
-      context.report({ ratio: 0.1, label: "Alignement…" });
+      context.report({ ratio: 0.1, label: t("Alignement…") });
       const aligned = alignForComparison(a.full!, b.full!, align ?? "common");
-      context.report({ ratio: 0.4, label: "Comparaison des pixels…" });
+      context.report({ ratio: 0.4, label: t("Comparaison des pixels…") });
       // Un rendu intermédiaire laisse la WebView afficher la progression avant
       // le parcours des pixels, qui, lui, ne rend pas la main.
       await new Promise((resolve) => setTimeout(resolve, 0));
@@ -116,9 +117,9 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
           mimeType: "image/png",
         },
       ],
-      summary: `Image de différence ${result.width} × ${result.height}.`,
+      summary: t("Image de différence {width} × {height}.", { width: result.width, height: result.height }),
     });
-    notify.success("Image de différence prête", "Enregistrez-la depuis le panneau de résultat.");
+    notify.success(t("Image de différence prête"), t("Enregistrez-la depuis le panneau de résultat."));
   };
 
   return (
@@ -128,29 +129,29 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
           constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
           files={fileA}
           onChange={setFileA}
-          label="Image A — référence"
-          hint="Celle à laquelle on compare."
+          label={t("Image A — référence")}
+          hint={t("Celle à laquelle on compare.")}
           disabled={job.isRunning}
         />
         <FileDropZone
           constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
           files={fileB}
           onChange={setFileB}
-          label="Image B — comparaison"
-          hint="Celle dont on cherche les écarts."
+          label={t("Image B — comparaison")}
+          hint={t("Celle dont on cherche les écarts.")}
           disabled={job.isRunning}
         />
       </div>
 
       {fileA.length === 1 && fileB.length === 0 && (
-        <Callout tone="info" title="Il manque la seconde image">
-          Déposez une image dans l'emplacement B pour lancer la comparaison.
+        <Callout tone="info" title={t("Il manque la seconde image")}>
+          {t("Déposez une image dans l'emplacement B pour lancer la comparaison.")}
         </Callout>
       )}
 
       {fileB.length === 1 && fileA.length === 0 && (
-        <Callout tone="info" title="Il manque l'image de référence">
-          Déposez une image dans l'emplacement A pour lancer la comparaison.
+        <Callout tone="info" title={t("Il manque l'image de référence")}>
+          {t("Déposez une image dans l'emplacement A pour lancer la comparaison.")}
         </Callout>
       )}
 
@@ -161,11 +162,11 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
           {!matching && (
             <Fieldset columns={1}>
               <Field
-                label="Dimensions différentes"
-                hint={ALIGN_MODES.find((mode) => mode.value === align)?.hint ?? "Choisissez comment comparer : aucune image n'est modifiée tant que vous n'avez pas tranché."}
+                label={t("Dimensions différentes")}
+                hint={ALIGN_MODES.find((mode) => mode.value === align)?.hint ?? t("Choisissez comment comparer : aucune image n'est modifiée tant que vous n'avez pas tranché.")}
               >
                 <OptionGroup
-                  ariaLabel="Alignement"
+                  ariaLabel={t("Alignement")}
                   value={align ?? ""}
                   onChange={(value) => setAlign(value as AlignMode)}
                   options={ALIGN_MODES.map((mode) => ({ value: mode.value, label: mode.label }))}
@@ -176,25 +177,25 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
 
           <Fieldset columns={2}>
             <Field
-              label={`Tolérance (${tolerance})`}
-              hint="Écart par canal en deçà duquel deux pixels sont tenus pour égaux. Change les chiffres."
+              label={t("Tolérance ({tolerance})", { tolerance })}
+              hint={t("Écart par canal en deçà duquel deux pixels sont tenus pour égaux. Change les chiffres.")}
             >
               <Slider value={tolerance} onChange={setTolerance} min={0} max={64} />
             </Field>
             <Field
-              label={`Amplification (×${amplify})`}
-              hint="Rend l'image de différence lisible. Ne change aucun chiffre."
+              label={t("Amplification (×{amplify})", { amplify })}
+              hint={t("Rend l'image de différence lisible. Ne change aucun chiffre.")}
             >
               <Slider value={amplify} onChange={setAmplify} min={1} max={20} />
             </Field>
-            <Field label="Transparence" full>
+            <Field label={t("Transparence")} full>
               <OptionGroup
-                ariaLabel="Transparence"
+                ariaLabel={t("Transparence")}
                 value={includeAlpha ? "yes" : "no"}
                 onChange={(value) => setIncludeAlpha(value === "yes")}
                 options={[
-                  { value: "no", label: "Ignorer l'opacité" },
-                  { value: "yes", label: "Comparer l'opacité" },
+                  { value: "no", label: t("Ignorer l'opacité") },
+                  { value: "yes", label: t("Comparer l'opacité") },
                 ]}
               />
             </Field>
@@ -207,7 +208,7 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
             <div className="flex items-center gap-2">
               {job.isRunning && (
                 <Button size="sm" variant="ghost" onClick={job.cancel}>
-                  Annuler
+                  {t("Annuler")}
                 </Button>
               )}
               <Button
@@ -219,40 +220,38 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
                 {job.isRunning ? (
                   <>
                     <Icon name="Loader" size={15} className="animate-spin" />
-                    {job.progress.label ?? "Comparaison…"}
+                    {job.progress.label ?? t("Comparaison…")}
                   </>
                 ) : (
                   <>
                     <Icon name="Play" size={15} />
-                    Comparer
+                    {t("Comparer")}
                   </>
                 )}
               </Button>
             </div>
           </div>
 
-          {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
+          {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={tx(job.progress.label)} />}
           {needsChoice && (
-            <Callout tone="warning" title="Choisissez d'abord comment comparer">
-              Les deux images n'ont pas les mêmes dimensions. FourTout n'en redimensionne aucune
-              sans votre accord : un rééchantillonnage fabriquerait des différences absentes des
-              fichiers.
+            <Callout tone="warning" title={t("Choisissez d'abord comment comparer")}>
+              {t("Les deux images n'ont pas les mêmes dimensions. FourTout n'en redimensionne aucune sans votre accord : un rééchantillonnage fabriquerait des différences absentes des fichiers.")}
             </Callout>
           )}
 
           {result && <Metrics result={result} amplify={amplify} onSave={saveDiff} />}
 
           <Fieldset columns={1}>
-            <Field label="Affichage">
+            <Field label={t("Affichage")}>
               <OptionGroup
-                ariaLabel="Affichage"
+                ariaLabel={t("Affichage")}
                 value={view}
                 onChange={(value) => setView(value as ViewMode)}
                 options={VIEW_MODES.filter((mode) => mode.value !== "diff" || result)}
               />
             </Field>
             {view === "overlay" && (
-              <Field label={`Opacité de B (${opacity} %)`}>
+              <Field label={t("Opacité de B ({opacity} %)", { opacity })}>
                 <Slider value={opacity} onChange={setOpacity} min={0} max={100} />
               </Field>
             )}
@@ -271,7 +270,7 @@ export function ImageCompareTool({ tool }: ToolComponentProps) {
       )}
 
       {(a.error || b.error) && (
-        <Callout tone="error" title="Image illisible">
+        <Callout tone="error" title={t("Image illisible")}>
           {a.error ?? b.error}
         </Callout>
       )}
@@ -304,7 +303,7 @@ function Dimensions({
           key={entry.label}
           className="rounded-md border border-[var(--ft-border)] px-3 py-2 text-xs"
         >
-          <span className="font-medium">{entry.label}</span>{" "}
+          <span className="font-medium">{tx(entry.label)}</span>{" "}
           <span className="text-[var(--ft-text-muted)]">{entry.name}</span>
           <div className="font-mono text-[var(--ft-text-muted)]">
             {entry.size.width} × {entry.size.height}
@@ -319,8 +318,8 @@ function Dimensions({
 /** Une métrique avec son aide courte : les sigles ne parlent pas d'eux-mêmes. */
 function Metric({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-md border border-[var(--ft-border)] px-3 py-2" title={hint}>
-      <div className="text-[10px] uppercase tracking-wide text-[var(--ft-text-faint)]">{label}</div>
+    <div className="rounded-md border border-[var(--ft-border)] px-3 py-2" title={tx(hint)}>
+      <div className="text-[10px] uppercase tracking-wide text-[var(--ft-text-faint)]">{tx(label)}</div>
       <div className="font-mono text-sm">{value}</div>
     </div>
   );
@@ -339,46 +338,45 @@ function Metrics({
   return (
     <div className="space-y-3">
       {result.identical && (
-        <Callout tone="success" title="Images identiques">
-          Aucun pixel ne diffère sur les canaux comparés. Le PSNR est infini : il n'a pas de valeur
-          à afficher.
+        <Callout tone="success" title={t("Images identiques")}>
+          {t("Aucun pixel ne diffère sur les canaux comparés. Le PSNR est infini : il n'a pas de valeur à afficher.")}
         </Callout>
       )}
       <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
-        <Metric label="Pixels comparés" value={result.pixelsCompared.toLocaleString("fr-FR")} />
+        <Metric label={t("Pixels comparés")} value={formatNumber(result.pixelsCompared)} />
         <Metric
-          label="Pixels différents"
-          value={result.pixelsDifferent.toLocaleString("fr-FR")}
-          hint="Pixels dont l'écart dépasse la tolérance."
+          label={t("Pixels différents")}
+          value={formatNumber(result.pixelsDifferent)}
+          hint={t("Pixels dont l'écart dépasse la tolérance.")}
         />
         <Metric
-          label="Pourcentage"
+          label={t("Pourcentage")}
           value={percent === 0 ? "0 %" : `${percent < 0.01 ? "< 0,01" : percent.toFixed(2)} %`}
         />
         <Metric
-          label="Écart moyen"
+          label={t("Écart moyen")}
           value={result.meanDifference.toFixed(2)}
-          hint="Moyenne, sur tous les pixels, du plus grand écart de canal (0 à 255)."
+          hint={t("Moyenne, sur tous les pixels, du plus grand écart de canal (0 à 255).")}
         />
-        <Metric label="Écart maximal" value={String(result.maxDifference)} />
+        <Metric label={t("Écart maximal")} value={String(result.maxDifference)} />
         <Metric
           label="PSNR"
           value={result.psnr === undefined ? "∞ (identiques)" : `${result.psnr.toFixed(2)} dB`}
-          hint="Rapport signal sur bruit de crête : plus il est élevé, plus les images sont proches. Au-delà de 40 dB, l'écart est généralement imperceptible."
+          hint={t("Rapport signal sur bruit de crête : plus il est élevé, plus les images sont proches. Au-delà de 40 dB, l'écart est généralement imperceptible.")}
         />
         <Metric
           label="SSIM"
           value={result.ssim.toFixed(4)}
-          hint="Similarité structurelle, de 0 à 1. Compare luminance, contraste et structure par blocs de 8 × 8 pixels. Aucun seuil universel ne dit « bonne image »."
+          hint={t("Similarité structurelle, de 0 à 1. Compare luminance, contraste et structure par blocs de 8 × 8 pixels. Aucun seuil universel ne dit « bonne image ».")}
         />
         <Metric
           label="EQM"
           value={result.mse.toFixed(3)}
-          hint="Erreur quadratique moyenne sur les canaux comparés."
+          hint={t("Erreur quadratique moyenne sur les canaux comparés.")}
         />
       </div>
       <button onClick={onSave} className="text-xs text-[var(--ft-accent-text)] underline">
-        Enregistrer l'image de différence (PNG{amplify > 1 ? `, amplifiée ×${amplify}` : ""})
+        {t("Enregistrer l'image de différence (PNG{value})", { value: amplify > 1 ? t(", amplifiée ×{amplify}", { amplify }) : "" })}
       </button>
     </div>
   );
@@ -477,12 +475,11 @@ function Views({
     <div className="space-y-2">
       <PreviewFrame maxHeight={420}>
         {urlDiff && (
-          <img src={urlDiff} alt="Différence" className="max-h-[400px] max-w-full object-contain" />
+          <img src={urlDiff} alt={t("Différence")} className="max-h-[400px] max-w-full object-contain" />
         )}
       </PreviewFrame>
       <p className="text-xs text-[var(--ft-text-muted)]">
-        Le noir signale l'absence d'écart ; plus un pixel est clair, plus les deux images y
-        divergent{amplify > 1 ? ` (amplification ×${amplify} pour la lisibilité)` : ""}.
+        {t("Le noir signale l'absence d'écart ; plus un pixel est clair, plus les deux images y divergent{value}.", { value: amplify > 1 ? ` (amplification ×${amplify} pour la lisibilité)` : "" })}
       </p>
     </div>
   );

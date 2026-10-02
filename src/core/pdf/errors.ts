@@ -4,6 +4,7 @@
  * Toutes les opérations remontent une `PdfError` porteuse d'un code stable :
  * l'interface affiche le message, les tests assertent sur le code.
  */
+import { localized, t } from "@/i18n";
 export type PdfErrorCode =
   | "not-a-pdf"
   | "corrupted"
@@ -23,25 +24,25 @@ export type PdfErrorCode =
   | "cancelled"
   | "unknown";
 
-const MESSAGES: Record<PdfErrorCode, string> = {
-  "not-a-pdf": "Ce fichier n'est pas un PDF.",
-  corrupted: "Ce PDF est illisible ou endommagé.",
-  encrypted: "Ce PDF est protégé par un mot de passe.",
-  "wrong-password": "Mot de passe incorrect.",
-  "empty-document": "Ce PDF ne contient aucune page.",
-  "no-pages-selected": "Aucune page sélectionnée.",
-  "page-out-of-range": "La sélection désigne des pages qui n'existent pas.",
-  "invalid-range": "La sélection de pages est mal écrite.",
-  "would-remove-all-pages": "Cette opération supprimerait toutes les pages du document.",
-  "not-enough-files": "Il faut au moins deux fichiers pour cette opération.",
-  "unsupported-image": "Ce format d'image n'est pas pris en charge.",
-  "render-unavailable": "Le rendu des pages n'est pas disponible dans cet environnement.",
-  "no-text-found": "Aucun texte n'a pu être extrait de ce PDF.",
-  "no-images-found": "Aucune image exploitable n'a été trouvée dans ce PDF.",
-  "table-not-found": "Aucun tableau n'a été reconnu dans ce PDF.",
-  cancelled: "Opération annulée.",
-  unknown: "Une erreur inattendue est survenue.",
-};
+const MESSAGES: Record<PdfErrorCode, string> = localized(() => ({
+  "not-a-pdf": t("Ce fichier n'est pas un PDF."),
+  corrupted: t("Ce PDF est illisible ou endommagé."),
+  encrypted: t("Ce PDF est protégé par un mot de passe."),
+  "wrong-password": t("Mot de passe incorrect."),
+  "empty-document": t("Ce PDF ne contient aucune page."),
+  "no-pages-selected": t("Aucune page sélectionnée."),
+  "page-out-of-range": t("La sélection désigne des pages qui n'existent pas."),
+  "invalid-range": t("La sélection de pages est mal écrite."),
+  "would-remove-all-pages": t("Cette opération supprimerait toutes les pages du document."),
+  "not-enough-files": t("Il faut au moins deux fichiers pour cette opération."),
+  "unsupported-image": t("Ce format d'image n'est pas pris en charge."),
+  "render-unavailable": t("Le rendu des pages n'est pas disponible dans cet environnement."),
+  "no-text-found": t("Aucun texte n'a pu être extrait de ce PDF."),
+  "no-images-found": t("Aucune image exploitable n'a été trouvée dans ce PDF."),
+  "table-not-found": t("Aucun tableau n'a été reconnu dans ce PDF."),
+  cancelled: t("Opération annulée."),
+  unknown: t("Une erreur inattendue est survenue."),
+}));
 
 export class PdfError extends Error {
   readonly code: PdfErrorCode;

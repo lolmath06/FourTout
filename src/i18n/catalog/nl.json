@@ -1,0 +1,3718 @@
+{
+  "categories": {
+    "pdf": {
+      "name": "PDF",
+      "description": "Pdf's samenvoegen, splitsen, comprimeren, converteren en beveiligen.",
+      "keywords": [
+        "pdf",
+        "document",
+        "acrobat"
+      ]
+    },
+    "images": {
+      "name": "Afbeeldingen",
+      "description": "Afbeeldingen converteren, comprimeren, verkleinen en opschonen.",
+      "keywords": [
+        "afbeelding",
+        "foto",
+        "plaatje",
+        "png",
+        "jpg",
+        "jpeg",
+        "webp"
+      ]
+    },
+    "audio": {
+      "name": "Audio",
+      "description": "Geluid converteren, knippen, normaliseren, transcriberen en synthetiseren.",
+      "keywords": [
+        "audio",
+        "geluid",
+        "muziek",
+        "mp3",
+        "stem"
+      ]
+    },
+    "video": {
+      "name": "Video",
+      "description": "Video's converteren, comprimeren, knippen en ondertitelen.",
+      "keywords": [
+        "video",
+        "film",
+        "mp4",
+        "clip"
+      ]
+    },
+    "text": {
+      "name": "Tekst & documenten",
+      "description": "Tekst analyseren, opschonen, vergelijken en omzetten.",
+      "keywords": [
+        "tekst",
+        "document",
+        "markdown",
+        "woorden"
+      ]
+    },
+    "files": {
+      "name": "Bestanden & archieven",
+      "description": "Bestanden comprimeren, uitpakken, vergelijken, hernoemen en ordenen.",
+      "keywords": [
+        "bestand",
+        "archief",
+        "zip",
+        "map"
+      ]
+    },
+    "converters": {
+      "name": "Converters",
+      "description": "Van het ene formaat naar het andere, welk bestandstype ook.",
+      "keywords": [
+        "converteren",
+        "omzetten",
+        "conversie",
+        "converter",
+        "formaat"
+      ]
+    },
+    "developer": {
+      "name": "Ontwikkelaar",
+      "description": "Technische formaten opmaken, coderen, genereren en inspecteren.",
+      "keywords": [
+        "dev",
+        "ontwikkelaar",
+        "json",
+        "code",
+        "programmeren"
+      ]
+    },
+    "calculators": {
+      "name": "Rekenhulpen",
+      "description": "Eenheden, percentages, datums, duur en dagelijkse berekeningen.",
+      "keywords": [
+        "rekenen",
+        "rekenmachine",
+        "eenheid",
+        "omrekenen",
+        "maat",
+        "wiskunde"
+      ]
+    },
+    "network": {
+      "name": "Netwerk",
+      "description": "Een verbinding diagnosticeren, poorten testen, zien wat er thuis is aangesloten.",
+      "keywords": [
+        "netwerk",
+        "lan",
+        "ip",
+        "ping",
+        "poort",
+        "verbinding",
+        "wifi"
+      ]
+    },
+    "diagnostics": {
+      "name": "Diagnose & herstel",
+      "description": "Begrijpen wat er stuk is aan een beschadigd bestand, en redden wat te redden valt.",
+      "keywords": [
+        "diagnose",
+        "corrupt",
+        "beschadigd",
+        "kapot",
+        "repareren",
+        "herstellen",
+        "schijf",
+        "partitie",
+        "smart"
+      ]
+    },
+    "security": {
+      "name": "Beveiliging & privacy",
+      "description": "Wachtwoorden, versleuteling, hashes en gegevens wissen.",
+      "keywords": [
+        "beveiliging",
+        "privacy",
+        "versleuteling",
+        "wachtwoord",
+        "hash"
+      ]
+    }
+  },
+  "tools": {
+    "pdf-merge": {
+      "name": "Pdf's samenvoegen",
+      "description": "Meerdere pdf's in de gewenste volgorde tot één document samenvoegen.",
+      "keywords": [
+        "samenvoegen",
+        "combineren",
+        "bundelen",
+        "meerdere pdf's",
+        "één pdf",
+        "twee pdf's samenvoegen"
+      ],
+      "aliases": [
+        "merge pdf",
+        "combine pdf",
+        "pdf samenvoegen"
+      ]
+    },
+    "pdf-split": {
+      "name": "Een pdf splitsen",
+      "description": "Een pdf op paginabereiken in meerdere bestanden opdelen.",
+      "keywords": [
+        "splitsen",
+        "opdelen",
+        "knippen",
+        "scheiden",
+        "in tweeën"
+      ],
+      "aliases": [
+        "split pdf",
+        "pdf splitsen"
+      ]
+    },
+    "pdf-extract-pages": {
+      "name": "Pagina's extraheren",
+      "description": "Een nieuwe pdf maken van een selectie pagina's.",
+      "keywords": [
+        "extraheren",
+        "selecteren",
+        "pagina's eruit halen",
+        "sommige pagina's houden"
+      ],
+      "aliases": [
+        "extract pages",
+        "pdf pagina's extraheren"
+      ]
+    },
+    "pdf-remove-pages": {
+      "name": "Pagina's verwijderen",
+      "description": "Bepaalde pagina's definitief uit een pdf verwijderen.",
+      "keywords": [
+        "verwijderen",
+        "weghalen",
+        "pagina's verwijderen",
+        "een pagina wissen",
+        "laatste pagina verwijderen"
+      ],
+      "aliases": [
+        "delete pages",
+        "remove pages pdf"
+      ]
+    },
+    "pdf-reorder-pages": {
+      "name": "Pagina's herschikken",
+      "description": "De paginavolgorde met slepen en neerzetten wijzigen.",
+      "keywords": [
+        "herschikken",
+        "volgorde",
+        "pagina's sorteren",
+        "pagina verplaatsen",
+        "omkeren"
+      ],
+      "aliases": [
+        "reorder pages",
+        "pdf ordenen"
+      ]
+    },
+    "pdf-rotate": {
+      "name": "Pagina's draaien",
+      "description": "Alle of sommige pagina's 90, 180 of 270 graden draaien.",
+      "keywords": [
+        "draaien",
+        "roteren",
+        "rotatie",
+        "rechtzetten",
+        "pagina ondersteboven",
+        "oriëntatie"
+      ],
+      "aliases": [
+        "rotate pdf",
+        "pdf draaien"
+      ]
+    },
+    "pdf-compress": {
+      "name": "Een pdf comprimeren",
+      "description": "Een pdf kleiner maken en goed leesbaar houden.",
+      "keywords": [
+        "comprimeren",
+        "verkleinen",
+        "kleiner maken",
+        "bestandsgrootte verkleinen",
+        "optimaliseren",
+        "te groot",
+        "groot bestand",
+        "minder mb"
+      ],
+      "aliases": [
+        "compress pdf",
+        "reduce pdf size",
+        "pdf verkleinen",
+        "pdf te groot"
+      ]
+    },
+    "images-to-pdf": {
+      "name": "Afbeeldingen naar pdf",
+      "description": "Een reeks afbeeldingen omzetten naar een pdf-document met pagina's.",
+      "keywords": [
+        "afbeeldingen naar pdf",
+        "foto's naar pdf",
+        "jpg naar pdf",
+        "png naar pdf",
+        "scanner"
+      ],
+      "aliases": [
+        "image to pdf",
+        "jpg to pdf",
+        "png to pdf"
+      ]
+    },
+    "pdf-to-images": {
+      "name": "Pdf naar afbeeldingen",
+      "description": "Elke pagina van een pdf exporteren als PNG of JPEG, in de gewenste resolutie.",
+      "keywords": [
+        "pdf naar afbeeldingen",
+        "pdf naar png",
+        "pdf naar jpg",
+        "pdf naar jpeg",
+        "pagina's exporteren"
+      ],
+      "aliases": [
+        "pdf to image",
+        "pdf to jpg",
+        "pdf to png"
+      ]
+    },
+    "document-to-pdf": {
+      "name": "Document naar pdf",
+      "description": "Een tekst-, Markdown- of HTML-bestand naar pdf omzetten.",
+      "keywords": [
+        "tekst naar pdf",
+        "markdown naar pdf",
+        "html naar pdf",
+        "txt naar pdf",
+        "docx naar pdf"
+      ],
+      "aliases": [
+        "text to pdf",
+        "markdown to pdf",
+        "html to pdf"
+      ]
+    },
+    "pdf-add-text": {
+      "name": "Tekst toevoegen",
+      "description": "Tekst op een pdf schrijven om een formulier in te vullen of aantekeningen te maken.",
+      "keywords": [
+        "schrijven",
+        "annoteren",
+        "invullen",
+        "formulier",
+        "opmerking",
+        "tekst op pdf"
+      ],
+      "aliases": [
+        "add text to pdf",
+        "pdf invullen"
+      ]
+    },
+    "pdf-add-image": {
+      "name": "Afbeelding of handtekening toevoegen",
+      "description": "Een afbeelding, stempel of handtekening precies op de gewenste plek invoegen.",
+      "keywords": [
+        "ondertekenen",
+        "handtekening",
+        "stempel",
+        "logo",
+        "afbeelding plakken",
+        "paraferen"
+      ],
+      "aliases": [
+        "sign pdf",
+        "add signature",
+        "pdf ondertekenen"
+      ]
+    },
+    "pdf-watermark": {
+      "name": "Watermerk toevoegen",
+      "description": "Een tekst als watermerk op alle of sommige pagina's zetten.",
+      "keywords": [
+        "watermerk",
+        "watermark",
+        "vertrouwelijk",
+        "markeren",
+        "concept"
+      ],
+      "aliases": [
+        "watermark pdf"
+      ]
+    },
+    "pdf-page-numbers": {
+      "name": "Pagina's nummeren",
+      "description": "Aanpasbare paginanummers toevoegen in de kop- of voettekst.",
+      "keywords": [
+        "nummeren",
+        "paginering",
+        "paginanummers",
+        "bladzijdenummers"
+      ],
+      "aliases": [
+        "page numbers",
+        "pdf nummeren"
+      ]
+    },
+    "pdf-protect": {
+      "name": "Beveiligen met wachtwoord",
+      "description": "Een pdf versleutelen zodat hij alleen met een wachtwoord opengaat.",
+      "keywords": [
+        "beveiligen",
+        "wachtwoord",
+        "versleutelen",
+        "vergrendelen",
+        "pdf beveiligen",
+        "wachtwoord instellen",
+        "vertrouwelijke pdf"
+      ],
+      "aliases": [
+        "protect pdf",
+        "encrypt pdf",
+        "password pdf"
+      ]
+    },
+    "pdf-unlock": {
+      "name": "Een pdf ontgrendelen",
+      "description": "De beveiliging verwijderen van een pdf waarvan je het wachtwoord kent.",
+      "keywords": [
+        "ontgrendelen",
+        "wachtwoord verwijderen",
+        "beveiliging opheffen",
+        "ontsleutelen"
+      ],
+      "aliases": [
+        "unlock pdf",
+        "remove pdf password",
+        "decrypt pdf"
+      ],
+      "note": "FourTout kraakt geen beveiliging: je moet het wachtwoord kennen. Voor een vergeten wachtwoord, zie ‘Pdf-wachtwoord herstellen’."
+    },
+    "pdf-recover-password": {
+      "name": "Pdf-wachtwoord herstellen",
+      "description": "Waarschijnlijke wachtwoorden proberen om een pdf te openen waarvan je het wachtwoord bent vergeten.",
+      "keywords": [
+        "wachtwoord vergeten",
+        "wachtwoord herstellen",
+        "herstellen",
+        "vergrendelde pdf",
+        "wachtwoord kwijt",
+        "beveiligde pdf openen",
+        "woordenboek",
+        "herstel"
+      ],
+      "aliases": [
+        "recover pdf password",
+        "forgot pdf password",
+        "pdf password recovery"
+      ],
+      "note": "Lokaal herstel met woordenboek en regels, voor een document dat je mag openen. Het is geen uitputtende zoektocht: een wachtwoord dat niet in de woordenlijst staat, wordt niet gevonden."
+    },
+    "pdf-metadata": {
+      "name": "Pdf-metadata",
+      "description": "Titel, auteur, onderwerp en trefwoorden van een pdf lezen en wijzigen.",
+      "keywords": [
+        "metadata",
+        "eigenschappen",
+        "auteur",
+        "titel",
+        "documentinfo"
+      ],
+      "aliases": [
+        "pdf metadata",
+        "edit pdf properties"
+      ]
+    },
+    "pdf-extract-images": {
+      "name": "Afbeeldingen uit een pdf halen",
+      "description": "Alle afbeeldingen die in een pdf zijn ingesloten eruit halen.",
+      "keywords": [
+        "afbeeldingen extraheren",
+        "foto's eruit halen",
+        "afbeeldingen opslaan"
+      ],
+      "aliases": [
+        "extract images from pdf"
+      ]
+    },
+    "pdf-extract-text": {
+      "name": "Tekst uit een pdf halen",
+      "description": "De selecteerbare tekst van een pdf per pagina eruit halen.",
+      "keywords": [
+        "tekst extraheren",
+        "tekst kopiëren",
+        "pdf naar tekst",
+        "inhoud eruit halen"
+      ],
+      "aliases": [
+        "pdf to text",
+        "extract text"
+      ]
+    },
+    "pdf-edit-text": {
+      "name": "Pdf-tekst bewerken",
+      "description": "Tekst direct op de pagina corrigeren: dubbelklik op een woord en vervang het.",
+      "keywords": [
+        "pdf tekst bewerken",
+        "pdf tekst wijzigen",
+        "tekst in pdf corrigeren",
+        "tekst vervangen",
+        "pdf bewerken",
+        "typfout verbeteren",
+        "datum wijzigen",
+        "bedrag wijzigen"
+      ],
+      "aliases": [
+        "edit pdf text",
+        "modify pdf text",
+        "change text pdf",
+        "edit text in pdf"
+      ],
+      "note": "Visueel bewerken door vervanging: de originele tekst wordt bedekt met de gemeten achtergrondkleur en daarna opnieuw getekend. Ideaal voor horizontale tekst op een egale achtergrond (documenten, facturen, rapporten). Gebieden op een niet-egale achtergrond of gedraaide tekst worden gemarkeerd en niet gewijzigd."
+    },
+    "ocr-document": {
+      "name": "OCR van een gescande pdf",
+      "description": "De tekst van een gescande pdf per pagina herkennen, in het Frans of Engels.",
+      "keywords": [
+        "ocr",
+        "tekstherkenning",
+        "scan",
+        "gescand",
+        "foto naar tekst",
+        "scan lezen",
+        "niet-selecteerbare pdf",
+        "afbeelding naar tekst"
+      ],
+      "aliases": [
+        "ocr",
+        "optical character recognition",
+        "image to text",
+        "scan to text"
+      ],
+      "note": "Lokale OCR-engine (tesseract.js) ingebouwd: er worden geen gegevens via het netwerk verzonden. Voor één afbeelding, zie ‘Tekst uit een afbeelding halen’."
+    },
+    "pdf-compare": {
+      "name": "Twee pdf's vergelijken",
+      "description": "De verschillen tussen twee versies van een document markeren.",
+      "keywords": [
+        "vergelijken",
+        "verschillen",
+        "diff",
+        "twee versies",
+        "wijzigingen"
+      ],
+      "aliases": [
+        "compare pdf",
+        "pdf diff"
+      ]
+    },
+    "pdf-redact": {
+      "name": "Een pdf zwartlakken",
+      "description": "Gevoelige gebieden definitief verbergen: de inhoud wordt verwijderd, niet alleen bedekt.",
+      "keywords": [
+        "zwartlakken",
+        "verbergen",
+        "anonimiseren",
+        "censureren",
+        "gevoelige gegevens"
+      ],
+      "aliases": [
+        "redact pdf",
+        "redactie"
+      ]
+    },
+    "pdf-searchable": {
+      "name": "Gescande pdf naar doorzoekbare pdf",
+      "description": "De tekst van een gescande pdf herkennen en als onzichtbare laag toevoegen: Ctrl+F, selecteren en kopiëren werken, het uiterlijk blijft gelijk.",
+      "keywords": [
+        "doorzoekbare pdf",
+        "ocr pdf",
+        "pdf scannen",
+        "gescande pdf",
+        "pdf doorzoekbaar maken",
+        "tekstherkenning pdf",
+        "tekstlaag",
+        "niet-selecteerbare pdf"
+      ],
+      "aliases": [
+        "searchable pdf",
+        "ocr pdf",
+        "make pdf searchable",
+        "scanned pdf"
+      ],
+      "note": "De herkenning is volledig lokaal. De originele pagina's worden niet gerasterd of opnieuw gecomprimeerd: er wordt alleen een onzichtbare tekstlaag toegevoegd. De kwaliteit van het resultaat hangt af van die van de scan."
+    },
+    "pdf-extract-tables": {
+      "name": "Tabellen uit een pdf halen",
+      "description": "Rijen en kolommen reconstrueren uit de positie van de tekst en exporteren naar CSV of een XLSX-werkmap.",
+      "keywords": [
+        "pdf tabel extraheren",
+        "pdf tabel",
+        "pdf naar excel",
+        "pdf naar csv",
+        "tabel eruit halen",
+        "pdf xlsx",
+        "spreadsheet",
+        "kolommen",
+        "rijen"
+      ],
+      "aliases": [
+        "pdf to excel",
+        "extract tables",
+        "pdf table to csv",
+        "pdf to csv"
+      ],
+      "note": "Een pdf bevat geen tabellen, alleen gepositioneerde tekst: FourTout reconstrueert rijen en kolommen uit die posities. Complexe tabellen — samengevoegde cellen, tekst over meerdere regels — moeten vóór export mogelijk worden gecorrigeerd."
+    },
+    "scans-to-pdf": {
+      "name": "Scans en foto's naar pdf",
+      "description": "Gescande of gefotografeerde pagina's samenvoegen tot één pdf, met opschonen en ordenen van de pagina's.",
+      "keywords": [
+        "scans naar pdf",
+        "foto's naar pdf",
+        "scans samenvoegen",
+        "pagina's bundelen",
+        "gescande pagina's naar pdf",
+        "documentfoto pdf",
+        "opschonen en bundelen"
+      ],
+      "aliases": [
+        "scans to pdf",
+        "photos to pdf",
+        "scan to pdf"
+      ],
+      "note": "Het opschonen geldt voor alle pagina's met dezelfde instellingen; het samenvoegen gebruikt de engine van ‘Afbeeldingen naar pdf’."
+    },
+    "image-convert": {
+      "name": "Een afbeelding converteren",
+      "description": "Van het ene formaat naar het andere: PNG, JPG, WebP. Leest ook GIF, BMP, TIFF en SVG.",
+      "keywords": [
+        "converteren",
+        "formaat wijzigen",
+        "png naar jpg",
+        "jpg naar png",
+        "png naar webp",
+        "jpg naar webp",
+        "webp naar png",
+        "webp naar jpg",
+        "webp",
+        "svg naar png",
+        "gif naar png",
+        "bmp",
+        "tiff",
+        "heic",
+        "avif"
+      ],
+      "aliases": [
+        "convert image",
+        "png to jpg",
+        "jpg to png",
+        "jpg to webp",
+        "webp to png",
+        "image converter"
+      ]
+    },
+    "image-compress": {
+      "name": "Een afbeelding comprimeren",
+      "description": "Een afbeelding kleiner maken met controle over het kwaliteitsverlies.",
+      "keywords": [
+        "comprimeren",
+        "foto comprimeren",
+        "kleiner maken",
+        "verkleinen",
+        "optimaliseren",
+        "foto te groot",
+        "minder kb"
+      ],
+      "aliases": [
+        "compress image",
+        "optimize image",
+        "reduce image size"
+      ]
+    },
+    "image-resize": {
+      "name": "Afbeeldingsformaat wijzigen",
+      "description": "De afmetingen wijzigen in pixels of procenten, met of zonder verhouding.",
+      "keywords": [
+        "formaat wijzigen",
+        "schalen",
+        "fotoformaat wijzigen",
+        "vergroten",
+        "verkleinen",
+        "pixels",
+        "breedte",
+        "hoogte",
+        "1920",
+        "1080"
+      ],
+      "aliases": [
+        "resize image",
+        "scale image"
+      ]
+    },
+    "image-crop": {
+      "name": "Een afbeelding bijsnijden",
+      "description": "Een afbeelding visueel bijsnijden, vrij of op een verhouding (1:1, 4:3, 16:9, 3:2).",
+      "keywords": [
+        "bijsnijden",
+        "uitsnijden",
+        "foto bijsnijden",
+        "kader",
+        "verhouding",
+        "vierkant",
+        "crop"
+      ],
+      "aliases": [
+        "crop image"
+      ]
+    },
+    "image-rotate": {
+      "name": "Draaien en spiegelen",
+      "description": "In kwartslagen draaien en spiegelen, met direct voorbeeld.",
+      "keywords": [
+        "draaien",
+        "roteren",
+        "rotatie",
+        "rechtzetten",
+        "scheve foto",
+        "spiegelen",
+        "omkeren",
+        "90 graden"
+      ],
+      "aliases": [
+        "rotate image",
+        "rotate and flip"
+      ]
+    },
+    "image-flip": {
+      "name": "Horizontaal of verticaal spiegelen",
+      "description": "Een afbeelding omkeren als in een spiegel.",
+      "keywords": [
+        "spiegelen",
+        "omkeren",
+        "symmetrie",
+        "flip",
+        "kantelen"
+      ],
+      "aliases": [
+        "flip image",
+        "mirror image"
+      ]
+    },
+    "image-grayscale": {
+      "name": "Zwart-wit",
+      "description": "Omzetten naar grijstinten, of naar zuiver zwart-wit met een instelbare drempel.",
+      "keywords": [
+        "zwart-wit",
+        "zwartwit",
+        "grijstinten",
+        "grayscale",
+        "monochroom",
+        "drempel",
+        "ontkleuren"
+      ],
+      "aliases": [
+        "grayscale",
+        "black and white"
+      ]
+    },
+    "image-adjust": {
+      "name": "Een afbeelding aanpassen",
+      "description": "Helderheid, contrast, verzadiging en gamma instellen, met live voorbeeld.",
+      "keywords": [
+        "aanpassen",
+        "helderheid",
+        "contrast",
+        "verzadiging",
+        "gamma",
+        "lichter maken",
+        "donkerder maken",
+        "corrigeren"
+      ],
+      "aliases": [
+        "adjust image",
+        "brightness contrast"
+      ]
+    },
+    "image-blur": {
+      "name": "Vervagen of pixeleren",
+      "description": "Informatie verbergen: vervaging of mozaïek, op de hele afbeelding of een getekend gebied.",
+      "keywords": [
+        "vervagen",
+        "onscherp maken",
+        "blur",
+        "pixeleren",
+        "mozaïek",
+        "verbergen",
+        "censureren"
+      ],
+      "aliases": [
+        "blur image",
+        "pixelate"
+      ]
+    },
+    "image-remove-transparency": {
+      "name": "Transparantie verwijderen",
+      "description": "Een transparante PNG of WebP afvlakken op een egale achtergrond (wit, zwart of een kleur).",
+      "keywords": [
+        "transparantie verwijderen",
+        "afvlakken",
+        "witte achtergrond",
+        "egale achtergrond",
+        "alfa verwijderen",
+        "ondoorzichtig"
+      ],
+      "aliases": [
+        "remove transparency",
+        "flatten image"
+      ]
+    },
+    "image-remove-background": {
+      "name": "Achtergrond verwijderen",
+      "description": "Het onderwerp van een foto automatisch uitknippen en de achtergrond transparant maken.",
+      "keywords": [
+        "achtergrond verwijderen",
+        "achtergrond wissen",
+        "transparante achtergrond",
+        "foto uitknippen",
+        "uitknippen",
+        "onderwerp isoleren",
+        "profielfoto",
+        "transparante png"
+      ],
+      "aliases": [
+        "remove background",
+        "background remover",
+        "cutout"
+      ],
+      "note": "Het uitknipmodel wordt één keer geïnstalleerd via Instellingen → Modellen en werkt daarna offline: de afbeelding wordt nooit naar een server gestuurd. Het herkent een scherp, goed afgebakend hoofdonderwerp; het vergist zich bij scènes zonder duidelijk onderwerp en bij zeer fijne details."
+    },
+    "image-color-transparent": {
+      "name": "Een kleur transparant maken",
+      "description": "Een egale kleur (de achtergrond) wissen en vervangen door transparantie.",
+      "keywords": [
+        "transparant maken",
+        "uitknippen",
+        "achtergrond verwijderen",
+        "transparante kleur",
+        "transparante achtergrond",
+        "chroma key"
+      ],
+      "aliases": [
+        "color to transparent",
+        "remove background color"
+      ]
+    },
+    "image-ocr": {
+      "name": "Tekst uit een afbeelding halen (OCR)",
+      "description": "De tekst in een afbeelding herkennen, in het Frans of Engels, 100% lokaal.",
+      "keywords": [
+        "ocr",
+        "tekst extraheren",
+        "tekst uit foto",
+        "afbeelding naar tekst",
+        "tekst lezen",
+        "tekstherkenning",
+        "digitaliseren",
+        "tekst uit afbeelding"
+      ],
+      "aliases": [
+        "ocr",
+        "image to text",
+        "extract text"
+      ]
+    },
+    "image-add-text": {
+      "name": "Tekst op een afbeelding",
+      "description": "Tekst op een afbeelding schrijven — bijschrift, meme, aantekening — en met de hand plaatsen.",
+      "keywords": [
+        "tekst op afbeelding",
+        "bijschrift",
+        "meme",
+        "schrijven",
+        "foto annoteren"
+      ],
+      "aliases": [
+        "add text to image",
+        "meme generator"
+      ]
+    },
+    "image-metadata-read": {
+      "name": "Afbeeldingsmetadata lezen",
+      "description": "EXIF, GPS, camera en opnamedatum tonen.",
+      "keywords": [
+        "exif",
+        "metadata",
+        "gps",
+        "waar is de foto genomen",
+        "camera",
+        "fotodatum"
+      ],
+      "aliases": [
+        "exif viewer",
+        "image metadata"
+      ]
+    },
+    "image-metadata-strip": {
+      "name": "Afbeeldingsmetadata verwijderen",
+      "description": "EXIF- en GPS-gegevens wissen voordat je een foto deelt.",
+      "keywords": [
+        "exif verwijderen",
+        "exif wissen",
+        "metadata verwijderen",
+        "foto anonimiseren",
+        "gps verwijderen",
+        "voor het delen",
+        "privacy"
+      ],
+      "aliases": [
+        "strip exif",
+        "remove metadata",
+        "anonymize image"
+      ]
+    },
+    "image-batch-convert": {
+      "name": "Afbeeldingen in batch converteren",
+      "description": "Dezelfde conversie toepassen op een hele map met afbeeldingen.",
+      "keywords": [
+        "batch",
+        "in bulk",
+        "meerdere afbeeldingen",
+        "map met afbeeldingen",
+        "al mijn foto's"
+      ],
+      "aliases": [
+        "batch convert",
+        "bulk image convert"
+      ]
+    },
+    "image-watermark": {
+      "name": "Watermerk op een afbeelding",
+      "description": "Een logo of tekst als watermerk toevoegen, per stuk of in batch.",
+      "keywords": [
+        "watermerk",
+        "watermark",
+        "logo",
+        "handtekening",
+        "mijn foto's beschermen"
+      ],
+      "aliases": [
+        "watermark image"
+      ]
+    },
+    "image-favicon": {
+      "name": "Een favicon maken",
+      "description": "Een favicon in meerdere formaten en het .ico-bestand maken van een afbeelding.",
+      "keywords": [
+        "favicon",
+        "websitepictogram",
+        "ico",
+        "browsertabblad",
+        "websitelogo"
+      ],
+      "aliases": [
+        "favicon generator",
+        "ico"
+      ]
+    },
+    "image-icon-sizes": {
+      "name": "Meerdere formaten maken",
+      "description": "Alle nuttige pictogram- of miniatuurformaten in één keer exporteren.",
+      "keywords": [
+        "formaten",
+        "pictogrammen",
+        "iconen",
+        "app-icoon",
+        "miniaturen",
+        "thumbnails",
+        "alle resoluties"
+      ],
+      "aliases": [
+        "icon generator",
+        "app icon sizes"
+      ]
+    },
+    "color-picker": {
+      "name": "Een kleur analyseren en omrekenen",
+      "description": "Dominante kleuren van een afbeelding, pixelnauwkeurige pipet, HEX- / RGB- / HSL- / HSV-notaties en WCAG-contrast tussen tekst en achtergrond.",
+      "keywords": [
+        "palet",
+        "dominante kleuren",
+        "kleur",
+        "hex",
+        "rgb",
+        "hsl",
+        "hsv",
+        "kleuren extraheren",
+        "kleurstalen",
+        "pipet",
+        "rgb naar hex",
+        "hex naar rgb",
+        "kleur omrekenen",
+        "kleurcode",
+        "wcag contrast",
+        "contrast",
+        "toegankelijkheid",
+        "contrastverhouding",
+        "leesbaarheid"
+      ],
+      "aliases": [
+        "color picker",
+        "hex to rgb",
+        "color converter",
+        "eyedropper",
+        "wcag contrast",
+        "contrast checker"
+      ]
+    },
+    "document-perspective": {
+      "name": "Perspectief van een document corrigeren",
+      "description": "De foto van een schuin gefotografeerd vel rechtzetten: plaats de vier hoeken en FourTout maakt er een recht van voren gezien rechthoek van.",
+      "keywords": [
+        "perspectief corrigeren",
+        "document rechtzetten",
+        "documentfoto",
+        "scheef vel",
+        "scheve foto",
+        "vier hoeken",
+        "scannen met telefoon",
+        "rechttrekken",
+        "vervorming"
+      ],
+      "aliases": [
+        "perspective correction",
+        "dewarp",
+        "document scanner",
+        "deskew photo"
+      ],
+      "note": "De vier hoeken worden met de hand geplaatst: dat is altijd exact, waar automatische detectie zich vergist. De uit de hoeken afgeleide verhoudingen zijn bij benadering — kies A4 of Letter voor een exact resultaat."
+    },
+    "scan-clean": {
+      "name": "Een scan opschonen",
+      "description": "Een licht scheef document rechtzetten, het contrast verhogen, een grijze of vergeelde achtergrond wit maken, omzetten naar grijstinten of zwart-wit.",
+      "keywords": [
+        "scan opschonen",
+        "gescand document opschonen",
+        "scan rechtzetten",
+        "deskew",
+        "scheve scan",
+        "grijze achtergrond",
+        "vergeeld papier",
+        "documentcontrast",
+        "onleesbare scan",
+        "scan verbeteren"
+      ],
+      "aliases": [
+        "clean scan",
+        "deskew",
+        "enhance scan",
+        "document cleanup"
+      ],
+      "note": "Elke instelling is optioneel en zichtbaar in een voor-/navoorbeeld. Het witmaken raakt nooit donkere pixels: fijne tekst behoudt zijn dichtheid."
+    },
+    "image-compare": {
+      "name": "Twee afbeeldingen vergelijken",
+      "description": "Zien en meten wat er verandert tussen twee afbeeldingen: naast elkaar, over elkaar of als verschil, met afwijkende pixels, PSNR en SSIM.",
+      "keywords": [
+        "afbeeldingen vergelijken",
+        "twee afbeeldingen vergelijken",
+        "afbeeldingsverschil",
+        "image diff",
+        "pixelverschil",
+        "psnr",
+        "ssim",
+        "verschil tussen twee foto's",
+        "voor en na",
+        "compressiekwaliteit",
+        "overlay",
+        "verschillen zoeken"
+      ],
+      "aliases": [
+        "compare images",
+        "image diff",
+        "pixel diff",
+        "psnr",
+        "ssim",
+        "image comparison"
+      ],
+      "note": "Twee afbeeldingen van verschillende grootte worden nooit zonder jouw toestemming geschaald: herbemonsteren zou verschillen maken die niet in de bestanden zitten."
+    },
+    "image-contact-sheet": {
+      "name": "Een contactafdruk maken",
+      "description": "Meerdere afbeeldingen in een raster op één vel plaatsen, met de naam van elk bestand.",
+      "keywords": [
+        "contactafdruk",
+        "contact sheet",
+        "afbeeldingenraster",
+        "mozaïek",
+        "miniaturen",
+        "afbeeldingen samenvoegen",
+        "fotomontage",
+        "afbeeldingencatalogus",
+        "meerdere afbeeldingen op één pagina"
+      ],
+      "aliases": [
+        "contact sheet",
+        "photo grid",
+        "thumbnail sheet"
+      ]
+    },
+    "audio-record": {
+      "name": "Opnemen met de microfoon",
+      "description": "Geluid van de microfoon opnemen en lokaal opslaan.",
+      "keywords": [
+        "opnemen",
+        "microfoon",
+        "dictafoon",
+        "mijn stem opnemen",
+        "spraakmemo"
+      ],
+      "aliases": [
+        "record audio",
+        "voice recorder"
+      ]
+    },
+    "audio-trim": {
+      "name": "Audio knippen",
+      "description": "Een precies fragment van een audiobestand bewaren.",
+      "keywords": [
+        "knippen",
+        "inkorten",
+        "fragment",
+        "bijsnijden",
+        "stuk bewaren"
+      ],
+      "aliases": [
+        "trim audio",
+        "cut audio",
+        "split audio"
+      ]
+    },
+    "audio-merge": {
+      "name": "Audiobestanden samenvoegen",
+      "description": "Meerdere sporen achter elkaar in één bestand zetten.",
+      "keywords": [
+        "samenvoegen",
+        "combineren",
+        "achter elkaar plakken",
+        "sporen samenvoegen"
+      ],
+      "aliases": [
+        "merge audio",
+        "join audio",
+        "concat audio"
+      ]
+    },
+    "audio-convert": {
+      "name": "Audio converteren",
+      "description": "Van het ene formaat naar het andere: MP3, WAV, FLAC, OGG, M4A, OPUS.",
+      "keywords": [
+        "converteren",
+        "formaat wijzigen",
+        "wav naar mp3",
+        "mp3 naar wav",
+        "flac",
+        "ogg",
+        "m4a",
+        "opus",
+        "aac"
+      ],
+      "aliases": [
+        "convert audio",
+        "wav to mp3",
+        "audio converter"
+      ]
+    },
+    "audio-compress": {
+      "name": "Audio comprimeren",
+      "description": "Een audiobestand kleiner maken door de bitrate aan te passen.",
+      "keywords": [
+        "comprimeren",
+        "kleiner maken",
+        "verkleinen",
+        "bitrate",
+        "te groot"
+      ],
+      "aliases": [
+        "compress audio",
+        "reduce audio size"
+      ]
+    },
+    "audio-volume": {
+      "name": "Volume aanpassen",
+      "description": "Het totale volume van een audiobestand verhogen of verlagen.",
+      "keywords": [
+        "volume",
+        "harder",
+        "zachter",
+        "versterken",
+        "geluid zachter",
+        "te zacht"
+      ],
+      "aliases": [
+        "change volume",
+        "amplify audio"
+      ]
+    },
+    "audio-normalize": {
+      "name": "Audio normaliseren",
+      "description": "Het geluidsniveau van meerdere bestanden gelijktrekken (loudness).",
+      "keywords": [
+        "normaliseren",
+        "gelijktrekken",
+        "loudness",
+        "zelfde volume",
+        "lufs"
+      ],
+      "aliases": [
+        "normalize audio",
+        "loudness"
+      ]
+    },
+    "audio-speed": {
+      "name": "Snelheid wijzigen",
+      "description": "Audio versnellen of vertragen, met of zonder toonhoogtecorrectie.",
+      "keywords": [
+        "snelheid",
+        "versnellen",
+        "vertragen",
+        "tempo",
+        "toonhoogte",
+        "sneller"
+      ],
+      "aliases": [
+        "audio speed",
+        "speed up audio",
+        "slow down audio"
+      ]
+    },
+    "audio-remove-silence": {
+      "name": "Stiltes verwijderen",
+      "description": "Stiltes in een opname automatisch detecteren en wegknippen.",
+      "keywords": [
+        "stiltes",
+        "pauzes",
+        "pauzes wegknippen",
+        "opname opschonen",
+        "podcast"
+      ],
+      "aliases": [
+        "remove silence",
+        "trim silence"
+      ]
+    },
+    "video-extract-audio": {
+      "name": "Audio uit een video halen",
+      "description": "Het geluidsspoor van een video in het gewenste formaat eruit halen.",
+      "keywords": [
+        "geluid extraheren",
+        "soundtrack",
+        "video naar mp3",
+        "mp4 naar mp3",
+        "audio eruit halen",
+        "geluid van een video"
+      ],
+      "aliases": [
+        "extract audio",
+        "video to mp3",
+        "mp4 to mp3"
+      ]
+    },
+    "audio-transcribe": {
+      "name": "Audiotranscriptie",
+      "description": "Spraak uit een audio- of videobestand lokaal omzetten naar tekst.",
+      "keywords": [
+        "transcriberen",
+        "transcriptie",
+        "audio naar tekst",
+        "spraak naar tekst",
+        "vergadering",
+        "interview",
+        "dicteren",
+        "ondertitelen",
+        "mp3 transcriberen",
+        "video transcriberen"
+      ],
+      "aliases": [
+        "transcribe",
+        "speech to text",
+        "audio to text",
+        "stt"
+      ],
+      "note": "Spraakherkenningsmodel dat op je computer draait, op verzoek geïnstalleerd."
+    },
+    "audio-generate-srt": {
+      "name": "SRT-ondertitels maken",
+      "description": "Een ondertitelbestand met tijdcodes maken van audio of video.",
+      "keywords": [
+        "srt",
+        "ondertitels",
+        "vtt",
+        "tijdcodes",
+        "captions",
+        "ondertitels maken"
+      ],
+      "aliases": [
+        "generate subtitles",
+        "srt generator"
+      ]
+    },
+    "text-to-speech": {
+      "name": "Tekst naar spraak",
+      "description": "Een tekst voorlezen en opslaan als audiobestand, zonder onlinedienst.",
+      "keywords": [
+        "spraaksynthese",
+        "tts",
+        "voorlezen",
+        "tekst naar audio",
+        "synthetische stem",
+        "tekst beluisteren",
+        "mp3 van mijn tekst"
+      ],
+      "aliases": [
+        "text to speech",
+        "tts",
+        "voorleesfunctie"
+      ]
+    },
+    "pdf-to-audio": {
+      "name": "Pdf naar audio",
+      "description": "Een pdf met de lokale spraaksynthese omzetten in een luisterboek.",
+      "keywords": [
+        "pdf naar audio",
+        "luisterboek",
+        "pdf beluisteren",
+        "mijn pdf voorlezen",
+        "cursus beluisteren"
+      ],
+      "aliases": [
+        "pdf to audio",
+        "pdf to speech",
+        "audiobook"
+      ]
+    },
+    "text-file-to-audio": {
+      "name": "Tekstbestand naar audio",
+      "description": "Een TXT- of Markdown-bestand omzetten in een voorgelezen audiobestand.",
+      "keywords": [
+        "txt naar audio",
+        "luisterboek",
+        "vertelling",
+        "tekst beluisteren",
+        "mp3 van mijn tekst"
+      ],
+      "aliases": [
+        "txt to audio",
+        "text file to audio"
+      ]
+    },
+    "audio-channels": {
+      "name": "Audiokanalen omzetten",
+      "description": "Een bestand naar mono of stereo omzetten, of laten zoals het is. Een meerkanaalsbestand wordt nooit ongevraagd teruggemixt.",
+      "keywords": [
+        "mono stereo",
+        "audiokanalen",
+        "mono",
+        "stereo",
+        "naar mono",
+        "naar stereo",
+        "downmix",
+        "kanalen mixen",
+        "5.1 naar stereo"
+      ],
+      "aliases": [
+        "audio channels",
+        "mono to stereo",
+        "stereo to mono",
+        "downmix"
+      ],
+      "note": "Van mono naar stereo wordt het kanaal verdubbeld: beide kanten dragen hetzelfde signaal. Er wordt geen ruimtelijkheid verzonnen."
+    },
+    "audio-metadata": {
+      "name": "Audiotags bewerken",
+      "description": "Titel, artiest, album, jaar, genre, nummer en opmerking lezen en corrigeren — zonder het geluid opnieuw te coderen.",
+      "keywords": [
+        "audio metadata",
+        "tags",
+        "mp3 tags",
+        "id3",
+        "titel artiest album",
+        "titel corrigeren",
+        "jaar genre nummer",
+        "mp3-info bewerken"
+      ],
+      "aliases": [
+        "audio metadata",
+        "id3 tags",
+        "edit tags",
+        "music tags"
+      ],
+      "note": "Bij het schrijven wordt de audiostroom ongewijzigd gekopieerd (-c copy): het geluid is bit voor bit identiek."
+    },
+    "media-info": {
+      "name": "Een mediabestand inspecteren",
+      "description": "Alles wat een audio- of videobestand vermeldt: container, codecs, resolutie, framerate, bitrates, kanalen, tags.",
+      "keywords": [
+        "video metadata",
+        "audio metadata",
+        "media-info",
+        "codec",
+        "bitrate",
+        "videoresolutie",
+        "framerate",
+        "fps",
+        "kanalen",
+        "samplefrequentie",
+        "video inspecteren",
+        "ffprobe"
+      ],
+      "aliases": [
+        "media info",
+        "media metadata",
+        "video metadata",
+        "ffprobe",
+        "mediainfo"
+      ]
+    },
+    "video-convert": {
+      "name": "Een video converteren",
+      "description": "Van het ene formaat naar het andere: MP4, MKV, WebM, MOV.",
+      "keywords": [
+        "converteren",
+        "formaat wijzigen",
+        "mkv naar mp4",
+        "avi naar mp4",
+        "webm",
+        "mov"
+      ],
+      "aliases": [
+        "convert video",
+        "mkv to mp4",
+        "video converter"
+      ],
+      "note": "Alleen codecs die echt in de geïnstalleerde engine zitten, worden aangeboden."
+    },
+    "video-compress": {
+      "name": "Een video comprimeren",
+      "description": "Een video flink kleiner maken door de gewenste kwaliteit te kiezen.",
+      "keywords": [
+        "comprimeren",
+        "kleiner maken",
+        "verkleinen",
+        "te groot",
+        "per e-mail versturen",
+        "minder mb",
+        "optimaliseren"
+      ],
+      "aliases": [
+        "compress video",
+        "reduce video size"
+      ]
+    },
+    "video-resolution": {
+      "name": "Resolutie wijzigen",
+      "description": "Een video omzetten naar 1080p, 720p, 480p of een eigen formaat.",
+      "keywords": [
+        "resolutie",
+        "1080p",
+        "720p",
+        "480p",
+        "4k",
+        "schalen",
+        "formaat wijzigen"
+      ],
+      "aliases": [
+        "resize video",
+        "change resolution",
+        "downscale video"
+      ]
+    },
+    "video-trim": {
+      "name": "Een video knippen",
+      "description": "Alleen een fragment bewaren, waar mogelijk zonder opnieuw te coderen.",
+      "keywords": [
+        "knippen",
+        "inkorten",
+        "fragment",
+        "begin weghalen",
+        "einde weghalen",
+        "clip"
+      ],
+      "aliases": [
+        "trim video",
+        "cut video"
+      ]
+    },
+    "video-merge": {
+      "name": "Video's samenvoegen",
+      "description": "Meerdere video's achter elkaar tot één bestand samenvoegen.",
+      "keywords": [
+        "samenvoegen",
+        "combineren",
+        "achter elkaar plakken",
+        "clips samenvoegen"
+      ],
+      "aliases": [
+        "merge video",
+        "concat video",
+        "join video"
+      ]
+    },
+    "video-crop": {
+      "name": "Een video bijsnijden",
+      "description": "Visueel het te bewaren gebied kiezen, met vaste verhoudingen.",
+      "keywords": [
+        "bijsnijden",
+        "herkaderen",
+        "crop",
+        "randen wegsnijden",
+        "staand formaat",
+        "9:16",
+        "vierkant",
+        "zwarte balken weghalen"
+      ],
+      "aliases": [
+        "crop video",
+        "vertical video",
+        "reframe"
+      ]
+    },
+    "video-to-gif": {
+      "name": "Video naar gif",
+      "description": "Een videofragment omzetten in een geoptimaliseerde geanimeerde gif.",
+      "keywords": [
+        "gif",
+        "video naar gif",
+        "animatie",
+        "lus",
+        "mp4 naar gif"
+      ],
+      "aliases": [
+        "video to gif",
+        "mp4 to gif",
+        "gif maker"
+      ]
+    },
+    "gif-to-video": {
+      "name": "Gif naar video",
+      "description": "Een geanimeerde gif omzetten naar MP4 of WebM, die veel kleiner zijn.",
+      "keywords": [
+        "gif naar video",
+        "gif naar mp4",
+        "gif omzetten",
+        "animatie naar video",
+        "gif te groot"
+      ],
+      "aliases": [
+        "gif to video",
+        "gif to mp4",
+        "gif to webm"
+      ]
+    },
+    "video-extract-frame": {
+      "name": "Een beeld uit een video halen",
+      "description": "Een bepaald frame vastleggen of op vaste tussenpozen stilstaande beelden maken.",
+      "keywords": [
+        "stilstaand beeld",
+        "frame",
+        "beeld uit video",
+        "screenshot",
+        "miniatuur"
+      ],
+      "aliases": [
+        "extract frame",
+        "video screenshot",
+        "video to image"
+      ]
+    },
+    "video-speed": {
+      "name": "Videosnelheid wijzigen",
+      "description": "Een timelapse of slow motion maken, inclusief geluid.",
+      "keywords": [
+        "snelheid",
+        "timelapse",
+        "slow motion",
+        "vertraagd",
+        "versneld",
+        "sneller"
+      ],
+      "aliases": [
+        "video speed",
+        "timelapse",
+        "slow motion"
+      ]
+    },
+    "video-rotate": {
+      "name": "Een video draaien",
+      "description": "Een verkeerd om gefilmde video corrigeren, of spiegelen.",
+      "keywords": [
+        "draaien",
+        "roteren",
+        "rotatie",
+        "ondersteboven",
+        "staand gefilmd",
+        "rechtzetten",
+        "spiegelen"
+      ],
+      "aliases": [
+        "rotate video",
+        "flip video",
+        "mirror video"
+      ]
+    },
+    "video-remove-audio": {
+      "name": "Geluid uit een video verwijderen",
+      "description": "Een stille versie van de video maken, zonder het beeld opnieuw te coderen.",
+      "keywords": [
+        "geluid verwijderen",
+        "dempen",
+        "zonder audio",
+        "muziek weghalen",
+        "stil"
+      ],
+      "aliases": [
+        "remove audio",
+        "mute video"
+      ]
+    },
+    "video-replace-audio": {
+      "name": "Audiospoor vervangen",
+      "description": "Het geluidsspoor van een video vervangen, of er een extra spoor aan toevoegen.",
+      "keywords": [
+        "geluid vervangen",
+        "muziek toevoegen",
+        "nasynchronisatie",
+        "soundtrack",
+        "voice-over",
+        "tweede audiospoor"
+      ],
+      "aliases": [
+        "replace audio",
+        "add audio track",
+        "dub video"
+      ],
+      "note": "Zet de video en het audiobestand samen neer."
+    },
+    "video-volume": {
+      "name": "Videovolume aanpassen",
+      "description": "Het geluid van een video harder of zachter zetten zonder het beeld aan te raken.",
+      "keywords": [
+        "volume",
+        "geluid te zacht",
+        "geluid te hard",
+        "harder zetten",
+        "zachter zetten",
+        "versterken",
+        "volume normaliseren"
+      ],
+      "aliases": [
+        "video volume",
+        "boost audio",
+        "louder video"
+      ]
+    },
+    "video-add-subtitles": {
+      "name": "Ondertitelspoor toevoegen",
+      "description": "Een SRT- of VTT-bestand aan de video koppelen, in de speler in te schakelen.",
+      "keywords": [
+        "ondertitels",
+        "srt",
+        "vtt",
+        "ondertitelspoor",
+        "softsub",
+        "koppelen"
+      ],
+      "aliases": [
+        "add subtitles",
+        "soft subtitles",
+        "mux srt"
+      ],
+      "note": "Zet de video en het ondertitelbestand samen neer."
+    },
+    "video-burn-subtitles": {
+      "name": "Ondertitels inbranden",
+      "description": "Ondertitels in het beeld branden: ze verschijnen in elke speler.",
+      "keywords": [
+        "inbranden",
+        "hardsub",
+        "ondertitels inbranden",
+        "ondertitels in beeld",
+        "ingebrande srt",
+        "overal zichtbare ondertitels"
+      ],
+      "aliases": [
+        "burn subtitles",
+        "hardcode srt",
+        "hardsub"
+      ],
+      "note": "Zet de video en het ondertitelbestand samen neer."
+    },
+    "video-extract-subtitles": {
+      "name": "Ondertitels uit een video halen",
+      "description": "Bestaande ondertitelsporen exporteren als SRT of VTT.",
+      "keywords": [
+        "ondertitels extraheren",
+        "ondertitels eruit halen",
+        "srt exporteren",
+        "ondertitelspoor",
+        "mkv ondertitels"
+      ],
+      "aliases": [
+        "extract subtitles",
+        "rip subtitles",
+        "demux srt"
+      ],
+      "note": "Alleen tekstsporen kunnen worden geëxporteerd; beeldsporen (PGS, dvd) zijn afbeeldingen."
+    },
+    "video-generate-subtitles": {
+      "name": "Ondertitels voor een video maken",
+      "description": "De spraak in een video automatisch transcriberen en daarna exporteren of inbranden.",
+      "keywords": [
+        "ondertitels maken",
+        "video transcriberen",
+        "automatisch ondertitelen",
+        "automatische srt",
+        "spraakherkenning"
+      ],
+      "aliases": [
+        "auto subtitles",
+        "generate subtitles"
+      ],
+      "note": "Gebruikt het al geïnstalleerde lokale transcriptiemodel (er wordt niets via het netwerk verzonden)."
+    },
+    "video-batch": {
+      "name": "Video's in batch verwerken",
+      "description": "Meerdere video's converteren, comprimeren, schalen, draaien of hun audio extraheren.",
+      "keywords": [
+        "batch",
+        "in bulk",
+        "al mijn video's",
+        "map"
+      ],
+      "aliases": [
+        "batch video",
+        "bulk video"
+      ]
+    },
+    "video-frame-rate": {
+      "name": "Framerate wijzigen",
+      "description": "Een video omzetten naar 24, 25, 30 of 60 fps of een eigen framerate, door beelden te verdubbelen en weg te laten.",
+      "keywords": [
+        "video fps",
+        "fps wijzigen",
+        "framerate",
+        "beelden per seconde",
+        "24 fps",
+        "25 fps",
+        "30 fps",
+        "60 fps",
+        "29.97",
+        "23.976",
+        "ntsc",
+        "pal"
+      ],
+      "aliases": [
+        "frame rate",
+        "change fps",
+        "fps converter",
+        "framerate"
+      ],
+      "note": "Er worden geen tussenbeelden berekend: beelden worden verdubbeld of weggelaten. De uitvoer heeft een constante framerate."
+    },
+    "text-statistics": {
+      "name": "Woorden- en tekenteller",
+      "description": "Woorden, tekens, zinnen, alinea's en geschatte leestijd.",
+      "keywords": [
+        "tellen",
+        "aantal woorden",
+        "tekens",
+        "zinnen",
+        "leestijd",
+        "tekstlengte",
+        "statistieken"
+      ],
+      "aliases": [
+        "word count",
+        "character count",
+        "reading time",
+        "woorden tellen"
+      ]
+    },
+    "text-case": {
+      "name": "Hoofdletters wijzigen",
+      "description": "HOOFDLETTERS, kleine letters, Hoofdletter Per Woord, camelCase, snake_case, kebab-case.",
+      "keywords": [
+        "hoofdletters",
+        "kleine letters",
+        "hoofdlettergebruik",
+        "alles in hoofdletters",
+        "camelcase",
+        "snake case",
+        "kebab case",
+        "title case"
+      ],
+      "aliases": [
+        "uppercase",
+        "lowercase",
+        "change case",
+        "text case"
+      ]
+    },
+    "text-clean": {
+      "name": "Tekst opschonen",
+      "description": "Overbodige spaties, lege regels, tabs en onzichtbare tekens verwijderen.",
+      "keywords": [
+        "opschonen",
+        "spaties",
+        "lege regels",
+        "tabs",
+        "trim",
+        "regeleinden verwijderen",
+        "opmaak",
+        "gekopieerde tekst"
+      ],
+      "aliases": [
+        "clean text",
+        "trim whitespace",
+        "remove empty lines"
+      ]
+    },
+    "text-find-replace": {
+      "name": "Zoeken en vervangen",
+      "description": "Tekst in bulk vervangen, met of zonder reguliere expressie.",
+      "keywords": [
+        "vervangen",
+        "zoeken",
+        "regex",
+        "zoeken en vervangen"
+      ],
+      "aliases": [
+        "find and replace",
+        "search replace"
+      ]
+    },
+    "text-compare": {
+      "name": "Twee teksten vergelijken",
+      "description": "Per regel zien wat er is toegevoegd, verwijderd of gewijzigd.",
+      "keywords": [
+        "vergelijken",
+        "verschillen",
+        "diff",
+        "twee versies",
+        "wijzigingen"
+      ],
+      "aliases": [
+        "diff",
+        "compare text",
+        "text diff"
+      ]
+    },
+    "text-deduplicate": {
+      "name": "Dubbele regels verwijderen",
+      "description": "Van elke regel maar één exemplaar houden, eventueel ongeacht hoofdletters.",
+      "keywords": [
+        "dubbele",
+        "ontdubbelen",
+        "dubbele regels",
+        "uniek",
+        "herhalingen verwijderen"
+      ],
+      "aliases": [
+        "remove duplicates",
+        "dedupe lines",
+        "unique lines"
+      ]
+    },
+    "text-sort-lines": {
+      "name": "Regels sorteren",
+      "description": "Regels alfabetisch, numeriek of willekeurig sorteren.",
+      "keywords": [
+        "sorteren",
+        "ordenen",
+        "alfabetisch",
+        "lijst",
+        "willekeurig"
+      ],
+      "aliases": [
+        "sort lines",
+        "sort list"
+      ]
+    },
+    "markdown-convert": {
+      "name": "Markdown ↔ HTML / tekst",
+      "description": "Markdown omzetten naar HTML of platte tekst, en terug.",
+      "keywords": [
+        "markdown",
+        "md",
+        "html",
+        "markdown omzetten",
+        "platte tekst",
+        "weergeven"
+      ],
+      "aliases": [
+        "markdown to html",
+        "html to markdown",
+        "md converter"
+      ]
+    },
+    "text-extract-urls": {
+      "name": "URL's extraheren",
+      "description": "Alle webadressen uit een tekst halen.",
+      "keywords": [
+        "urls",
+        "links",
+        "webadressen",
+        "links extraheren",
+        "http"
+      ],
+      "aliases": [
+        "extract urls",
+        "link extractor"
+      ]
+    },
+    "text-extract-emails": {
+      "name": "E-mailadressen extraheren",
+      "description": "Alle e-mailadressen uit een tekst halen.",
+      "keywords": [
+        "e-mails",
+        "e-mailadressen",
+        "mailadressen",
+        "e-mails extraheren",
+        "contacten"
+      ],
+      "aliases": [
+        "extract emails",
+        "email extractor"
+      ]
+    },
+    "text-extract-numbers": {
+      "name": "Getallen extraheren",
+      "description": "Alle getallen uit een tekst halen en optellen.",
+      "keywords": [
+        "getallen",
+        "cijfers",
+        "bedragen extraheren",
+        "som",
+        "waarden"
+      ],
+      "aliases": [
+        "extract numbers",
+        "number extractor"
+      ]
+    },
+    "lorem-ipsum": {
+      "name": "Lorem Ipsum",
+      "description": "Opvultekst maken: woorden, zinnen of alinea's.",
+      "keywords": [
+        "lorem",
+        "opvultekst",
+        "dummytekst",
+        "placeholder",
+        "mockup"
+      ],
+      "aliases": [
+        "lorem ipsum",
+        "dummy text",
+        "placeholder text"
+      ]
+    },
+    "text-unicode-normalize": {
+      "name": "Unicode normaliseren",
+      "description": "De schrijfwijze van accenten tussen systemen gelijktrekken (NFC, NFD, NFKC, NFKD).",
+      "keywords": [
+        "unicode",
+        "accenten",
+        "nfc",
+        "nfd",
+        "nfkc",
+        "nfkd",
+        "normaliseren",
+        "vreemde tekens",
+        "accenten mac windows"
+      ],
+      "aliases": [
+        "unicode normalization",
+        "normalize unicode",
+        "nfc nfd"
+      ]
+    },
+    "text-line-endings": {
+      "name": "Regeleinden omzetten",
+      "description": "Van CRLF (Windows) naar LF (Unix) en terug, met voorafgaande detectie.",
+      "keywords": [
+        "crlf",
+        "lf",
+        "regeleinden",
+        "carriage return",
+        "windows unix",
+        "^M",
+        "dos2unix",
+        "unix2dos",
+        "nieuwe regels"
+      ],
+      "aliases": [
+        "line endings",
+        "crlf to lf",
+        "dos2unix",
+        "unix2dos"
+      ]
+    },
+    "docx-extract": {
+      "name": "Word (DOCX) naar tekst, Markdown of HTML",
+      "description": "De inhoud van een Word-document extraheren: koppen, alinea's, lijsten en tabellen.",
+      "keywords": [
+        "docx",
+        "word",
+        "word-document",
+        "tekst uit word",
+        "docx naar tekst",
+        "docx naar html",
+        "docx naar markdown",
+        "docx lezen"
+      ],
+      "aliases": [
+        "docx to text",
+        "word to text",
+        "docx to html",
+        "docx to markdown"
+      ],
+      "note": "Complexe opmaak (kolommen, afbeeldingen, stijlen) wordt niet overgenomen: FourTout extraheert de inhoud en de structuur."
+    },
+    "docx-to-pdf": {
+      "name": "Word (DOCX) naar pdf",
+      "description": "Een Word-document naar pdf omzetten: koppen, alinea's, lijsten en eenvoudige tabellen.",
+      "keywords": [
+        "docx naar pdf",
+        "word naar pdf",
+        "word omzetten",
+        "document naar pdf"
+      ],
+      "aliases": [
+        "docx to pdf",
+        "word to pdf"
+      ],
+      "note": "FourTout neemt de inhoud en de structuur over — koppen, alinea's, vet, cursief, lijsten, eenvoudige tabellen — maar niet de Word-opmaak: kolommen, zwevende vakken, kop- en voetteksten, specifieke lettertypen en afbeeldingen kunnen afwijken of ontbreken. Exporteer voor een pixelperfect resultaat naar pdf vanuit Word of LibreOffice."
+    },
+    "document-compare": {
+      "name": "Twee documenten vergelijken",
+      "description": "De inhoud van twee documenten vergelijken — pdf, Word, tekst, Markdown of HTML —, ook in verschillende formaten, per regel en per woord.",
+      "keywords": [
+        "documenten vergelijken",
+        "twee documenten vergelijken",
+        "pdf en word vergelijken",
+        "verschil tussen twee documenten",
+        "document diff",
+        "twee versies",
+        "wat is er veranderd",
+        "contracten vergelijken"
+      ],
+      "aliases": [
+        "compare documents",
+        "document diff",
+        "compare pdf docx"
+      ],
+      "note": "De vergelijking gaat over de tekst, niet over de opmaak: ze laat zien wat er inhoudelijk is veranderd, ook tussen twee verschillende formaten. Een gescande pdf moet eerst door ‘Gescande pdf naar doorzoekbare pdf’."
+    },
+    "text-encoding-detect": {
+      "name": "Codering van een tekstbestand detecteren",
+      "description": "De codering, byte order mark en regeleindeconventie van een bestand bepalen, met de werkelijke mate van zekerheid.",
+      "keywords": [
+        "tekstcodering",
+        "codering detecteren",
+        "welke codering",
+        "vreemde tekens",
+        "kapotte accenten",
+        "mojibake",
+        "utf8 of latin1",
+        "bom",
+        "regeleinde",
+        "onleesbaar bestand",
+        "charset"
+      ],
+      "aliases": [
+        "detect encoding",
+        "charset detection",
+        "what encoding",
+        "bom"
+      ],
+      "note": "Behalve via een byte order mark vermeldt geen enkel bestand zijn codering: detectie blijft een aanname, en FourTout toont zijn werkelijke zekerheid in plaats van een misleidend oordeel."
+    },
+    "text-encoding-convert": {
+      "name": "Codering van een tekstbestand omzetten",
+      "description": "Van de ene codering naar de andere — UTF-8, UTF-8 met BOM, UTF-16 LE/BE, Windows-1252, Latin-1 — zonder ongemerkt een teken te verliezen.",
+      "keywords": [
+        "codering omzetten",
+        "utf16 utf8",
+        "latin1 utf8",
+        "windows 1252 utf8",
+        "codering wijzigen",
+        "accenten herstellen",
+        "ansi naar utf8",
+        "iso 8859 1",
+        "bom",
+        "transcoderen"
+      ],
+      "aliases": [
+        "convert encoding",
+        "utf16 to utf8",
+        "latin1 to utf8",
+        "transcode"
+      ],
+      "note": "Als de doelcodering bepaalde tekens niet kan schrijven, wordt de omzetting geweigerd en worden die tekens opgesomd. Vervangen gebeurt alleen als je daar uitdrukkelijk om vraagt."
+    },
+    "subtitle-edit": {
+      "name": "Ondertitels bewerken",
+      "description": "Omzetten tussen SRT en WebVTT, tijdcodes verschuiven, twee bestanden samenvoegen, controleren en herstellen.",
+      "keywords": [
+        "ondertitels",
+        "srt",
+        "vtt",
+        "webvtt",
+        "srt naar vtt",
+        "vtt naar srt",
+        "ondertitels verschuiven",
+        "ondertitels synchroniseren",
+        "ondertitels te laat",
+        "ondertitels samenvoegen",
+        "srt herstellen",
+        "overlap"
+      ],
+      "aliases": [
+        "subtitles",
+        "srt to vtt",
+        "vtt to srt",
+        "shift subtitles",
+        "merge subtitles",
+        "fix srt"
+      ],
+      "note": "Wat mechanisch veilig is, wordt gecorrigeerd (volgorde, nummering, regeleinden); overlappingen worden gemeld maar nooit eigenmachtig ingekort."
+    },
+    "archive-create": {
+      "name": "Een archief maken",
+      "description": "Bestanden of mappen comprimeren tot ZIP, 7z, TAR, TAR.GZ of TAR.XZ, met behoud van de mappenstructuur.",
+      "keywords": [
+        "zip",
+        "comprimeren",
+        "archiveren",
+        "7z",
+        "tar",
+        "tar.gz",
+        "in een zip stoppen",
+        "bestanden bundelen"
+      ],
+      "aliases": [
+        "create zip",
+        "compress files",
+        "make archive"
+      ],
+      "note": "De hier gemaakte 7z is niet versleuteld: gebruik voor een archief met wachtwoord ‘Archief met wachtwoord’, waarvan de AES-256-ZIP opent in 7-Zip, WinRAR, Keka en Windows Verkenner."
+    },
+    "archive-extract": {
+      "name": "Een archief uitpakken",
+      "description": "Een ZIP-, 7z-, TAR-, TAR.GZ- of TAR.XZ-archief uitpakken naar de map van je keuze.",
+      "keywords": [
+        "uitpakken",
+        "decomprimeren",
+        "extraheren",
+        "zip openen",
+        "unzip"
+      ],
+      "aliases": [
+        "unzip",
+        "extract archive",
+        "decompress"
+      ],
+      "note": "Er wordt nooit een bestand buiten de gekozen map geschreven: items waarvan het pad omhoog gaat (‘../’), absolute paden en symbolische koppelingen worden geweigerd en opgesomd. RAR wordt niet ondersteund."
+    },
+    "archive-encrypted": {
+      "name": "Archief met wachtwoord",
+      "description": "Een met een wachtwoord versleuteld archief maken of openen.",
+      "keywords": [
+        "beveiligd archief",
+        "zip met wachtwoord",
+        "versleutelde 7z",
+        "bestanden beveiligen",
+        "veilig archief"
+      ],
+      "aliases": [
+        "encrypted zip",
+        "password protected archive"
+      ],
+      "note": "WinZip AES-256-versleuteling: het archief opent in 7-Zip, WinRAR, PeaZip, Keka en Windows Verkenner. Het verouderde ‘ZipCrypto’, in seconden te kraken, wordt nooit gebruikt. De bestandsnamen blijven wel leesbaar zonder wachtwoord — een beperking van het ZIP-formaat."
+    },
+    "file-hash": {
+      "name": "Een hash berekenen",
+      "description": "De SHA-256, SHA-512, SHA-1 of MD5 van een of meer bestanden bepalen, ongeacht de grootte.",
+      "keywords": [
+        "hash",
+        "vingerafdruk",
+        "md5",
+        "sha256",
+        "sha1",
+        "checksum",
+        "controlesom"
+      ],
+      "aliases": [
+        "file hash",
+        "checksum",
+        "md5",
+        "sha256"
+      ]
+    },
+    "file-verify-hash": {
+      "name": "Een hash controleren",
+      "description": "De hash van een bestand vergelijken met die van de bron.",
+      "keywords": [
+        "controleren",
+        "integriteit",
+        "checksum",
+        "is het bestand beschadigd",
+        "hash vergelijken",
+        "echtheid"
+      ],
+      "aliases": [
+        "verify checksum",
+        "check integrity",
+        "hash compare"
+      ]
+    },
+    "file-find-duplicates": {
+      "name": "Dubbele bestanden zoeken",
+      "description": "Dubbele bestanden in een map vinden op inhoud, niet op naam.",
+      "keywords": [
+        "dubbele",
+        "identieke bestanden",
+        "ruimte vrijmaken",
+        "opruimen",
+        "dubbele foto's"
+      ],
+      "aliases": [
+        "find duplicates",
+        "duplicate finder"
+      ]
+    },
+    "file-compare": {
+      "name": "Twee bestanden vergelijken",
+      "description": "Controleren of twee bestanden identiek zijn, byte voor byte of regel voor regel.",
+      "keywords": [
+        "vergelijken",
+        "identiek",
+        "verschillen",
+        "binair",
+        "bestands-diff"
+      ],
+      "aliases": [
+        "compare files",
+        "file diff"
+      ]
+    },
+    "file-bulk-rename": {
+      "name": "Bulksgewijs hernoemen",
+      "description": "Honderden bestanden hernoemen met een patroon, nummering of regex.",
+      "keywords": [
+        "hernoemen",
+        "in bulk",
+        "batch hernoemen",
+        "bestanden nummeren",
+        "voorvoegsel",
+        "achtervoegsel",
+        "al mijn bestanden"
+      ],
+      "aliases": [
+        "bulk rename",
+        "batch rename"
+      ]
+    },
+    "file-clean-names": {
+      "name": "Bestandsnamen opschonen",
+      "description": "Accenten, spaties en problematische tekens uit bestandsnamen verwijderen.",
+      "keywords": [
+        "accenten",
+        "spaties in namen",
+        "speciale tekens",
+        "slug",
+        "normaliseren"
+      ],
+      "aliases": [
+        "clean filenames",
+        "sanitize filenames"
+      ]
+    },
+    "file-organize": {
+      "name": "Een map ordenen",
+      "description": "Bestanden automatisch sorteren op extensie, datum of type.",
+      "keywords": [
+        "opruimen",
+        "ordenen",
+        "sorteren",
+        "op extensie",
+        "op datum",
+        "downloadmap opruimen",
+        "orde scheppen"
+      ],
+      "aliases": [
+        "organize folder",
+        "sort files"
+      ]
+    },
+    "folder-size": {
+      "name": "Ruimte van een map analyseren",
+      "description": "Zien wat echt ruimte inneemt: grootste bestanden, grootste submappen, verdeling per type.",
+      "keywords": [
+        "grootte",
+        "schijfruimte",
+        "wat neemt ruimte in",
+        "grote bestanden",
+        "schijf vol",
+        "analyseren"
+      ],
+      "aliases": [
+        "folder size",
+        "disk usage",
+        "disk analyzer",
+        "space analyzer"
+      ],
+      "note": "Alleen de metadata van het bestandssysteem worden gelezen: de inhoud van bestanden wordt nooit geopend. Onleesbare mappen worden gemeld in plaats van als nul geteld, en symbolische koppelingen worden niet gevolgd (hun doel zou dubbel worden geteld)."
+    },
+    "file-secure-delete": {
+      "name": "Veilig verwijderen",
+      "description": "De inhoud van een bestand overschrijven voordat het wordt verwijderd, zodat herstel met software zeer onwaarschijnlijk wordt.",
+      "keywords": [
+        "definitief verwijderen",
+        "veilig wissen",
+        "onherstelbaar",
+        "shred",
+        "bestand vernietigen",
+        "echt verwijderen"
+      ],
+      "aliases": [
+        "secure delete",
+        "shred",
+        "wipe file"
+      ],
+      "note": "Versterkt wissen met software, geen fysieke vernietiging: op een ssd, geheugenkaart, Btrfs/ZFS/APFS, of als er snapshots en back-ups zijn, kan geen enkele software garanderen dat alle eerdere kopieën weg zijn."
+    },
+    "file-split": {
+      "name": "Een groot bestand splitsen",
+      "description": "Een groot bestand in genummerde stukken opdelen, met een controlemanifest.",
+      "keywords": [
+        "splitsen",
+        "opdelen",
+        "split",
+        "stukken",
+        "bestand te groot",
+        "usb-stick",
+        "fat32",
+        "groot bestand versturen",
+        "part001"
+      ],
+      "aliases": [
+        "split file",
+        "file splitter"
+      ]
+    },
+    "file-join": {
+      "name": "Een bestand samenvoegen",
+      "description": "Een bestand herstellen uit zijn .part001-stukken, met hashcontrole.",
+      "keywords": [
+        "samenvoegen",
+        "weer samenvoegen",
+        "join",
+        "stukken samenvoegen",
+        "part001",
+        "bestand herstellen"
+      ],
+      "aliases": [
+        "join files",
+        "merge parts",
+        "reassemble"
+      ]
+    },
+    "folder-tree": {
+      "name": "Mappenstructuur maken",
+      "description": "De mappenboom van een map als tekst maken, klaar om in een README te plakken.",
+      "keywords": [
+        "boom",
+        "structuur",
+        "tree",
+        "mappenstructuur",
+        "hiërarchie",
+        "readme",
+        "mappenlijst"
+      ],
+      "aliases": [
+        "folder tree",
+        "directory tree"
+      ]
+    },
+    "file-info": {
+      "name": "Een bestand inspecteren",
+      "description": "Echt type op basis van de handtekening, kloppende extensie, codering, datums, hashes en eerste bytes.",
+      "keywords": [
+        "informatie",
+        "eigenschappen",
+        "details",
+        "bestandstype",
+        "inspecteren",
+        "welk formaat",
+        "mime",
+        "aanmaakdatum",
+        "wat is dit bestand",
+        "magic bytes",
+        "handtekening",
+        "misleidende extensie",
+        "echt formaat",
+        "codering"
+      ],
+      "aliases": [
+        "file info",
+        "file properties",
+        "file details",
+        "inspect file",
+        "magic bytes"
+      ],
+      "note": "Het getoonde type komt uit de eerste bytes, niet uit de extensie: een ‘.jpg’ met een PNG erin wordt als zodanig gemeld. Er wordt niets automatisch hernoemd — corrigeren blijft een handeling die jij vraagt."
+    },
+    "folder-compare": {
+      "name": "Twee mappen vergelijken",
+      "description": "Zien wat tussen twee mappenbomen identiek, gewijzigd of maar aan één kant aanwezig is.",
+      "keywords": [
+        "mappen vergelijken",
+        "mappen-diff",
+        "verschillen tussen twee mappen",
+        "wat is er veranderd",
+        "twee versies van een map",
+        "voor en na",
+        "kopie controleren",
+        "back-up bijgewerkt"
+      ],
+      "aliases": [
+        "compare folders",
+        "folder diff",
+        "directory compare",
+        "diff directories"
+      ],
+      "note": "De snelle modus vergelijkt type en grootte zonder iets te lezen: twee even grote bestanden heten daar ‘waarschijnlijk identiek’. Alleen de betrouwbare modus bevestigt gelijkheid op inhoud — en leest alleen even grote bestanden, want een andere grootte is genoeg om te concluderen."
+    },
+    "folder-sync": {
+      "name": "Mappen synchroniseren",
+      "description": "Een doel bijwerken vanuit een bron, met een gedetailleerd plan vóór elke schrijfactie.",
+      "keywords": [
+        "synchroniseren",
+        "spiegelen",
+        "map kopiëren",
+        "map bijwerken",
+        "back-up externe schijf",
+        "usb-stick",
+        "repliceren",
+        "mirror",
+        "rsync"
+      ],
+      "aliases": [
+        "sync folders",
+        "mirror folder",
+        "folder sync",
+        "one-way sync"
+      ],
+      "note": "Synchronisatie in één richting: de bron is leidend, het doel volgt. Er wordt niets geschreven voordat je het plan hebt gelezen. De spiegelmodus verwijdert uit het doel wat niet meer in de bron bestaat, en vraagt daarvoor een aparte bevestiging."
+    },
+    "file-search": {
+      "name": "Zoeken in bestanden",
+      "description": "Bestanden vinden op naam, type, grootte of datum — of op de tekst die ze bevatten.",
+      "keywords": [
+        "zoeken",
+        "zoeken in bestanden",
+        "bestand vinden",
+        "grep",
+        "document terugvinden",
+        "waar is dit bestand",
+        "woord zoeken",
+        "inhoud doorzoeken",
+        "op datum",
+        "op grootte"
+      ],
+      "aliases": [
+        "search files",
+        "find files",
+        "grep",
+        "search in files"
+      ],
+      "note": "Zoeken op verzoek: FourTout indexeert niets op de achtergrond en bewaart niets tussen twee zoekopdrachten. Zoeken op inhoud opent alleen wat echt op tekst lijkt — een binair bestand wordt nooit als tekst gelezen."
+    },
+    "file-preview": {
+      "name": "Een bestand bekijken",
+      "description": "Elk bestand openen zonder bijbehorend programma: tekst, afbeelding, pdf, audio, video, archief of ruwe bytes.",
+      "keywords": [
+        "voorbeeld",
+        "bekijken",
+        "openen zonder programma",
+        "inhoud zien",
+        "quick look",
+        "bestand bekijken",
+        "bestand lezen"
+      ],
+      "aliases": [
+        "preview file",
+        "quick look",
+        "file viewer"
+      ],
+      "note": "Het voorbeeld wordt gekozen op basis van de echte inhoud, niet de extensie. Grote tekstbestanden worden maar deels geladen, en het voorbeeld meldt dat."
+    },
+    "file-hex-edit": {
+      "name": "Hex-editor",
+      "description": "De bytes van een bestand per venster lezen en corrigeren, zonder het ooit helemaal te laden.",
+      "keywords": [
+        "hexadecimaal",
+        "hex editor",
+        "hex",
+        "bytes",
+        "binair",
+        "bytes wijzigen",
+        "offset",
+        "ascii",
+        "dump"
+      ],
+      "aliases": [
+        "hex editor",
+        "hex edit",
+        "binary editor"
+      ],
+      "note": "Bewust beperkte editor: geen binaire sjablonen, geen scripts, geen bytes invoegen of verwijderen — alleen correcties ter plekke, die de bestandsgrootte nooit veranderen. Standaard wordt het resultaat in een nieuw bestand opgeslagen."
+    },
+    "folder-backup": {
+      "name": "Een map back-uppen",
+      "description": "Een map kopiëren met een hashmanifest, zodat je hem later kunt controleren en terugzetten.",
+      "keywords": [
+        "back-up",
+        "reservekopie",
+        "backup",
+        "mijn documenten archiveren",
+        "voor herinstallatie",
+        "externe schijf",
+        "mijn bestanden beschermen"
+      ],
+      "aliases": [
+        "backup folder",
+        "create backup"
+      ],
+      "note": "Transparant formaat: een map ‘donnees’ die je mappenstructuur weerspiegelt, en een leesbaar ‘manifeste.json’. Geen gesloten container — ook zonder FourTout blijven je bestanden toegankelijk. Dit is geen back-up met versies: elke back-up is een volledige, gedateerde kopie."
+    },
+    "folder-restore": {
+      "name": "Een back-up terugzetten",
+      "description": "Een FourTout-back-up controleren en terugzetten zonder te overschrijven wat je niet hebt gekozen.",
+      "keywords": [
+        "terugzetten",
+        "herstellen",
+        "back-up terugzetten",
+        "mijn bestanden terugzetten",
+        "restore",
+        "terug in de tijd",
+        "back-up controleren"
+      ],
+      "aliases": [
+        "restore backup",
+        "verify backup"
+      ],
+      "note": "De integriteit wordt gecontroleerd vóór elke schrijfactie: een beschadigd bestand in de back-up wordt bij naam genoemd, niet stilzwijgend teruggezet. Terugzetten verwijdert nooit iets in het doel."
+    },
+    "checksum-manifest": {
+      "name": "Een hashmanifest maken",
+      "description": "Een .sha256-bestand maken met de hash van elk bestand in een map.",
+      "keywords": [
+        "manifest",
+        "controlesommen",
+        "checksums",
+        "sha256sum",
+        "hashlijst",
+        "voor het branden",
+        "voor het versturen",
+        "integriteitscontrole",
+        "sfv"
+      ],
+      "aliases": [
+        "checksum manifest",
+        "create checksums",
+        "sha256sum"
+      ],
+      "note": "Het tekstformaat is dat van sha256sum: het is te controleren met de systeemtools op elke computer. MD5 en SHA-1 blijven beschikbaar om oude hashes te controleren, maar worden aangemerkt als ongeschikt voor beveiliging."
+    },
+    "checksum-verify": {
+      "name": "Een hashmanifest controleren",
+      "description": "Een map vergelijken met een checksumbestand: intact, gewijzigd, ontbrekend of onleesbaar, per bestand.",
+      "keywords": [
+        "controlesommen controleren",
+        "manifest controleren",
+        "sha256sum -c",
+        "zijn mijn bestanden veranderd",
+        "integriteit van een map",
+        "bit rot"
+      ],
+      "aliases": [
+        "verify checksums",
+        "check manifest",
+        "sha256sum -c"
+      ],
+      "note": "Een manifest is een gegeven, geen opdracht: een item dat uit de gecontroleerde map zou gaan (‘../’, absoluut pad) wordt geweigerd en opgesomd, nooit gevolgd."
+    },
+    "hmac": {
+      "name": "Een HMAC berekenen",
+      "description": "Een tekst of bestand ondertekenen met een geheime sleutel, met HMAC-SHA-256 of SHA-512.",
+      "keywords": [
+        "hmac",
+        "handtekening",
+        "geheime sleutel",
+        "webhook",
+        "api",
+        "authenticeren",
+        "verzoek ondertekenen",
+        "berichtauthenticatiecode"
+      ],
+      "aliases": [
+        "hmac",
+        "message authentication code"
+      ],
+      "note": "De sleutel wordt niet opgeslagen, niet gelogd en niet aan recente items toegevoegd: hij dient voor de berekening en verdwijnt. Hij wordt van het scherm gewist zodra je de tool verlaat."
+    },
+    "file-compress": {
+      "name": "Een bestand comprimeren (GZ, XZ)",
+      "description": "Eén bestand verkleinen tot .gz of .xz — zonder er een archief van te maken.",
+      "keywords": [
+        "gzip",
+        "gz",
+        "xz",
+        "bestand comprimeren",
+        "lzma",
+        "bestand verkleinen",
+        "compressie",
+        "groot logbestand"
+      ],
+      "aliases": [
+        "gzip",
+        "xz compress",
+        "compress file"
+      ],
+      "note": "‘.gz’ en ‘.xz’ bevatten maar één bestand, zonder mapnaam of structuur. Gebruik om meerdere bestanden met hun ordening te comprimeren ‘Een archief maken’ met het formaat TAR.GZ of TAR.XZ."
+    },
+    "file-decompress": {
+      "name": "Een bestand decomprimeren (GZ, XZ)",
+      "description": "Het originele bestand terughalen uit een .gz of .xz.",
+      "keywords": [
+        "gunzip",
+        "unxz",
+        ".gz openen",
+        ".xz openen",
+        "gz uitpakken",
+        "gz decomprimeren",
+        "xz decomprimeren"
+      ],
+      "aliases": [
+        "gunzip",
+        "unxz",
+        "decompress file"
+      ],
+      "note": "Een ‘.tar.gz’ bevat een mappenstructuur: gebruik liever ‘Een archief uitpakken’, dat die herstelt. Hier zou een .tar.gz gewoon de .tar teruggeven."
+    },
+    "archive-inspect": {
+      "name": "Een archief inspecteren",
+      "description": "De inhoud van een archief tonen zonder het uit te pakken: paden, groottes, compressieverhoudingen, verdachte items.",
+      "keywords": [
+        "inhoud van een zip bekijken",
+        "archief tonen",
+        "zonder uitpakken",
+        "wat zit erin",
+        "zip inspecteren",
+        "7z inhoud",
+        "archief doorbladeren"
+      ],
+      "aliases": [
+        "inspect archive",
+        "list archive",
+        "browse archive"
+      ],
+      "note": "Er wordt niets gedecomprimeerd: alleen de inhoudsopgave van het archief wordt gelezen. Items waarvan het pad buiten de uitpakmap zou komen, worden gemeld voordat je zelfs maar aan uitpakken denkt."
+    },
+    "archive-test": {
+      "name": "Een archief testen",
+      "description": "Controleren of een archief intact is door het volledig te decomprimeren, zonder iets naar de schijf te schrijven.",
+      "keywords": [
+        "archief testen",
+        "beschadigd archief",
+        "kapotte zip",
+        "zip controleren",
+        "onvolledige download",
+        "archiefintegriteit",
+        "crc"
+      ],
+      "aliases": [
+        "test archive",
+        "verify archive",
+        "check archive"
+      ],
+      "note": "De inhoud wordt echt gedecomprimeerd en de controlesommen worden gecontroleerd — het archief alleen tonen zou niets bewijzen, want dan wordt alleen de kop gelezen. Er wordt niets geschreven: de bytes worden geteld en weggegooid."
+    },
+    "universal-converter": {
+      "name": "Universele converter",
+      "description": "Zet een bestand neer: FourTout stelt de mogelijke omzettingen naar compatibele formaten voor.",
+      "keywords": [
+        "converteren",
+        "omzetten",
+        "formaat wijzigen",
+        "elk bestand",
+        "welk formaat",
+        "converter"
+      ],
+      "aliases": [
+        "universal converter",
+        "convert anything",
+        "file converter"
+      ],
+      "note": "De voorgestelde omzettingen volgen uit de in- en uitvoer die de tools in het register opgeven: geen aparte tabel om bij te houden, en nooit een aangekondigde omzetting zonder tool erachter."
+    },
+    "json-tools": {
+      "name": "JSON — opmaken en valideren",
+      "description": "JSON inspringen, verkleinen en valideren, met een precieze foutmelding.",
+      "keywords": [
+        "json",
+        "opmaken",
+        "inspringen",
+        "valideren",
+        "prettify",
+        "verkleinen",
+        "parsen"
+      ],
+      "aliases": [
+        "json formatter",
+        "json validator",
+        "json beautifier",
+        "prettify json"
+      ]
+    },
+    "xml-format": {
+      "name": "XML — opmaken",
+      "description": "Een XML-document inspringen en valideren.",
+      "keywords": [
+        "xml",
+        "opmaken",
+        "inspringen",
+        "valideren",
+        "tags"
+      ],
+      "aliases": [
+        "xml formatter",
+        "xml beautifier"
+      ]
+    },
+    "yaml-format": {
+      "name": "YAML — opmaken en omzetten",
+      "description": "YAML opmaken en omzetten van of naar JSON.",
+      "keywords": [
+        "yaml",
+        "yml",
+        "opmaken",
+        "yaml naar json",
+        "json naar yaml",
+        "configuratie"
+      ],
+      "aliases": [
+        "yaml formatter",
+        "yaml to json",
+        "json to yaml"
+      ]
+    },
+    "sql-format": {
+      "name": "SQL — opmaken",
+      "description": "Een compacte of gegenereerde SQL-query leesbaar maken.",
+      "keywords": [
+        "sql",
+        "query",
+        "opmaken",
+        "inspringen",
+        "leesbaar"
+      ],
+      "aliases": [
+        "sql formatter",
+        "sql beautifier"
+      ]
+    },
+    "base64": {
+      "name": "Base64 — coderen en decoderen",
+      "description": "Tekst omzetten naar Base64 en terug, inclusief base64url.",
+      "keywords": [
+        "base64",
+        "coderen",
+        "decoderen",
+        "b64",
+        "codering",
+        "data uri"
+      ],
+      "aliases": [
+        "base64 encode",
+        "base64 decode",
+        "b64"
+      ]
+    },
+    "url-encode": {
+      "name": "URL — coderen en decoderen",
+      "description": "Een URL en de parameters coderen of decoderen (procentcodering).",
+      "keywords": [
+        "url",
+        "coderen",
+        "decoderen",
+        "procentcodering",
+        "querystring",
+        "speciale tekens"
+      ],
+      "aliases": [
+        "url encode",
+        "url decode",
+        "uri encode"
+      ]
+    },
+    "jwt-decode": {
+      "name": "JWT — decoderen",
+      "description": "De header en payload van een JWT lezen, zonder het ergens naartoe te sturen.",
+      "keywords": [
+        "jwt",
+        "token",
+        "decoderen",
+        "bearer",
+        "payload",
+        "claims"
+      ],
+      "aliases": [
+        "jwt decoder",
+        "decode token"
+      ],
+      "note": "Het token wordt lokaal gedecodeerd: het verlaat je computer nooit."
+    },
+    "uuid-generate": {
+      "name": "UUID's genereren",
+      "description": "Unieke v4- of v7-ID's maken, per stuk of in batch.",
+      "keywords": [
+        "uuid",
+        "guid",
+        "unieke id",
+        "id genereren",
+        "v4",
+        "v7"
+      ],
+      "aliases": [
+        "uuid generator",
+        "guid generator"
+      ]
+    },
+    "regex-tester": {
+      "name": "Regex-tester",
+      "description": "Een reguliere expressie live testen en de overeenkomsten en groepen zien.",
+      "keywords": [
+        "regex",
+        "reguliere expressie",
+        "testen",
+        "overeenkomst",
+        "patroon",
+        "match"
+      ],
+      "aliases": [
+        "regex tester",
+        "regexp",
+        "regex101"
+      ]
+    },
+    "timestamp-convert": {
+      "name": "Unix-tijdstempel",
+      "description": "Een tijdstempel omzetten naar een leesbare datum en terug, met tijdzones.",
+      "keywords": [
+        "tijdstempel",
+        "timestamp",
+        "unix",
+        "epoch",
+        "datum in seconden",
+        "milliseconden",
+        "datum omzetten"
+      ],
+      "aliases": [
+        "unix timestamp",
+        "epoch converter"
+      ]
+    },
+    "hash-text": {
+      "name": "Hash van een tekst maken",
+      "description": "De MD5, SHA-1, SHA-256 of SHA-512 van een tekenreeks berekenen.",
+      "keywords": [
+        "hash",
+        "md5",
+        "sha256",
+        "vingerafdruk",
+        "tekst hashen",
+        "digest"
+      ],
+      "aliases": [
+        "hash generator",
+        "md5 text",
+        "sha256 text"
+      ]
+    },
+    "qr-generate": {
+      "name": "Een QR-code maken",
+      "description": "Een QR-code maken voor een URL, tekst, contact of wifinetwerk.",
+      "keywords": [
+        "qr-code",
+        "qrcode",
+        "streepjescode",
+        "qr maken",
+        "wifi",
+        "vcard"
+      ],
+      "aliases": [
+        "qr code generator",
+        "make qr code"
+      ]
+    },
+    "qr-read": {
+      "name": "Een QR-code lezen",
+      "description": "Een QR-code decoderen uit een afbeelding of schermafbeelding.",
+      "keywords": [
+        "qr lezen",
+        "scannen",
+        "qr-code decoderen",
+        "qr uit afbeelding"
+      ],
+      "aliases": [
+        "qr code reader",
+        "scan qr code",
+        "decode qr"
+      ]
+    },
+    "number-base-convert": {
+      "name": "Hex, decimaal, binair omrekenen",
+      "description": "Wisselen tussen talstelsels: binair, octaal, decimaal, hexadecimaal.",
+      "keywords": [
+        "hexadecimaal",
+        "binair",
+        "decimaal",
+        "octaal",
+        "grondtal 16",
+        "grondtal 2",
+        "getal omrekenen"
+      ],
+      "aliases": [
+        "hex to decimal",
+        "binary converter",
+        "base converter"
+      ]
+    },
+    "code-diff": {
+      "name": "Code-diff",
+      "description": "Twee codeblokken vergelijken, met toevoegingen en verwijderingen gemarkeerd.",
+      "keywords": [
+        "diff",
+        "code vergelijken",
+        "verschillen",
+        "merge",
+        "versies"
+      ],
+      "aliases": [
+        "code diff",
+        "compare code"
+      ]
+    },
+    "web-minify": {
+      "name": "HTML, CSS, JS verkleinen",
+      "description": "Code kleiner maken door witruimte en commentaar te verwijderen.",
+      "keywords": [
+        "minify",
+        "verkleinen",
+        "code comprimeren",
+        "uglify",
+        "productie"
+      ],
+      "aliases": [
+        "minify",
+        "minify css",
+        "minify js",
+        "minify html"
+      ]
+    },
+    "web-beautify": {
+      "name": "HTML, CSS, JS opmaken",
+      "description": "Verkleinde of slecht opgemaakte code opnieuw laten inspringen zodat hij leesbaar wordt.",
+      "keywords": [
+        "opmaken",
+        "inspringen",
+        "beautify",
+        "prettify",
+        "onleesbare code",
+        "opnieuw inspringen"
+      ],
+      "aliases": [
+        "beautify",
+        "format code",
+        "prettify html"
+      ]
+    },
+    "cron-helper": {
+      "name": "Cron-hulp",
+      "description": "Een cron-expressie samenstellen en in gewone taal uitleggen.",
+      "keywords": [
+        "cron",
+        "crontab",
+        "planning",
+        "geplande taak",
+        "cron-expressie",
+        "schedule"
+      ],
+      "aliases": [
+        "cron generator",
+        "crontab helper",
+        "cron expression"
+      ]
+    },
+    "toml-format": {
+      "name": "TOML — opmaken en valideren",
+      "description": "Een TOML-bestand controleren en in canonieke vorm herschrijven.",
+      "keywords": [
+        "toml",
+        "opmaken",
+        "valideren",
+        "configuratie",
+        "cargo",
+        "pyproject",
+        "inspringen",
+        "syntaxisfout"
+      ],
+      "aliases": [
+        "toml formatter",
+        "toml validator",
+        "toml linter",
+        "format toml"
+      ],
+      "note": "Bij het opnieuw opmaken wordt het document opgebouwd uit zijn gegevens: opmerkingen en de oorspronkelijke volgorde gaan verloren. Valideren verandert daarentegen niets."
+    },
+    "base32": {
+      "name": "Base32 — coderen en decoderen",
+      "description": "Tekst omzetten naar Base32 en terug, volgens RFC 4648.",
+      "keywords": [
+        "base32",
+        "coderen",
+        "decoderen",
+        "rfc 4648",
+        "totp",
+        "codering",
+        "padding",
+        "alfabet"
+      ],
+      "aliases": [
+        "base32 encode",
+        "base32 decode",
+        "b32"
+      ]
+    },
+    "sqlite-explorer": {
+      "name": "SQLite-database — verkennen",
+      "description": "Een SQLite-database alleen-lezen openen: schema, gegevens, query's, CSV-export.",
+      "keywords": [
+        "sqlite",
+        "database",
+        "db",
+        "verkennen",
+        "schema",
+        "tabel",
+        "query",
+        "select",
+        "sql",
+        "alleen-lezen"
+      ],
+      "aliases": [
+        "sqlite browser",
+        "sqlite explorer",
+        "db browser",
+        "open sqlite"
+      ],
+      "note": "Strikt lezende verkenner: de database wordt alleen-lezen geopend en geen enkele query kan hem wijzigen."
+    },
+    "unit-length": {
+      "name": "Omrekenen — lengte",
+      "description": "Meters, kilometers, mijlen, voeten, inches, zeemijlen.",
+      "keywords": [
+        "omrekenen",
+        "conversie",
+        "eenheden",
+        "lengte",
+        "afstand",
+        "meter",
+        "km",
+        "mijl",
+        "inch",
+        "voet",
+        "centimeter"
+      ],
+      "aliases": [
+        "length converter",
+        "cm to inches",
+        "km to miles"
+      ]
+    },
+    "unit-weight": {
+      "name": "Omrekenen — gewicht en massa",
+      "description": "Grammen, kilo's, tonnen, ponden, ounces.",
+      "keywords": [
+        "omrekenen",
+        "conversie",
+        "eenheden",
+        "gewicht",
+        "massa",
+        "kilo",
+        "gram",
+        "pond",
+        "ounce",
+        "ton",
+        "lbs"
+      ],
+      "aliases": [
+        "weight converter",
+        "kg to lbs",
+        "pounds to kg"
+      ]
+    },
+    "unit-temperature": {
+      "name": "Omrekenen — temperatuur",
+      "description": "Celsius, Fahrenheit, Kelvin.",
+      "keywords": [
+        "omrekenen",
+        "conversie",
+        "eenheden",
+        "temperatuur",
+        "celsius",
+        "fahrenheit",
+        "kelvin",
+        "graden",
+        "°c",
+        "°f"
+      ],
+      "aliases": [
+        "temperature converter",
+        "celsius to fahrenheit"
+      ]
+    },
+    "unit-volume": {
+      "name": "Omrekenen — volume",
+      "description": "Liters, milliliters, gallons, pints, kopjes, lepels.",
+      "keywords": [
+        "omrekenen",
+        "conversie",
+        "eenheden",
+        "volume",
+        "liter",
+        "ml",
+        "gallon",
+        "pint",
+        "kopje",
+        "lepel",
+        "recept"
+      ],
+      "aliases": [
+        "volume converter",
+        "cups to ml",
+        "gallons to liters"
+      ]
+    },
+    "unit-area": {
+      "name": "Omrekenen — oppervlakte",
+      "description": "Vierkante meters, hectares, acres, vierkante voeten.",
+      "keywords": [
+        "omrekenen",
+        "conversie",
+        "eenheden",
+        "oppervlakte",
+        "m2",
+        "vierkante meter",
+        "hectare",
+        "acre",
+        "perceel"
+      ],
+      "aliases": [
+        "area converter",
+        "sqft to m2"
+      ]
+    },
+    "unit-speed": {
+      "name": "Omrekenen — snelheid",
+      "description": "km/u, m/s, mph, knopen.",
+      "keywords": [
+        "omrekenen",
+        "conversie",
+        "eenheden",
+        "snelheid",
+        "km/u",
+        "km/h",
+        "mph",
+        "m/s",
+        "knopen"
+      ],
+      "aliases": [
+        "speed converter",
+        "kmh to mph"
+      ]
+    },
+    "unit-pressure": {
+      "name": "Omrekenen — druk",
+      "description": "Pascal, bar, PSI, atmosfeer, mmHg.",
+      "keywords": [
+        "omrekenen",
+        "conversie",
+        "eenheden",
+        "druk",
+        "bar",
+        "psi",
+        "pascal",
+        "atmosfeer",
+        "bandenspanning"
+      ],
+      "aliases": [
+        "pressure converter",
+        "bar to psi"
+      ]
+    },
+    "unit-energy": {
+      "name": "Omrekenen — energie",
+      "description": "Joules, calorieën, kWh, BTU.",
+      "keywords": [
+        "omrekenen",
+        "conversie",
+        "eenheden",
+        "energie",
+        "joule",
+        "calorie",
+        "kwh",
+        "btu",
+        "kcal"
+      ],
+      "aliases": [
+        "energy converter",
+        "kwh to joules"
+      ]
+    },
+    "unit-power": {
+      "name": "Omrekenen — vermogen",
+      "description": "Watt, kilowatt, paardenkracht.",
+      "keywords": [
+        "omrekenen",
+        "conversie",
+        "eenheden",
+        "vermogen",
+        "watt",
+        "kw",
+        "kilowatt",
+        "pk",
+        "paardenkracht",
+        "hp"
+      ],
+      "aliases": [
+        "power converter",
+        "watts to hp",
+        "kw to hp"
+      ]
+    },
+    "unit-data": {
+      "name": "Omrekenen — dataopslag",
+      "description": "Bytes, KB, MB, GB, TB en hun binaire tegenhangers (KiB, MiB).",
+      "keywords": [
+        "omrekenen",
+        "conversie",
+        "eenheden",
+        "bytes",
+        "mb",
+        "gb",
+        "tb",
+        "megabyte",
+        "gigabyte",
+        "bits",
+        "kib",
+        "mib"
+      ],
+      "aliases": [
+        "data converter",
+        "mb to gb",
+        "bytes converter"
+      ]
+    },
+    "calc-percentage": {
+      "name": "Procentberekeningen",
+      "description": "Percentage van een getal, verandering, korting, btw, aandeel in het totaal.",
+      "keywords": [
+        "percentage",
+        "procent",
+        "%",
+        "korting",
+        "btw",
+        "stijging",
+        "verandering",
+        "korting berekenen",
+        "toename",
+        "afname"
+      ],
+      "aliases": [
+        "percentage calculator",
+        "percent change",
+        "discount calculator"
+      ]
+    },
+    "calc-proportion": {
+      "name": "Regel van drie",
+      "description": "Een verhouding oplossen: als A gelijk is aan B, hoeveel is C dan?",
+      "keywords": [
+        "regel van drie",
+        "verhouding",
+        "kruislings vermenigvuldigen",
+        "ratio",
+        "schaal"
+      ],
+      "aliases": [
+        "rule of three",
+        "cross multiplication",
+        "proportion calculator"
+      ]
+    },
+    "calc-date-difference": {
+      "name": "Datumberekeningen",
+      "description": "Aantal dagen tussen twee datums; een duur optellen of aftrekken.",
+      "keywords": [
+        "datums",
+        "dagen tussen",
+        "hoeveel dagen",
+        "dagen optellen",
+        "werkdagen",
+        "vervaldatum",
+        "termijn"
+      ],
+      "aliases": [
+        "date calculator",
+        "days between dates",
+        "date difference"
+      ]
+    },
+    "calc-duration": {
+      "name": "Duurberekeningen",
+      "description": "Uren, minuten en seconden optellen en aftrekken.",
+      "keywords": [
+        "duur",
+        "uren",
+        "minuten",
+        "uren optellen",
+        "werktijd",
+        "hh:mm"
+      ],
+      "aliases": [
+        "duration calculator",
+        "time calculator",
+        "add hours"
+      ]
+    },
+    "calc-age": {
+      "name": "Leeftijd berekenen",
+      "description": "Exacte leeftijd in jaren, maanden en dagen op basis van een geboortedatum.",
+      "keywords": [
+        "leeftijd",
+        "geboortedatum",
+        "hoe oud",
+        "verjaardag",
+        "jaren"
+      ],
+      "aliases": [
+        "age calculator",
+        "how old"
+      ]
+    },
+    "calc-scientific": {
+      "name": "Wetenschappelijke rekenmachine",
+      "description": "Geavanceerde bewerkingen: machten, wortels, goniometrie, logaritmen.",
+      "keywords": [
+        "rekenmachine",
+        "wetenschappelijk",
+        "vierkantswortel",
+        "macht",
+        "goniometrie",
+        "logaritme",
+        "sin",
+        "cos",
+        "rekenen"
+      ],
+      "aliases": [
+        "scientific calculator",
+        "calculator"
+      ]
+    },
+    "calc-currency": {
+      "name": "Valuta-omrekenaar",
+      "description": "Bedragen omrekenen tussen valuta met recente koersen.",
+      "keywords": [
+        "valuta",
+        "munteenheid",
+        "euro",
+        "dollar",
+        "wisselkoers",
+        "koers",
+        "geld",
+        "euro omrekenen"
+      ],
+      "aliases": [
+        "currency converter",
+        "eur to usd",
+        "exchange rate"
+      ],
+      "note": "De enige FourTout-tool die internet nodig heeft, alleen om de koersen van de dag op te halen. Offline worden de laatst bekende koersen hergebruikt."
+    },
+    "calc-timezone": {
+      "name": "Tussen tijdzones omrekenen",
+      "description": "Een lokale tijd omrekenen naar een andere, inclusief zomertijd.",
+      "keywords": [
+        "tijdzone",
+        "tijdzones",
+        "timezone",
+        "tijd",
+        "tijdsverschil",
+        "utc",
+        "gmt",
+        "tijd amsterdam tokio",
+        "tijd new york",
+        "zomertijd",
+        "dst"
+      ],
+      "aliases": [
+        "timezone converter",
+        "time zone",
+        "convert time",
+        "world clock"
+      ],
+      "note": "De tijdsverschillen komen uit de tijdzonedatabase van het systeem, voor de gevraagde datum: klokwijzigingen worden dus gerespecteerd, en dubbelzinnige of niet-bestaande tijden worden gemeld."
+    },
+    "calc-bandwidth": {
+      "name": "Bandbreedte berekenen",
+      "description": "Een gemiddelde snelheid afleiden uit een overgedragen hoeveelheid en een duur.",
+      "keywords": [
+        "bandbreedte",
+        "doorvoer",
+        "snelheid",
+        "bandwidth",
+        "mbps",
+        "mb per seconde",
+        "bits",
+        "bytes",
+        "verbinding"
+      ],
+      "aliases": [
+        "bandwidth calculator",
+        "throughput",
+        "data rate"
+      ]
+    },
+    "calc-transfer-time": {
+      "name": "Overdrachtstijd berekenen",
+      "description": "De duur van een overdracht schatten op basis van grootte en snelheid.",
+      "keywords": [
+        "overdrachtstijd",
+        "duur",
+        "download",
+        "upload",
+        "overdracht",
+        "hoelang",
+        "snelheid",
+        "grootte",
+        "eta"
+      ],
+      "aliases": [
+        "transfer time",
+        "download time",
+        "upload time"
+      ],
+      "note": "Theoretische berekening: grootte ÷ snelheid. Protocoloverhead, latentie en congestie worden genegeerd — een echte overdracht duurt altijd langer."
+    },
+    "calc-interest": {
+      "name": "Rente berekenen",
+      "description": "Enkelvoudige of samengestelde rente, met optionele periodieke stortingen.",
+      "keywords": [
+        "rente",
+        "samengestelde rente",
+        "enkelvoudige rente",
+        "kapitalisatie",
+        "sparen",
+        "belegging",
+        "rentevoet",
+        "rendement",
+        "spaarrekening"
+      ],
+      "aliases": [
+        "compound interest",
+        "simple interest",
+        "savings calculator"
+      ],
+      "note": "Een wiskundige tool, geen financieel advies: belastingen, inflatie en kosten worden niet meegenomen."
+    },
+    "network-ping": {
+      "name": "Ping",
+      "description": "Meten of een host antwoordt, en hoe snel.",
+      "keywords": [
+        "ping",
+        "latentie",
+        "icmp",
+        "antwoordt",
+        "bereikbaar",
+        "pakketverlies",
+        "responstijd",
+        "diagnose"
+      ],
+      "aliases": [
+        "ping",
+        "icmp echo",
+        "latency test"
+      ],
+      "note": "Verstuurt echte ICMP-pakketten, standaard vier. Als het systeem ICMP-sockets weigert, zegt de tool dat in plaats van iets anders te meten."
+    },
+    "network-ports": {
+      "name": "Poorten testen",
+      "description": "Zien welke TCP-poorten van een host een verbinding accepteren.",
+      "keywords": [
+        "poort",
+        "poorten",
+        "tcp",
+        "poort testen",
+        "open poort",
+        "gesloten poort",
+        "verbinding",
+        "firewall",
+        "dienst",
+        "luistert"
+      ],
+      "aliases": [
+        "port check",
+        "port test",
+        "tcp connect",
+        "is port open"
+      ],
+      "note": "Eén host, maximaal 256 poorten per run, via gewone TCP-verbindingen. Dit is geen scanner: geen stealth, geen dienstdetectie, geen zoektocht naar kwetsbaarheden."
+    },
+    "network-lan": {
+      "name": "Apparaten op het lokale netwerk ontdekken",
+      "description": "De apparaten tonen die zich op je subnet melden.",
+      "keywords": [
+        "lokaal netwerk",
+        "lan",
+        "apparaten",
+        "computers",
+        "lokaal netwerk scannen",
+        "ontdekking",
+        "printer",
+        "ip-adres",
+        "mac"
+      ],
+      "aliases": [
+        "lan discovery",
+        "network scan",
+        "find devices",
+        "arp table"
+      ],
+      "note": "Beperkt tot het direct verbonden subnet en 256 adressen. Het exacte bereik wordt vóór elk verzenden getoond, en er gaat niets weg zonder bevestiging."
+    },
+    "file-diagnose": {
+      "name": "Een bestand diagnosticeren",
+      "description": "Begrijpen wat een bestand echt is, en wat eraan ontbreekt.",
+      "keywords": [
+        "bestand diagnosticeren",
+        "corrupt bestand",
+        "beschadigd bestand",
+        "onleesbaar bestand",
+        "bestandstype",
+        "extensie",
+        "afgekapt",
+        "handtekening",
+        "analyseren"
+      ],
+      "aliases": [
+        "file diagnosis",
+        "corrupt file",
+        "file check",
+        "inspect file"
+      ],
+      "note": "Het originele bestand wordt nooit gewijzigd. FourTout analyseert de interne structuur van ZIP, PDF, PNG en JPEG, en zegt het eerlijk voor andere formaten."
+    },
+    "archive-repair": {
+      "name": "Beschadigd ZIP-archief",
+      "description": "Een onleesbaar archief diagnosticeren en redden wat er nog in zit.",
+      "keywords": [
+        "zip repareren",
+        "kapotte zip",
+        "corrupte zip",
+        "beschadigd archief",
+        "archief herstellen",
+        "onleesbaar archief",
+        "centrale map",
+        "toch uitpakken"
+      ],
+      "aliases": [
+        "repair zip",
+        "recover zip",
+        "broken archive",
+        "zip repair"
+      ],
+      "note": "Herstelt door de lokale headers te doorzoeken, ook zonder centrale map. Items met afgekapte gegevens worden als verloren gemeld — ze worden nooit gereconstrueerd. Het originele archief blijft onaangeroerd."
+    },
+    "pdf-repair": {
+      "name": "Beschadigde pdf",
+      "description": "Een onleesbare pdf diagnosticeren en herstellen als dat aantoonbaar lukt.",
+      "keywords": [
+        "pdf repareren",
+        "corrupte pdf",
+        "kapotte pdf",
+        "onleesbare pdf",
+        "pdf xref",
+        "startxref",
+        "afgekapte pdf",
+        "pdf herstellen"
+      ],
+      "aliases": [
+        "repair pdf",
+        "fix pdf",
+        "broken pdf",
+        "pdf recovery"
+      ],
+      "note": "Elk gemaakt bestand wordt opnieuw geopend door de pdf-engine en de pagina's worden geteld: weigert de engine het, dan geldt het herstel als mislukt en wordt het bestand verwijderd. Herschrijven maakt elke digitale handtekening ongeldig."
+    },
+    "image-repair": {
+      "name": "Beschadigde afbeelding",
+      "description": "Een beschadigde PNG of JPEG diagnosticeren en de leesbare pixels redden.",
+      "keywords": [
+        "afbeelding herstellen",
+        "corrupte afbeelding",
+        "kapotte jpeg",
+        "corrupte png",
+        "beschadigde foto",
+        "onleesbare afbeelding",
+        "afgekapte afbeelding",
+        "png crc"
+      ],
+      "aliases": [
+        "repair image",
+        "recover photo",
+        "broken jpeg",
+        "png repair"
+      ],
+      "note": "Een foute controlesom wordt nooit opnieuw berekend, en ontbrekende rijen van een afgekapte afbeelding worden nooit verzonnen. Visueel herstel codeert de gedecodeerde pixels opnieuw: het redt het beeld, niet het bestand."
+    },
+    "disk-inspect": {
+      "name": "Schijven en partities inspecteren",
+      "description": "De schijven, partities, volumes en gezondheidsindicatoren van het systeem bekijken.",
+      "keywords": [
+        "schijf",
+        "schijven",
+        "partities",
+        "bestandssysteem",
+        "schijfruimte",
+        "volume",
+        "smart",
+        "schijfgezondheid",
+        "ssd",
+        "nvme",
+        "usb",
+        "koppelen"
+      ],
+      "aliases": [
+        "disk info",
+        "partitions",
+        "smart health",
+        "drive inspector",
+        "storage"
+      ],
+      "note": "Alleen-lezen, zonder uitzondering: FourTout kan een schijf niet partitioneren, formatteren, koppelen, klonen of wissen. Uitgebreide gezondheidsindicatoren hangen af van `smartctl`, dat FourTout niet meelevert."
+    },
+    "password-generate": {
+      "name": "Een wachtwoord genereren",
+      "description": "Sterke wachtwoorden of goed te onthouden wachtzinnen maken.",
+      "keywords": [
+        "wachtwoord",
+        "genereren",
+        "willekeurig",
+        "veilig",
+        "wachtzin",
+        "sterk wachtwoord",
+        "wachtwoord maken"
+      ],
+      "aliases": [
+        "password generator",
+        "generate password",
+        "passphrase"
+      ]
+    },
+    "password-strength": {
+      "name": "Wachtwoordsterkte testen",
+      "description": "Offline inschatten hoe lang het zou duren om een wachtwoord te kraken.",
+      "keywords": [
+        "sterkte",
+        "sterk wachtwoord",
+        "beveiliging",
+        "is mijn wachtwoord goed",
+        "entropie",
+        "wachtwoord controleren"
+      ],
+      "aliases": [
+        "password strength",
+        "password checker"
+      ],
+      "note": "De analyse is volledig lokaal: het ingevoerde wachtwoord wordt nooit verzonden."
+    },
+    "file-encrypt": {
+      "name": "Bestanden versleutelen",
+      "description": "Bestanden met een wachtwoord beschermen via moderne versleuteling.",
+      "keywords": [
+        "versleutelen",
+        "encrypten",
+        "beschermen",
+        "wachtwoord",
+        "aes",
+        "vertrouwelijk",
+        "bestand beveiligen"
+      ],
+      "aliases": [
+        "encrypt file",
+        "file encryption",
+        "aes encrypt"
+      ]
+    },
+    "file-decrypt": {
+      "name": "Bestanden ontsleutelen",
+      "description": "De inhoud terughalen van een bestand dat met FourTout is versleuteld.",
+      "keywords": [
+        "ontsleutelen",
+        "decrypten",
+        "versleuteld bestand openen",
+        "herstellen"
+      ],
+      "aliases": [
+        "decrypt file",
+        "file decryption"
+      ]
+    },
+    "metadata-strip-any": {
+      "name": "Metadata van een bestand verwijderen",
+      "description": "Auteur, datums, apparaat en locatie wissen voordat je een document deelt.",
+      "keywords": [
+        "metadata",
+        "anonimiseren",
+        "voor het delen",
+        "privacy",
+        "auteur verwijderen",
+        "sporen",
+        "document opschonen"
+      ],
+      "aliases": [
+        "strip metadata",
+        "remove metadata",
+        "anonymize file"
+      ]
+    }
+  }
+}

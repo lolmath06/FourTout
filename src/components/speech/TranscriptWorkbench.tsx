@@ -19,6 +19,7 @@ import {
 import { useToolJob } from "@/features/jobs/hooks";
 import { notify } from "@/features/notifications/store";
 import type { ToolDefinition } from "@/core/tools/types";
+import { t, tx } from "@/i18n";
 
 /**
  * Atelier commun à la transcription et aux sous-titres.
@@ -110,7 +111,7 @@ export function TranscriptWorkbench({
         },
       });
     } catch (error) {
-      notify.error("Lancement impossible", cleanMessage(error));
+      notify.error(t("Lancement impossible"), cleanMessage(error));
     } finally {
       startingRef.current = false;
     }
@@ -129,29 +130,29 @@ export function TranscriptWorkbench({
       bytes: new TextEncoder().encode(content),
       mimeType: extension === "txt" ? "text/plain" : `text/${extension}`,
     });
-    if (outcome.saved) notify.success("Fichier enregistré", outcome.path);
+    if (outcome.saved) notify.success(t("Fichier enregistré"), outcome.path);
   };
 
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(toPlainText(segments));
-      notify.success("Transcription copiée");
+      notify.success(t("Transcription copiée"));
     } catch {
-      notify.error("Copie impossible");
+      notify.error(t("Copie impossible"));
     }
   };
 
   const exports: { format: "txt" | "srt" | "vtt"; label: string; icon: "FileText" | "Subtitles" }[] =
     focus === "subtitles"
       ? [
-          { format: "srt", label: "Sous-titres SRT", icon: "Subtitles" },
-          { format: "vtt", label: "Sous-titres VTT", icon: "Subtitles" },
-          { format: "txt", label: "Texte brut", icon: "FileText" },
+          { format: "srt", label: t("Sous-titres SRT"), icon: "Subtitles" },
+          { format: "vtt", label: t("Sous-titres VTT"), icon: "Subtitles" },
+          { format: "txt", label: t("Texte brut"), icon: "FileText" },
         ]
       : [
-          { format: "txt", label: "Texte brut", icon: "FileText" },
-          { format: "srt", label: "Sous-titres SRT", icon: "Subtitles" },
-          { format: "vtt", label: "Sous-titres VTT", icon: "Subtitles" },
+          { format: "txt", label: t("Texte brut"), icon: "FileText" },
+          { format: "srt", label: t("Sous-titres SRT"), icon: "Subtitles" },
+          { format: "vtt", label: t("Sous-titres VTT"), icon: "Subtitles" },
         ];
 
   return (
@@ -160,14 +161,14 @@ export function TranscriptWorkbench({
         constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
         files={files}
         onChange={setFiles}
-        label={dropLabel ?? "Déposez un fichier audio ou vidéo"}
-        hint="La bande son d'une vidéo est extraite automatiquement."
+        label={dropLabel ?? t("Déposez un fichier audio ou vidéo")}
+        hint={t("La bande son d'une vidéo est extraite automatiquement.")}
         disabled={running}
       />
 
       {files.length > 0 && (
         <Fieldset>
-          <Field label="Modèle" hint={STT_MODELS.find((m) => m.id === modelId)?.detail}>
+          <Field label={t("Modèle")} hint={tx(STT_MODELS.find((m) => m.id === modelId)?.detail)}>
             <Select
               value={modelId}
               onChange={setModelId}
@@ -175,7 +176,7 @@ export function TranscriptWorkbench({
               options={installedModels.map((model) => ({ value: model.id, label: model.label }))}
             />
           </Field>
-          <Field label="Langue parlée">
+          <Field label={t("Langue parlée")}>
             <Select
               value={language}
               onChange={setLanguage}
@@ -191,14 +192,14 @@ export function TranscriptWorkbench({
         <div className="flex items-center justify-end gap-2 border-t border-[var(--ft-border)] pt-4">
           {running && (
             <Button size="sm" variant="ghost" onClick={() => job && cancelSpeechJob(job.id)}>
-              Annuler
+              {t("Annuler")}
             </Button>
           )}
           <Button size="md" variant="primary" onClick={() => void start()} disabled={running}>
             {running ? (
-              <><Icon name="Loader" size={15} className="animate-spin" /> {job?.step ?? "Transcription…"}</>
+              <><Icon name="Loader" size={15} className="animate-spin" /> {job?.step ?? t("Transcription…")}</>
             ) : (
-              <><Icon name="Play" size={15} /> {focus === "subtitles" ? "Générer les sous-titres" : "Transcrire"}</>
+              <><Icon name="Play" size={15} /> {focus === "subtitles" ? t("Générer les sous-titres") : t("Transcrire")}</>
             )}
           </Button>
         </div>
@@ -213,7 +214,7 @@ export function TranscriptWorkbench({
             />
           </div>
           <p className="text-[11px] text-[var(--ft-text-faint)]">
-            {job?.step ?? "Transcription en cours"} — vous pouvez quitter cet outil, le traitement continue.
+            {t("{value} — vous pouvez quitter cet outil, le traitement continue.", { value: job?.step ?? t("Transcription en cours") })}
           </p>
         </div>
       )}
@@ -222,11 +223,11 @@ export function TranscriptWorkbench({
         // Une annulation demandée par l'utilisateur n'est pas une panne.
         job.error === SPEECH_CANCELLED ? (
           <p className="flex items-center gap-2 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-sm text-[var(--ft-text-muted)]">
-            <Icon name="Info" size={15} /> {job.error}
+            <Icon name="Info" size={15} /> {tx(job.error)}
           </p>
         ) : (
           <p className="flex items-center gap-2 rounded-md border border-[var(--ft-danger)] px-3 py-2 text-sm text-[var(--ft-danger)]">
-            <Icon name="CircleAlert" size={16} /> {job.error}
+            <Icon name="CircleAlert" size={16} /> {tx(job.error)}
           </p>
         )
       )}
@@ -236,16 +237,16 @@ export function TranscriptWorkbench({
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs text-[var(--ft-text-muted)]">
               {segments.length} passage{segments.length > 1 ? "s" : ""}
-              {result?.language && ` · langue détectée : ${result.language}`}
-              {result && ` · modèle ${STT_MODELS.find((m) => m.id === result.modelId)?.label ?? result.modelId}`}
+              {result?.language && t(" · langue détectée : {language}", { language: result.language })}
+              {result && t(" · modèle {value}", { value: STT_MODELS.find((m) => m.id === result.modelId)?.label ?? result.modelId })}
             </p>
             <span className="flex flex-wrap gap-2">
               <Button size="sm" onClick={() => void copy()}>
-                <Icon name="Copy" size={14} /> Copier
+                <Icon name="Copy" size={14} />{" "}{t("Copier")}
               </Button>
               {exports.map((entry) => (
                 <Button key={entry.format} size="sm" onClick={() => void download(entry.format)}>
-                  <Icon name={entry.icon} size={14} /> {entry.label}
+                  <Icon name={entry.icon} size={14} /> {tx(entry.label)}
                 </Button>
               ))}
             </span>
@@ -267,8 +268,7 @@ export function TranscriptWorkbench({
             ))}
           </ul>
           <p className="text-[11px] text-[var(--ft-text-faint)]">
-            Corrigez librement un passage : les horodatages restent inchangés et les fichiers
-            exportés reprennent le texte affiché.
+            {t("Corrigez librement un passage : les horodatages restent inchangés et les fichiers exportés reprennent le texte affiché.")}
           </p>
 
           {renderExtras?.({ segments, file: files[0] })}

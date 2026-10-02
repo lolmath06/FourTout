@@ -11,6 +11,7 @@ import type { PixelRect } from "@/core/image/types";
 import type { SelectedFile } from "@/core/files";
 import type { RasterCanvas } from "@/core/pdf/raster/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 type Mode = "blur" | "pixelate";
 interface NormRect { x: number; y: number; w: number; h: number }
@@ -31,33 +32,33 @@ export function ImageBlurTool({ tool }: ToolComponentProps) {
     <ImageToolShell
       tool={tool}
       selection="single"
-      actionLabel="Appliquer"
-      hint="Dessinez un rectangle pour ne traiter qu'une zone (ex. masquer une information)."
+      actionLabel={t("Appliquer")}
+      hint={t("Dessinez un rectangle pour ne traiter qu'une zone (ex. masquer une information).")}
       run={async ({ files, context }) => {
         const output = await processImage(files[0], apply, { format: "same", suffix: mode === "blur" ? "floutee" : "pixelisee" }, context);
-        return { files: [output], summary: region ? "Zone traitée." : "Image entière traitée." };
+        return { files: [output], summary: region ? t("Zone traitée.") : t("Image entière traitée.") };
       }}
     >
       {(files) => (
         <div className="space-y-3">
           <Fieldset columns={1}>
-            <Field label="Effet">
+            <Field label={t("Effet")}>
               <OptionGroup
-                ariaLabel="Effet"
+                ariaLabel={t("Effet")}
                 value={mode}
                 onChange={setMode}
                 options={[
-                  { value: "blur", label: "Flou" },
-                  { value: "pixelate", label: "Pixellisation" },
+                  { value: "blur", label: t("Flou") },
+                  { value: "pixelate", label: t("Pixellisation") },
                 ]}
               />
             </Field>
-            <Field label={mode === "blur" ? `Intensité du flou (${strength})` : `Taille des blocs (${strength} px)`}>
+            <Field label={mode === "blur" ? t("Intensité du flou ({strength})", { strength }) : t("Taille des blocs ({strength} px)", { strength })}>
               <Slider value={strength} onChange={setStrength} min={mode === "blur" ? 1 : 4} max={mode === "blur" ? 40 : 60} />
             </Field>
-            <Field label="Zone">
+            <Field label={t("Zone")}>
               <Button size="sm" variant={region ? "primary" : "secondary"} onClick={() => setRegion(region ? null : { x: 0.3, y: 0.3, w: 0.4, h: 0.4 })}>
-                {region ? "Zone active — cliquer pour tout traiter" : "Traiter une zone rectangulaire"}
+                {region ? t("Zone active — cliquer pour tout traiter") : t("Traiter une zone rectangulaire")}
               </Button>
             </Field>
           </Fieldset>
@@ -124,7 +125,7 @@ function BlurStage({
   return (
     <PreviewFrame maxHeight={420}>
       <div ref={boxRef} className="relative inline-block select-none" onPointerDown={start}>
-        {url && <img src={url} alt="Aperçu" className="block max-h-[400px] max-w-full object-contain" draggable={false} />}
+        {url && <img src={url} alt={t("Aperçu")} className="block max-h-[400px] max-w-full object-contain" draggable={false} />}
         {region && (
           <div
             className="pointer-events-none absolute border-2 border-dashed border-[var(--ft-accent)] bg-[var(--ft-accent)]/10"

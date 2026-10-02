@@ -14,12 +14,13 @@ import { saveFile } from "@/core/output/save";
 import { outputName } from "@/core/pdf/filenames";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t } from "@/i18n";
 
-const LANGS: { value: OcrLanguage; label: string }[] = [
+const LANGS: { value: OcrLanguage; label: string }[] = localized(() => [
   { value: "fra", label: OCR_LANGUAGE_LABELS.fra },
   { value: "eng", label: OCR_LANGUAGE_LABELS.eng },
   { value: "fra+eng", label: OCR_LANGUAGE_LABELS["fra+eng"] },
-];
+]);
 
 export function PdfOcrTool({ tool }: ToolComponentProps) {
   const [files, setFiles] = useState<SelectedFile[]>([]);
@@ -42,7 +43,7 @@ export function PdfOcrTool({ tool }: ToolComponentProps) {
     if (result) {
       setPages(result);
       setEdited(Object.fromEntries(result.map((p) => [p.page, p.text])));
-      notify.success("Texte extrait", `${result.length} page${result.length > 1 ? "s" : ""} analysée${result.length > 1 ? "s" : ""}.`);
+      notify.success(t("Texte extrait"), t("{count} {count, plural, one {page} other {pages}} {count, plural, one {analysée} other {analysées}}.", { count: result.length }));
     }
   };
 
@@ -50,7 +51,7 @@ export function PdfOcrTool({ tool }: ToolComponentProps) {
     const text = pages.map((p) => `--- Page ${p.page} ---\n${edited[p.page] ?? p.text}`).join("\n\n");
     const bytes = new TextEncoder().encode(text);
     const result = await saveFile({ name: outputName(usable?.source.name ?? "document", "ocr", "txt"), bytes, mimeType: "text/plain" });
-    if (result.saved) notify.success("Fichier enregistré", result.path);
+    if (result.saved) notify.success(t("Fichier enregistré"), result.path);
   };
 
   const errorMessage = job.error ? toPdfError(job.error.cause).message : undefined;
@@ -61,8 +62,8 @@ export function PdfOcrTool({ tool }: ToolComponentProps) {
         constraints={{ ...constraintsForTool(tool), maxFiles: 1 }}
         files={files}
         onChange={setFiles}
-        label="Déposez un PDF scanné"
-        hint="Reconnaissance 100 % locale, page par page."
+        label={t("Déposez un PDF scanné")}
+        hint={t("Reconnaissance 100 % locale, page par page.")}
         disabled={job.isRunning}
       />
       {loaded.length > 0 && <PdfSourceList documents={loaded} onUnlock={unlock} />}
@@ -70,18 +71,18 @@ export function PdfOcrTool({ tool }: ToolComponentProps) {
       {usable && (
         <>
           <Fieldset columns={1}>
-            <Field label="Langue">
-              <OptionGroup ariaLabel="Langue" value={language} onChange={setLanguage} options={LANGS} disabled={job.isRunning} />
+            <Field label={t("Langue")}>
+              <OptionGroup ariaLabel={t("Langue")} value={language} onChange={setLanguage} options={LANGS} disabled={job.isRunning} />
             </Field>
           </Fieldset>
 
           <div className="flex items-center justify-end gap-2">
-            {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>Annuler</Button>}
+            {job.isRunning && <Button size="sm" variant="ghost" onClick={job.cancel}>{t("Annuler")}</Button>}
             <Button size="md" variant="primary" onClick={run} disabled={job.isRunning}>
               {job.isRunning ? (
-                <><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? "Analyse…"}</>
+                <><Icon name="Loader" size={15} className="animate-spin" />{job.progress.label ?? t("Analyse…")}</>
               ) : (
-                <><Icon name="ScanText" size={15} />Extraire le texte</>
+                <><Icon name="ScanText" size={15} />{t("Extraire le texte")}</>
               )}
             </Button>
           </div>
@@ -102,7 +103,7 @@ export function PdfOcrTool({ tool }: ToolComponentProps) {
 
       {pages.length > 0 && (
         <div className="flex justify-end">
-          <Button size="sm" onClick={saveAll}><Icon name="HardDrive" size={14} />Enregistrer tout en .txt</Button>
+          <Button size="sm" onClick={saveAll}><Icon name="HardDrive" size={14} />{t("Enregistrer tout en .txt")}</Button>
         </div>
       )}
 
@@ -113,14 +114,14 @@ export function PdfOcrTool({ tool }: ToolComponentProps) {
           <div key={page.page} className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-3">
             <p className="mb-2 flex items-center gap-2 text-sm font-medium">
               <Icon name="FileText" size={14} className="text-[var(--ft-text-faint)]" />
-              Page {page.page} <span className="text-xs text-[var(--ft-text-muted)]">· confiance {page.confidence} %</span>
+              <Trans source={"Page {page} <0>· confiance {confidence} %</0>"} values={{ page: page.page, confidence: page.confidence }} components={[<span className="text-xs text-[var(--ft-text-muted)]" />]} />
             </p>
             <textarea
               value={value}
               onChange={(e) => setEdited((m) => ({ ...m, [page.page]: e.target.value }))}
               rows={Math.min(14, Math.max(3, value.split("\n").length + 1))}
               className="w-full resize-y rounded-md border border-[var(--ft-border)] bg-[var(--ft-bg)] p-2.5 font-mono text-sm outline-none focus:border-[var(--ft-accent)]"
-              placeholder="Aucun texte détecté."
+              placeholder={t("Aucun texte détecté.")}
             />
             <p className="mt-1 text-right text-xs text-[var(--ft-text-muted)]">{words} mot{words > 1 ? "s" : ""}</p>
           </div>

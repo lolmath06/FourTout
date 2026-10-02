@@ -1,5 +1,6 @@
 import type { RasterCanvas, RasterPixels } from "@/core/pdf/raster/types";
 import { crop, resize } from "./operations";
+import { localized, t } from "@/i18n";
 
 /**
  * Comparaison de deux images : différence pixel à pixel, PSNR et SSIM.
@@ -80,7 +81,7 @@ export interface CompareResult {
 function assertSameSize(a: RasterPixels, b: RasterPixels): void {
   if (a.width !== b.width || a.height !== b.height) {
     throw new Error(
-      `Les images n'ont pas les mêmes dimensions (${a.width} × ${a.height} contre ${b.width} × ${b.height}).`,
+      t("Les images n'ont pas les mêmes dimensions ({width} × {height} contre {width2} × {height2}).", { width: a.width, height: a.height, width2: b.width, height2: b.height }),
     );
   }
 }
@@ -248,23 +249,23 @@ export function computeSsim(a: RasterPixels, b: RasterPixels, includeAlpha = fal
  */
 export type AlignMode = "common" | "fit-a" | "fit-b";
 
-export const ALIGN_MODES: { value: AlignMode; label: string; hint: string }[] = [
+export const ALIGN_MODES: { value: AlignMode; label: string; hint: string }[] = localized(() => [
   {
     value: "common",
-    label: "Zone commune",
-    hint: "Compare le rectangle présent dans les deux images (coin haut-gauche). Aucun pixel n'est inventé.",
+    label: t("Zone commune"),
+    hint: t("Compare le rectangle présent dans les deux images (coin haut-gauche). Aucun pixel n'est inventé."),
   },
   {
     value: "fit-a",
-    label: "Adapter B à A",
-    hint: "Redimensionne l'image B aux dimensions de A. Le rééchantillonnage crée lui-même des écarts.",
+    label: t("Adapter B à A"),
+    hint: t("Redimensionne l'image B aux dimensions de A. Le rééchantillonnage crée lui-même des écarts."),
   },
   {
     value: "fit-b",
-    label: "Adapter A à B",
-    hint: "Redimensionne l'image A aux dimensions de B. Le rééchantillonnage crée lui-même des écarts.",
+    label: t("Adapter A à B"),
+    hint: t("Redimensionne l'image A aux dimensions de B. Le rééchantillonnage crée lui-même des écarts."),
   },
-];
+]);
 
 /** Les deux images ont-elles déjà les mêmes dimensions ? */
 export function sameDimensions(a: RasterCanvas, b: RasterCanvas): boolean {

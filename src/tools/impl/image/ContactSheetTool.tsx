@@ -15,6 +15,7 @@ import {
 import type { Rgb } from "@/core/image/types";
 import { JobCancelledError } from "@/core/jobs/types";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 /**
  * Planche-contact : toutes les images déposées sur une seule feuille.
@@ -57,8 +58,8 @@ export function ContactSheetTool({ tool }: ToolComponentProps) {
     <ImageToolShell
       tool={tool}
       selection="multiple"
-      actionLabel="Créer la planche"
-      hint="Toutes les images déposées sont disposées sur une seule feuille."
+      actionLabel={t("Créer la planche")}
+      hint={t("Toutes les images déposées sont disposées sur une seule feuille.")}
       run={async ({ files, context }) => {
         const ordered = sortByOrder(files, order);
         const items: ContactSheetItem[] = [];
@@ -66,7 +67,7 @@ export function ContactSheetTool({ tool }: ToolComponentProps) {
           for (const [index, file] of ordered.entries()) {
             context.report?.({
               ratio: index / (ordered.length + 1),
-              label: `Lecture de ${file.name}…`,
+              label: t("Lecture de {name}…", { name: file.name }),
             });
             if (context.signal?.aborted) throw new JobCancelledError();
             const bytes = await readSelectedFile(file);
@@ -74,7 +75,7 @@ export function ContactSheetTool({ tool }: ToolComponentProps) {
             items.push({ canvas, label: file.name });
           }
 
-          context.report?.({ ratio: 0.9, label: "Assemblage…" });
+          context.report?.({ ratio: 0.9, label: t("Assemblage…") });
           const sheet = buildContactSheet(items, options);
           const bytes = await sheet.encode(format, 0.9);
           const layout = contactSheetLayout(items.length, options);
@@ -89,9 +90,9 @@ export function ContactSheetTool({ tool }: ToolComponentProps) {
               },
             ],
             summary:
-              `${items.length} image${items.length > 1 ? "s" : ""} en ${layout.columns} colonne` +
+              t("{count} {count, plural, one {image} other {images}} en {columns} colonne", { count: items.length, columns: layout.columns }) +
               `${layout.columns > 1 ? "s" : ""} × ${layout.rows} ligne${layout.rows > 1 ? "s" : ""} ` +
-              `— planche de ${layout.width} × ${layout.height} px.`,
+              t("— planche de {width} × {height} px.", { width: layout.width, height: layout.height }),
           };
         } finally {
           // Une planche de cent vignettes tient autant de surfaces ouvertes :
@@ -105,7 +106,7 @@ export function ContactSheetTool({ tool }: ToolComponentProps) {
         return (
           <div className="space-y-3">
             <Fieldset columns={2}>
-              <Field label="Colonnes">
+              <Field label={t("Colonnes")}>
                 <NumberInput
                   value={columns}
                   min={1}
@@ -115,40 +116,40 @@ export function ContactSheetTool({ tool }: ToolComponentProps) {
                   }
                 />
               </Field>
-              <Field label={`Largeur de vignette (${thumbWidth} px)`}>
+              <Field label={t("Largeur de vignette ({thumbWidth} px)", { thumbWidth })}>
                 <Slider value={thumbWidth} onChange={setThumbWidth} min={60} max={600} step={10} />
               </Field>
-              <Field label={`Espacement (${gap} px)`}>
+              <Field label={t("Espacement ({gap} px)", { gap })}>
                 <Slider value={gap} onChange={setGap} min={0} max={64} />
               </Field>
-              <Field label={`Marge (${margin} px)`}>
+              <Field label={t("Marge ({margin} px)", { margin })}>
                 <Slider value={margin} onChange={setMargin} min={0} max={120} step={4} />
               </Field>
-              <Field label="Fond">
+              <Field label={t("Fond")}>
                 <ColorField value={background} onChange={setBackground} />
               </Field>
-              <Field label="Noms de fichier">
+              <Field label={t("Noms de fichier")}>
                 <OptionGroup
-                  ariaLabel="Noms de fichier"
+                  ariaLabel={t("Noms de fichier")}
                   value={showLabels ? "yes" : "no"}
                   onChange={(value) => setShowLabels(value === "yes")}
                   options={[
-                    { value: "yes", label: "Afficher" },
-                    { value: "no", label: "Masquer" },
+                    { value: "yes", label: t("Afficher") },
+                    { value: "no", label: t("Masquer") },
                   ]}
                 />
               </Field>
-              <Field label="Ordre" full>
+              <Field label={t("Ordre")} full>
                 <OptionGroup
-                  ariaLabel="Ordre"
+                  ariaLabel={t("Ordre")}
                   value={order}
                   onChange={(value) => setOrder(value as ContactSheetOrder)}
                   options={CONTACT_SHEET_ORDERS}
                 />
               </Field>
-              <Field label="Format de sortie" full>
+              <Field label={t("Format de sortie")} full>
                 <OptionGroup
-                  ariaLabel="Format"
+                  ariaLabel={t("Format")}
                   value={format}
                   onChange={(value) => setFormat(value as "png" | "jpeg")}
                   options={[...FORMATS]}
@@ -157,8 +158,7 @@ export function ContactSheetTool({ tool }: ToolComponentProps) {
             </Fieldset>
 
             <p className="text-xs text-[var(--ft-text-muted)]">
-              Planche de {layout.width} × {layout.height} px — {layout.columns} colonne
-              {layout.columns > 1 ? "s" : ""}, {layout.rows} ligne{layout.rows > 1 ? "s" : ""}.
+              {t("Planche de {width} × {height} px — {columns} {columns, plural, one {colonne} other {colonnes}}, {rows} {rows, plural, one {ligne} other {lignes}}.", { width: layout.width, height: layout.height, columns: layout.columns, rows: layout.rows })}
             </p>
 
             <ol className="space-y-1 text-xs text-[var(--ft-text-muted)]">

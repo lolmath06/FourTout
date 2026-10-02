@@ -19,6 +19,7 @@ import {
 import { baseName, directoryName, joinPath, stemOf } from "@/core/files/paths";
 import { revealFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t } from "@/i18n";
 
 type Mode = "create" | "extract";
 
@@ -42,14 +43,14 @@ export function EncryptedArchiveTool(_props: ToolComponentProps) {
   return (
     <div className="space-y-4">
       <Fieldset columns={1}>
-        <Field label="Opération">
+        <Field label={t("Opération")}>
           <OptionGroup
-            ariaLabel="Opération"
+            ariaLabel={t("Opération")}
             value={mode}
             onChange={setMode}
             options={[
-              { value: "create", label: "Créer une archive protégée" },
-              { value: "extract", label: "Extraire une archive protégée" },
+              { value: "create", label: t("Créer une archive protégée") },
+              { value: "extract", label: t("Extraire une archive protégée") },
             ]}
           />
         </Field>
@@ -82,15 +83,15 @@ function CreateMode() {
           setDestination("");
         },
         multiple: true,
-        label: "Choisissez les fichiers à protéger",
-        hint: "Déposez aussi des dossiers : leur arborescence est conservée.",
+        label: t("Choisissez les fichiers à protéger"),
+        hint: t("Déposez aussi des dossiers : leur arborescence est conservée."),
       }}
-      actionLabel="Créer l'archive protégée"
+      actionLabel={t("Créer l'archive protégée")}
       actionIcon="Lock"
       actionDisabled={output.length === 0 || !passwordReady(password, confirmation)}
       run={(context) => createEncryptedArchive(paths, output, level, password, context)}
       successMessage={(summary) =>
-        `${summary.files} fichiers → ${formatFileSize(summary.outputBytes)}`
+        t("{files} fichiers → {size}", { files: summary.files, size: formatFileSize(summary.outputBytes) })
       }
       renderResult={(summary) => (
         <div
@@ -101,7 +102,7 @@ function CreateMode() {
             <Icon name="CircleCheck" size={15} className="mt-px shrink-0 text-[var(--ft-ok)]" />
             <div className="min-w-0">
               <p className="text-[13px] font-medium leading-5">
-                Archive protégée créée — {summary.files} fichier{summary.files > 1 ? "s" : ""}
+                {t("Archive protégée créée — {files} {files, plural, one {fichier} other {fichiers}}", { files: summary.files })}
               </p>
               <p className="ft-value break-all text-[var(--ft-text-muted)]">{summary.path}</p>
             </div>
@@ -111,58 +112,54 @@ function CreateMode() {
           </p>
           <div className="border-t border-[var(--ft-rule)] px-3 py-2">
             <Button size="sm" variant="ghost" onClick={() => revealFile(summary.path)}>
-              <Icon name="FolderTree" size={13} /> Ouvrir le dossier
+              <Icon name="FolderTree" size={13} />{" "}{t("Ouvrir le dossier")}
             </Button>
           </div>
         </div>
       )}
       footer={
         <>
-          <Callout tone="info" title="AES-256, pas ZipCrypto">
-            L'archive utilise le chiffrement WinZip AES-256, lu par 7-Zip, WinRAR, PeaZip, Keka et
-            l'Explorateur de Windows. Le « ZipCrypto » historique n'est jamais employé : il se
-            casse à partir de quelques octets de contenu connu.
+          <Callout tone="info" title={t("AES-256, pas ZipCrypto")}>
+            {t("L'archive utilise le chiffrement WinZip AES-256, lu par 7-Zip, WinRAR, PeaZip, Keka et l'Explorateur de Windows. Le « ZipCrypto » historique n'est jamais employé : il se casse à partir de quelques octets de contenu connu.")}
           </Callout>
-          <Callout tone="warning" title="Les noms de fichiers restent visibles">
-            Dans un ZIP chiffré, seul le contenu l'est : la liste des fichiers et leurs tailles se
-            lisent sans mot de passe. Pour masquer jusqu'aux noms, chiffrez l'archive terminée avec
-            l'outil « Chiffrer des fichiers ».
+          <Callout tone="warning" title={t("Les noms de fichiers restent visibles")}>
+            {t("Dans un ZIP chiffré, seul le contenu l'est : la liste des fichiers et leurs tailles se lisent sans mot de passe. Pour masquer jusqu'aux noms, chiffrez l'archive terminée avec l'outil « Chiffrer des fichiers ».")}
           </Callout>
         </>
       }
     >
-      <Fieldset columns={2} title="Protection">
+      <Fieldset columns={2} title={t("Protection")}>
         <PasswordField
           value={password}
           onChange={setPassword}
           confirmation={confirmation}
           onConfirmationChange={setConfirmation}
         />
-        <Field label="Nom de l'archive" hint={output || "Choisissez d'abord des fichiers."}>
+        <Field label={t("Nom de l'archive")} hint={output || t("Choisissez d'abord des fichiers.")}>
           <TextInput
             value={name}
             placeholder={defaultName}
             onChange={(event) => setName(event.target.value)}
-            aria-label="Nom de l'archive"
+            aria-label={t("Nom de l'archive")}
           />
         </Field>
-        <Field label={`Compression (${level})`} hint="0 = aucune, 9 = maximale mais plus lente.">
+        <Field label={t("Compression ({level})", { level })} hint={t("0 = aucune, 9 = maximale mais plus lente.")}>
           <Slider value={level} min={0} max={9} step={1} onChange={setLevel} />
         </Field>
-        <Field label="Dossier de sortie" hint={destination || "Par défaut : à côté des fichiers."}>
+        <Field label={t("Dossier de sortie")} hint={destination || t("Par défaut : à côté des fichiers.")}>
           <div className="flex gap-2">
             <Button
               size="sm"
               onClick={async () => {
-                const chosen = await pickDirectory("Dossier de sortie");
+                const chosen = await pickDirectory(t("Dossier de sortie"));
                 if (chosen) setDestination(chosen);
               }}
             >
-              <Icon name="FolderTree" size={13} /> Choisir
+              <Icon name="FolderTree" size={13} />{" "}{t("Choisir")}
             </Button>
             {destination && (
               <Button size="sm" variant="ghost" onClick={() => setDestination("")}>
-                Par défaut
+                {t("Par défaut")}
               </Button>
             )}
           </div>
@@ -198,7 +195,7 @@ function ExtractMode() {
       .catch((failure: unknown) => {
         if (cancelled) return;
         setListing(undefined);
-        setListingError(failure instanceof Error ? failure.message : "Archive illisible.");
+        setListingError(failure instanceof Error ? failure.message : t("Archive illisible."));
       });
     return () => {
       cancelled = true;
@@ -213,15 +210,15 @@ function ExtractMode() {
         mode: "files",
         paths,
         onChange: setPaths,
-        label: "Choisissez l'archive protégée",
-        hint: "ZIP chiffré (AES ou ZipCrypto).",
-        filters: [{ name: "Archive ZIP", extensions: ["zip"] }],
+        label: t("Choisissez l'archive protégée"),
+        hint: t("ZIP chiffré (AES ou ZipCrypto)."),
+        filters: [{ name: t("Archive ZIP"), extensions: ["zip"] }],
       }}
-      actionLabel="Extraire"
+      actionLabel={t("Extraire")}
       actionIcon="LockOpen"
       actionDisabled={paths.length === 0 || target.length === 0 || !passwordReady(password)}
       run={(context) => extractEncryptedArchive(paths[0], target, false, password, context)}
-      successMessage={(summary) => `${summary.extracted} fichiers extraits`}
+      successMessage={(summary) => t("{extracted} fichiers extraits", { extracted: summary.extracted })}
       renderResult={(summary) => (
         <div
           className="rounded-[var(--radius-card)] border border-l-2 border-[var(--ft-border)] bg-[var(--ft-surface)]"
@@ -231,8 +228,7 @@ function ExtractMode() {
             <Icon name="CircleCheck" size={15} className="mt-px shrink-0 text-[var(--ft-ok)]" />
             <div className="min-w-0">
               <p className="text-[13px] font-medium leading-5">
-                {summary.extracted} fichier{summary.extracted > 1 ? "s" : ""} extrait
-                {summary.extracted > 1 ? "s" : ""} — {formatFileSize(summary.bytes)}
+                {t("{extracted} {extracted, plural, one {fichier} other {fichiers}} {extracted, plural, one {extrait} other {extraits}} — {size}", { extracted: summary.extracted, size: formatFileSize(summary.bytes) })}
               </p>
               <p className="ft-value break-all text-[var(--ft-text-muted)]">{summary.destination}</p>
             </div>
@@ -248,40 +244,39 @@ function ExtractMode() {
           )}
           <div className="border-t border-[var(--ft-rule)] px-3 py-2">
             <Button size="sm" variant="ghost" onClick={() => revealFile(summary.destination)}>
-              <Icon name="FolderTree" size={13} /> Ouvrir le dossier
+              <Icon name="FolderTree" size={13} />{" "}{t("Ouvrir le dossier")}
             </Button>
           </div>
         </div>
       )}
       footer={
         listingError ? (
-          <Callout tone="error" title="Archive illisible">
+          <Callout tone="error" title={t("Archive illisible")}>
             {listingError}
           </Callout>
         ) : listing && !listing.encrypted ? (
-          <Callout tone="info" title="Archive non protégée">
-            Cette archive n'est pas chiffrée : le mot de passe sera ignoré. L'outil « Extraire une
-            archive » convient mieux.
+          <Callout tone="info" title={t("Archive non protégée")}>
+            {t("Cette archive n'est pas chiffrée : le mot de passe sera ignoré. L'outil « Extraire une archive » convient mieux.")}
           </Callout>
         ) : undefined
       }
     >
-      <Fieldset columns={2} title="Déverrouillage">
+      <Fieldset columns={2} title={t("Déverrouillage")}>
         <PasswordField value={password} onChange={setPassword} autoFocus />
-        <Field label="Dossier de destination" hint={target || "Par défaut : à côté de l'archive."}>
+        <Field label={t("Dossier de destination")} hint={target || t("Par défaut : à côté de l'archive.")}>
           <div className="flex gap-2">
             <Button
               size="sm"
               onClick={async () => {
-                const chosen = await pickDirectory("Dossier de destination");
+                const chosen = await pickDirectory(t("Dossier de destination"));
                 if (chosen) setDestination(chosen);
               }}
             >
-              <Icon name="FolderTree" size={13} /> Choisir
+              <Icon name="FolderTree" size={13} />{" "}{t("Choisir")}
             </Button>
             {destination && (
               <Button size="sm" variant="ghost" onClick={() => setDestination("")}>
-                Par défaut
+                {t("Par défaut")}
               </Button>
             )}
           </div>
@@ -291,9 +286,7 @@ function ExtractMode() {
       {listing && (
         <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
           <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-            Contenu annoncé — {listing.files} fichier{listing.files > 1 ? "s" : ""},{" "}
-            {formatFileSize(listing.totalSize)}
-            {listing.encrypted ? " · protégé par mot de passe" : ""}
+            {t("Contenu annoncé — {files} {files, plural, one {fichier} other {fichiers}}, {size}{value}", { files: listing.files, size: formatFileSize(listing.totalSize), value: listing.encrypted ? t(" · protégé par mot de passe") : "" })}
           </h3>
           <ul className="max-h-56 divide-y divide-[var(--ft-rule)] overflow-y-auto">
             {listing.entries.slice(0, 200).map((entry) => (

@@ -8,6 +8,7 @@ import { htmlToMarkdown, htmlToText, sanitizeHtml } from "@/core/text/html";
 import { notify } from "@/features/notifications/store";
 import { saveFile } from "@/core/output/save";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { msg, t } from "@/i18n";
 
 /**
  * Conversions Markdown ↔ HTML ↔ texte.
@@ -26,30 +27,7 @@ const DIRECTION_LABELS: Record<Direction, string> = {
   "md-text": "Markdown → texte",
 };
 
-const SAMPLE_MARKDOWN = `# Titre principal
-
-Un paragraphe avec du **gras**, de l'*italique* et du \`code\`.
-
-## Liste
-
-- premier point
-- second point
-  - sous-point
-1. numéroté
-2. suite
-
-> Une citation.
-
-| Colonne A | Colonne B |
-| --- | --- |
-| 1 | 2 |
-
-[Lien](https://example.com)
-
-\`\`\`js
-const x = 1;
-\`\`\`
-`;
+const SAMPLE_MARKDOWN = msg("# Titre principal\n\nUn paragraphe avec du **gras**, de l'*italique* et du `code`.\n\n## Liste\n\n- premier point\n- second point\n  - sous-point\n1. numéroté\n2. suite\n\n> Une citation.\n\n| Colonne A | Colonne B |\n| --- | --- |\n| 1 | 2 |\n\n[Lien](https://example.com)\n\n```js\nconst x = 1;\n```\n");
 
 const SAMPLE_HTML = `<h1>Titre</h1>
 <p>Un paragraphe <strong>important</strong>.</p>
@@ -89,28 +67,28 @@ export function MarkdownConvertTool(_props: ToolComponentProps) {
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(output);
-      notify.success("Copié dans le presse-papiers");
+      notify.success(t("Copié dans le presse-papiers"));
     } catch {
-      notify.error("Copie impossible");
+      notify.error(t("Copie impossible"));
     }
   };
 
   const download = async () => {
     const bytes = new TextEncoder().encode(output);
     const saved = await saveFile({
-      name: `conversion.${outputExtension}`,
+      name: t("conversion.{outputExtension}", { outputExtension }),
       bytes,
       mimeType: outputExtension === "html" ? "text/html" : "text/plain",
     });
-    if (saved.saved) notify.success("Fichier enregistré", saved.path);
+    if (saved.saved) notify.success(t("Fichier enregistré"), saved.path);
   };
 
   return (
     <div className="space-y-4">
       <Fieldset columns={1}>
-        <Field label="Conversion">
+        <Field label={t("Conversion")}>
           <OptionGroup
-            ariaLabel="Sens de conversion"
+            ariaLabel={t("Sens de conversion")}
             value={direction}
             onChange={setDirection}
             options={(Object.keys(DIRECTION_LABELS) as Direction[]).map((value) => ({
@@ -123,13 +101,13 @@ export function MarkdownConvertTool(_props: ToolComponentProps) {
 
       <div className="flex flex-col gap-4 lg:flex-row">
         <TextPane
-          label={direction.startsWith("md") ? "Markdown" : "HTML"}
+          label={direction.startsWith("md") ? t("Markdown") : "HTML"}
           value={input}
           onChange={setInput}
           placeholder={
             direction.startsWith("md")
-              ? "# Votre Markdown…"
-              : "<p>Votre HTML…</p>"
+              ? t("# Votre Markdown…")
+              : t("<p>Votre HTML…</p>")
           }
         />
         <TextPane label={DIRECTION_LABELS[direction].split(" → ")[1]} value={output} readOnly droppable={false} />
@@ -137,23 +115,23 @@ export function MarkdownConvertTool(_props: ToolComponentProps) {
 
       <div className="flex flex-wrap items-center gap-2">
         <Button size="sm" variant="ghost" onClick={() => setInput(sample)}>
-          <Icon name="Sparkles" size={14} /> Exemple
+          <Icon name="Sparkles" size={14} />{" "}{t("Exemple")}
         </Button>
         <Button size="sm" variant="ghost" onClick={() => setInput("")} disabled={!input}>
-          <Icon name="Eraser" size={14} /> Effacer
+          <Icon name="Eraser" size={14} />{" "}{t("Effacer")}
         </Button>
         {preview !== "" && (
           <Button size="sm" variant="ghost" onClick={() => setShowPreview((v) => !v)}>
             <Icon name={showPreview ? "EyeOff" : "Eye"} size={14} />
-            {showPreview ? "Masquer l'aperçu" : "Afficher l'aperçu"}
+            {showPreview ? t("Masquer l'aperçu") : t("Afficher l'aperçu")}
           </Button>
         )}
         <div className="flex-1" />
         <Button size="sm" onClick={download} disabled={!output}>
-          <Icon name="Download" size={14} /> Télécharger
+          <Icon name="Download" size={14} />{" "}{t("Télécharger")}
         </Button>
         <Button size="sm" variant="primary" onClick={copy} disabled={!output}>
-          <Icon name="Copy" size={14} /> Copier
+          <Icon name="Copy" size={14} />{" "}{t("Copier")}
         </Button>
       </div>
 
@@ -161,7 +139,7 @@ export function MarkdownConvertTool(_props: ToolComponentProps) {
         <div>
           <p className="mb-1.5 flex items-center gap-1.5 text-xs text-[var(--ft-text-muted)]">
             <Icon name="ShieldCheck" size={13} />
-            Aperçu assaini : scripts, styles et cadres externes sont retirés avant affichage.
+            {t("Aperçu assaini : scripts, styles et cadres externes sont retirés avant affichage.")}
           </p>
           <div
             data-testid="markdown-preview"

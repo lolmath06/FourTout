@@ -2,6 +2,7 @@ import { useId, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Field } from "@/components/pdf/Field";
+import { t, tx } from "@/i18n";
 
 /**
  * Saisie d'un mot de passe destiné à une opération de chiffrement.
@@ -21,7 +22,7 @@ export function PasswordField({
   onChange,
   confirmation,
   onConfirmationChange,
-  label = "Mot de passe",
+  label = t("Mot de passe"),
   hint,
   autoFocus,
 }: {
@@ -45,7 +46,7 @@ export function PasswordField({
 
   return (
     <>
-      <Field label={label} hint={hint}>
+      <Field label={tx(label)} hint={tx(hint)}>
         <div className="flex items-center gap-2">
           <input
             id={id}
@@ -55,15 +56,15 @@ export function PasswordField({
             autoComplete="new-password"
             spellCheck={false}
             onChange={(event) => onChange(event.target.value)}
-            aria-label={label}
+            aria-label={tx(label)}
             data-testid="password-field"
             className={inputClass}
           />
           <Button
             size="sm"
             onClick={() => setVisible((current) => !current)}
-            aria-label={visible ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-            title={visible ? "Masquer" : "Afficher"}
+            aria-label={visible ? t("Masquer le mot de passe") : t("Afficher le mot de passe")}
+            title={visible ? t("Masquer") : t("Afficher")}
           >
             <Icon name={visible ? "EyeOff" : "Eye"} size={14} />
           </Button>
@@ -72,8 +73,8 @@ export function PasswordField({
 
       {requiresConfirmation && (
         <Field
-          label="Confirmation"
-          hint={mismatch ? "Les deux saisies diffèrent." : "Retapez le mot de passe."}
+          label={t("Confirmation")}
+          hint={mismatch ? t("Les deux saisies diffèrent.") : t("Retapez le mot de passe.")}
         >
           <input
             type={visible ? "text" : "password"}
@@ -81,7 +82,7 @@ export function PasswordField({
             autoComplete="new-password"
             spellCheck={false}
             onChange={(event) => onConfirmationChange(event.target.value)}
-            aria-label="Confirmation du mot de passe"
+            aria-label={t("Confirmation du mot de passe")}
             data-testid="password-confirmation"
             className={
               mismatch ? `${inputClass} border-[var(--ft-danger)]` : inputClass

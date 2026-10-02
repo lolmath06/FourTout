@@ -24,6 +24,7 @@
  */
 
 import { decodeJwt, JwtError, type DecodedJwt } from "./tokens";
+import { localized, t } from "@/i18n";
 
 /** Algorithmes réellement vérifiés par FourTout. Aucun autre n'est annoncé. */
 export const SUPPORTED_JWT_ALGORITHMS = [
@@ -37,14 +38,14 @@ export const SUPPORTED_JWT_ALGORITHMS = [
 
 export type JwtAlgorithm = (typeof SUPPORTED_JWT_ALGORITHMS)[number];
 
-export const JWT_ALGORITHM_LABELS: Record<JwtAlgorithm, string> = {
-  HS256: "HS256 — HMAC SHA-256 (secret partagé)",
-  HS384: "HS384 — HMAC SHA-384 (secret partagé)",
-  HS512: "HS512 — HMAC SHA-512 (secret partagé)",
-  RS256: "RS256 — RSA PKCS#1 v1.5 SHA-256 (clé publique)",
-  RS384: "RS384 — RSA PKCS#1 v1.5 SHA-384 (clé publique)",
-  RS512: "RS512 — RSA PKCS#1 v1.5 SHA-512 (clé publique)",
-};
+export const JWT_ALGORITHM_LABELS: Record<JwtAlgorithm, string> = localized(() => ({
+  HS256: t("HS256 — HMAC SHA-256 (secret partagé)"),
+  HS384: t("HS384 — HMAC SHA-384 (secret partagé)"),
+  HS512: t("HS512 — HMAC SHA-512 (secret partagé)"),
+  RS256: t("RS256 — RSA PKCS#1 v1.5 SHA-256 (clé publique)"),
+  RS384: t("RS384 — RSA PKCS#1 v1.5 SHA-384 (clé publique)"),
+  RS512: t("RS512 — RSA PKCS#1 v1.5 SHA-512 (clé publique)"),
+}));
 
 export function isSupportedAlgorithm(value: string): value is JwtAlgorithm {
   return (SUPPORTED_JWT_ALGORITHMS as readonly string[]).includes(value);
@@ -125,8 +126,8 @@ function claimStatus(decoded: DecodedJwt, now: Date): ClaimStatus {
   const expired = typeof exp === "number" && exp <= seconds;
   const notYetValid = typeof nbf === "number" && nbf > seconds;
   const notes: string[] = [];
-  if (expired) notes.push("Le token a expiré : son `exp` est dans le passé.");
-  if (notYetValid) notes.push("Le token n'est pas encore valide : son `nbf` est dans le futur.");
+  if (expired) notes.push(t("Le token a expiré : son `exp` est dans le passé."));
+  if (notYetValid) notes.push(t("Le token n'est pas encore valide : son `nbf` est dans le futur."));
   return {
     expired,
     notYetValid,
@@ -163,29 +164,24 @@ export async function verifyJwt(
 
   if (headerAlgorithm.toLowerCase() === "none") {
     return refuse(
-      "L'en-tête annonce « alg: none » : le token n'est pas signé. FourTout refuse de le " +
-        "déclarer valide, quelle que soit la clé fournie — c'est exactement la forgerie que " +
-        "cette vérification doit empêcher.",
+      t("L'en-tête annonce « alg: none » : le token n'est pas signé. FourTout refuse de le déclarer valide, quelle que soit la clé fournie — c'est exactement la forgerie que cette vérification doit empêcher."),
     );
   }
   if (!isSupportedAlgorithm(headerAlgorithm)) {
     return refuse(
-      `L'en-tête annonce l'algorithme « ${headerAlgorithm} », que FourTout ne sait pas vérifier. ` +
-        `Algorithmes pris en charge : ${SUPPORTED_JWT_ALGORITHMS.join(", ")}.`,
+      t("L'en-tête annonce l'algorithme « {headerAlgorithm} », que FourTout ne sait pas vérifier. Algorithmes pris en charge : {value}.", { headerAlgorithm, value: SUPPORTED_JWT_ALGORITHMS.join(", ") }),
     );
   }
   if (headerAlgorithm !== options.algorithm) {
     return refuse(
-      `Divergence d'algorithme : l'en-tête du token annonce « ${headerAlgorithm} », vous attendez ` +
-        `« ${options.algorithm} ». Vérifier avec un autre algorithme que celui attendu est la faille ` +
-        `classique des JWT : la vérification s'arrête ici.`,
+      t("Divergence d'algorithme : l'en-tête du token annonce « {headerAlgorithm} », vous attendez « {algorithm} ». Vérifier avec un autre algorithme que celui attendu est la faille classique des JWT : la vérification s'arrête ici.", { headerAlgorithm, algorithm: options.algorithm }),
     );
   }
   if (options.key.length === 0) {
     return refuse(
       keyKindFor(options.algorithm) === "secret"
-        ? "Aucun secret fourni : il n'y a rien avec quoi vérifier."
-        : "Aucune clé publique fournie : il n'y a rien avec quoi vérifier.",
+        ? t("Aucun secret fourni : il n'y a rien avec quoi vérifier.")
+        : t("Aucune clé publique fournie : il n'y a rien avec quoi vérifier."),
     );
   }
 
@@ -209,17 +205,17 @@ export async function verifyJwt(
 
 /** Phrase de synthèse, volontairement sans raccourci. */
 export function verdictSentence(result: JwtVerification): string {
-  if (result.signature === "refused") return "Vérification refusée.";
+  if (result.signature === "refused") return t("Vérification refusée.");
   if (result.signature === "invalid") {
-    return "Signature invalide : ce token n'a pas été produit avec cette clé (ou il a été modifié).";
+    return t("Signature invalide : ce token n'a pas été produit avec cette clé (ou il a été modifié).");
   }
   if (result.claims.expired) {
-    return "Signature valide, mais le token est expiré : il est authentique et inutilisable.";
+    return t("Signature valide, mais le token est expiré : il est authentique et inutilisable.");
   }
   if (result.claims.notYetValid) {
-    return "Signature valide, mais le token n'est pas encore valide (nbf dans le futur).";
+    return t("Signature valide, mais le token n'est pas encore valide (nbf dans le futur).");
   }
-  return "Signature valide, et aucune contrainte de temps n'est violée.";
+  return t("Signature valide, et aucune contrainte de temps n'est violée.");
 }
 
 export { JwtError };

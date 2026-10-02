@@ -11,9 +11,10 @@ import { drawText, type TextItem } from "@/core/image/operations";
 import { rgbToHex, type Rgb } from "@/core/image/types";
 import type { SelectedFile } from "@/core/files";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 export function ImageAddTextTool({ tool }: ToolComponentProps) {
-  const [text, setText] = useState("Votre texte");
+  const [text, setText] = useState(t("Votre texte"));
   const [size, setSize] = useState(8); // % de la hauteur
   const [color, setColor] = useState<Rgb>({ r: 255, g: 255, b: 255 });
   const [bold, setBold] = useState(true);
@@ -25,29 +26,29 @@ export function ImageAddTextTool({ tool }: ToolComponentProps) {
     <ImageToolShell
       tool={tool}
       selection="single"
-      actionLabel="Ajouter le texte"
+      actionLabel={t("Ajouter le texte")}
       actionDisabled={text.trim().length === 0}
       run={async ({ files, context }) => {
         const output = await processImage(files[0], (canvas) => drawText(canvas, [item]), { format: "same", suffix: "texte" }, context);
-        return { files: [output], summary: "Texte ajouté." };
+        return { files: [output], summary: t("Texte ajouté.") };
       }}
     >
       {(files) => (
         <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
           <TextStage file={files[0]} item={item} pos={pos} setPos={setPos} />
           <Fieldset columns={1}>
-            <Field label="Texte">
+            <Field label={t("Texte")}>
               <TextInput value={text} onChange={(e) => setText(e.target.value)} />
             </Field>
-            <Field label={`Taille (${size} %)`}>
+            <Field label={t("Taille ({size} %)", { size })}>
               <Slider value={size} onChange={setSize} min={2} max={25} />
             </Field>
-            <Field label="Couleur">
+            <Field label={t("Couleur")}>
               <ColorField value={color} onChange={setColor} />
             </Field>
-            <Field label="Graisse">
+            <Field label={t("Graisse")}>
               <Button size="sm" variant={bold ? "primary" : "secondary"} onClick={() => setBold((v) => !v)}>
-                {bold ? "Gras" : "Normal"}
+                {bold ? t("Gras") : t("Normal")}
               </Button>
             </Field>
           </Fieldset>
@@ -120,7 +121,7 @@ function TextStage({
             fontFamily: "sans-serif",
           }}
         >
-          {item.text}
+          {tx(item.text)}
         </div>
       </div>
     </PreviewFrame>

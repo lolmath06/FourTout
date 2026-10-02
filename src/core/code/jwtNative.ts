@@ -17,6 +17,7 @@
 
 import { isTauri } from "@/core/platform";
 import type { SignatureChecker } from "./jwtVerify";
+import { t } from "@/i18n";
 
 export const JWT_VERIFY_NATIVE_REQUIRED =
   "La vérification de signature utilise le moteur cryptographique de FourTout : elle nécessite " +
@@ -41,7 +42,7 @@ export const nativeSignatureChecker: SignatureChecker = async ({
   } catch (error) {
     const message =
       typeof error === "string" ? error : error instanceof Error ? error.message : "";
-    throw new Error(message || "La vérification de signature a échoué.");
+    throw new Error(message || t("La vérification de signature a échoué."));
   }
 };
 

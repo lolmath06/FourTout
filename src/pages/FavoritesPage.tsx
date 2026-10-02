@@ -5,6 +5,7 @@ import { Page, PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { ToolList } from "@/components/tools/ToolRow";
+import { t } from "@/i18n";
 
 export function FavoritesPage() {
   const ids = useFavorites((state) => state.ids);
@@ -15,12 +16,12 @@ export function FavoritesPage() {
     <Page width="wide">
       <PageHeader
         icon="Star"
-        title="Favoris"
-        description="Les outils que vous épinglez restent ici, même après redémarrage."
+        title={t("Favoris")}
+        description={t("Les outils que vous épinglez restent ici, même après redémarrage.")}
         actions={
           tools.length > 0 ? (
             <Button size="sm" variant="ghost" onClick={clear}>
-              Tout retirer
+              {t("Tout retirer")}
             </Button>
           ) : undefined
         }
@@ -31,12 +32,12 @@ export function FavoritesPage() {
       ) : (
         <EmptyState
           icon="Star"
-          title="Aucun favori pour l'instant"
-          description="Cliquez sur l'étoile d'un outil pour le retrouver ici en un clic."
+          title={t("Aucun favori pour l'instant")}
+          description={t("Cliquez sur l'étoile d'un outil pour le retrouver ici en un clic.")}
           action={
             <Link to="/tools">
               <Button size="sm" variant="primary">
-                Parcourir les outils
+                {t("Parcourir les outils")}
               </Button>
             </Link>
           }

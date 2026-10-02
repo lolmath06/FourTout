@@ -12,6 +12,7 @@
  * partielle, de `runRegex` : c'est dit tel quel plutôt que promis à tort.
  */
 import { RegexError, replaceAll, runRegex, type RegexRun } from "./regex";
+import { t } from "@/i18n";
 
 /** Au-delà, le worker est tué : mieux vaut un message qu'une interface figée. */
 export const HARD_TIMEOUT_MS = 2000;
@@ -54,10 +55,10 @@ function ensureWorker(): Worker | undefined {
       if (data.ok) {
         entry.resolve({ run: data.run as RegexRun | undefined, replaced: data.replaced as string | undefined });
       } else {
-        entry.reject(new RegexError(data.message ?? "Expression invalide."));
+        entry.reject(new RegexError(data.message ?? t("Expression invalide.")));
       }
     };
-    worker.onerror = () => kill(new RegexError("Le moteur d'expressions régulières s'est arrêté."));
+    worker.onerror = () => kill(new RegexError(t("Le moteur d'expressions régulières s'est arrêté.")));
     return worker;
   } catch {
     // Worker indisponible : on le note une fois pour ne pas réessayer à chaque

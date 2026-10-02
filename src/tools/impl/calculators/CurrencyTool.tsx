@@ -15,6 +15,7 @@ import {
 } from "@/core/currency";
 import { formatWithGrouping, parseNumber } from "@/core/units";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { t, tx } from "@/i18n";
 
 /**
  * Convertisseur de devises.
@@ -41,7 +42,7 @@ export function CurrencyTool(_props: ToolComponentProps) {
       setRates(await loadRates({ force }));
     } catch (failure) {
       setRates(undefined);
-      setError(failure instanceof Error ? failure.message : "Taux indisponibles.");
+      setError(failure instanceof Error ? failure.message : t("Taux indisponibles."));
     } finally {
       setLoading(false);
     }
@@ -70,48 +71,48 @@ export function CurrencyTool(_props: ToolComponentProps) {
       {loading && !snapshot && (
         <p className="ft-meta flex items-center gap-2">
           <Icon name="Loader" size={14} className="animate-spin" />
-          Récupération des taux de la Banque centrale européenne…
+          {t("Récupération des taux de la Banque centrale européenne…")}
         </p>
       )}
 
       {error && (
-        <Callout tone="error" title="Aucun taux disponible">
-          {error}
+        <Callout tone="error" title={t("Aucun taux disponible")}>
+          {tx(error)}
         </Callout>
       )}
 
       {snapshot && (
         <>
           {rates?.warning && (
-            <Callout tone="warning" title="Taux non actualisés">
-              {rates.warning}
+            <Callout tone="warning" title={t("Taux non actualisés")}>
+              {tx(rates.warning)}
             </Callout>
           )}
 
-          <Fieldset columns={3} title="Conversion">
-            <Field label="Montant">
+          <Fieldset columns={3} title={t("Conversion")}>
+            <Field label={t("Montant")}>
               <TextInput
                 value={raw}
                 inputMode="decimal"
                 autoFocus
                 onChange={(event) => setRaw(event.target.value)}
-                aria-label="Montant à convertir"
+                aria-label={t("Montant à convertir")}
                 data-testid="currency-amount"
               />
             </Field>
-            <Field label="De">
+            <Field label={t("De")}>
               <Select
                 value={from}
                 onChange={setFrom}
-                aria-label="Devise de départ"
+                aria-label={t("Devise de départ")}
                 options={codes.map((code) => ({ value: code, label: currencyLabel(code) }))}
               />
             </Field>
-            <Field label="Vers">
+            <Field label={t("Vers")}>
               <Select
                 value={to}
                 onChange={setTo}
-                aria-label="Devise d'arrivée"
+                aria-label={t("Devise d'arrivée")}
                 options={codes.map((code) => ({ value: code, label: currencyLabel(code) }))}
               />
             </Field>
@@ -128,18 +129,18 @@ export function CurrencyTool(_props: ToolComponentProps) {
                 setTo(from);
               }}
             >
-              <Icon name="ArrowUpDown" size={13} /> Inverser
+              <Icon name="ArrowUpDown" size={13} />{" "}{t("Inverser")}
             </Button>
             <Button size="sm" onClick={() => void refresh(true)} disabled={loading}>
               <Icon name="RefreshCw" size={13} className={loading ? "animate-spin" : undefined} />
-              Actualiser
+              {t("Actualiser")}
             </Button>
           </div>
 
           <InputError
             message={
               raw.trim().length > 0 && amount === undefined
-                ? `« ${raw} » n'est pas un montant valide.`
+                ? t("« {raw} » n'est pas un montant valide.", { raw })
                 : conversionError
             }
           />
@@ -154,7 +155,7 @@ export function CurrencyTool(_props: ToolComponentProps) {
 
           {amount !== undefined && (
             <ValueTable
-              caption={`${formatWithGrouping(amount)} ${from} dans les autres devises`}
+              caption={t("{amount} {from} dans les autres devises", { amount: formatWithGrouping(amount), from })}
               rows={snapshot.rates
                 .filter(([code]) => code !== from)
                 .map(([code]) => ({
@@ -165,7 +166,7 @@ export function CurrencyTool(_props: ToolComponentProps) {
             />
           )}
 
-          <Callout tone="info" title="Taux indicatifs">
+          <Callout tone="info" title={t("Taux indicatifs")}>
             {CURRENCY_NOTE}
           </Callout>
         </>

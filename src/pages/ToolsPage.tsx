@@ -7,6 +7,7 @@ import { SearchInput } from "@/components/ui/SearchInput";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CategoryTile } from "@/components/tools/CategoryTile";
 import { ToolList } from "@/components/tools/ToolRow";
+import { t } from "@/i18n";
 
 /**
  * Page Outils : vue d'ensemble des catégories, et recherche transversale.
@@ -35,15 +36,15 @@ export function ToolsPage() {
     <Page width="wide">
       <PageHeader
         icon="LayoutGrid"
-        title="Outils"
-        description={`${toolRegistry.all().length} outils répartis en ${categories.length} catégories.`}
+        title={t("Outils")}
+        description={t("{count} outils répartis en {categoriesCount} catégories.", { count: toolRegistry.all().length, categoriesCount: categories.length })}
       />
 
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <SearchInput
           value={query}
           onChange={(value) => update({ q: value })}
-          placeholder="Rechercher : « réduire taille pdf », « gif en vidéo »…"
+          placeholder={t("Rechercher : « réduire taille pdf », « gif en vidéo »…")}
           className="min-w-64 flex-1"
         />
       </div>
@@ -52,15 +53,15 @@ export function ToolsPage() {
         results.length > 0 ? (
           <>
             <p className="ft-meta ft-num mb-1.5">
-              {results.length} résultat{results.length > 1 ? "s" : ""}
+              {t("{count} {count, plural, one {résultat} other {résultats}}", { count: results.length })}
             </p>
             <ToolList tools={results.map((result) => result.tool)} showCategory />
           </>
         ) : (
           <EmptyState
             icon="Search"
-            title="Aucun outil ne correspond"
-            description={`FourTout n'a rien trouvé pour « ${query} ». Le catalogue ne contient peut-être pas encore cet outil — rien n'est inventé.`}
+            title={t("Aucun outil ne correspond")}
+            description={t("FourTout n'a rien trouvé pour « {query} ». Le catalogue ne contient peut-être pas encore cet outil — rien n'est inventé.", { query })}
           />
         )
       ) : (

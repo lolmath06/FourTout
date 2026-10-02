@@ -22,6 +22,7 @@ import {
   type Volume,
 } from "@/core/disks/native";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, formatNumber, t, tx } from "@/i18n";
 
 type Pane = "overview" | "partitions" | "volumes" | "health";
 
@@ -61,7 +62,7 @@ export function DiskInspectTool(_props: ToolComponentProps) {
         setSelected((current) => current ?? result.disks[0]?.name);
       })
       .catch((failure: unknown) =>
-        setError(failure instanceof Error ? failure.message : "Inventaire impossible."),
+        setError(failure instanceof Error ? failure.message : t("Inventaire impossible.")),
       )
       .finally(() => setBusy(false));
   }, [available]);
@@ -99,7 +100,7 @@ export function DiskInspectTool(_props: ToolComponentProps) {
           percentageUsed: null,
           mediaErrors: null,
           bytesWritten: null,
-          notes: [failure instanceof Error ? failure.message : "Interrogation impossible."],
+          notes: [failure instanceof Error ? failure.message : t("Interrogation impossible.")],
         },
       }));
     } finally {
@@ -111,29 +112,27 @@ export function DiskInspectTool(_props: ToolComponentProps) {
     <div className="space-y-4">
       {!available && <Callout tone="warning">{DISKS_NATIVE_REQUIRED}</Callout>}
 
-      <Callout tone="info" title="Lecture seule">
-        Cet écran lit, et rien d'autre. FourTout ne sait pas partitionner, formater, monter,
-        cloner ni effacer un disque : ces opérations n'existent nulle part dans le programme. Les
-        numéros de série et identifiants affichés ne sont enregistrés nulle part.
+      <Callout tone="info" title={t("Lecture seule")}>
+        {t("Cet écran lit, et rien d'autre. FourTout ne sait pas partitionner, formater, monter, cloner ni effacer un disque : ces opérations n'existent nulle part dans le programme. Les numéros de série et identifiants affichés ne sont enregistrés nulle part.")}
       </Callout>
 
-      {error && <Callout tone="error">{error}</Callout>}
+      {error && <Callout tone="error">{tx(error)}</Callout>}
 
       <div className="flex flex-wrap items-center gap-2">
         <Button size="sm" onClick={load} disabled={!available || busy}>
-          <Icon name="RefreshCw" size={13} /> {busy ? "Lecture…" : "Actualiser"}
+          <Icon name="RefreshCw" size={13} /> {busy ? t("Lecture…") : t("Actualiser")}
         </Button>
-        {data && <span className="ft-meta">Source : {data.provider}</span>}
+        {data && <span className="ft-meta">{t("Source : {provider}", { provider: data.provider })}</span>}
       </div>
 
       {data && data.disks.length === 0 && (
-        <Callout tone="neutral">Aucun disque physique n'a été rapporté par le système.</Callout>
+        <Callout tone="neutral">{t("Aucun disque physique n'a été rapporté par le système.")}</Callout>
       )}
 
       {data && data.disks.length > 0 && (
         <div className="flex flex-col gap-4 lg:flex-row">
           <nav className="lg:w-60 lg:shrink-0">
-            <h3 className="ft-section mb-1.5">Disques physiques</h3>
+            <h3 className="ft-section mb-1.5">{t("Disques physiques")}</h3>
             <ul className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
               {data.disks.map((entry) => (
                 <li key={entry.name}>
@@ -151,11 +150,11 @@ export function DiskInspectTool(_props: ToolComponentProps) {
                       <Icon name={entry.removable ? "Usb" : "HardDrive"} size={13} />
                       <span className="min-w-0 flex-1 truncate font-medium">{entry.name}</span>
                       {entry.system && (
-                        <span className="ft-meta shrink-0">système</span>
+                        <span className="ft-meta shrink-0">{t("système")}</span>
                       )}
                     </span>
                     <span className="ft-meta">
-                      {formatSize(entry.size)} · {TRANSPORT_LABELS[entry.transport]}
+                      {formatSize(entry.size)} · {tx(TRANSPORT_LABELS[entry.transport])}
                     </span>
                   </button>
                 </li>
@@ -165,16 +164,16 @@ export function DiskInspectTool(_props: ToolComponentProps) {
 
           <div className="min-w-0 flex-1 space-y-3">
             <Fieldset columns={1}>
-              <Field label="Affichage">
+              <Field label={t("Affichage")}>
                 <OptionGroup
-                  ariaLabel="Panneau"
+                  ariaLabel={t("Panneau")}
                   value={pane}
                   onChange={setPane}
                   options={[
-                    { value: "overview", label: "Vue d'ensemble" },
-                    { value: "partitions", label: "Partitions" },
-                    { value: "volumes", label: "Volumes" },
-                    { value: "health", label: "Santé" },
+                    { value: "overview", label: t("Vue d'ensemble") },
+                    { value: "partitions", label: t("Partitions") },
+                    { value: "volumes", label: t("Volumes") },
+                    { value: "health", label: t("Santé") },
                   ]}
                 />
               </Field>
@@ -184,19 +183,19 @@ export function DiskInspectTool(_props: ToolComponentProps) {
               <StructureTable
                 caption={disk.model ?? disk.name}
                 rows={[
-                  { label: "Nom système", value: disk.name },
-                  { label: "Chemin", value: disk.path },
-                  { label: "Modèle", value: disk.model ?? "non rapporté" },
-                  { label: "Fabricant", value: disk.vendor ?? "non rapporté" },
-                  { label: "Capacité", value: formatSize(disk.size) },
-                  { label: "Raccordement", value: TRANSPORT_LABELS[disk.transport] },
-                  { label: "Support", value: mediaKind(disk) },
-                  { label: "Amovible", value: disk.removable ? "oui" : "non" },
-                  { label: "Lecture seule", value: disk.readOnly ? "oui" : "non" },
-                  { label: "Table de partitions", value: disk.partitionTable?.toUpperCase() ?? "aucune" },
-                  { label: "Partitions", value: String(disk.partitions.length) },
-                  { label: "Porte le système", value: disk.system ? "oui" : "non" },
-                  { label: "Numéro de série", value: disk.serial ?? "non exposé sans privilèges" },
+                  { label: t("Nom système"), value: disk.name },
+                  { label: t("Chemin"), value: disk.path },
+                  { label: t("Modèle"), value: disk.model ?? t("non rapporté") },
+                  { label: t("Fabricant"), value: disk.vendor ?? t("non rapporté") },
+                  { label: t("Capacité"), value: formatSize(disk.size) },
+                  { label: t("Raccordement"), value: TRANSPORT_LABELS[disk.transport] },
+                  { label: t("Support"), value: mediaKind(disk) },
+                  { label: t("Amovible"), value: disk.removable ? "oui" : "non" },
+                  { label: t("Lecture seule"), value: disk.readOnly ? "oui" : "non" },
+                  { label: t("Table de partitions"), value: disk.partitionTable?.toUpperCase() ?? "aucune" },
+                  { label: t("Partitions"), value: String(disk.partitions.length) },
+                  { label: t("Porte le système"), value: disk.system ? "oui" : "non" },
+                  { label: t("Numéro de série"), value: disk.serial ?? t("non exposé sans privilèges") },
                 ]}
               />
             )}
@@ -207,15 +206,15 @@ export function DiskInspectTool(_props: ToolComponentProps) {
                   <table className="ft-table">
                     <thead>
                       <tr>
-                        <th scope="col">Partition</th>
+                        <th scope="col">{t("Partition")}</th>
                         <th scope="col" className="text-right">
-                          Taille
+                          {t("Taille")}
                         </th>
                         <th scope="col" className="text-right">
-                          Début
+                          {t("Début")}
                         </th>
-                        <th scope="col">Type</th>
-                        <th scope="col">Amorçage</th>
+                        <th scope="col">{t("Type")}</th>
+                        <th scope="col">{t("Amorçage")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -241,7 +240,7 @@ export function DiskInspectTool(_props: ToolComponentProps) {
                 </div>
                 {disk.partitions.length === 0 && (
                   <p className="ft-meta px-3 py-2">
-                    Aucune partition : ce disque n'est pas partitionné, ou sa table n'est pas lisible.
+                    {t("Aucune partition : ce disque n'est pas partitionné, ou sa table n'est pas lisible.")}
                   </p>
                 )}
               </section>
@@ -260,7 +259,7 @@ export function DiskInspectTool(_props: ToolComponentProps) {
                   ))}
                 {disk.partitions.every((partition) => !partition.volume) && (
                   <Callout tone="neutral">
-                    Aucun système de fichiers reconnu sur ce disque, ou aucun volume monté.
+                    {t("Aucun système de fichiers reconnu sur ce disque, ou aucun volume monté.")}
                   </Callout>
                 )}
               </div>
@@ -281,7 +280,7 @@ export function DiskInspectTool(_props: ToolComponentProps) {
 
       {data && data.otherVolumes.length > 0 && (
         <section className="space-y-2">
-          <h3 className="ft-section">Volumes sans disque physique identifié</h3>
+          <h3 className="ft-section">{t("Volumes sans disque physique identifié")}</h3>
           {data.otherVolumes.map((volume) => (
             <VolumeCard key={volume.mountPoint ?? volume.uuid ?? "?"} name={volume.mountPoint ?? "—"} volume={volume} />
           ))}
@@ -289,10 +288,10 @@ export function DiskInspectTool(_props: ToolComponentProps) {
       )}
 
       {data && data.notes.length > 0 && (
-        <Callout tone="neutral" title="Ce que le système n'a pas donné">
+        <Callout tone="neutral" title={t("Ce que le système n'a pas donné")}>
           <ul className="list-disc pl-4">
             {data.notes.map((note) => (
-              <li key={note}>{note}</li>
+              <li key={note}>{tx(note)}</li>
             ))}
           </ul>
         </Callout>
@@ -308,10 +307,10 @@ function VolumeCard({ name, volume }: { name: string; volume: Volume }) {
       <p className="ft-value">
         <strong>{volume.label ?? name}</strong>
         {volume.filesystem && ` · ${volume.filesystem}`}
-        {volume.readOnly && " · monté en lecture seule"}
+        {volume.readOnly && t(" · monté en lecture seule")}
       </p>
       <p className="ft-meta">
-        {volume.mountPoint ? `Monté sur ${volume.mountPoint}` : "Non monté"}
+        {volume.mountPoint ? t("Monté sur {mountPoint}", { mountPoint: volume.mountPoint }) : t("Non monté")}
         {volume.uuid && ` · identifiant ${volume.uuid}`}
       </p>
       {ratio !== undefined ? (
@@ -323,13 +322,12 @@ function VolumeCard({ name, volume }: { name: string; volume: Volume }) {
             />
           </div>
           <p className="ft-meta mt-1">
-            {formatSize(volume.usedBytes)} occupés sur {formatSize(volume.totalBytes)} ·{" "}
-            {formatSize(volume.availableBytes)} disponibles
+            {t("{size} occupés sur {size2} · {size3} disponibles", { size: formatSize(volume.usedBytes), size2: formatSize(volume.totalBytes), size3: formatSize(volume.availableBytes) })}
           </p>
         </>
       ) : (
         <p className="ft-meta mt-1">
-          Espace occupé non rapporté : ce volume n'est pas monté, ou le système ne le dit pas.
+          {t("Espace occupé non rapporté : ce volume n'est pas monté, ou le système ne le dit pas.")}
         </p>
       )}
     </section>
@@ -359,94 +357,89 @@ function HealthPane({
   return (
     <div className="space-y-3">
       {provider === "" && (
-        <Callout tone="neutral" title="Aucun fournisseur de santé sur cette machine">
-          Les indicateurs détaillés (température, heures de fonctionnement, secteurs réalloués)
-          passent par <code>smartctl</code>, qui n'est pas installé ici. FourTout ne l'embarque pas
-          et ne l'installe pas : c'est un logiciel distribué séparément, sous une licence
-          incompatible avec celle de FourTout. Si vous installez <code>smartmontools</code> vous-même,
-          cet écran s'enrichira sans rien faire de plus.
+        <Callout tone="neutral" title={t("Aucun fournisseur de santé sur cette machine")}>
+          <Trans source={"Les indicateurs détaillés (température, heures de fonctionnement, secteurs réalloués) passent par <0>smartctl</0>, qui n'est pas installé ici. FourTout ne l'embarque pas et ne l'installe pas : c'est un logiciel distribué séparément, sous une licence incompatible avec celle de FourTout. Si vous installez <1>smartmontools</1> vous-même, cet écran s'enrichira sans rien faire de plus."} components={[<code />, <code />]} />
         </Callout>
       )}
 
       <div>
         <Button size="sm" variant="primary" onClick={onAsk} disabled={checking}>
           <Icon name="Activity" size={13} />{" "}
-          {checking ? "Interrogation…" : "Interroger la santé de ce disque"}
+          {checking ? t("Interrogation…") : t("Interroger la santé de ce disque")}
         </Button>
         <p className="ft-meta mt-1">
-          Lecture des compteurs déjà tenus par le disque. Aucun autotest n'est lancé : ce sont des
-          opérations longues qui occupent le disque, et elles n'ont pas leur place ici.
+          {t("Lecture des compteurs déjà tenus par le disque. Aucun autotest n'est lancé : ce sont des opérations longues qui occupent le disque, et elles n'ont pas leur place ici.")}
         </p>
       </div>
 
       {report && (
         <>
           <Callout tone={report.available ? "info" : "neutral"} title={healthSummary(report)}>
-            Source : {report.provider}. {mediaKind(disk)}.
+            {t("Source : {provider}. {value}.", { provider: report.provider, value: mediaKind(disk) })}
           </Callout>
 
           {report.available && (
             <StructureTable
-              caption="Compteurs rapportés"
+              caption={t("Compteurs rapportés")}
               rows={[
-                { label: "Santé rapportée par le système", value: report.health ?? "non rapportée" },
+                { label: t("Santé rapportée par le système"), value: report.health ?? t("non rapportée") },
                 {
-                  label: "Température",
-                  value: report.temperatureC === null ? "non rapportée" : `${report.temperatureC} °C`,
+                  label: t("Température"),
+                  value: report.temperatureC === null ? t("non rapportée") : `${report.temperatureC} °C`,
                 },
                 {
-                  label: "Heures de fonctionnement",
+                  label: t("Heures de fonctionnement"),
                   value:
                     report.powerOnHours === null
-                      ? "non rapportées"
-                      : `${report.powerOnHours.toLocaleString("fr-FR")} h`,
+                      ? t("non rapportées")
+                      : `${formatNumber(report.powerOnHours)} h`,
                 },
                 {
-                  label: "Cycles d'allumage",
+                  label: t("Cycles d'allumage"),
                   value:
                     report.powerCycles === null
-                      ? "non rapportés"
-                      : report.powerCycles.toLocaleString("fr-FR"),
+                      ? t("non rapportés")
+                      : formatNumber(report.powerCycles),
                 },
                 {
-                  label: "Secteurs réalloués",
+                  label: t("Secteurs réalloués"),
                   value:
                     report.reallocatedSectors === null
-                      ? "non rapportés"
+                      ? t("non rapportés")
                       : String(report.reallocatedSectors),
                 },
                 {
-                  label: "Secteurs en attente",
-                  value: report.pendingSectors === null ? "non rapportés" : String(report.pendingSectors),
+                  label: t("Secteurs en attente"),
+                  value: report.pendingSectors === null ? t("non rapportés") : String(report.pendingSectors),
                 },
                 {
-                  label: "Secteurs non corrigibles",
+                  label: t("Secteurs non corrigibles"),
                   value:
                     report.uncorrectableSectors === null
-                      ? "non rapportés"
+                      ? t("non rapportés")
                       : String(report.uncorrectableSectors),
                 },
                 {
-                  label: "Usure (NVMe)",
-                  value: report.percentageUsed === null ? "non rapportée" : `${report.percentageUsed} %`,
+                  label: t("Usure (NVMe)"),
+                  value: report.percentageUsed === null ? t("non rapportée") : `${report.percentageUsed} %`,
                 },
                 {
-                  label: "Erreurs d'intégrité (NVMe)",
-                  value: report.mediaErrors === null ? "non rapportées" : String(report.mediaErrors),
+                  label: t("Erreurs d'intégrité (NVMe)"),
+                  value: report.mediaErrors === null ? t("non rapportées") : String(report.mediaErrors),
                 },
                 {
-                  label: "Données écrites",
-                  value: report.bytesWritten === null ? "non rapportées" : formatSize(report.bytesWritten),
+                  label: t("Données écrites"),
+                  value: report.bytesWritten === null ? t("non rapportées") : formatSize(report.bytesWritten),
                 },
               ]}
             />
           )}
 
           {report.notes.length > 0 && (
-            <Callout tone="neutral" title="Ce que ce disque n'expose pas">
+            <Callout tone="neutral" title={t("Ce que ce disque n'expose pas")}>
               <ul className="list-disc pl-4">
                 {report.notes.map((note) => (
-                  <li key={note}>{note}</li>
+                  <li key={note}>{tx(note)}</li>
                 ))}
               </ul>
             </Callout>

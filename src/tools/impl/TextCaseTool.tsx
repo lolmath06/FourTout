@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { notify } from "@/features/notifications/store";
 import type { ToolComponentProps } from "../implementations";
 import { CASE_TRANSFORMS, type CaseKey } from "../logic/textCase";
+import { t, tx } from "@/i18n";
 
 export function TextCaseTool(_props: ToolComponentProps) {
   const [text, setText] = useState("");
@@ -12,9 +13,9 @@ export function TextCaseTool(_props: ToolComponentProps) {
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(text);
-      notify.success("Texte copié");
+      notify.success(t("Texte copié"));
     } catch {
-      notify.error("Copie impossible", "Le presse-papiers n'est pas accessible.");
+      notify.error(t("Copie impossible"), t("Le presse-papiers n'est pas accessible."));
     }
   };
 
@@ -23,23 +24,23 @@ export function TextCaseTool(_props: ToolComponentProps) {
       <div className="flex flex-wrap gap-1.5">
         {(Object.keys(CASE_TRANSFORMS) as CaseKey[]).map((key) => (
           <Button key={key} size="sm" onClick={() => apply(key)} disabled={text.length === 0}>
-            {CASE_TRANSFORMS[key].label}
+            {tx(CASE_TRANSFORMS[key].label)}
           </Button>
         ))}
       </div>
       <textarea
         value={text}
         onChange={(event) => setText(event.target.value)}
-        placeholder="Collez ou saisissez votre texte…"
-        aria-label="Texte à transformer"
+        placeholder={t("Collez ou saisissez votre texte…")}
+        aria-label={t("Texte à transformer")}
         className="min-h-56 w-full resize-y rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)] p-3 font-mono text-sm outline-none focus:border-[var(--ft-accent)]"
       />
       <div className="flex justify-end gap-2">
         <Button size="sm" variant="ghost" onClick={() => setText("")} disabled={!text}>
-          Effacer
+          {t("Effacer")}
         </Button>
         <Button size="sm" variant="primary" onClick={copy} disabled={!text}>
-          Copier
+          {t("Copier")}
         </Button>
       </div>
     </div>

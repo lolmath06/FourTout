@@ -1,4 +1,5 @@
 import { createZip } from "@/core/archive/zip";
+import { t } from "@/i18n";
 
 /**
  * Écriture de classeurs XLSX.
@@ -90,7 +91,7 @@ function sheetXml(rows: readonly (readonly string[])[]): string {
  * homonymes rendent le fichier illisible.
  */
 export function createXlsx(sheets: readonly XlsxSheet[]): Uint8Array {
-  if (sheets.length === 0) throw new Error("Un classeur doit contenir au moins une feuille.");
+  if (sheets.length === 0) throw new Error(t("Un classeur doit contenir au moins une feuille."));
 
   const used = new Set<string>();
   const names = sheets.map((sheet, index) => {

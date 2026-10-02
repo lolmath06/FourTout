@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useMemo } from "react";
+import { categoryName, toolDescription, toolName, toolNote } from "@/core/tools/localized";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { getCategory } from "@/core/tools/categories";
 import { toolRegistry } from "@/core/tools/registry";
@@ -11,6 +12,7 @@ import { Page } from "@/components/ui/PageHeader";
 import { PrivacyNote } from "@/components/ui/PrivacyNote";
 import { FavoriteButton } from "@/components/tools/FavoriteButton";
 import { CapabilityList } from "@/components/tools/CapabilityList";
+import { t } from "@/i18n";
 
 /**
  * Outils dont le contenu a réellement besoin de largeur : comparaison côte à
@@ -78,7 +80,7 @@ export function ToolPage() {
               className="ft-meta inline-flex items-center gap-1 transition-colors hover:text-[var(--ft-text)]"
             >
               <Icon name="ArrowLeft" size={12} />
-              {category.name}
+              {categoryName(category)}
             </Link>
           )}
         </div>
@@ -88,20 +90,20 @@ export function ToolPage() {
             <span className="shrink-0 text-[var(--ft-cat)]">
               <Icon name={tool.icon} size={17} />
             </span>
-            <h1 className="ft-page-title min-w-0 flex-1 truncate">{tool.name}</h1>
+            <h1 className="ft-page-title min-w-0 flex-1 truncate">{toolName(tool)}</h1>
             <FavoriteButton toolId={tool.id} size={14} />
           </div>
           <p className="mt-1 text-[13px] leading-5 text-[var(--ft-text-muted)]">
-            {tool.description}
+            {toolDescription(tool)}
           </p>
           <CapabilityList tool={tool} className="mt-1.5" />
         </header>
       </div>
 
-      {tool.note && (
+      {toolNote(tool) && (
         <p className="mb-4 flex items-start gap-2 border-l-2 border-[var(--ft-border-strong)] bg-[var(--ft-surface-2)] px-3 py-2 text-[11.5px] leading-5 text-[var(--ft-text-muted)]">
           <Icon name="Info" size={13} className="mt-px shrink-0" />
-          {tool.note}
+          {toolNote(tool)}
         </p>
       )}
 
@@ -109,7 +111,7 @@ export function ToolPage() {
         fallback={
           <div className="ft-meta flex items-center gap-2 py-8">
             <Icon name="Loader" size={14} className="animate-spin" />
-            Chargement de l'outil…
+            {t("Chargement de l'outil…")}
           </div>
         }
       >

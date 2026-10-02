@@ -18,6 +18,7 @@
  *   primaire   := nombre | constante | fonction "(" args ")" | "(" expression ")"
  */
 
+import { t } from "@/i18n";
 export type AngleMode = "deg" | "rad";
 
 export interface EvaluationResult {
@@ -98,10 +99,10 @@ const MAX_FACTORIAL = 170;
 
 function factorial(value: number): number {
   if (!Number.isInteger(value) || value < 0) {
-    throw new ExpressionError("La factorielle n'accepte qu'un entier positif.");
+    throw new ExpressionError(t("La factorielle n'accepte qu'un entier positif."));
   }
   if (value > MAX_FACTORIAL) {
-    throw new ExpressionError(`La factorielle n'est calculable que jusqu'à ${MAX_FACTORIAL}!.`);
+    throw new ExpressionError(t("La factorielle n'est calculable que jusqu'à {MAX_FACTORIAL}!.", { MAX_FACTORIAL }));
   }
   let result = 1;
   for (let i = 2; i <= value; i += 1) result *= i;
@@ -142,7 +143,7 @@ function tokenize(source: string): Token[] {
       const text = source.slice(start, i).replace(",", ".");
       const value = Number(text);
       if (!Number.isFinite(value)) {
-        throw new ExpressionError(`Nombre invalide : « ${text} »`, start);
+        throw new ExpressionError(t("Nombre invalide : « {text} »", { text }), start);
       }
       tokens.push({ type: "number", text, value, position: start });
       continue;
@@ -173,7 +174,7 @@ function tokenize(source: string): Token[] {
       i += 1;
       continue;
     }
-    throw new ExpressionError(`Caractère inattendu : « ${char} »`, i);
+    throw new ExpressionError(t("Caractère inattendu : « {char} »", { char }), i);
   }
   return tokens;
 }
@@ -190,7 +191,7 @@ class Parser {
     const value = this.expression();
     const rest = this.tokens[this.index];
     if (rest) {
-      throw new ExpressionError(`Élément en trop : « ${rest.text} »`, rest.position);
+      throw new ExpressionError(t("Élément en trop : « {text} »", { text: rest.text }), rest.position);
     }
     return value;
   }
@@ -227,8 +228,8 @@ class Parser {
       const modulo = times || divide ? undefined : this.eat("operator", "%");
       if (!times && !divide && !modulo) return left;
       const right = this.factor();
-      if (divide && right === 0) throw new ExpressionError("Division par zéro.");
-      if (modulo && right === 0) throw new ExpressionError("Modulo par zéro.");
+      if (divide && right === 0) throw new ExpressionError(t("Division par zéro."));
+      if (modulo && right === 0) throw new ExpressionError(t("Modulo par zéro."));
       left = times ? left * right : divide ? left / right : left % right;
     }
   }
@@ -260,12 +261,12 @@ class Parser {
 
   private primary(): number {
     const token = this.peek();
-    if (!token) throw new ExpressionError("Expression incomplète.");
+    if (!token) throw new ExpressionError(t("Expression incomplète."));
 
     if (this.eat("lparen")) {
       const value = this.expression();
       if (!this.eat("rparen")) {
-        throw new ExpressionError("Parenthèse fermante manquante.", token.position);
+        throw new ExpressionError(t("Parenthèse fermante manquante."), token.position);
       }
       return value;
     }
@@ -280,7 +281,7 @@ class Parser {
         const args = [this.expression()];
         while (this.eat("comma")) args.push(this.expression());
         if (!this.eat("rparen")) {
-          throw new ExpressionError("Parenthèse fermante manquante.", identifier.position);
+          throw new ExpressionError(t("Parenthèse fermante manquante."), identifier.position);
         }
         const binary = BINARY_FUNCTIONS[name];
         if (binary) {
@@ -292,18 +293,18 @@ class Parser {
         const unary = FUNCTIONS[name];
         if (unary) {
           if (args.length !== 1) {
-            throw new ExpressionError(`${name} attend un seul argument.`, identifier.position);
+            throw new ExpressionError(t("{name} attend un seul argument.", { name }), identifier.position);
           }
           return unary(args[0], this.mode);
         }
-        throw new ExpressionError(`Fonction inconnue : « ${identifier.text} »`, identifier.position);
+        throw new ExpressionError(t("Fonction inconnue : « {text} »", { text: identifier.text }), identifier.position);
       }
       const constant = CONSTANTS[name] ?? CONSTANTS[identifier.text];
       if (constant !== undefined) return constant;
-      throw new ExpressionError(`Nom inconnu : « ${identifier.text} »`, identifier.position);
+      throw new ExpressionError(t("Nom inconnu : « {text} »", { text: identifier.text }), identifier.position);
     }
 
-    throw new ExpressionError(`Élément inattendu : « ${token.text} »`, token.position);
+    throw new ExpressionError(t("Élément inattendu : « {text} »", { text: token.text }), token.position);
   }
 }
 
@@ -313,12 +314,12 @@ class Parser {
  */
 export function evaluateExpression(input: string, mode: AngleMode = "deg"): EvaluationResult {
   const normalized = normalize(input).trim();
-  if (normalized.length === 0) throw new ExpressionError("Expression vide.");
+  if (normalized.length === 0) throw new ExpressionError(t("Expression vide."));
   const value = new Parser(tokenize(normalized), mode).parse();
   if (Number.isNaN(value)) {
-    throw new ExpressionError("Le résultat n'est pas un nombre (domaine de définition dépassé).");
+    throw new ExpressionError(t("Le résultat n'est pas un nombre (domaine de définition dépassé)."));
   }
-  if (!Number.isFinite(value)) throw new ExpressionError("Le résultat est infini.");
+  if (!Number.isFinite(value)) throw new ExpressionError(t("Le résultat est infini."));
   return { value, normalized };
 }
 

@@ -1,6 +1,7 @@
 import { getRasterBackend, type RasterCanvas } from "@/core/pdf/raster/types";
 import { ImageError } from "./errors";
 import type { Rgb } from "./types";
+import { compareText, localized, t } from "@/i18n";
 
 /**
  * Planche-contact : une grille de vignettes sur un fond uni, éventuellement
@@ -114,7 +115,7 @@ export function buildContactSheet(
 ): RasterCanvas {
   const backend = getRasterBackend();
   if (!backend) throw new ImageError("render-unavailable");
-  if (items.length === 0) throw new Error("Aucune image à disposer.");
+  if (items.length === 0) throw new Error(t("Aucune image à disposer."));
 
   const layout = contactSheetLayout(items.length, options);
   const sheet = backend.createCanvas(layout.width, layout.height);
@@ -166,11 +167,11 @@ function ellipsize(context: CanvasRenderingContext2D, text: string, maxWidth: nu
 /** Ordres de tri proposés pour la planche. */
 export type ContactSheetOrder = "dropped" | "name" | "name-desc";
 
-export const CONTACT_SHEET_ORDERS: { value: ContactSheetOrder; label: string }[] = [
-  { value: "dropped", label: "Ordre de dépôt" },
-  { value: "name", label: "Nom (A → Z)" },
-  { value: "name-desc", label: "Nom (Z → A)" },
-];
+export const CONTACT_SHEET_ORDERS: { value: ContactSheetOrder; label: string }[] = localized(() => [
+  { value: "dropped", label: t("Ordre de dépôt") },
+  { value: "name", label: t("Nom (A → Z)") },
+  { value: "name-desc", label: t("Nom (Z → A)") },
+]);
 
 /** Applique un ordre de tri à une liste nommée, sans modifier la source. */
 export function sortByOrder<T extends { name: string }>(
@@ -178,6 +179,6 @@ export function sortByOrder<T extends { name: string }>(
   order: ContactSheetOrder,
 ): T[] {
   if (order === "dropped") return [...items];
-  const sorted = [...items].sort((a, b) => a.name.localeCompare(b.name, "fr"));
+  const sorted = [...items].sort((a, b) => compareText(a.name, b.name));
   return order === "name" ? sorted : sorted.reverse();
 }

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { toolName } from "@/core/tools/localized";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -15,6 +16,7 @@ import { toolRegistry } from "@/core/tools/registry";
 import { toolRoute, type DataKind } from "@/core/tools/types";
 import { setHandoff } from "@/features/handoff/store";
 import type { ToolComponentProps } from "@/tools/implementations";
+import { Trans, localized, t, tx } from "@/i18n";
 
 /**
  * Centre de nettoyage des métadonnées.
@@ -42,52 +44,52 @@ interface Capability {
   keeps: string[];
 }
 
-const CAPABILITIES: Partial<Record<DataKind, Capability>> = {
+const CAPABILITIES: Partial<Record<DataKind, Capability>> = localized(() => ({
   image: {
     toolId: "image-metadata-strip",
     removes: [
-      "EXIF : appareil, objectif, réglages de prise de vue",
-      "Coordonnées GPS et altitude",
-      "Date et heure de la prise de vue",
-      "Profils IPTC et XMP, logiciel de retouche",
-      "Vignette intégrée, qui peut montrer l'image avant retouche",
+      t("EXIF : appareil, objectif, réglages de prise de vue"),
+      t("Coordonnées GPS et altitude"),
+      t("Date et heure de la prise de vue"),
+      t("Profils IPTC et XMP, logiciel de retouche"),
+      t("Vignette intégrée, qui peut montrer l'image avant retouche"),
     ],
     keeps: [
-      "Ce qui est visible dans l'image (horodatage incrusté, plaque, visage)",
-      "Le nom du fichier",
+      t("Ce qui est visible dans l'image (horodatage incrusté, plaque, visage)"),
+      t("Le nom du fichier"),
     ],
   },
   pdf: {
     toolId: "pdf-metadata",
     removes: [
-      "Titre, auteur, sujet, mots-clés",
-      "Logiciel créateur et producteur",
-      "Dates de création et de modification",
+      t("Titre, auteur, sujet, mots-clés"),
+      t("Logiciel créateur et producteur"),
+      t("Dates de création et de modification"),
     ],
     keeps: [
-      "Le texte et les images du document",
-      "Les métadonnées des images incluses dans le PDF",
-      "Le contenu masqué que le producteur du fichier aurait laissé",
+      t("Le texte et les images du document"),
+      t("Les métadonnées des images incluses dans le PDF"),
+      t("Le contenu masqué que le producteur du fichier aurait laissé"),
     ],
   },
   video: {
     removes: [
-      "Titre, auteur, logiciel d'encodage, commentaires",
-      "Date d'enregistrement",
-      "Coordonnées GPS des vidéos de téléphone",
+      t("Titre, auteur, logiciel d'encodage, commentaires"),
+      t("Date d'enregistrement"),
+      t("Coordonnées GPS des vidéos de téléphone"),
       "Chapitres",
     ],
-    keeps: ["L'image et le son, recopiés sans réencodage ni perte de qualité"],
+    keeps: [t("L'image et le son, recopiés sans réencodage ni perte de qualité")],
   },
   audio: {
     removes: [
-      "Étiquettes ID3 : titre, artiste, album, année, commentaires",
-      "Logiciel d'encodage",
-      "Pochette intégrée",
+      t("Étiquettes ID3 : titre, artiste, album, année, commentaires"),
+      t("Logiciel d'encodage"),
+      t("Pochette intégrée"),
     ],
-    keeps: ["Le son, recopié sans réencodage ni perte de qualité"],
+    keeps: [t("Le son, recopié sans réencodage ni perte de qualité")],
   },
-};
+}));
 
 /** Types pour lesquels FourTout n'a pas de nettoyeur, et le dit. */
 const UNSUPPORTED: Partial<Record<DataKind, string>> = {
@@ -100,16 +102,16 @@ const UNSUPPORTED: Partial<Record<DataKind, string>> = {
     "extrayez-la, nettoyez les fichiers un par un, puis recréez l'archive.",
 };
 
-const KIND_LABELS: Partial<Record<DataKind, string>> = {
+const KIND_LABELS: Partial<Record<DataKind, string>> = localized(() => ({
   image: "Image",
   pdf: "Document PDF",
-  video: "Vidéo",
+  video: t("Vidéo"),
   audio: "Audio",
-  document: "Document bureautique",
+  document: t("Document bureautique"),
   archive: "Archive",
-  text: "Texte",
-  data: "Données",
-};
+  text: t("Texte"),
+  data: t("Données"),
+}));
 
 export function MetadataStripTool(_props: ToolComponentProps) {
   const [files, setFiles] = useState<SelectedFile[]>([]);
@@ -146,8 +148,7 @@ export function MetadataStripTool(_props: ToolComponentProps) {
     const result = await job.run(async (context) => {
       if (!(await isMediaAvailable())) {
         throw new Error(
-          "Le moteur média (FFmpeg) n'est pas disponible : le nettoyage audio et vidéo " +
-            "nécessite l'application FourTout installée.",
+          t("Le moteur média (FFmpeg) n'est pas disponible : le nettoyage audio et vidéo nécessite l'application FourTout installée."),
         );
       }
       // Le conteneur de sortie est celui d'entrée : on ne réencode rien, donc
@@ -158,15 +159,14 @@ export function MetadataStripTool(_props: ToolComponentProps) {
           files: [file],
           operation: stripMediaMetadata(container, file.mimeType || "application/octet-stream"),
           outputName: outputName(file.name, "sans-metadonnees", container),
-          label: "Recopie sans métadonnées…",
+          label: t("Recopie sans métadonnées…"),
         },
         context,
       );
       return {
         files: [produced],
         summary:
-          "Pistes recopiées à l'identique, métadonnées et chapitres retirés. " +
-          "Aucun réencodage : la qualité d'origine est conservée.",
+          t("Pistes recopiées à l'identique, métadonnées et chapitres retirés. Aucun réencodage : la qualité d'origine est conservée."),
       } satisfies OperationOutcome;
     });
     if (result) setOutcome(result);
@@ -183,19 +183,19 @@ export function MetadataStripTool(_props: ToolComponentProps) {
           setFiles(next);
           setOutcome(null);
         }}
-        label="Déposez le fichier à nettoyer"
-        hint="Image, PDF, audio ou vidéo. FourTout identifie ce qu'il sait retirer."
+        label={t("Déposez le fichier à nettoyer")}
+        hint={t("Image, PDF, audio ou vidéo. FourTout identifie ce qu'il sait retirer.")}
         disabled={job.isRunning}
       />
 
       {file && analysis && (
         <>
           <ValueTable
-            caption="Fichier analysé"
+            caption={t("Fichier analysé")}
             rows={[
-              { label: "Nom", value: file.name },
-              { label: "Type détecté", value: KIND_LABELS[analysis.kind] ?? analysis.kind },
-              { label: "Taille", value: formatFileSize(file.size) },
+              { label: t("Nom"), value: file.name },
+              { label: t("Type détecté"), value: KIND_LABELS[analysis.kind] ?? analysis.kind },
+              { label: t("Taille"), value: formatFileSize(file.size) },
             ]}
           />
 
@@ -203,7 +203,7 @@ export function MetadataStripTool(_props: ToolComponentProps) {
             <>
               <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">
                 <h3 className="ft-section border-b border-[var(--ft-rule)] px-3 py-1.5">
-                  Ce que FourTout peut retirer
+                  {t("Ce que FourTout peut retirer")}
                 </h3>
                 <ul className="divide-y divide-[var(--ft-rule)]">
                   {analysis.capability.removes.map((entry) => (
@@ -214,7 +214,7 @@ export function MetadataStripTool(_props: ToolComponentProps) {
                   ))}
                 </ul>
                 <h3 className="ft-section border-y border-[var(--ft-rule)] px-3 py-1.5">
-                  Ce qui subsiste
+                  {t("Ce qui subsiste")}
                 </h3>
                 <ul className="divide-y divide-[var(--ft-rule)]">
                   {analysis.capability.keeps.map((entry) => (
@@ -234,23 +234,22 @@ export function MetadataStripTool(_props: ToolComponentProps) {
                 {analysis.target ? (
                   <>
                     <p className="ft-meta">
-                      Le nettoyage est réalisé par l'outil spécialisé, avec votre fichier déjà
-                      chargé.
+                      {t("Le nettoyage est réalisé par l'outil spécialisé, avec votre fichier déjà chargé.")}
                     </p>
                     <Button size="md" variant="primary" onClick={openSpecialised}>
                       <Icon name={analysis.target.icon} size={15} />
-                      Ouvrir « {analysis.target.name} »
+                      {t("Ouvrir « {name} »", { name: toolName(analysis.target) })}
                     </Button>
                   </>
                 ) : (
                   <>
                     <p className="ft-meta">
-                      Les pistes sont recopiées telles quelles : aucun réencodage, aucune perte.
+                      {t("Les pistes sont recopiées telles quelles : aucun réencodage, aucune perte.")}
                     </p>
                     <div className="flex items-center gap-2">
                       {job.isRunning && (
                         <Button size="sm" variant="ghost" onClick={job.cancel}>
-                          Annuler
+                          {t("Annuler")}
                         </Button>
                       )}
                       <Button
@@ -264,7 +263,7 @@ export function MetadataStripTool(_props: ToolComponentProps) {
                           size={15}
                           className={job.isRunning ? "animate-spin" : undefined}
                         />
-                        {job.isRunning ? "Nettoyage…" : "Retirer les métadonnées"}
+                        {job.isRunning ? t("Nettoyage…") : t("Retirer les métadonnées")}
                       </Button>
                     </div>
                   </>
@@ -272,30 +271,26 @@ export function MetadataStripTool(_props: ToolComponentProps) {
               </div>
             </>
           ) : (
-            <Callout tone="warning" title="Pas de nettoyage pour ce type de fichier">
+            <Callout tone="warning" title={t("Pas de nettoyage pour ce type de fichier")}>
               {analysis.unsupported ??
-                "FourTout ne dispose d'aucun nettoyeur de métadonnées pour ce type de fichier. " +
-                  "Plutôt que de produire une copie qui aurait l'air propre sans l'être, l'outil " +
-                  "préfère ne rien faire."}
+                t("FourTout ne dispose d'aucun nettoyeur de métadonnées pour ce type de fichier. Plutôt que de produire une copie qui aurait l'air propre sans l'être, l'outil préfère ne rien faire.")}
             </Callout>
           )}
         </>
       )}
 
-      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={job.progress.label} />}
+      {job.isRunning && <ProgressBar ratio={job.progress.ratio} label={tx(job.progress.label)} />}
 
       {error && (
-        <Callout tone="error" title="L'opération a échoué">
-          {error}
+        <Callout tone="error" title={t("L'opération a échoué")}>
+          {tx(error)}
         </Callout>
       )}
 
       {outcome && <ResultPanel outcome={outcome} />}
 
-      <Callout tone="info" title="Ce que « supprimer les métadonnées » veut dire">
-        Les métadonnées sont les informations <em>autour</em> du contenu : appareil photo, position
-        GPS, auteur, logiciel, dates. Les retirer ne modifie pas ce qu'on voit ou ce qu'on entend —
-        et ne retire donc rien de ce qui est visible <em>dans</em> le fichier lui-même.
+      <Callout tone="info" title={t("Ce que « supprimer les métadonnées » veut dire")}>
+        <Trans source={"Les métadonnées sont les informations <0>autour</0> du contenu : appareil photo, position GPS, auteur, logiciel, dates. Les retirer ne modifie pas ce qu'on voit ou ce qu'on entend — et ne retire donc rien de ce qui est visible <1>dans</1> le fichier lui-même."} components={[<em />, <em />]} />
       </Callout>
     </div>
   );
