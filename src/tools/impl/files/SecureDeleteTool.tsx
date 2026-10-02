@@ -211,7 +211,10 @@ export function SecureDeleteTool(_props: ToolComponentProps) {
                   />
                   <span className="ft-value min-w-0 flex-1 truncate">{baseName(entry.path)}</span>
                   <span className="ft-meta shrink-0">
-                    {entry.error ?? `${entry.passes} passe${entry.passes > 1 ? "s" : ""}`}
+                    {entry.error ??
+                      t("{count} {count, plural, one {passe} other {passes}}", {
+                        count: entry.passes,
+                      })}
                   </span>
                 </li>
               ))}

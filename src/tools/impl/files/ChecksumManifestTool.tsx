@@ -153,7 +153,13 @@ function CreatePanel({ onVerify }: { onVerify: (manifest: string, root: string) 
       ),
     );
     if (summary) {
-      notify.success(t("Manifeste créé"), `${summary.files} fichier(s) · ${summary.algorithm}`);
+      notify.success(
+        t("Manifeste créé"),
+        t("{count} {count, plural, one {fichier} other {fichiers}} · {algorithm}", {
+          count: summary.files,
+          algorithm: summary.algorithm,
+        }),
+      );
     }
   };
 

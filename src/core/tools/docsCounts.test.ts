@@ -51,11 +51,13 @@ describe("les chiffres de la documentation suivent le registre", () => {
   });
 
   it("l'index de la documentation annonce le bon nombre d'outils", () => {
-    expect(read("docs/README.md")).toContain(`Les ${TOOLS} outils`);
+    expect(read("docs/README.md")).toContain(`All ${TOOLS} tools`);
+    expect(read("docs/fr/README.md")).toContain(`Les ${TOOLS} outils`);
   });
 
   it("la feuille de route annonce le bon nombre d'outils", () => {
-    expect(read("ROADMAP.md")).toContain(`${TOOLS} outils`);
+    expect(read("ROADMAP.md")).toContain(`${TOOLS} tools`);
+    expect(read("ROADMAP.fr.md")).toContain(`${TOOLS} outils`);
   });
 
   it("le journal des versions annonce le bon nombre d'outils et de catégories", () => {
@@ -68,21 +70,24 @@ describe("les chiffres de la documentation suivent le registre", () => {
     // `pnpm docs:features` régénère ce fichier ; s'il annonce autre chose, il
     // n'a pas été régénéré depuis le dernier changement de catalogue.
     const features = read("docs/guides/FEATURES.md");
-    expect(features).toContain(`${TOOLS} outils, répartis en ${CATEGORY_COUNT} catégories`);
+    const frenchFeatures = read("docs/fr/guides/FEATURES.md");
+    expect(features).toContain(`${TOOLS} tools across ${CATEGORY_COUNT} categories`);
+    expect(frenchFeatures).toContain(`${TOOLS} outils, répartis en ${CATEGORY_COUNT} catégories`);
     for (const category of CATEGORIES) {
       const count = ALL_TOOLS.filter(
         (tool) => tool.category === category.id,
       ).length;
-      expect(features, `section manquante ou périmée : ${category.name}`).toContain(
+      expect(frenchFeatures, `section manquante ou périmée : ${category.name}`).toContain(
         `### ${category.name} (${count})`,
       );
     }
   });
 
   it("le guide d'utilisation annonce le bon nombre de catégories", () => {
-    expect(read("docs/guides/USER_GUIDE.md")).toContain(
+    expect(read("docs/fr/guides/USER_GUIDE.md")).toContain(
       `les ${SPELLED[CATEGORY_COUNT]} catégories`,
     );
+    expect(read("docs/guides/USER_GUIDE.md")).toContain("the twelve categories");
   });
 
   it("ne laisse traîner aucun ancien total dans les pages d'état actuel", () => {
@@ -90,7 +95,7 @@ describe("les chiffres de la documentation suivent le registre", () => {
     // décrit le produit d'aujourd'hui. Le journal des versions, lui, a le droit
     // de raconter l'histoire — il n'est donc pas vérifié ici.
     const stale = [152, 160, 174, 181, 191].filter((count) => count !== TOOLS);
-    for (const page of ["README.md", "README.fr.md", "docs/README.md", "ROADMAP.md", "docs/guides/FEATURES.md"]) {
+    for (const page of ["README.md", "README.fr.md", "docs/README.md", "docs/fr/README.md", "ROADMAP.md", "ROADMAP.fr.md", "docs/guides/FEATURES.md", "docs/fr/guides/FEATURES.md"]) {
       const text = read(page);
       for (const count of stale) {
         expect(text.includes(`${count} outils`), `« ${count} outils » dans ${page}`).toBe(false);

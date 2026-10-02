@@ -1,256 +1,134 @@
-# Architecture de FourTout
+# FourTout architecture
+
+[English](ARCHITECTURE.md) | [Français](../fr/technical/ARCHITECTURE.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+## Technology choices
 
-- [Choix techniques](#choix-techniques)
-- [Structure](#structure)
-- [Le registre : une seule source de vérité](#le-registre--une-seule-source-de-vérité)
-- [Recherche et intention](#recherche-et-intention)
-- [Traitements longs](#traitements-longs)
-- [Erreurs et retours utilisateur](#erreurs-et-retours-utilisateur)
-- [Fichiers](#fichiers)
-- [Confidentialité](#confidentialité)
-- [Échelle de l'interface](#échelle-de-linterface)
-- [Langues](#langues)
-- [Ce qui reste ouvert](#ce-qui-reste-ouvert)
-
----
-
-## Choix techniques
-
-| Choix | Pourquoi |
+| Choice | Reason |
 | --- | --- |
-| **Tauri 2** | Application native légère, backend Rust pour les traitements qui l'exigent (ffmpeg, OCR, disque), installeurs Windows et Linux. |
-| **React 19 + TypeScript + Vite 7** | Interface typée, démarrage instantané, découpage en chunks par outil. |
-| **React Router (HashRouter)** | Le routage par fragment fonctionne sans serveur de réécriture, donc identique en développement et en application empaquetée. |
-| **Zustand** | État partagé (favoris, récents, notifications, réglages) sans contexte imbriqué ni boilerplate. |
-| **Tailwind CSS 4** | Interface dense et cohérente ; toutes les couleurs passent par des variables CSS (`--ft-*`), une seule définition par rôle. |
-| **Vitest + Testing Library** | Mêmes transformations que Vite, tests d'intégration réels sur le routeur. |
-| **localStorage derrière une interface** | Persistance simple aujourd'hui, remplaçable par un store fichier Tauri sans toucher aux fonctionnalités. |
+| **Tauri 2** | Lightweight native application, Rust for FFmpeg/OCR/disk work, Windows and Linux installers. |
+| **React 19, TypeScript, Vite 7** | Typed UI, quick startup, per-tool chunks. |
+| **React Router HashRouter** | Identical routing without server rewrite rules in development and packaged builds. |
+| **Zustand** | Shared favorites, recents, notifications, and settings without nested contexts. |
+| **Tailwind CSS 4** | Dense, consistent UI; colors are centralized as `--ft-*` CSS variables. |
+| **Vitest and Testing Library** | Vite-compatible transforms and real router integration tests. |
+| **Storage interface over localStorage** | Simple persistence that can later move to a Tauri file store. |
 
 ## Structure
 
-```
+```text
 src/
-├── core/                  Cœur métier, sans dépendance à React quand c'est possible
-│   ├── tools/             LE registre : types, catégories, catalogue, recherche
-│   │   ├── types.ts       ToolDefinition, CategoryDefinition, routes canoniques
-│   │   ├── categories.ts  Source de vérité des catégories
-│   │   ├── catalog/       Le catalogue, un fichier par catégorie
-│   │   ├── registry.ts    ToolRegistry : accès, filtres, cohérence
-│   │   └── search.ts      Recherche déterministe (mots-clés + langage courant)
-│   ├── intent/            resolveToolIntent() et le point d'extension LLM
-│   ├── storage/           KeyValueStore (localStorage / mémoire)
-│   ├── files/             Fichiers déposés, chemins, client du socle natif
-│   ├── pdf/               Lecture, rendu, écriture et opérations PDF
-│   ├── image/             Traitement d'images dans la WebView
-│   ├── media/             Pilotage FFmpeg côté interface, capacités réelles
-│   ├── ocr/               Reconnaissance de texte (tesseract.js)
-│   ├── speech/            Synthèse et transcription, gestionnaire de modèles
-│   ├── text/              Socle texte : fonctions pures, sans React ni backend
-│   ├── code/              Outils développeur : JSON, XML, YAML, TOML, SQL, Base32, JWT, regex, cron, web
-│   ├── calc/              Calculatrice, pourcentages, dates, durées, âge, fuseaux, débits, intérêts
-│   ├── units/             Moteur d'unités partagé par les dix convertisseurs
-│   ├── security/          Génération et évaluation de mots de passe
-│   ├── sqlite/            Client de l'explorateur SQLite natif (lecture seule)
-│   ├── diagnostics/       Diagnostic de fichiers abîmés, récupération prudente
-│   ├── disks/             Inventaire disques et santé, en lecture seule
-│   ├── network/           Client des sondes réseau natives (ping, ports, LAN)
-│   ├── currency/          Taux de change : cache, conversion, datation
-│   ├── convert/           Graphe de conversion dérivé du registre
-│   ├── hash/              Empreintes calculées dans la WebView (texte)
-│   ├── jobs/              Traitements longs : progression, erreur, annulation
-│   ├── ui/                Échelle de l'interface (zoom)
-│   └── platform/          Détection Tauri / navigateur / OS
-├── features/              État applicatif
-│   ├── favorites/         Favoris persistants
-│   ├── recents/           Historique d'ouverture (12 entrées)
-│   ├── notifications/     Toasts : succès, erreur, avertissement, en cours
-│   ├── handoff/           Passage de relais entre outils (fichier + préréglage)
-│   ├── jobs/              Travaux de fond, barre de progression globale
-│   └── settings/          Thème, échelle, densité, animations, confidentialité
-├── components/            Composants réutilisables (ui/, tools/, files/)
-├── layouts/AppShell.tsx   Barre latérale de navigation et zone de contenu
-├── pages/                 Une page par route
-├── tools/                 Les outils réellement implémentés
-│   ├── implementations.ts Table id → composant (chargement paresseux)
-│   ├── impl/              Composants d'outil
-│   └── logic/             Logique pure, testable sans DOM
-└── app/                   Routes et racine de l'application
-src-tauri/                 Application native (Rust)
-├── src/media/             Socle FFmpeg : exécution, progression, annulation
-├── src/speech/            Synthèse (Piper) et transcription (whisper.cpp)
-├── src/models/            Téléchargement vérifié et installation des modèles
-├── src/recovery/          Récupération de mot de passe PDF
-├── src/rates.rs           Taux BCE — la seule sortie vers Internet
-├── src/security/          Vérification de signature JWT (HMAC et RSA)
-├── src/sqlite/            Explorateur SQLite : trois verrous de lecture seule
-├── src/network/           Sondes bornées : ping ICMP, ports TCP, découverte LAN
-├── src/diagnostics/       Structure ZIP, PDF, PNG, JPEG ; réparations prouvables
-├── src/disks/             /sys, /proc, PowerShell figé, SMART opportuniste
-└── src/files/             Archives, empreintes, doublons, découpage, renommage,
-                           chiffrement, effacement, organisation de dossier,
-                           comparaison et synchronisation de dossiers, recherche,
-                           sauvegarde, manifestes, hexadécimal, signatures
+├── core/          Framework-independent business logic where possible
+│   ├── tools/     Registry, categories, catalog, localization, and search
+│   ├── intent/    resolveToolIntent() and the future local-LLM extension point
+│   ├── storage/   KeyValueStore implementations
+│   ├── files/ pdf/ image/ media/ ocr/ speech/ text/ code/ calc/ units/
+│   ├── security/ sqlite/ diagnostics/ disks/ network/ currency/ convert/
+│   ├── jobs/      Progress, error, and cancellation contracts
+│   └── ui/ platform/
+├── features/      Favorites, recents, notifications, handoff, jobs, settings
+├── components/    Reusable UI and domain components
+├── layouts/       Application shell
+├── pages/         Route pages
+├── tools/         Lazy implementation map, components, and pure tool logic
+└── app/           Routes and application root
+
+src-tauri/src/
+├── media/ speech/ models/ recovery/
+├── rates.rs       ECB rates, the only outbound Internet request
+├── security/ sqlite/ network/ diagnostics/ disks/
+└── files/         Archives, hashes, encryption, deletion, folder operations
 ```
 
-## Le registre : une seule source de vérité
+## Registry: one source of truth
 
-Un outil est décrit **une fois**, dans `src/core/tools/catalog/`. Cette
-définition alimente :
+Each tool is declared once in `src/core/tools/catalog/`. The declaration feeds
+category and Tools pages, localized search, favorites and recents, the
+`/tools/t/:id` route, drop constraints, the universal conversion graph, and the
+future local assistant.
 
-- l'affichage dans les catégories et la page Outils ;
-- la recherche (nom, alias, mots-clés, catégorie, description) ;
-- les favoris et les récents (qui ne stockent que des identifiants) ;
-- la route `/tools/t/:id` ;
-- les contraintes de fichiers de la zone de dépôt (`acceptedInputs`) ;
-- le convertisseur universel, qui dérive ses arêtes des `acceptedInputs` et
-  `outputs` déclarés ;
-- le futur assistant local (mots-clés, alias, capacités).
+**Being in the catalog means working.** There is no availability or “coming
+soon” state. An incomplete tool is not registered, and a test keeps the catalog
+and implementation map aligned. `alsoIn` can expose one definition in several
+categories without duplication. Startup validation rejects duplicate IDs and
+unknown categories.
 
-**Figurer au catalogue, c'est fonctionner.** Le modèle ne porte plus d'état de
-disponibilité : il en avait un tant que des cartes existaient sans
-implémentation, ce qui n'est plus le cas. Un outil incomplet n'est simplement
-pas enregistré, et un test garde le catalogue et la table des implémentations
-exactement alignés.
+## Search and intent
 
-Un outil peut apparaître dans plusieurs catégories via `alsoIn`, **sans être
-dupliqué** : une seule définition, plusieurs points d'entrée. Le registre
-refuse au démarrage un identifiant en double ou une catégorie inconnue, et des
-tests le vérifient.
-
-## Recherche et intention
-
-```
-requête utilisateur
-      ↓
-resolveToolIntent()          ← src/core/intent
-      ↓
-IntentResolver (chaîne)      ← déterministe aujourd'hui, LLM local demain
-      ↓
-ToolRegistry                 ← AUTORITÉ : seul lui dit ce qui existe
-      ↓
-outil → navigation
+```text
+user query → resolveToolIntent() → IntentResolver chain
+           → ToolRegistry authority → tool navigation
 ```
 
-La recherche déterministe (`core/tools/search.ts`) mêle :
+Deterministic search combines weighted fields (name before aliases, keywords,
+and description), complete-query bonuses, directional bonuses and penalties
+so “GIF to video” differs from “video to GIF,” and a coverage threshold that
+prefers no result over an unrelated one. A future local resolver can be
+registered, but every candidate is revalidated through `ToolRegistry` and the
+deterministic resolver remains the fallback.
 
-- correspondance mot à mot pondérée par champ (nom > alias > mots-clés > … ) ;
-- bonus si la requête complète apparaît telle quelle ;
-- bonus/malus **directionnel** : « gif en vidéo » ≠ « vidéo en gif » ;
-- un seuil de couverture : si trop peu de mots de la requête sont retrouvés,
-  aucun résultat n'est renvoyé plutôt qu'un résultat approximatif.
+## Long-running operations
 
-Quand l'assistant local arrivera, il suffira de :
+`useJob()` exposes status, progress, result, error, and cancellation. The
+operation receives `report()`, an `AbortSignal`, and `throwIfCancelled()`.
+Video compression, OCR, speech, hashing, encryption, and password recovery use
+this contract and the global task bar survives navigation. Cancellation stops
+the native process, removes temporary files, and never presents partial output
+as complete. See [JOBS.md](JOBS.md).
 
-```ts
-registerIntentResolver(new LocalLLMIntentResolver(...));
-```
+## Errors and user feedback
 
-Le LLM pourra interpréter une formulation, mais ne pourra désigner que des
-outils du registre : les candidats sont revalidés par `ToolRegistry` avant
-d'être affichés, et le résolveur déterministe reste le repli.
+There is no `alert()`. `notify.success/error/warning/info/loading` feeds the
+shared `ToastViewport`; long operations update their existing loading notice.
 
-## Traitements longs
+## Files and algorithm placement
 
-`useJob()` (`core/jobs`) donne à chaque futur outil : `status`, `progress`,
-`result`, `error`, `cancel()`. Le traitement reçoit un `JobContext` avec
-`report()`, un `AbortSignal` et `throwIfCancelled()`. Compression vidéo, OCR,
-transcription, synthèse, empreintes, chiffrement et récupération de mot de
-passe passent tous par ce contrat : une seule mécanique de progression et
-d'annulation, et une barre de tâches globale qui survit au changement de page.
+`FileDropZone` handles browser-readable files and validates the current tool's
+`acceptedInputs`. Path-based tools use native `PathPicker`, then either
+`NativeToolShell` or `useNativeAction` plus `RunBar` for custom multi-selection
+or plan/execute layouts.
 
-Une annulation est une vraie annulation : le processus natif est arrêté, les
-fichiers temporaires sont supprimés, et **aucun résultat partiel n'est
-présenté comme un résultat**. Voir [JOBS.md](JOBS.md).
-
-## Erreurs et retours utilisateur
-
-Aucun `alert()`. Tout passe par `notify.success/error/warning/info/loading`
-(`features/notifications`), affiché par `ToastViewport`. Un traitement long
-utilise `notify.loading()` puis `notify.update(id, …)`.
-
-## Fichiers
-
-`FileDropZone` (`components/files`) est la zone de dépôt générique :
-glisser-déposer, explorateur, validation selon les `acceptedInputs` de l'outil,
-affichage nom/taille/type, multi-fichiers quand l'outil est `batch`. Les futurs
-outils l'utilisent avec `constraintsForTool(tool)` et n'écrivent aucune
-validation eux-mêmes.
-
-Les outils qui travaillent sur des **chemins** — archives, dossiers,
-empreintes, sauvegarde — n'utilisent pas `FileDropZone` : ils passent par
-`PathPicker` (boîtes de dialogue natives et glisser-déposer Tauri, qui fournit
-de vrais chemins) et par l'une des deux ossatures d'exécution :
-
-- `NativeToolShell` pour le cas courant — une sélection, un bouton, un
-  résultat ;
-- `useNativeAction` + `RunBar` quand l'outil compose lui-même sa mise en page,
-  parce qu'il a deux sélections (comparer, synchroniser) ou deux étapes (plan
-  puis exécution). Même mécanique — progression réelle, annulation réelle,
-  erreur lisible — sans mise en page imposée.
-
-### Où vit un algorithme
-
-La règle qui décide de TypeScript ou de Rust n'est pas une préférence, c'est
-une conséquence :
-
-| En TypeScript | En Rust |
+| TypeScript | Rust |
 | --- | --- |
-| Modèles de données, types partagés | Parcours du système de fichiers |
-| Mise en forme, libellés, unités | Lecture et écriture de gros fichiers |
-| Orchestration d'un outil, état de l'écran | Empreintes et copies en flux |
-| Logique pure et testable sans disque | Validation des chemins d'archive |
-| | Lecture partielle (fenêtres hexadécimales) |
+| Data models and shared types | File-system traversal |
+| Labels, formatting, units | Streaming large-file I/O |
+| UI orchestration and state | Streaming hashes and copies |
+| Pure disk-independent logic | Archive path validation |
+| | Partial reads such as hex windows |
 
-Corollaire pratique : chaque capacité de la phase 9 est une **fonction**
-appelable sans React (`compareFolders`, `buildSyncPlan`, `executeSyncPlan`,
-`searchFiles`, `createBackup`, `verifyManifest`, `testArchive`…). Un appelant
-automatisé futur n'aura donc jamais à simuler des clics — il appellera
-exactement ce que l'interface appelle.
+Every file capability also has a callable non-React function, so future
+automation invokes the same API as the interface instead of simulating clicks.
 
-## Confidentialité
+## Privacy
 
-- `PrivacyNote` affiche « Traitement local — vos fichiers restent sur votre
-  appareil » sur les pages d'outil (désactivable dans les Paramètres).
-- La capacité `network` marque explicitement le seul outil qui a besoin
-  d'Internet (taux de change). Un test vérifie que c'est bien le seul.
-- La CSP de `tauri.conf.json` interdit toute connexion sortante non prévue.
+Tool pages can show the configurable local-processing note. `network` marks
+the capabilities that open connections; currency rates are the only automatic
+application service request. Tests enforce this and Tauri's CSP blocks
+unexpected outbound connections.
 
-## Échelle de l'interface
+## Interface scale
 
-`core/ui/zoom.ts` applique l'échelle en demandant à la **WebView elle-même** de
-zoomer (`setZoom`) : la page est remise en page, le texte reste net, et les
-coordonnées de pointeur restent justes — ce qui compte pour le rognage
-d'image, le rognage vidéo, l'éditeur PDF et la réorganisation des pages.
+`core/ui/zoom.ts` asks the WebView to zoom and reflow, preserving sharp text
+and correct pointer coordinates for crop and PDF editors. Browser/tests fall
+back to CSS `zoom`. `transform: scale()` is prohibited because it blurs and
+misaligns. Density and animation settings switch root CSS tokens.
 
-`transform: scale()` est proscrit : il floute le texte, décale les
-coordonnées et laisse le viewport à sa taille d'origine. Hors application
-(navigateur, tests), le repli est la propriété CSS `zoom`, qui remet aussi en
-page.
+## Languages
 
-Densité et animations se règlent par jetons CSS, commutés par un attribut sur
-la racine du document — pas par un second système de classes.
+The UI ships 16 complete locales. French source messages passed to `t()` are
+fingerprinted into `src/i18n/messages/<locale>.json`; localized catalog names,
+descriptions, and keywords are indexed by tool ID under `src/i18n/catalog/`.
+Search builds a locale-specific index with lower-weight English and French
+terms. Runtime fallback order is selected locale → English → source, but the
+fallback is only a safety net because every real locale has full coverage. See
+[I18N.md](I18N.md).
 
-## Langues
+## Open work
 
-L'interface est traduite en 16 langues, embarquées. Le texte source reste
-écrit en français dans le code (`t("…")`), et les traductions sont indexées
-par empreinte du texte (`src/i18n/messages/<langue>.json`). Le registre n'est
-pas dupliqué : les noms, descriptions et mots-clés traduits des outils vivent
-dans `src/i18n/catalog/<langue>.json`, indexés par identifiant, et l'interface
-les lit par `core/tools/localized.ts`. La recherche construit un index par
-langue, qui inclut l'anglais et le français à poids réduit. Repli : langue
-affichée → anglais → source. Détails : [I18N.md](I18N.md).
+- Replace `LocalStorageStore` with a Tauri file-backed store.
+- Add the local assistant through `registerIntentResolver`, keeping the
+  deterministic resolver as fallback and the registry as authority.
 
-## Ce qui reste ouvert
-
-- Remplacer `LocalStorageStore` par un store fichier Tauri, pour que favoris et
-  récents survivent à un nettoyage de la WebView.
-- Brancher l'assistant local via `registerIntentResolver` : le résolveur
-  déterministe reste alors le repli, et le registre reste l'autorité sur ce qui
-  existe.
-
-Le reste du chantier ouvert est dans [ROADMAP.md](../../ROADMAP.md).
+Other future work is tracked in [ROADMAP.md](../../ROADMAP.md).

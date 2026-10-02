@@ -1,161 +1,160 @@
 # Installation
 
+[English](INSTALLATION.md) | [Français](../fr/guides/INSTALLATION.md)
+
 [← Documentation](../README.md)
 
-## Sommaire
+## Contents
 
-- [Windows 10 et 11](#windows-10-et-11)
-- [Fedora, RHEL, CentOS Stream](#fedora-rhel-centos-stream)
-- [Autres distributions Linux](#autres-distributions-linux)
-- [FFmpeg (audio et vidéo)](#ffmpeg-audio-et-vidéo)
-- [Modèles de parole (facultatif)](#modèles-de-parole-facultatif)
-- [Vérifier un téléchargement](#vérifier-un-téléchargement)
-- [Où sont mes données ?](#où-sont-mes-données-)
-- [Problème d'installation ?](#problème-dinstallation-)
-
----
-
-FourTout est une application desktop. Il n'y a rien à configurer : téléchargez
-le paquet correspondant à votre système, installez-le, lancez-le.
-
-Les paquets sont publiés sur la page **Releases** du dépôt GitHub, accompagnés
-d'un fichier `SHA256SUMS.txt` permettant de vérifier ce que vous avez
-téléchargé.
+- [Windows 10 and 11](#windows-10-and-11)
+- [Fedora, RHEL, and CentOS Stream](#fedora-rhel-and-centos-stream)
+- [Other Linux distributions](#other-linux-distributions)
+- [FFmpeg (audio and video)](#ffmpeg-audio-and-video)
+- [Speech models (optional)](#speech-models-optional)
+- [Verifying a download](#verifying-a-download)
+- [Where is my data?](#where-is-my-data)
+- [Installation problems](#installation-problems)
 
 ---
 
-## Windows 10 et 11
+FourTout is a desktop application. There is nothing to configure: download the
+package for your system, install it, and launch it.
 
-**Fichier recommandé :** `FourTout-<version>-Windows-x64-Setup.exe`
-(installeur NSIS), sur la page **Releases** du dépôt.
+Packages are published on the GitHub repository's **Releases** page together
+with `SHA256SUMS.txt`, which lets you verify the downloaded file.
 
-> **N'utilisez pas « Code → Download ZIP ».** Cette archive contient le code
-> source, pas l'application.
+---
 
-1. Téléchargez le `.exe`.
-2. Double-cliquez.
-3. FourTout s'installe pour l'utilisateur courant — **aucun droit
-   administrateur n'est nécessaire**.
-4. FourTout apparaît dans le menu Démarrer.
+## Windows 10 and 11
 
-Un `.msi` est également publié pour les déploiements par stratégie de groupe.
+**Recommended file:** `FourTout-<version>-Windows-x64-Setup.exe`, the NSIS
+installer available from the repository's **Releases** page.
 
-### L'avertissement SmartScreen
+> **Do not use “Code → Download ZIP.”** That archive contains the source code,
+> not the application.
 
-Les installeurs ne sont pas encore signés par un certificat de signature de
-code. Windows affichera donc, au premier lancement :
+1. Download the `.exe`.
+2. Double-click it.
+3. FourTout installs for the current user; **administrator rights are not
+   required**.
+4. FourTout appears in the Start menu.
 
-> Windows a protégé votre ordinateur — Application non reconnue
+An `.msi` is also published for Group Policy deployments.
 
-C'est le comportement normal pour un logiciel non signé, pas le signe d'un
-problème. Pour continuer : **Informations complémentaires** → **Exécuter
-quand même**. Vérifiez d'abord l'empreinte SHA-256 du fichier téléchargé
-(voir plus bas).
+### SmartScreen warning
 
-La signature demande un certificat payant auprès d'une autorité reconnue.
-Elle sera mise en place ; en attendant, ce README le dit plutôt que de laisser
-l'utilisateur découvrir l'avertissement.
+The installers are not yet signed with a code-signing certificate. On first
+launch, Windows therefore displays:
 
-### Prérequis Windows
+> Windows protected your PC — Unrecognized app
 
-- **WebView2** : présent d'origine sur Windows 11 et sur Windows 10 à jour.
-  L'installeur le télécharge automatiquement si nécessaire.
-- **FFmpeg** : nécessaire uniquement pour les outils audio et vidéo. Voir
-  [FFmpeg](#ffmpeg-audio-et-vidéo) ci-dessous.
+This is normal for unsigned software and does not indicate a defect. To
+continue, choose **More info** → **Run anyway**. First verify the SHA-256 digest
+of the downloaded file as explained below.
 
-### Désinstallation
+Signing requires a paid certificate from a recognized authority. It will be
+added; until then, the documentation states the limitation instead of letting
+users discover the warning unexpectedly.
 
-Paramètres → Applications → FourTout → Désinstaller. Ou l'entrée
-« Désinstaller FourTout » du menu Démarrer.
+### Windows prerequisites
 
-### Vérifier une installation Windows
+- **WebView2:** included with Windows 11 and current Windows 10 installations.
+  The installer downloads it automatically when necessary.
+- **FFmpeg:** needed only by audio and video tools. See
+  [FFmpeg](#ffmpeg-audio-and-video).
 
-Liste à cocher, à faire une fois sur une machine Windows après une
-publication. Elle ne demande ni Node, ni Rust, ni ligne de commande.
+### Uninstallation
 
-1. **Télécharger** `FourTout-<version>-Windows-x64-Setup.exe` depuis la page
-   Releases. Vérifier son empreinte SHA-256 :
+Use Settings → Apps → FourTout → Uninstall, or the “Uninstall FourTout” entry
+in the Start menu.
+
+### Verifying a Windows installation
+
+Run this checklist once on a Windows machine after a release. It requires no
+Node, Rust, or command line except for the optional digest check.
+
+1. **Download** `FourTout-<version>-Windows-x64-Setup.exe` from Releases. Check
+   its SHA-256 digest:
+
    ```powershell
    Get-FileHash .\FourTout-<version>-Windows-x64-Setup.exe -Algorithm SHA256
    ```
-   et la comparer à la ligne correspondante de `SHA256SUMS.txt`.
-2. **Installer** par double-clic. Passer l'avertissement SmartScreen
-   (*Informations complémentaires* → *Exécuter quand même*) tant que
-   l'installeur n'est pas signé.
-   → **Aucune fenêtre de contrôle de compte d'utilisateur ne doit apparaître :**
-   l'installation se fait pour l'utilisateur courant.
-3. **Menu Démarrer** — FourTout apparaît, avec son icône (carré bleu marine,
-   F blanc). Pas d'icône générique, pas de logo Tauri.
-4. **Lancer** — la fenêtre s'ouvre, son icône de barre des tâches est la bonne,
-   et le titre est « FourTout ».
-5. **Trois outils sans dépendance externe** : *Calculs de pourcentages*,
-   *JSON — formater et valider*, *Fusionner des PDF*. Ils doivent fonctionner
-   immédiatement, sans rien installer d'autre.
-6. **Un outil vidéo** — sans FFmpeg dans le `PATH`, l'écran doit **le dire
-   clairement**, pas échouer en silence. Installer FFmpeg
-   (`winget install Gyan.FFmpeg`), **redémarrer FourTout**, et vérifier que
-   l'outil devient utilisable.
-7. **Un outil à modèle** — ouvrir *Retirer l'arrière-plan* : l'écran doit
-   proposer le téléchargement, avec taille, source et licence. Installer,
-   détourer une photo, vérifier le PNG produit.
-8. **Zoom** — `Ctrl` `+`, `Ctrl` `-`, `Ctrl` `0`. Fermer, rouvrir : l'échelle
-   est conservée.
-9. **Désinstaller** depuis Paramètres → Applications. L'entrée du menu Démarrer
-   disparaît.
 
-Le dossier de données (`%APPDATA%\app.fourtout.desktop\`) survit à la
-désinstallation : c'est voulu, il contient vos préférences et vos modèles.
-Supprimez-le à la main pour repartir de zéro.
+   Compare it with the corresponding line in `SHA256SUMS.txt`.
+2. **Install** by double-clicking. While the installer remains unsigned, pass
+   the SmartScreen warning with *More info* → *Run anyway*.
+   **No User Account Control prompt should appear:** installation is scoped to
+   the current user.
+3. **Start menu:** FourTout appears with its own icon (navy square, white F),
+   not a generic icon or the Tauri logo.
+4. **Launch:** the window opens, its taskbar icon is correct, and its title is
+   “FourTout.”
+5. Try **three tools with no external dependency**: *Percentage calculations*,
+   *JSON — format and validate*, and *Merge PDFs*. They must work immediately.
+6. Try **a video tool**. Without FFmpeg in `PATH`, the screen must **say so
+   clearly**, not fail silently. Install FFmpeg with
+   `winget install Gyan.FFmpeg`, **restart FourTout**, and confirm that the tool
+   becomes available.
+7. Try **a model-based tool**. Open *Remove background*: the screen must offer
+   a download and display its size, source, and license. Install it, process a
+   photo, and inspect the resulting PNG.
+8. Test **zoom** with `Ctrl` `+`, `Ctrl` `-`, and `Ctrl` `0`. Close and reopen
+   the app: the scale must persist.
+9. **Uninstall** from Settings → Apps. The Start-menu entry must disappear.
+
+The data folder (`%APPDATA%\app.fourtout.desktop\`) survives uninstallation by
+design because it contains preferences and models. Delete it manually to start
+from scratch.
 
 ---
 
-## Fedora, RHEL, CentOS Stream
+## Fedora, RHEL, and CentOS Stream
 
-**Fichier recommandé :** `FourTout-<version>-Fedora-x86_64.rpm`, sur la page
-**Releases** du dépôt.
+**Recommended file:** `FourTout-<version>-Fedora-x86_64.rpm` from the
+repository's **Releases** page.
 
-Un double-clic sur le `.rpm` ouvre GNOME Logiciels (ou le gestionnaire de
-paquets de votre bureau), qui propose l'installation. En ligne de commande :
+Double-clicking the `.rpm` opens GNOME Software or your desktop's package
+manager. From a terminal:
 
 ```bash
 sudo dnf install ./FourTout-<version>-Fedora-x86_64.rpm
 ```
 
-FourTout apparaît ensuite dans le menu Applications, catégorie *Utilitaires*.
+FourTout then appears under *Utilities* in the Applications menu.
 
-Le paquet **recommande** `ffmpeg-free` : `dnf` l'installe automatiquement avec
-FourTout, sauf si vous l'en empêchez. Il déclare comme dépendances strictes
-`webkit2gtk-4.1` et `gtk3`, présents sur toute installation de bureau Fedora.
+The package **recommends** `ffmpeg-free`; `dnf` installs it automatically with
+FourTout unless explicitly prevented. Its strict dependencies include
+`webkit2gtk-4.1` and `gtk3`, both present on every Fedora desktop installation.
 
-### Désinstallation
+### Uninstallation
 
 ```bash
 sudo dnf remove four-tout
 ```
 
-> Le nom de paquet RPM est `four-tout` — c'est la forme normalisée de
-> « FourTout » produite par l'empaqueteur.
+> The RPM package name is `four-tout`, the normalized form of “FourTout”
+> produced by the packager.
 
 ---
 
-## Autres distributions Linux
+## Other Linux distributions
 
-**Fichier recommandé :** `FourTout-<version>-Linux-x86_64.AppImage`.
+**Recommended file:** `FourTout-<version>-Linux-x86_64.AppImage`.
 
 ```bash
 chmod +x FourTout-<version>-Linux-x86_64.AppImage
 ./FourTout-<version>-Linux-x86_64.AppImage
 ```
 
-L'AppImage est autonome : elle n'installe rien et ne demande aucun droit
-particulier. Elle n'ajoute pas non plus d'entrée au menu Applications ; pour
-cela, utilisez un intégrateur d'AppImage, ou préférez le `.rpm` (Fedora) ou le
-`.deb` (Debian, Ubuntu), également publiés.
+The AppImage is self-contained: it installs nothing and requires no special
+rights. It does not add an Applications-menu entry. Use an AppImage integrator
+for that, or choose the `.rpm` on Fedora or `.deb` on Debian and Ubuntu, which
+are also published.
 
-L'AppImage a besoin de `libwebkit2gtk-4.1` sur le système hôte. Sur les
-distributions qui ne le fournissent pas, installez-le d'abord :
+The host system must provide `libwebkit2gtk-4.1`. Install it first on systems
+that do not include it:
 
-| Distribution | Paquet |
+| Distribution | Package |
 | --- | --- |
 | Debian, Ubuntu | `libwebkit2gtk-4.1-0` |
 | Fedora | `webkit2gtk4.1` |
@@ -164,49 +163,47 @@ distributions qui ne le fournissent pas, installez-le d'abord :
 
 ---
 
-## FFmpeg (audio et vidéo)
+## FFmpeg (audio and video)
 
-Les **34 outils audio et vidéo** de FourTout s'appuient sur FFmpeg. Les 117
-autres outils n'en ont pas besoin et fonctionnent sans lui.
+FourTout's **34 audio and video tools** use FFmpeg. The other 117 tools do not
+need it and work without it.
 
-FourTout cherche FFmpeg dans cet ordre :
+FourTout searches for FFmpeg in this order:
 
-1. dans ses propres ressources (`resources/ffmpeg/`), s'il y a été placé ;
-2. dans le `PATH` du système.
+1. its own resources under `resources/ffmpeg/`, if present;
+2. the system `PATH`.
 
-| Système | Installation |
+| System | Installation |
 | --- | --- |
-| Fedora | `sudo dnf install ffmpeg-free` (recommandé automatiquement par le RPM) |
+| Fedora | `sudo dnf install ffmpeg-free` (automatically recommended by the RPM) |
 | Debian, Ubuntu | `sudo apt install ffmpeg` |
 | Arch | `sudo pacman -S ffmpeg` |
-| Windows | [ffmpeg.org/download](https://ffmpeg.org/download.html), puis ajouter le dossier `bin` au `PATH` — ou `winget install Gyan.FFmpeg` |
+| Windows | Use [ffmpeg.org/download](https://ffmpeg.org/download.html) and add its `bin` directory to `PATH`, or run `winget install Gyan.FFmpeg` |
 
-FourTout détecte l'absence de FFmpeg et le dit clairement sur les pages
-concernées, plutôt que d'échouer au moment du traitement. Les codecs proposés
-sont ceux que le FFmpeg **installé** sait réellement produire : ils sont
-éprouvés par un encodage d'essai au démarrage, pas simplement lus dans la
-liste annoncée.
-
----
-
-## Modèles de parole (facultatif)
-
-La synthèse vocale (Piper) et la transcription (whisper.cpp) ont besoin d'un
-modèle. Il n'est **pas** livré avec l'application : ce sont plusieurs dizaines
-à plusieurs centaines de mégaoctets, et la plupart des utilisateurs n'en ont
-pas l'usage.
-
-Le gestionnaire de modèles de FourTout (Paramètres → Modèles) les télécharge à
-votre demande explicite, vérifie leur empreinte, et les installe dans le
-dossier de données de l'application. Ensuite, tout fonctionne hors ligne.
-
-Détails : [MODELS.md](../technical/MODELS.md).
+Pages that require FFmpeg clearly report when it is absent instead of failing
+during processing. The codecs offered are those that the **installed** FFmpeg
+can actually produce. FourTout tests them by performing a short encode at
+startup rather than merely trusting FFmpeg's advertised list.
 
 ---
 
-## Vérifier un téléchargement
+## Speech models (optional)
 
-Chaque publication contient un fichier `SHA256SUMS.txt`.
+Speech synthesis through Piper and transcription through whisper.cpp each need
+a model. Models are **not** bundled with the application: they range from tens
+to hundreds of megabytes, and most users do not need them.
+
+FourTout's model manager under Settings → Models downloads them only after an
+explicit request, verifies their digest, and installs them in the application
+data directory. Everything then works offline.
+
+See [Models](../technical/MODELS.md) for details.
+
+---
+
+## Verifying a download
+
+Every release includes `SHA256SUMS.txt`.
 
 ```bash
 # Linux, macOS
@@ -218,26 +215,26 @@ sha256sum -c SHA256SUMS.txt --ignore-missing
 Get-FileHash .\FourTout-1.0.0-Windows-x64-Setup.exe -Algorithm SHA256
 ```
 
-Comparez l'empreinte obtenue à celle du fichier. FourTout sait aussi le faire :
-l'outil **Vérifier une empreinte** compare un fichier à l'empreinte annoncée
-par sa source.
+Compare the resulting digest with the published one. FourTout can also do this:
+the **Verify a checksum** tool compares a file against the digest supplied by
+its source.
 
 ---
 
-## Où sont mes données ?
+## Where is my data?
 
-FourTout ne stocke que vos préférences, favoris et outils récents.
+FourTout stores only preferences, favorites, and recently used tools.
 
-| Système | Emplacement |
+| System | Location |
 | --- | --- |
 | Linux | `~/.local/share/app.fourtout.desktop/` |
 | Windows | `%APPDATA%\app.fourtout.desktop\` |
 
-Les fichiers que vous traitez sont enregistrés là où vous le demandez, et
-nulle part ailleurs. Paramètres → Données locales permet de tout effacer.
+Processed files are saved only where you request. Settings → Local data lets
+you erase all locally stored application data.
 
 ---
 
-## Problème d'installation ?
+## Installation problems
 
-Voir [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+See [Troubleshooting](TROUBLESHOOTING.md).

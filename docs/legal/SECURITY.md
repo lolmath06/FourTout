@@ -1,397 +1,133 @@
-# Sécurité
+# Security
+
+[English](SECURITY.md) | [Français](../fr/legal/SECURITY.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+This page documents FourTout's threat model, cryptographic choices, guarantees,
+limits, and vulnerability-reporting process.
 
-- [Signaler une vulnérabilité](#signaler-une-vulnérabilité)
-- [Modèle de menace](#modèle-de-menace)
-- [Chiffrement de fichiers](#chiffrement-de-fichiers)
-- [Archives protégées par mot de passe](#archives-protégées-par-mot-de-passe)
-- [Traitement des entrées non fiables](#traitement-des-entrées-non-fiables)
-- [Générateurs aléatoires](#générateurs-aléatoires)
-- [Effacement sécurisé : ce qu'il vaut](#effacement-sécurisé--ce-quil-vaut)
-- [Récupération de mot de passe PDF](#récupération-de-mot-de-passe-pdf)
-- [JWT : décodage et vérification](#jwt--décodage-et-vérification)
-- [Explorateur SQLite : lecture seule](#explorateur-sqlite--lecture-seule)
-- [Outils réseau : périmètre et bornes](#outils-réseau--périmètre-et-bornes)
-- [Intégrité de la chaîne de construction](#intégrité-de-la-chaîne-de-construction)
-- [Périmètre couvert par les tests](#périmètre-couvert-par-les-tests)
+## Reporting a vulnerability
 
----
+Do not open a public issue. Use the GitHub repository's **Security → Report a
+vulnerability** private reporting flow. Include the FourTout version, operating
+system, reproduction steps, observed impact, and ideally a minimal sample. A fix
+will be released before public disclosure, with credit if desired.
 
-Cette page décrit le modèle de sécurité de FourTout : ce qu'il protège, ce
-qu'il ne protège pas, les choix cryptographiques réels, et comment signaler
-une vulnérabilité.
+## Threat model
 
----
+FourTout is a local, single-user application with no server or account system.
+Its main attack surfaces are untrusted files, output-path confinement, and
+secrets such as encryption and PDF passwords. It does not claim to defend a
+user account already controlled by an attacker, provide physical SSD forensic
+resistance, or withstand state-level compromise.
 
-## Signaler une vulnérabilité
+## File encryption
 
-**Ne l'ouvrez pas en ticket public.**
+`src-tauri/src/files/crypto.rs` writes `.ftenc` files.
 
-Utilisez l'onglet **Security → Report a vulnerability** du dépôt GitHub
-(*private vulnerability reporting*), qui crée un échange privé.
-
-Merci d'inclure : la version de FourTout, le système d'exploitation, les
-étapes de reproduction, et l'impact que vous constatez. Un fichier de
-démonstration minimal aide énormément.
-
-Vous recevrez un accusé de réception. Un correctif sera publié avant toute
-divulgation publique, et vous serez crédité si vous le souhaitez.
-
----
-
-## Modèle de menace
-
-FourTout est une **application locale monoposte**. Il n'y a ni serveur, ni
-compte, ni communication entre utilisateurs. Les surfaces d'attaque réelles
-sont donc :
-
-1. **Les fichiers que l'utilisateur ouvre.** Une archive piégée, un PDF
-   malformé, un XML hostile, un YAML avec des tags exécutables : ce sont des
-   entrées non fiables, traitées comme telles.
-2. **Ce que FourTout écrit sur le disque.** Un outil qui écrit hors du dossier
-   choisi est une vulnérabilité.
-3. **Les secrets manipulés.** Mots de passe de chiffrement, mots de passe PDF,
-   contenus chiffrés.
-
-Ne sont **pas** dans le modèle : un attaquant qui a déjà le contrôle du compte
-utilisateur, la protection contre une analyse forensique matérielle d'un SSD,
-et la résistance à un adversaire disposant de moyens étatiques.
-
----
-
-## Chiffrement de fichiers
-
-Les outils **Chiffrer des fichiers** / **Déchiffrer des fichiers** produisent
-des fichiers `.ftenc`. Implémentation : `src-tauri/src/files/crypto.rs`.
-
-### Paramètres réels
-
-| Élément | Choix | Pourquoi |
-| --- | --- | --- |
-| Dérivation de clé | **Argon2id**, 64 Mio, 3 passes, parallélisme 1, clé de 256 bits | Lauréat de la Password Hashing Competition, recommandation OWASP. Le coût mémoire rend les attaques GPU et ASIC nettement plus chères qu'avec PBKDF2 ou bcrypt. Ces valeurs sont au-dessus des minima OWASP tout en restant supportables sur une machine modeste. |
-| Chiffrement | **XChaCha20-Poly1305** (AEAD) | Nonce de 192 bits : il peut être tiré au hasard sans risque de collision, là où les 96 bits d'AES-GCM imposent un compteur rigoureux. Rapide sans accélération matérielle, ce qui compte sur les machines sans AES-NI. |
-| Sel | 16 octets, tirés du CSPRNG du système à **chaque** chiffrement | Deux chiffrements du même fichier avec le même mot de passe donnent des octets différents. |
-| Nonce | Préfixe aléatoire de 16 octets + compteur de bloc sur 8 octets | Aucune répétition possible entre blocs d'un même fichier, ni entre deux fichiers. |
-| Découpage | Blocs de 1 Mio, chacun chiffré et authentifié séparément | Un fichier de 20 Go ne tient pas en mémoire. |
-| Données associées | En-tête complet + numéro de bloc + drapeau de dernier bloc | Interdit de réordonner, rejouer ou **tronquer** les blocs : chacune de ces manipulations casse l'authentification. |
-
-### Format `.ftenc`
-
-```
-« FTENC\0 » | version | code KDF | mémoire | itérations | parallélisme
-            | sel (16) | préfixe de nonce (16) | taille de bloc
-puis, pour chaque bloc : longueur (u32 LE) | chiffré + tag Poly1305 (16)
-```
-
-Les paramètres Argon2id sont **écrits dans l'en-tête** : un fichier produit
-aujourd'hui restera lisible si ces valeurs augmentent demain. À la lecture,
-ils sont bornés avant toute allocation — un en-tête falsifié qui demanderait
-64 Gio de mémoire est refusé.
-
-### Ce que le format garantit
-
-- **Confidentialité** du contenu.
-- **Intégrité** : un seul octet modifié fait échouer le déchiffrement, et
-  aucun contenu n'est écrit.
-- **Détection de troncature** : le drapeau de dernier bloc est authentifié.
-  Un fichier amputé de sa fin est refusé, il n'est pas déchiffré à moitié.
-- **Aucune sortie partielle.** Mot de passe faux, fichier altéré, annulation :
-  le fichier de sortie est supprimé. Un clair partiel serait pris pour un
-  résultat.
-- **L'original n'est jamais supprimé.**
-
-### Ce que le format ne cache pas
-
-- **La taille du fichier**, à l'arrondi du bloc près.
-- **Le nom du fichier d'origine** : `rapport.pdf` devient `rapport.pdf.ftenc`.
-- **Le fait qu'il s'agit d'un fichier FourTout chiffré** : la signature est en
-  clair, pour donner un message d'erreur utile plutôt qu'un échec silencieux.
-
-### Le mot de passe
-
-Il n'est jamais journalisé, jamais écrit dans un fichier temporaire, jamais
-placé dans l'en-tête. La clé dérivée est effacée de la mémoire après
-initialisation du chiffreur (`write_volatile` + barrière de compilation).
-
-Il n'existe **aucune récupération** : un mot de passe perdu, c'est un fichier
-perdu. C'est le comportement attendu d'un chiffrement correct.
-
----
-
-## Archives protégées par mot de passe
-
-**WinZip AES-256.** Le « ZipCrypto » historique n'est **jamais** employé : il
-est cassable en quelques secondes à partir de quelques octets de clair connu,
-et une « archive protégée » qui ne protège pas serait un mensonge.
-
-L'interopérabilité est vérifiée par un test automatisé qui relit l'archive
-avec **7-Zip**, pas avec le code qui l'a écrite
-(`src-tauri/tests/files_integration.rs`). 7-Zip, WinRAR, PeaZip, Keka et
-l'Explorateur Windows ouvrent ces archives.
-
-**Limite du format ZIP :** les **noms de fichiers** restent lisibles sans le
-mot de passe. Seul le contenu est chiffré. Pour cacher aussi les noms,
-chiffrez l'archive elle-même avec l'outil de chiffrement de fichiers.
-
----
-
-## Traitement des entrées non fiables
-
-### Traversée de dossiers (« zip-slip »)
-
-À l'extraction d'une archive, chaque chemin d'entrée est résolu et comparé au
-dossier de destination. Sont **refusés et listés** : les chemins remontants
-(`../`), les chemins absolus, et les liens symboliques. Une fixture d'archive
-piégée fait partie de la suite de tests.
-
-L'organisation de dossier applique la même règle : une destination qui sort de
-la racine choisie est refusée.
-
-### XXE et entités XML
-
-L'analyseur XML de FourTout **refuse toute déclaration d'entité et toute DTD
-externe** avant même de commencer. Il ne résout aucune ressource : ni fichier
-local, ni URL. Un test envoie plusieurs charges XXE — dont une pointant vers
-un vrai fichier témoin — et vérifie à la fois qu'aucun contenu ne fuit et
-qu'**aucune requête réseau ne part**, `fetch` et `XMLHttpRequest` étant
-instrumentés pendant le test.
-
-### YAML
-
-Le lecteur YAML n'accepte que le **schéma `core`** : chaînes, nombres,
-booléens, `null`, listes, tables. Aucun tag ne peut instancier un objet.
-`!!js/function` et `!!python/object` échouent.
-
-### Expressions régulières
-
-Le moteur d'expressions régulières de JavaScript n'est pas interruptible : un
-motif à retour sur trace catastrophique (`(a+)+$` sur `aaaa…b`) occupe le
-processeur pendant des secondes, et **trente et un caractères suffisent à
-bloquer quatre secondes**. Aucun compteur vérifié entre deux correspondances
-ne peut arrêter cela.
-
-Le testeur d'expressions régulières exécute donc le motif dans un **worker**,
-qu'il **tue** au bout de deux secondes. C'est la seule interruption qui existe
-réellement. S'y ajoutent des bornes sur la taille du sujet (200 000
-caractères) et le nombre de correspondances (1 000).
-
-### Calculatrice
-
-L'expression saisie est analysée par un analyseur écrit pour cela. Ni `eval`,
-ni `new Function`, ni aucune forme d'exécution : `globalThis`,
-`[].constructor` et `1;alert(1)` sont des erreurs de syntaxe, pas des
-programmes. Un test le vérifie.
-
-### Code utilisateur (formatage et minification)
-
-Le code HTML, CSS et JavaScript soumis aux outils de formatage et de
-minification est **analysé, jamais exécuté**. Prettier et Terser lisent la
-grammaire ; rien n'est évalué.
-
-### Aperçu HTML et Markdown
-
-L'aperçu du Markdown converti passe par un assainissement : les scripts, les
-gestionnaires d'événements en ligne et les URL `javascript:` sont retirés.
-
----
-
-## Générateurs aléatoires
-
-| Usage | Source |
+| Element | Choice |
 | --- | --- |
-| Sels, nonces (chiffrement de fichiers) | `getrandom`, c'est-à-dire le CSPRNG du système d'exploitation |
-| Mots de passe, phrases de passe | `crypto.getRandomValues` |
-| UUID v4 et v7 | `crypto.getRandomValues` |
+| Key derivation | Argon2id, 64 MiB, 3 passes, parallelism 1, 256-bit key |
+| Encryption | XChaCha20-Poly1305 authenticated encryption |
+| Salt | Fresh 16-byte OS CSPRNG value per encryption |
+| Nonce | Random 16-byte prefix plus 8-byte block counter |
+| Chunks | Independently authenticated 1 MiB blocks |
+| Associated data | Full header, block number, and authenticated final-block flag |
 
-`Math.random()` n'est utilisé nulle part pour produire un secret ou un
-identifiant. Quand le générateur cryptographique est indisponible, les modules
-concernés **échouent bruyamment** plutôt que de se rabattre sur un hasard
-prévisible ; un test le vérifie en retirant `globalThis.crypto`.
+The versioned header stores bounded KDF parameters, salt, nonce prefix, and
+chunk size so future parameter changes do not make old files unreadable and a
+forged header cannot request absurd memory. The format provides confidentiality,
+integrity, authenticated truncation detection, and no partial output after a
+wrong password, corruption, or cancellation. It does not hide approximate size,
+the original filename, or the FourTout signature.
 
-Les mots de passe sont tirés par rejet, pas par modulo : aucun biais ne
-favorise le début de l'alphabet. Un test statistique le contrôle.
+Passwords are never logged, stored in temporary files, or placed in headers.
+Derived key memory is cleared after cipher initialization. There is no password
+recovery: losing it loses the encrypted content. Sources are never deleted.
 
----
+## Password-protected archives
 
-## Effacement sécurisé : ce qu'il vaut
+Archives use WinZip AES-256, never broken legacy ZipCrypto. Automated tests read
+output with independent 7-Zip. ZIP encryption leaves filenames visible; encrypt
+the archive itself with `.ftenc` when names must also be hidden.
 
-L'outil **Suppression sécurisée** écrase le contenu du fichier à son
-emplacement actuel (une passe aléatoire, ou trois passes), force l'écriture
-sur le support (`flush` puis `fsync`), renomme l'entrée de répertoire pour en
-retirer le nom d'origine, puis supprime.
+## Untrusted input
 
-**C'est un effacement logiciel renforcé, pas un effacement physique.** Sur un
-SSD, une carte mémoire, un système de fichiers à copie sur écriture (Btrfs,
-ZFS, APFS), en présence d'instantanés, d'un journal, d'une corbeille ou d'une
-sauvegarde, **aucun logiciel ne peut garantir la disparition de toutes les
-copies antérieures** : le contrôleur ou le système de fichiers décide seul où
-les données ont été écrites.
+- Archive extraction rejects traversal, absolute paths, and symlinks and lists
+  every refusal. Folder organization applies the same root confinement.
+- XML rejects all entity declarations and external DTDs before parsing. XXE
+  tests verify both no local-file leak and no network request.
+- YAML accepts only the core scalar/list/mapping schema and rejects executable
+  object tags.
+- Regex evaluation runs in a worker killed after two seconds, with 200,000
+  input characters and 1,000 matches at most.
+- The calculator uses a dedicated parser and never `eval` or `new Function`.
+- Prettier and Terser parse user code without executing it.
+- Markdown/HTML previews sanitize scripts, inline handlers, active URLs, and
+  other unsafe markup.
 
-FourTout affiche cet avertissement **avant** l'action, sans possibilité de le
-masquer, et exige la saisie exacte d'une phrase de confirmation. Le terme
-« irrécupérable » n'est employé nulle part sans cette réserve.
+## Random generators
 
-Pour un secret critique sur un SSD, la seule réponse fiable est le chiffrement
-intégral du disque.
+Encryption salts/nonces use the OS CSPRNG through `getrandom`; passwords,
+passphrases, and UUIDs use `crypto.getRandomValues`. `Math.random()` never
+produces secrets or identifiers. Missing secure randomness causes an explicit
+failure. Password sampling uses rejection rather than biased modulo reduction.
 
----
+## Secure deletion limits
 
-## Récupération de mot de passe PDF
+The tool overwrites the file's current allocation with one random pass or three
+passes, flushes and `fsync`s, removes the original directory name, then deletes.
+This is strengthened software deletion, **not guaranteed physical erasure** on
+SSDs, flash, copy-on-write file systems, snapshots, journals, trash, or backups.
+The warning is permanent and an exact confirmation phrase is required. Full-disk
+encryption is the reliable answer for critical SSD secrets.
 
-L'outil **Retrouver un mot de passe PDF** teste des candidats issus d'un
-corpus de mots de passe courants et de règles de transformation, localement.
+## PDF recovery and JWT
 
-Ce n'est **pas** une recherche exhaustive : un mot de passe absent du corpus
-ne sera pas trouvé, et l'interface le dit. L'outil est destiné à un document
-que vous êtes autorisé à ouvrir.
+PDF password recovery locally tests bounded dictionary/rule candidates for a
+document the user is authorized to open. It is not exhaustive and says so.
 
----
+JWT decoding is never presented as verification. Signature verification uses a
+user-selected expected algorithm, always rejects `none`, and reports signature
+and time-claim validity separately. Supported algorithms are HS256/384/512 and
+RS256/384/512 with public keys. There is no ES256 or JWKS download. HMAC
+comparison is constant-time. Tokens and keys stay local and are never persisted;
+private keys are rejected.
 
-## JWT : décodage et vérification
+## Read-only SQLite
 
-**Décodé n'est pas vérifié.** Sans la clé, personne ne peut dire si la
-signature d'un token est authentique. Le décodeur affiche un avertissement
-permanent et **n'affiche jamais de badge vert** de validité. L'algorithme
-`none` est signalé comme tel.
+The explorer combines `SQLITE_OPEN_READ_ONLY`, `PRAGMA query_only`, and
+SQLite's parsed-operation authorizer with a narrow informational-PRAGMA
+allowlist. Text classification only improves refusal messages. A test attempts
+28 direct and disguised writes and requires the database SHA-256 to remain
+identical. Results are bounded and identifiers safely quoted.
 
-La vérification de signature est un geste séparé, dans le même écran, et elle
-obéit à trois règles :
+## Bounded network tools
 
-1. **L'algorithme attendu est choisi par l'utilisateur, jamais lu dans le
-   token.** Se fier au champ `alg` de l'en-tête revient à laisser l'attaquant
-   choisir comment on vérifie sa propre signature : c'est l'origine des
-   attaques « alg: none » et « RS256 dégradé en HS256 ». Toute divergence entre
-   l'en-tête et l'algorithme attendu est un **refus**, prononcé avant que la
-   moindre opération cryptographique soit faite.
-2. **`alg: none` est refusé sans condition.**
-3. **La validité de la signature et celle des dates sont deux verdicts
-   distincts.** Un token expiré garde une signature parfaitement valide :
-   l'écran affiche « SIGNATURE VALIDE » puis, séparément, « EXPIRÉ ». Une
-   expiration n'est jamais présentée comme un échec de signature, et une
-   signature valide n'a jamais valeur d'autorisation.
+Ping, port checks, and LAN discovery are explicit local diagnostics: at most 20
+ping packets, 256 ports on one host, 256 addresses within at most an automatic
+`/24`, and 16 concurrent connections. Native code recomputes the range; no user
+input reaches a shell. Nothing runs on page load, cancellation stops new probes,
+and no addresses, names, hardware addresses, or history are stored.
 
-Algorithmes réellement vérifiés : HS256, HS384, HS512 (HMAC-SHA), RS256, RS384,
-RS512 (RSA PKCS#1 v1.5, à partir d'une clé **publique**). `ES256` n'est pas
-proposé : annoncer un algorithme non implémenté serait pire que ne pas le
-proposer. Aucun téléchargement JWKS n'est fait.
+Stealth/SYN scans, evasion, banner and OS fingerprinting, vulnerability search,
+brute force, Internet scans, ARP spoofing, and packet capture are intentionally
+absent.
 
-La comparaison HMAC utilise `Mac::verify_slice`, en **temps constant** : une
-comparaison octet par octet laisserait fuir, par son temps de réponse, de quoi
-reconstruire la signature attendue.
+## Build-chain integrity
 
-Coller une clé privée est refusé avec un message qui explique pourquoi. Le
-secret est masqué à la saisie, n'est ni journalisé, ni enregistré, ni ajouté aux
-récents, ni placé dans le stockage persistant : il sert au calcul et disparaît.
-Ni le token ni la clé ne quittent la machine.
+`pnpm-lock.yaml` and `src-tauri/Cargo.lock` are versioned. Model downloads are
+verified by digest before installation. The CSP blocks unexpected WebView
+outbound requests. Installers are not yet code-signed, so Windows SmartScreen
+may warn; releases provide `SHA256SUMS.txt`, as explained in
+[INSTALLATION.md](../guides/INSTALLATION.md).
 
----
+## Test coverage
 
-## Explorateur SQLite : lecture seule
-
-Une base SQLite est souvent la mémoire d'une application, et une écriture
-accidentelle y serait silencieuse — SQLite n'a pas de corbeille. L'explorateur
-est donc verrouillé par **trois mécanismes indépendants**, tous internes au
-moteur SQLite :
-
-1. Connexion ouverte avec `SQLITE_OPEN_READ_ONLY`.
-2. `PRAGMA query_only`, qui interdit aussi les écritures en mémoire et
-   temporaires.
-3. Un **autorisateur** consulté par SQLite pour chaque action, sur la requête
-   déjà analysée : seules les lectures et une liste blanche de `PRAGMA`
-   d'information passent.
-
-Le contrôle du texte de la requête existe, mais **uniquement pour expliquer** un
-refus avant exécution. Il n'est jamais la défense : un filtre syntaxique laisse
-toujours passer une tournure imprévue, et c'est précisément ce que les trois
-verrous rattrapent — écriture cachée dans un `WITH`, requêtes enchaînées,
-`ATTACH` vers un autre fichier, écriture dans `sqlite_master`.
-
-La garantie est éprouvée, pas affirmée : un test calcule le SHA-256 du fichier,
-lance vingt-huit requêtes d'écriture, et vérifie que l'empreinte est strictement
-identique ensuite.
-
-Les identifiants de tables sont échappés par redoublement du guillemet double,
-et l'affichage est plafonné (500 lignes par défaut, 5 000 au maximum).
-
----
-
-## Outils réseau : périmètre et bornes
-
-Les trois sondes — ping, test de ports, découverte du réseau local — sont des
-outils de **diagnostic local**. Ce ne sont pas des outils de test d'intrusion,
-et plusieurs choix les maintiennent de ce côté de la ligne :
-
-| Limite | Valeur |
-| --- | --- |
-| Paquets par ping | 20 |
-| Ports par lancement | 256, sur **un** hôte explicite |
-| Adresses par découverte | 256, dans le sous-réseau directement connecté |
-| Préfixe exploré automatiquement | `/24` au plus large |
-| Connexions simultanées | 16 |
-
-Une interface en `/16` est ramenée au `/24` qui entoure l'adresse locale ; une
-demande de `1-65535` ports est refusée. La plage est **recalculée côté natif** à
-partir du nom, de l'adresse et du masque de l'interface : ce qui vient de la
-WebView ne décide jamais de l'étendue d'une sonde.
-
-Aucune commande système n'est construite à partir d'une saisie. Tout passe par
-des sockets, jamais par un interpréteur de commandes : il n'y a pas de chaîne à
-échapper, donc pas d'injection de commande possible. Le ping n'analyse pas non
-plus la sortie de `/bin/ping` ou `ping.exe`.
-
-Rien ne part sans une action explicite : aucun écran ne sonde au chargement, et
-la découverte annonce sa plage avant d'attendre une confirmation. L'annulation
-arrête réellement les sondes — le drapeau est vérifié avant d'ouvrir chaque
-connexion.
-
-Ce qui est délibérément absent : scan furtif ou SYN, évasion de détection,
-identification de service par bannière, empreinte de système d'exploitation,
-recherche de vulnérabilités, force brute, scan d'Internet, usurpation ARP,
-capture de paquets. Le nom de service affiché à côté d'un port vient d'une table
-de numéros et s'annonce comme « service habituellement associé », jamais
-« service détecté ».
-
-Rien n'est conservé : ni les adresses observées, ni les noms, ni les adresses
-matérielles, ni l'historique des sondes.
-
----
-
-## Intégrité de la chaîne de construction
-
-- `pnpm-lock.yaml` et `src-tauri/Cargo.lock` sont versionnés : les
-  constructions sont reproductibles.
-- Les téléchargements du gestionnaire de modèles sont **vérifiés par
-  empreinte** ; un fichier qui ne correspond pas est rejeté et rien n'est
-  installé.
-- La politique de sécurité de contenu de l'application interdit toute requête
-  sortante depuis l'interface.
-
-### Signature des paquets
-
-Les installeurs **ne sont pas encore signés**. Sur Windows, SmartScreen
-affichera un avertissement au premier lancement. C'est écrit dans
-[INSTALLATION.md](../guides/INSTALLATION.md) plutôt que laissé à découvrir.
-
-En attendant la signature, chaque publication est accompagnée d'un fichier
-`SHA256SUMS.txt`. Vérifiez-le.
-
----
-
-## Périmètre couvert par les tests
-
-Les points ci-dessus ne sont pas des intentions : chacun est couvert par un
-test automatisé.
-
-| Sujet | Test |
-| --- | --- |
-| Aller-retour chiffrement, non-déterminisme, mauvais mot de passe, octet modifié, troncature, annulation, non-réutilisation de nonce | `src-tauri/src/files/crypto.rs` |
-| Interopérabilité 7-Zip de l'archive AES, archive abîmée | `src-tauri/tests/files_integration.rs` |
-| Traversée de dossiers à l'extraction, sortie de racine à l'organisation | `src-tauri/src/files/archive.rs`, `secure.rs` |
-| Confirmation exacte et écrasement réel avant suppression | `src-tauri/src/files/secure.rs` |
-| XXE sans résolution externe, tags YAML non sûrs | `src/core/code/code.test.ts` |
-| Absence d'`eval` dans la calculatrice | `src/core/calc/calc.test.ts` |
-| CSPRNG obligatoire, absence de biais | `src/core/security/security.test.ts`, `src/core/code/code.test.ts` |
-| Retour sur trace catastrophique non interruptible par un compteur | `src/core/code/code.test.ts` |
+Automated suites cover encryption round trips, non-determinism, bad passwords,
+tampering, truncation, cancellation and nonce reuse; independent 7-Zip
+interoperability; archive/path confinement; destructive-action confirmation;
+XXE and YAML restrictions; absence of calculator `eval`; mandatory unbiased
+CSPRNG use; regex catastrophic-backtracking containment; JWT policy and real
+cryptography; SQLite immutability; and network bounds.

@@ -10,16 +10,16 @@ Une boîte à outils desktop qui regroupe PDF, images, audio, vidéo, documents,
 fichiers, outils développeur et confidentialité — 196 outils, une seule
 application, et vos fichiers ne quittent pas votre machine.
 
-[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-et-11)
-[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#autres-distributions-linux)
-[![Tauri 2](https://img.shields.io/badge/Tauri-2-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
-[![Rust](https://img.shields.io/badge/Rust-native-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
-[![React 19](https://img.shields.io/badge/React-19-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
-[![Local-first](https://img.shields.io/badge/local--first-0a84ff?style=flat-square)](docs/legal/PRIVACY.md)
+[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/fr/guides/INSTALLATION.md#windows-10-et-11)
+[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/fr/guides/INSTALLATION.md#autres-distributions-linux)
+[![Tauri 2](https://img.shields.io/badge/Tauri-2-0b1a2e?style=flat-square)](docs/fr/technical/ARCHITECTURE.md)
+[![Rust](https://img.shields.io/badge/Rust-native-0b1a2e?style=flat-square)](docs/fr/technical/ARCHITECTURE.md)
+[![React 19](https://img.shields.io/badge/React-19-0b1a2e?style=flat-square)](docs/fr/technical/ARCHITECTURE.md)
+[![Local-first](https://img.shields.io/badge/local--first-0a84ff?style=flat-square)](docs/fr/legal/PRIVACY.md)
 [![Release](https://img.shields.io/github/v/release/lolmath06/FourTout?style=flat-square&color=0a84ff&label=release)][releases]
 
-**[Télécharger][releases]** · **[Documentation](docs/README.md)** ·
-**[Tous les outils](docs/guides/FEATURES.md)** · **[Confidentialité](docs/legal/PRIVACY.md)**
+**[Télécharger][releases]** · **[Documentation](docs/fr/README.md)** ·
+**[Tous les outils](docs/fr/guides/FEATURES.md)** · **[Confidentialité](docs/fr/legal/PRIVACY.md)**
 
 </div>
 
@@ -82,7 +82,7 @@ mots de passe, métadonnées.
 </table>
 
 Le tableau complet des douze catégories est [plus bas](#fonctionnalités) ;
-la liste outil par outil est dans **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.
+la liste outil par outil est dans **[docs/fr/guides/FEATURES.md](docs/fr/guides/FEATURES.md)**.
 
 ## Langues
 
@@ -212,7 +212,7 @@ Chaque outil est compté dans sa catégorie propriétaire : 196 au total. Un
 outil peut aussi être proposé dans d'autres catégories, là où on le cherche —
 c'est pourquoi l'application affiche des nombres plus élevés par catégorie.
 
-La liste complète, outil par outil : **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.
+La liste complète, outil par outil : **[docs/fr/guides/FEATURES.md](docs/fr/guides/FEATURES.md)**.
 
 ## Confidentialité
 
@@ -233,7 +233,7 @@ Les trois outils **réseau** (ping, ports, découverte du réseau local) ouvrent
 de vraies connexions, mais uniquement vers les hôtes que vous indiquez ou
 votre sous-réseau local, et jamais sans un clic.
 
-Le détail, fonction par fonction : **[docs/legal/PRIVACY.md](docs/legal/PRIVACY.md)**.
+Le détail, fonction par fonction : **[docs/fr/legal/PRIVACY.md](docs/fr/legal/PRIVACY.md)**.
 
 ## Installation
 
@@ -251,7 +251,7 @@ Téléchargez le paquet de votre système depuis la page **[Releases][releases]*
 > Releases.
 
 Instructions détaillées, prérequis et vérification des empreintes :
-**[docs/guides/INSTALLATION.md](docs/guides/INSTALLATION.md)**.
+**[docs/fr/guides/INSTALLATION.md](docs/fr/guides/INSTALLATION.md)**.
 
 > Les installeurs Windows ne sont pas encore signés : SmartScreen affichera un
 > avertissement au premier lancement. C'est attendu, et expliqué dans le guide
@@ -293,8 +293,8 @@ Tous les outils dérivent d'un **registre central** : catalogue, navigation,
 recherche, convertisseur universel et routage par glisser-déposer lisent la
 même source. Les traductions vivent à côté, indexées par identifiant d'outil :
 un outil n'est jamais dupliqué par langue. Détails :
-**[docs/technical/ARCHITECTURE.md](docs/technical/ARCHITECTURE.md)** et
-**[docs/technical/I18N.md](docs/technical/I18N.md)**.
+**[docs/fr/technical/ARCHITECTURE.md](docs/fr/technical/ARCHITECTURE.md)** et
+**[docs/fr/technical/I18N.md](docs/fr/technical/I18N.md)**.
 
 ## Développement
 
@@ -306,8 +306,8 @@ pnpm i18n:status   # couverture des traductions, langue par langue
 ```
 
 Prérequis, conventions et pièges d'environnement :
-**[docs/technical/DEVELOPMENT.md](docs/technical/DEVELOPMENT.md)**.
-Construire les paquets : **[docs/technical/BUILD.md](docs/technical/BUILD.md)**.
+**[docs/fr/technical/DEVELOPMENT.md](docs/fr/technical/DEVELOPMENT.md)**.
+Construire les paquets : **[docs/fr/technical/BUILD.md](docs/fr/technical/BUILD.md)**.
 Régénérer les captures, la bannière et la démo :
 **[scripts/showcase/README.md](scripts/showcase/README.md)**.
 
@@ -320,11 +320,11 @@ l'Explorateur Windows.
 
 Modèle de menace, format de fichier chiffré, limites de l'effacement sécurisé
 et signalement d'une vulnérabilité :
-**[docs/legal/SECURITY.md](docs/legal/SECURITY.md)**.
+**[docs/fr/legal/SECURITY.md](docs/fr/legal/SECURITY.md)**.
 
 ## Documentation
 
-L'index complet : **[docs/README.md](docs/README.md)**.
+L'index complet : **[docs/fr/README.md](docs/fr/README.md)**.
 
 ## Licence
 

@@ -1,6 +1,6 @@
-import { execFileSync } from "node:child_process";
-import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
+// @ts-expect-error The extraction script is plain ESM and intentionally shared with this test.
+import { buildSourceCatalog } from "../../scripts/i18n/source.mjs";
 import { ALL_TOOLS } from "@/core/tools/catalog";
 import { CATEGORIES } from "@/core/tools/categories";
 import { categoryText, toolText } from "@/core/tools/localized";
@@ -31,8 +31,8 @@ import {
  * fichiers réellement embarqués.
  *
  * - toutes les langues se chargent, sans clé inconnue ni message mal formé ;
- * - l'anglais (repli principal) et le français (source) couvrent 100 % des
- *   messages ; les autres langues, au moins tout le socle de l'interface ;
+ * - chacune des seize langues couvre 100 % des messages, sans dépendre du
+ *   repli anglais en fonctionnement normal ;
  * - une traduction garde les variables, les balises et les formes plurielles
  *   que sa langue demande ;
  * - les 196 outils et 12 catégories ont leurs textes dans chaque langue, sans
@@ -79,25 +79,6 @@ const CATEGORY_COUNT = 12;
 
 const TRANSLATED_LOCALES = EXPECTED_LOCALES.filter((code) => code !== SOURCE_LOCALE);
 
-interface StatusReport {
-  total: number;
-  required: string[];
-  stale: { missing: string[]; obsolete: string[] };
-  collisions: unknown[];
-  locales: Record<string, { missingRequired: string[]; unknown: string[] }>;
-}
-
-let status: StatusReport | undefined;
-function i18nStatus(): StatusReport {
-  status ??= JSON.parse(
-    execFileSync(process.execPath, [join(process.cwd(), "scripts/i18n/status.mjs"), "--json"], {
-      encoding: "utf8",
-      maxBuffer: 64 * 1024 * 1024,
-    }),
-  ) as StatusReport;
-  return status;
-}
-
 afterEach(async () => {
   await setLocale(SOURCE_LOCALE);
 });
@@ -131,11 +112,9 @@ describe("langues disponibles", () => {
 
 describe("catalogue source", () => {
   it("est à jour avec le code (pnpm i18n:extract)", () => {
-    const report = i18nStatus();
-    expect(report.collisions).toEqual([]);
-    expect(report.stale.missing).toEqual([]);
-    expect(report.stale.obsolete).toEqual([]);
-    expect(report.total).toBe(SOURCE_IDS.length);
+    const generated = buildSourceCatalog(process.cwd());
+    expect(generated.collisions).toEqual([]);
+    expect(generated.catalog).toEqual(SOURCE);
   });
 
   it("ne contient que des messages bien formés", () => {
@@ -145,16 +124,10 @@ describe("catalogue source", () => {
 });
 
 describe("couverture des traductions", () => {
-  it("anglais : 100 % des messages", () => {
-    const english = MESSAGES.get("en")!;
-    expect(SOURCE_IDS.filter((id) => !(id in english))).toEqual([]);
-  });
-
-  it.each(TRANSLATED_LOCALES)("%s : tout le socle de l'interface, aucune clé inconnue", (code) => {
-    const report = i18nStatus();
-    expect(report.required.length).toBeGreaterThan(300);
-    expect(report.locales[code].missingRequired).toEqual([]);
-    expect(report.locales[code].unknown).toEqual([]);
+  it.each(EXPECTED_LOCALES)("%s : 100 % des messages, aucune clé inconnue", (code) => {
+    const messages = MESSAGES.get(code)!;
+    expect(SOURCE_IDS.filter((id) => !(id in messages))).toEqual([]);
+    expect(Object.keys(messages).filter((id) => !(id in SOURCE))).toEqual([]);
   });
 
   it.each(TRANSLATED_LOCALES)("%s : variables, balises et pluriels compatibles", (code) => {

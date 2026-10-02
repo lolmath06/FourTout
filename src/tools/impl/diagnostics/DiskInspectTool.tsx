@@ -89,7 +89,7 @@ export function DiskInspectTool(_props: ToolComponentProps) {
         ...current,
         [disk.name]: {
           available: false,
-          provider: "aucun",
+          provider: t("aucun"),
           health: null,
           temperatureC: null,
           powerOnHours: null,
@@ -190,11 +190,11 @@ export function DiskInspectTool(_props: ToolComponentProps) {
                   { label: t("Capacité"), value: formatSize(disk.size) },
                   { label: t("Raccordement"), value: TRANSPORT_LABELS[disk.transport] },
                   { label: t("Support"), value: mediaKind(disk) },
-                  { label: t("Amovible"), value: disk.removable ? "oui" : "non" },
-                  { label: t("Lecture seule"), value: disk.readOnly ? "oui" : "non" },
-                  { label: t("Table de partitions"), value: disk.partitionTable?.toUpperCase() ?? "aucune" },
+                  { label: t("Amovible"), value: disk.removable ? t("oui") : t("non") },
+                  { label: t("Lecture seule"), value: disk.readOnly ? t("oui") : t("non") },
+                  { label: t("Table de partitions"), value: disk.partitionTable?.toUpperCase() ?? t("aucune") },
                   { label: t("Partitions"), value: String(disk.partitions.length) },
-                  { label: t("Porte le système"), value: disk.system ? "oui" : "non" },
+                  { label: t("Porte le système"), value: disk.system ? t("oui") : t("non") },
                   { label: t("Numéro de série"), value: disk.serial ?? t("non exposé sans privilèges") },
                 ]}
               />
@@ -232,7 +232,7 @@ export function DiskInspectTool(_props: ToolComponentProps) {
                           <td className="ft-value max-w-[16rem] truncate" title={partition.kind ?? undefined}>
                             {partition.kind ?? "—"}
                           </td>
-                          <td className="ft-value">{partition.boot ? "oui" : "—"}</td>
+                          <td className="ft-value">{partition.boot ? t("oui") : "—"}</td>
                         </tr>
                       ))}
                     </tbody>

@@ -64,18 +64,27 @@ export function ArchiveCreateTool(_props: ToolComponentProps) {
       actionIcon="FolderArchive"
       actionDisabled={output.length === 0}
       run={(context) => createArchive(paths, output, format, format === "tar" ? 0 : level, context)}
-      successMessage={(summary) => t("{files} fichiers → {size}", { files: summary.files, size: formatFileSize(summary.outputBytes) })}
+      successMessage={(summary) => t("{count} {count, plural, one {fichier} other {fichiers}} → {size}", { count: summary.files, size: formatFileSize(summary.outputBytes) })}
       renderResult={(summary) => (
         <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklch,var(--ft-ok)_45%,var(--ft-border))] bg-[color-mix(in_oklch,var(--ft-ok)_6%,transparent)] p-4">
           <p className="flex items-center gap-2 text-sm font-medium">
             <Icon name="CircleCheck" size={17} className="text-[var(--ft-ok)]" />
-            {t("Archive créée — {files} fichier(s)", { files: summary.files })}
+            {t("Archive créée — {count} {count, plural, one {fichier} other {fichiers}}", {
+              count: summary.files,
+            })}
           </p>
           <p className="mt-1 break-all text-xs text-[var(--ft-text-muted)]">{summary.path}</p>
           <p className="mt-1 text-xs tabular-nums">
-            {formatFileSize(summary.inputBytes)} → {formatFileSize(summary.outputBytes)}
-            {summary.inputBytes > 0 &&
-              ` (${Math.round((1 - summary.outputBytes / summary.inputBytes) * 100)} % de gain)`}
+            {summary.inputBytes > 0
+              ? t("{input} → {output} ({percent} % de gain)", {
+                  input: formatFileSize(summary.inputBytes),
+                  output: formatFileSize(summary.outputBytes),
+                  percent: Math.round((1 - summary.outputBytes / summary.inputBytes) * 100),
+                })
+              : t("{input} → {output}", {
+                  input: formatFileSize(summary.inputBytes),
+                  output: formatFileSize(summary.outputBytes),
+                })}
           </p>
           <div className="mt-3">
             <Button size="sm" onClick={() => revealFile(summary.path)}>
@@ -101,7 +110,7 @@ export function ArchiveCreateTool(_props: ToolComponentProps) {
           />
         </Field>
         <Field
-          label={format === "tar" ? t("Compression (sans objet pour TAR)") : `Compression : ${level}`}
+          label={format === "tar" ? t("Compression (sans objet pour TAR)") : t("Compression : {level}", { level })}
           hint={t("0 = stocké sans compression, 9 = plus lent mais plus petit")}
         >
           <Slider

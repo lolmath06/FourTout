@@ -9,8 +9,8 @@
 一个桌面工具箱，把 PDF、图片、音频、视频、文档、文件、开发者工具和隐私工具汇集在一起——
 196 个工具、一个应用，而且您的文件始终不会离开您的电脑。
 
-[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-et-11)
-[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#autres-distributions-linux)
+[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-and-11)
+[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#other-linux-distributions)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
 [![Rust](https://img.shields.io/badge/Rust-native-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
 [![React 19](https://img.shields.io/badge/React-19-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
@@ -288,7 +288,8 @@ pnpm i18n:status   # 各语言的翻译覆盖率
 
 ## 文档
 
-完整索引：**[docs/README.md](docs/README.md)**。文档使用法语撰写。
+完整英文索引见 **[docs/README.md](docs/README.md)**，完整法语镜像见
+**[docs/fr/](docs/fr/README.md)**。
 
 ## 许可
 

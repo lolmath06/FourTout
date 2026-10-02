@@ -285,7 +285,7 @@ function Rendered({ preview }: { preview: Preview }) {
           { label: t("Taille"), value: formatFileSize(info.size) },
           {
             label: t("Extension cohérente"),
-            value: info.extensionMatches ? "oui" : "non",
+            value: info.extensionMatches ? t("oui") : t("non"),
             tone: info.extensionMatches ? "ok" : "warn",
           },
         ]}

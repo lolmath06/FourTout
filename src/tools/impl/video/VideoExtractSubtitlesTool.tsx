@@ -60,14 +60,18 @@ export function VideoExtractSubtitlesTool({ tool }: ToolComponentProps) {
         return (
           <div className="space-y-2">
             <Fieldset columns={2}>
-              <Field label={`Piste (${tracks.length} détectée${tracks.length > 1 ? "s" : ""})`}>
+              <Field
+                label={t("Piste ({count} {count, plural, one {détectée} other {détectées}})", {
+                  count: tracks.length,
+                })}
+              >
                 <Select
                   value={String(order)}
                   onChange={(value) => setOrder(Number(value))}
                   options={tracks.map((track) => ({
                     value: String(track.order),
                     label:
-                      `${track.order + 1}. ${track.language ?? "langue inconnue"}` +
+                      `${track.order + 1}. ${track.language ?? t("langue inconnue")}` +
                       `${track.title ? ` — ${track.title}` : ""} (${track.codecName ?? "?"})` +
                       `${track.textBased ? "" : t(" — image, non extractible")}`,
                   }))}

@@ -77,9 +77,17 @@ export function FolderRestoreTool(_props: ToolComponentProps) {
     );
     if (!result) return;
     if (result.corrupted.length > 0 || result.failed.length > 0 || result.interrupted) {
-      notify.error(t("Restauration incomplète"), t("{restored} fichier(s) restauré(s)", { restored: result.restored }));
+      notify.error(
+        t("Restauration incomplète"),
+        t("{count} {count, plural, one {fichier restauré} other {fichiers restaurés}}", {
+          count: result.restored,
+        }),
+      );
     } else {
-      notify.success(t("Restauration terminée"), `${result.restored} fichier(s)`);
+      notify.success(
+        t("Restauration terminée"),
+        t("{count} {count, plural, one {fichier} other {fichiers}}", { count: result.restored }),
+      );
     }
   };
 

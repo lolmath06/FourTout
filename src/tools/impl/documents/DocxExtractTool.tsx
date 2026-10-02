@@ -45,21 +45,25 @@ export function DocxExtractTool(_props: ToolComponentProps) {
       actionLabel={t("Lire le document")}
       actionIcon="FileText"
       run={async () => readDocx(paths[0])}
-      successMessage={(result) => `${result.blocks} bloc(s) extrait(s)`}
+      successMessage={(result) =>
+        t("{count} {count, plural, one {bloc extrait} other {blocs extraits}}", {
+          count: result.blocks,
+        })
+      }
       renderResult={(result) => {
         const value = result[output];
         const extension = output === "markdown" ? "md" : output === "html" ? "html" : "txt";
         const metadataRows = Object.entries({
-          Titre: result.metadata.title,
-          Auteur: result.metadata.author,
-          Sujet: result.metadata.subject,
-          "Mots-clés": result.metadata.keywords,
-          "Créé le": result.metadata.created,
-          "Modifié le": result.metadata.modified,
-          "Dernière modification par": result.metadata.lastModifiedBy,
-          Application: result.metadata.application,
-          Pages: result.metadata.pages,
-          Mots: result.metadata.words,
+          [t("Titre")]: result.metadata.title,
+          [t("Auteur")]: result.metadata.author,
+          [t("Sujet")]: result.metadata.subject,
+          [t("Mots-clés")]: result.metadata.keywords,
+          [t("Créé le")]: result.metadata.created,
+          [t("Modifié le")]: result.metadata.modified,
+          [t("Dernière modification par")]: result.metadata.lastModifiedBy,
+          [t("Application")]: result.metadata.application,
+          [t("Pages")]: result.metadata.pages,
+          [t("Mots")]: result.metadata.words,
         }).filter(([, entry]) => entry);
 
         return (
@@ -142,7 +146,7 @@ export function DocxExtractTool(_props: ToolComponentProps) {
             )}
 
             <p className="text-xs text-[var(--ft-text-muted)]">
-              {t("{blocks} bloc(s) · {tables} tableau(x) · {images} image(s) dans le document d'origine.", { blocks: result.blocks, tables: result.tables, images: result.images })}
+              {t("{blocks} {blocks, plural, one {bloc} other {blocs}} · {tables} {tables, plural, one {tableau} other {tableaux}} · {images} {images, plural, one {image} other {images}} dans le document d'origine.", { blocks: result.blocks, tables: result.tables, images: result.images })}
             </p>
           </div>
         );

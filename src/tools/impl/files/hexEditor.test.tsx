@@ -189,12 +189,12 @@ describe("édition d'un octet", () => {
     await user.clear(field);
     await user.type(field, "FF");
 
-    expect(await screen.findByText(/1 octet\(s\) modifié\(s\)/i)).toBeInTheDocument();
+    expect(await screen.findByText(/1 octet modifié, pas encore enregistré/i)).toBeInTheDocument();
     expect(screen.getByText(/valeur d'origine 10/i)).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Rétablir" }));
     await waitFor(() =>
-      expect(screen.queryByText(/1 octet\(s\) modifié\(s\)/i)).not.toBeInTheDocument(),
+      expect(screen.queryByText(/1 octet modifié, pas encore enregistré/i)).not.toBeInTheDocument(),
     );
   });
 });

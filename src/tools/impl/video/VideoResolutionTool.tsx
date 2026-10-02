@@ -53,8 +53,12 @@ export function VideoResolutionTool({ tool }: ToolComponentProps) {
         const target = targetFor(source);
         if (isUpscale(source, target) && !allowUpscale) {
           throw new Error(
-            t("La définition demandée ({width} × {height}) est plus grande que la source ", { width: target.width, height: target.height }) +
-              `(${source.width} × ${source.height}). Cochez « Autoriser l'agrandissement » pour continuer.`,
+            t("La définition demandée ({width} × {height}) est plus grande que la source ({sourceWidth} × {sourceHeight}). Cochez « Autoriser l'agrandissement » pour continuer.", {
+              width: target.width,
+              height: target.height,
+              sourceWidth: source.width,
+              sourceHeight: source.height,
+            }),
           );
         }
 

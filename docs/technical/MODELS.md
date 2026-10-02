@@ -1,183 +1,157 @@
-# Moteurs et modèles de parole
+# Speech engines and models
+
+[English](MODELS.md) | [Français](../fr/technical/MODELS.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+## Contents
 
-- [Pourquoi ces moteurs](#pourquoi-ces-moteurs)
-- [Catalogue](#catalogue)
-- [Où vivent les fichiers](#où-vivent-les-fichiers)
+- [Why these engines](#why-these-engines)
+- [Catalog](#catalog)
+- [File locations](#file-locations)
 - [Installation](#installation)
-- [Fonctionnement hors ligne](#fonctionnement-hors-ligne)
-- [Empaquetage Windows et Fedora](#empaquetage-windows-et-fedora)
-- [Limites connues](#limites-connues)
-- [Modèles de détourage](#modèles-de-détourage)
+- [Offline operation](#offline-operation)
+- [Windows and Fedora packaging](#windows-and-fedora-packaging)
+- [Known limitations](#known-limitations)
+- [Background-removal models](#background-removal-models)
 
----
+FourTout speaks and transcribes **locally**. Nothing is sent over the network
+during use. The only network access is the initial, user-initiated download of
+engines and models.
 
-FourTout parle et transcrit **localement**. Rien n'est envoyé sur le réseau
-pendant l'usage : le seul accès à Internet est le téléchargement initial des
-moteurs et des modèles, déclenché par l'utilisateur, une fois pour toutes.
+## Why these engines
 
-## Pourquoi ces moteurs
-
-| Besoin | Moteur retenu | Écarté |
+| Need | Selected engine | Rejected alternative |
 | --- | --- | --- |
-| Synthèse (TTS) | **Piper** 2023.11.14-2 | Kokoro : qualité supérieure, mais suppose onnxruntime + un phonémiseur externe et un modèle de 90 à 310 Mo, sans binaire autonome Windows/Linux prêt à empaqueter. |
-| Reconnaissance (STT) | **whisper.cpp** b4938 | Whisper via ONNX : mêmes modèles, mais chaîne d'exécution à assembler soi-même, sans binaire officiel multiplateforme. |
+| Speech synthesis (TTS) | **Piper** 2023.11.14-2 | Kokoro offers higher quality but requires ONNX Runtime, an external phonemizer, and a 90–310 MB model, without a ready-to-package standalone Windows/Linux binary. |
+| Speech recognition (STT) | **whisper.cpp** b4938 | Whisper through ONNX uses the same models but requires a custom execution stack and has no official cross-platform binary. |
 
-Piper et whisper.cpp partagent ce qui compte ici : binaires **autonomes** publiés
-pour Linux x86-64 **et** Windows x86-64, exécution processeur, licence MIT,
-et un mode ligne de commande qui se pilote proprement (progression, arrêt réel).
+Both selected engines provide standalone Linux x86-64 and Windows x86-64
+binaries, CPU execution, an MIT license, and a command-line interface that can
+be monitored and stopped reliably.
 
-## Catalogue
+## Catalog
 
-Déclaré dans `src-tauri/src/models/mod.rs` : chaque fichier y porte son URL
-officielle, son empreinte SHA-256 et sa taille. Rien n'est téléchargé qui ne
-soit épinglé.
+`src-tauri/src/models/mod.rs` declares every file with its official URL,
+SHA-256 digest, and size. Nothing unpinned is downloaded.
 
-| Élément | Contenu | Poids | Licence | Source |
+| Item | Contents | Size | License | Source |
 | --- | --- | --- | --- | --- |
-| `engine-piper` | Binaire Piper + onnxruntime + espeak-ng | 26,5 Mo (Linux) / 22,5 Mo (Windows) | MIT | [rhasspy/piper](https://github.com/rhasspy/piper) |
-| `voice-fr-siwis` | `fr_FR-siwis-medium.onnx` + config | 63,2 Mo | CC BY 4.0 (corpus SIWIS) | [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) |
-| `voice-en-lessac` | `en_US-lessac-medium.onnx` + config | 63,2 Mo | Blizzard Challenge 2013 | [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) |
-| `engine-whisper` | `whisper-cli` + bibliothèques ggml | 9,5 Mo (Linux) / 8,4 Mo (Windows) | MIT | [ggml-org/whisper.cpp](https://github.com/ggml-org/whisper.cpp) |
-| `stt-base` — *Rapide* | `ggml-base.bin` | 128,5 Mo | MIT | [ggerganov/whisper.cpp](https://huggingface.co/ggerganov/whisper.cpp) |
-| `stt-small` — *Précis* | `ggml-small.bin` | 487,6 Mo | MIT | idem |
+| `engine-piper` | Piper, ONNX Runtime, and espeak-ng | 26.5 MB Linux / 22.5 MB Windows | MIT | [rhasspy/piper](https://github.com/rhasspy/piper) |
+| `voice-fr-siwis` | `fr_FR-siwis-medium.onnx` and config | 63.2 MB | CC BY 4.0 (SIWIS corpus) | [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) |
+| `voice-en-lessac` | `en_US-lessac-medium.onnx` and config | 63.2 MB | Blizzard Challenge 2013 | [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) |
+| `engine-whisper` | `whisper-cli` and ggml libraries | 9.5 MB Linux / 8.4 MB Windows | MIT | [ggml-org/whisper.cpp](https://github.com/ggml-org/whisper.cpp) |
+| `stt-base` — *Fast* | `ggml-base.bin` | 128.5 MB | MIT | [ggerganov/whisper.cpp](https://huggingface.co/ggerganov/whisper.cpp) |
+| `stt-small` — *Accurate* | `ggml-small.bin` | 487.6 MB | MIT | Same source |
 
-**Installation minimale utilisable** : Piper + une voix + whisper.cpp + `base`
-≈ **227 Mo** sur le disque. Avec les deux voix : ≈ 291 Mo. Le modèle *Précis*
-est facultatif.
+A minimal usable installation—Piper, one voice, whisper.cpp, and `base`—uses
+about **227 MB**. Both voices use about 291 MB. The *Accurate* model is optional.
 
-### Le compromis sur le modèle de transcription
+### Transcription-model tradeoff
 
-Mesuré sur cette machine (Intel Core i9-14900HX, 4 fils, 18,2 s de parole
-française) :
+Measurements on an Intel Core i9-14900HX using four threads and 18.2 seconds of
+French speech:
 
-| Modèle | Durée | Facteur temps réel | RAM (RSS) | Qualité observée |
+| Model | Time | Real-time factor | RAM (RSS) | Observed quality |
 | --- | --- | --- | --- | --- |
-| `base` (128 Mo) | 1,44 s | **0,08×** | 284 Mo | Phrases justes, quelques accords et chiffres approximatifs. |
-| `small` (488 Mo) | 4,39 s | **0,24×** | 750 Mo | Nettement plus fidèle sur le français ; ~3× plus lent. |
+| `base` (128 MB) | 1.44 s | **0.08×** | 284 MB | Correct sentences with some approximate agreement and numbers. |
+| `small` (488 MB) | 4.39 s | **0.24×** | 750 MB | Clearly more faithful French, about three times slower. |
 
-`base` est donc le modèle par défaut : il transcrit une heure d'audio en cinq
-minutes environ, tient dans un installateur raisonnable et suffit à un
-enregistrement net. `small` est proposé à côté, pour qui privilégie la fidélité.
+`base` is the default: it transcribes roughly one hour of audio in five minutes,
+keeps the installer reasonable, and works well for clean recordings. Users can
+choose `small` when accuracy matters more.
 
-### Débit de la synthèse
+### Synthesis throughput
 
-Même machine, voix `fr_FR-siwis-medium`. Deux mesures, parce qu'elles ne disent
-pas la même chose :
+On the same machine with `fr_FR-siwis-medium`:
 
-| Mesure | Texte | Calcul | Audio produit | Débit | Facteur temps réel |
+| Measurement | Text | Compute | Audio | Throughput | Real-time factor |
 | --- | --- | --- | --- | --- | --- |
-| Un seul appel | 297 car. | 0,60 s | 18,2 s | 495 car/s | 0,033× |
-| **Pipeline réel** (36 segments) | 4 427 car. | 13,1 s | 257 s | **339 car/s** | **0,051×** |
+| Single call | 297 characters | 0.60 s | 18.2 s | 495 chars/s | 0.033× |
+| **Real pipeline**, 36 segments | 4,427 characters | 13.1 s | 257 s | **339 chars/s** | **0.051×** |
 
-Le pipeline complet est ~30 % plus lent : chaque segment relance Piper, qui
-recharge son modèle. C'est le prix d'une annulation immédiate et d'une
-progression honnête, et il reste largement payant — la lecture est produite
-**20× plus vite qu'elle ne s'écoute**. Un livre de 300 000 caractères se
-synthétise en ~15 minutes. RAM par processus : 194 Mo.
+The full pipeline is about 30% slower because Piper reloads its model for each
+segment. This enables immediate cancellation and honest progress while still
+producing speech about **20 times faster than playback**. A 300,000-character
+book takes about 15 minutes. Each process uses about 194 MB of RAM.
 
-## Où vivent les fichiers
+## File locations
 
-Ordre de résolution d'un moteur (`models::resolve_engine`) :
+`models::resolve_engine` searches in this order:
 
-1. **ressources de l'application** — `resources/speech/<moteur>/` si un
-   installateur choisit d'embarquer les binaires ;
-2. **dossier de modèles** — installé par l'utilisateur ;
-3. **PATH** — commodité de développement uniquement.
+1. packaged resources under `resources/speech/<engine>/`;
+2. the user model directory;
+3. `PATH`, for development only.
 
-Le dossier de modèles est le dossier applicatif standard, et l'interface
-l'affiche :
-
-| Système | Emplacement |
+| System | Model directory |
 | --- | --- |
 | Fedora / Linux | `~/.local/share/app.fourtout.desktop/models` |
 | Windows | `%APPDATA%\app.fourtout.desktop\models` |
 
-`FOURTOUT_MODELS_DIR` le déplace (tests, installation partagée).
-
-Arborescence : `engines/piper/`, `engines/whisper/`, `voices/`, `stt/`, plus un
-`.partial/` de travail vidé après chaque installation.
+`FOURTOUT_MODELS_DIR` overrides the location for tests or shared installations.
+The directory contains `engines/piper/`, `engines/whisper/`, `voices/`, `stt/`,
+and a working `.partial/` directory cleared after every installation.
 
 ## Installation
 
-Le panneau d'installation apparaît **dans l'outil**, tant qu'un élément requis
-manque. Il annonce ce qui va être téléchargé, sa taille et sa licence, et
-n'agit qu'après un clic.
+An installation panel appears inside a tool while a required item is missing.
+It states the download, size, and license and acts only after a user click.
 
-Chaque fichier est écrit dans un `.part`, puis **vérifié par SHA-256** avant
-d'être mis en place : une coupure réseau, un disque plein ou une annulation ne
-laissent jamais un modèle à moitié installé passer pour valide. Les archives
-sont extraites en contrôlant chaque chemin (aucune sortie du dossier cible), en
-conservant le bit exécutable. Chaque élément peut être supprimé puis
-réinstallé.
+Each file is written to `.part` and **verified with SHA-256** before being put
+in place. Interrupted downloads, full disks, and cancellation therefore cannot
+make a partial model appear valid. Archive extraction checks every path to
+prevent traversal and preserves executable bits. Every item can be removed and
+reinstalled.
 
-## Fonctionnement hors ligne
+## Offline operation
 
-Une fois installés, la synthèse, la transcription, `PDF vers audio` et les
-sous-titres n'ouvrent **aucune connexion**. Vérifié en exécutant les deux
-moteurs dans un espace réseau isolé (`unshare -rn`, aucune interface adressable)
-: synthèse et transcription aboutissent normalement.
+Once installed, synthesis, transcription, PDF-to-audio, and automatic subtitles
+make **no network connection**. Both engines have been exercised in an isolated
+network namespace (`unshare -rn`) and complete normally.
 
-## Empaquetage Windows et Fedora
+## Windows and Fedora packaging
 
-Le catalogue sélectionne l'asset de la plateforme à la compilation
-(`#[cfg(target_os = …)]`) : un binaire Windows télécharge le `.zip` Windows, un
-binaire Linux le `.tar.gz` Linux. Rien n'est supposé présent dans le PATH de
-l'utilisateur final.
+The catalog selects platform assets at compile time with `#[cfg(target_os =
+…)]`; Linux downloads the Linux `.tar.gz`, Windows the Windows `.zip`. Nothing
+is expected in the end user's `PATH`.
 
-- **Fedora** — archive `.tar.gz`, extraite en conservant les permissions ; les
-  bibliothèques (`libpiper_phonemize.so`, `libwhisper.so`, `libggml-*.so`) sont
-  livrées à côté du binaire et résolues par son `RPATH=$ORIGIN`. Aucun chemin
-  `/usr/...` n'est codé en dur.
-- **Windows** — archive `.zip`, extraite avec les DLL voisines
-  (`onnxruntime.dll`, `espeak-ng.dll`, `ggml-*.dll`), chargées depuis le dossier
-  de l'exécutable. Les chemins comportant des espaces sont sûrs : aucun shell
-  n'est utilisé, les arguments sont passés séparément.
-- **Embarquer les moteurs dans l'installateur** (facultatif) : placer les
-  binaires dans `src-tauri/resources/speech/piper/` et
-  `src-tauri/resources/speech/whisper/`, et les déclarer dans `bundle.resources`
-  d'un `tauri.linux.conf.json` / `tauri.windows.conf.json`. `resolve_engine` les
-  préférera, et le panneau d'installation ne portera plus que sur les voix et
-  les modèles.
+- **Fedora:** the archive preserves permissions. `libpiper_phonemize.so`,
+  `libwhisper.so`, and `libggml-*.so` live beside the executable and resolve
+  through `RPATH=$ORIGIN`; no `/usr/...` path is hard-coded.
+- **Windows:** neighboring DLLs such as `onnxruntime.dll`, `espeak-ng.dll`, and
+  `ggml-*.dll` are loaded from the executable directory. Paths with spaces are
+  safe because no shell is used.
+- **Optional bundled engines:** put binaries in
+  `src-tauri/resources/speech/piper/` and `.../whisper/`, then declare them in
+  the platform Tauri configuration's `bundle.resources`. `resolve_engine`
+  prefers them, leaving only voices and models for the installer panel.
 
-## Limites connues
+## Known limitations
 
-- Voix disponibles : une française et une anglaise, qualité *medium*. Les autres
-  voix de `piper-voices` s'ajoutent en une entrée de catalogue, mais ne sont pas
-  livrées.
-- La transcription **auto-détecte** la langue ; sur un extrait très court, forcer
-  « Français » ou « Anglais » reste plus fiable.
-- Les noms propres inventés (« FourTout ») et les acronymes sont transcrits
-  phonétiquement par whisper.cpp, quel que soit le modèle.
-- Aucune accélération GPU : les binaires retenus sont les versions processeur,
-  seules réellement portables. La transcription utilise la moitié des cœurs
-  (8 au maximum) pour laisser la machine utilisable.
+- One French and one English medium-quality voice are provided. Other Piper
+  voices require a catalog entry.
+- Transcription auto-detects language, but explicitly choosing French or
+  English is more reliable for very short clips.
+- Invented proper nouns such as “FourTout” and acronyms may be transcribed
+  phonetically by either Whisper model.
+- There is no GPU acceleration. The portable CPU builds use half the available
+  cores, capped at eight, to keep the machine responsive.
 
----
+## Background-removal models
 
-## Modèles de détourage
+The **Remove background** tool runs U²-Net through ONNX Runtime in the WebView.
 
-L'outil **Retirer l'arrière-plan** utilise **U²-Net**, exécuté par ONNX Runtime
-dans la WebView. Deux variantes sont proposées :
-
-| Élément | Fichier | Taille | Licence |
+| Item | File | Size | License |
 | --- | --- | --- | --- |
-| `seg-u2netp` — Détourage rapide | `segmentation/u2netp.onnx` | 4,6 Mo | Apache 2.0 |
-| `seg-u2net` — Détourage précis | `segmentation/u2net.onnx` | 176 Mo | Apache 2.0 |
+| `seg-u2netp` — Fast | `segmentation/u2netp.onnx` | 4.6 MB | Apache 2.0 |
+| `seg-u2net` — Accurate | `segmentation/u2net.onnx` | 176 MB | Apache 2.0 |
 
-Comme les moteurs de parole, ils sont déclarés dans
-`src-tauri/src/models/mod.rs` avec leur URL officielle, leur empreinte SHA-256
-et leur taille, et installés uniquement à la demande.
+Like speech engines, both are declared in `src-tauri/src/models/mod.rs` with an
+official URL, SHA-256 digest, and size, and are installed only on request.
 
-Une différence toutefois : les moteurs de parole s'exécutent **côté natif** et
-lisent leurs modèles eux-mêmes, tandis que le détourage s'exécute **dans la
-WebView**. Il lui faut donc les octets du modèle. C'est le rôle de la commande
-`models_read_file`, qui n'accepte pas un chemin libre mais un identifiant du
-catalogue et un fichier que cet élément déclare : elle ne peut lire que ce que
-FourTout a lui-même installé.
-
-Le choix d'U²-Net est un choix de licence autant que de qualité : voir
+Speech engines run natively and read their own files; segmentation runs in the
+WebView and therefore needs the model bytes. `models_read_file` accepts only a
+catalog item identifier and a file declared by that item, never an arbitrary
+path, so it can read only files installed by FourTout. U²-Net was selected for
+licensing as well as quality; see
 [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md).

@@ -111,10 +111,18 @@ export function DiffStatsBar({
         <span className="flex items-center gap-1.5 text-[var(--ft-ok)]">{t("Les deux documents sont identiques")}</span>
       ) : (
         <>
-          <span className="tabular-nums text-[var(--ft-ok)]">+{stats.added} ajoutée(s)</span>
-          <span className="tabular-nums text-[var(--ft-danger)]">{t("−{removed} supprimée(s)", { removed: stats.removed })}</span>
-          <span className="tabular-nums text-[var(--ft-warn)]">{t("~{modified} modifiée(s)", { modified: stats.modified })}</span>
-          <span className="tabular-nums text-[var(--ft-text-muted)]">{t("{unchanged} inchangée(s)", { unchanged: stats.unchanged })}</span>
+          <span className="tabular-nums text-[var(--ft-ok)]">
+            {t("+{count} {count, plural, one {ajoutée} other {ajoutées}}", { count: stats.added })}
+          </span>
+          <span className="tabular-nums text-[var(--ft-danger)]">
+            {t("−{count} {count, plural, one {supprimée} other {supprimées}}", { count: stats.removed })}
+          </span>
+          <span className="tabular-nums text-[var(--ft-warn)]">
+            {t("~{count} {count, plural, one {modifiée} other {modifiées}}", { count: stats.modified })}
+          </span>
+          <span className="tabular-nums text-[var(--ft-text-muted)]">
+            {t("{count} {count, plural, one {inchangée} other {inchangées}}", { count: stats.unchanged })}
+          </span>
         </>
       )}
       <div className="flex-1" />

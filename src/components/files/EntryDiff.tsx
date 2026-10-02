@@ -149,7 +149,7 @@ export function EntryDiff({
                 },
                 {
                   label: t("Contenu"),
-                  value: state.compare.identical ? "identique" : t("différent"),
+                  value: state.compare.identical ? t("identique") : t("différent"),
                   tone: state.compare.identical ? "ok" : "warn",
                 },
               ]}
@@ -174,7 +174,7 @@ export function EntryDiff({
                       { value: "unified", label: t("Unifié") },
                     ]}
                   />
-                  <Trans source={"<0>{added} ajoutée(s) · {removed} retirée(s) · {modified} modifiée(s) · {unchanged} inchangée(s)</0>"} values={{ added: state.diff.stats.added, removed: state.diff.stats.removed, modified: state.diff.stats.modified, unchanged: state.diff.stats.unchanged }} components={[<span className="ft-meta tabular-nums" />]} />
+                  <Trans source={"<0>{added} {added, plural, one {ajoutée} other {ajoutées}} · {removed} {removed, plural, one {retirée} other {retirées}} · {modified} {modified, plural, one {modifiée} other {modifiées}} · {unchanged} {unchanged, plural, one {inchangée} other {inchangées}}</0>"} values={{ added: state.diff.stats.added, removed: state.diff.stats.removed, modified: state.diff.stats.modified, unchanged: state.diff.stats.unchanged }} components={[<span className="ft-meta tabular-nums" />]} />
                 </div>
                 <div className="max-h-96 overflow-auto rounded-md border border-[var(--ft-border)]">
                   {view === "side" ? (
@@ -195,7 +195,9 @@ export function EntryDiff({
             {state.binary && (
               <>
                 <p className="ft-meta">
-                  {t("{value} octet(s) différent(s) sur la partie commune, en {count} plage(s){value2}.", { value: formatNumber(state.binary.differingBytes), count: state.binary.ranges.length, value2: state.binary.truncated && " (liste écourtée)" })}
+                  {state.binary.truncated
+                    ? t("{bytes} {byteCount, plural, one {octet différent} other {octets différents}} sur la partie commune, en {ranges} {ranges, plural, one {plage} other {plages}} (liste écourtée).", { bytes: formatNumber(state.binary.differingBytes), byteCount: state.binary.differingBytes, ranges: state.binary.ranges.length })
+                    : t("{bytes} {byteCount, plural, one {octet différent} other {octets différents}} sur la partie commune, en {ranges} {ranges, plural, one {plage} other {plages}}.", { bytes: formatNumber(state.binary.differingBytes), byteCount: state.binary.differingBytes, ranges: state.binary.ranges.length })}
                 </p>
                 {state.binary.ranges.length > 0 ? (
                   <div className="overflow-x-auto rounded-md border border-[var(--ft-border)]">

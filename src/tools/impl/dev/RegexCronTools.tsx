@@ -148,9 +148,26 @@ export function RegexTesterTool(_props: ToolComponentProps) {
         <>
           <ResultBlock
             value={String(run.value.matches.length)}
-            unit={run.value.matches.length > 1 ? "correspondances" : "correspondance"}
+            unit={t("{count, plural, one {correspondance} other {correspondances}}", {
+              count: run.value.matches.length,
+            })}
             tone={run.value.matches.length === 0 ? "muted" : "normal"}
-            formula={`/${pattern}/${flagString} · ${run.value.groupCount} groupe${run.value.groupCount > 1 ? "s" : ""} capturant${run.value.groupCount > 1 ? "s" : ""}${run.value.groupNames.length > 0 ? ` (${run.value.groupNames.join(", ")})` : ""} · ${run.value.elapsedMs.toFixed(1)} ms`}
+            formula={
+              run.value.groupNames.length > 0
+                ? t("/{pattern}/{flags} · {count} {count, plural, one {groupe capturant} other {groupes capturants}} ({names}) · {elapsed} ms", {
+                    pattern,
+                    flags: flagString,
+                    count: run.value.groupCount,
+                    names: run.value.groupNames.join(", "),
+                    elapsed: run.value.elapsedMs.toFixed(1),
+                  })
+                : t("/{pattern}/{flags} · {count} {count, plural, one {groupe capturant} other {groupes capturants}} · {elapsed} ms", {
+                    pattern,
+                    flags: flagString,
+                    count: run.value.groupCount,
+                    elapsed: run.value.elapsedMs.toFixed(1),
+                  })
+            }
           />
 
           {run.value.truncated && (

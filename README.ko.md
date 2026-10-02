@@ -9,8 +9,8 @@
 PDF, 이미지, 오디오, 동영상, 문서, 파일, 개발자 도구, 개인정보 보호를 한데 모은 데스크톱
 도구 상자입니다. 196개 도구가 하나의 앱에 들어 있고, 파일은 컴퓨터 밖으로 나가지 않습니다.
 
-[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-et-11)
-[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#autres-distributions-linux)
+[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-and-11)
+[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#other-linux-distributions)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
 [![Rust](https://img.shields.io/badge/Rust-native-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
 [![React 19](https://img.shields.io/badge/React-19-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
@@ -296,7 +296,8 @@ pnpm i18n:status   # 언어별 번역 현황
 
 ## 문서
 
-전체 목차: **[docs/README.md](docs/README.md)**. 문서는 프랑스어로 작성되어 있습니다.
+전체 영어 목차는 **[docs/README.md](docs/README.md)**에 있으며, 완전한 프랑스어판은
+**[docs/fr/](docs/fr/README.md)**에서 볼 수 있습니다.
 
 ## 라이선스
 

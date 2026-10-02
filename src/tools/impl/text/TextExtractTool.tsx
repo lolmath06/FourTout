@@ -31,20 +31,64 @@ export function TextExtractTool({ tool }: ToolComponentProps) {
   const values = sorted ? [...result.values].sort((a, b) => compareText(a, b)) : result.values;
   const numbers = mode === "numbers" ? (result as ReturnType<typeof extractNumbers>) : undefined;
 
-  const label = mode === "emails" ? "adresses e-mail" : mode === "numbers" ? "nombres" : "URL";
+  const outputLabel =
+    mode === "emails"
+      ? t("{count} {count, plural, one {adresse e-mail} other {adresses e-mail}}", { count: values.length })
+      : mode === "numbers"
+        ? t("{count} {count, plural, one {nombre} other {nombres}}", { count: values.length })
+        : t("{count} URL", { count: values.length });
+
+  const foundSummary =
+    mode === "emails" && result.duplicates > 0 ? (
+      <Trans
+        source={"<0>{count}</0> {count, plural, one {adresse e-mail trouvée} other {adresses e-mail trouvées}} · {duplicates} {duplicates, plural, one {doublon ignoré} other {doublons ignorés}}"}
+        values={{ count: values.length, duplicates: result.duplicates }}
+        components={[<strong />]}
+      />
+    ) : mode === "emails" ? (
+      <Trans
+        source={"<0>{count}</0> {count, plural, one {adresse e-mail trouvée} other {adresses e-mail trouvées}}"}
+        values={{ count: values.length }}
+        components={[<strong />]}
+      />
+    ) : mode === "numbers" && result.duplicates > 0 ? (
+      <Trans
+        source={"<0>{count}</0> {count, plural, one {nombre trouvé} other {nombres trouvés}} · {duplicates} {duplicates, plural, one {doublon ignoré} other {doublons ignorés}}"}
+        values={{ count: values.length, duplicates: result.duplicates }}
+        components={[<strong />]}
+      />
+    ) : mode === "numbers" ? (
+      <Trans
+        source={"<0>{count}</0> {count, plural, one {nombre trouvé} other {nombres trouvés}}"}
+        values={{ count: values.length }}
+        components={[<strong />]}
+      />
+    ) : result.duplicates > 0 ? (
+      <Trans
+        source={"<0>{count}</0> URL {count, plural, one {trouvée} other {trouvées}} · {duplicates} {duplicates, plural, one {doublon ignoré} other {doublons ignorés}}"}
+        values={{ count: values.length, duplicates: result.duplicates }}
+        components={[<strong />]}
+      />
+    ) : (
+      <Trans
+        source={"<0>{count}</0> URL {count, plural, one {trouvée} other {trouvées}}"}
+        values={{ count: values.length }}
+        components={[<strong />]}
+      />
+    );
 
   return (
     <TextToolShell
       input={input}
       onInputChange={setInput}
       output={values.join("\n")}
-      outputLabel={`${values.length} ${label}`}
+      outputLabel={outputLabel}
       downloadName={`${mode}.txt`}
       sample={SAMPLE}
       summary={
         input.length > 0 ? (
           <span className="tabular-nums">
-            <Trans source={"<0>{count}</0> {label} {count, plural, one {trouvée} other {trouvées}}{value}"} values={{ count: values.length, label, value: result.duplicates > 0 && t(" · {duplicates} doublon(s) ignoré(s)", { duplicates: result.duplicates }) }} components={[<strong />]} />
+            {foundSummary}
             {numbers && values.length > 0 && (
               <>
                 {" "}{t("· somme {sum} · moyenne {average} · min {min} · max {max}", { sum: formatNumber(numbers.sum), average: formatNumber(numbers.average), min: formatNumber(numbers.min), max: formatNumber(numbers.max) })}

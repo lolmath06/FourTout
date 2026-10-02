@@ -91,11 +91,11 @@ export function TextCompareTool(_props: ToolComponentProps) {
             </span>
           ) : (
             <>
-              <span className="tabular-nums text-[var(--ft-ok)]">+{result.stats.added} ajoutée(s)</span>
-              <span className="tabular-nums text-[var(--ft-danger)]">{t("−{removed} supprimée(s)", { removed: result.stats.removed })}</span>
-              <span className="tabular-nums text-[var(--ft-warn)]">{t("~{modified} modifiée(s)", { modified: result.stats.modified })}</span>
+              <span className="tabular-nums text-[var(--ft-ok)]">{t("+{count} {count, plural, one {ajoutée} other {ajoutées}}", { count: result.stats.added })}</span>
+              <span className="tabular-nums text-[var(--ft-danger)]">{t("−{count} {count, plural, one {supprimée} other {supprimées}}", { count: result.stats.removed })}</span>
+              <span className="tabular-nums text-[var(--ft-warn)]">{t("~{count} {count, plural, one {modifiée} other {modifiées}}", { count: result.stats.modified })}</span>
               <span className="tabular-nums text-[var(--ft-text-muted)]">
-                {t("{unchanged} inchangée(s)", { unchanged: result.stats.unchanged })}
+                {t("{count} {count, plural, one {inchangée} other {inchangées}}", { count: result.stats.unchanged })}
               </span>
             </>
           )}

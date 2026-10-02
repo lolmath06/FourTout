@@ -103,12 +103,11 @@ export function VideoBatchTool({ tool }: ToolComponentProps) {
           files: outputs,
           zipName: "fourtout-videos.zip",
           summary:
-            t("{count} fichier(s) traité(s) — {value}.", { count: outputs.length, value: label.toLowerCase() }) +
-            (operation === "extract-audio"
-              ? ""
+            operation === "extract-audio"
+              ? t("{count} {count, plural, one {fichier traité} other {fichiers traités}} — {operation}.", { count: outputs.length, operation: label.toLowerCase() })
               : savedBytes > 0
-                ? t(" {size} économisés au total.", { size: formatFileSize(savedBytes) })
-                : t(" Le lot n'a pas gagné en poids ; les sources étaient déjà optimisées.")),
+                ? t("{count} {count, plural, one {fichier traité} other {fichiers traités}} — {operation}. {size} économisés au total.", { count: outputs.length, operation: label.toLowerCase(), size: formatFileSize(savedBytes) })
+                : t("{count} {count, plural, one {fichier traité} other {fichiers traités}} — {operation}. Le lot n'a pas gagné en poids ; les sources étaient déjà optimisées.", { count: outputs.length, operation: label.toLowerCase() }),
           warning: fellBack
             ? t("L'encodeur initial n'a pas pu démarrer sur au moins un fichier ; un encodeur logiciel a pris le relais.")
             : undefined,

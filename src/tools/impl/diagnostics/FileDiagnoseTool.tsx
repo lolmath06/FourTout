@@ -83,7 +83,7 @@ export function FileDiagnoseTool({ tool }: ToolComponentProps) {
                 label: t("Octets après la fin du fichier"),
                 value: report.details.generic?.trailingBytes
                   ? formatSize(report.details.generic.trailingBytes)
-                  : "aucun",
+                  : t("aucun"),
               },
             ]}
           />

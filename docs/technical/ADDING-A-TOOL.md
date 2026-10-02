@@ -1,90 +1,84 @@
-# Ajouter un outil
+# Adding a tool
+
+[English](ADDING-A-TOOL.md) | [Français](../fr/technical/ADDING-A-TOOL.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+## Contents
 
-- [En résumé](#en-résumé)
-- [1. Déclarer l'outil au catalogue](#1-déclarer-loutil-au-catalogue)
-- [2. Écrire la logique métier](#2-écrire-la-logique-métier)
-- [3. Écrire l'interface et la brancher](#3-écrire-linterface-et-la-brancher)
-- [Traduire l'outil](#traduire-loutil)
-- [Ajouter une catégorie](#ajouter-une-catégorie)
+- [Summary](#summary)
+- [1. Declare the tool in the catalog](#1-declare-the-tool-in-the-catalog)
+- [2. Write the business logic](#2-write-the-business-logic)
+- [3. Build and connect the interface](#3-build-and-connect-the-interface)
+- [Translate the tool](#translate-the-tool)
+- [Add a category](#add-a-category)
 - [Tests](#tests)
 
 ---
 
-## En résumé
+## Summary
 
-Un outil au catalogue = **1 fichier modifié**.
-Un outil réellement implémenté = **3 fichiers**.
+A catalog-only tool requires **one changed file**. A working implementation
+requires **three files**.
 
----
+## 1. Declare the tool in the catalog
 
-## 1. Déclarer l'outil au catalogue
-
-Ouvrez le fichier de sa catégorie dans `src/core/tools/catalog/` (par exemple
-`pdf.ts`) et ajoutez une définition :
+Open its category file under `src/core/tools/catalog/`, such as `pdf.ts`, and
+add a definition:
 
 ```ts
 {
-  id: "pdf-compress",                     // kebab-case, unique dans tout le catalogue
-  name: "Compresser un PDF",
+  id: "pdf-compress",                     // kebab-case, globally unique
+  name: "Compresser un PDF",              // French source message
   description: "Réduire le poids d'un PDF en gardant une qualité correcte.",
   category: "pdf",
-  alsoIn: ["converters"],                 // facultatif : découvrable ailleurs, sans duplication
-  icon: "Minimize2",                      // nom lucide, voir plus bas
-  keywords: ["réduire la taille", "trop lourd", "alléger"],  // langage courant
-  aliases: ["compress pdf", "reduce pdf size"],              // autres noms, anglais inclus
+  alsoIn: ["converters"],                 // optional: discoverable elsewhere
+  icon: "Minimize2",                      // Lucide name; see below
+  keywords: ["réduire la taille", "trop lourd", "alléger"],
+  aliases: ["compress pdf", "reduce pdf size"],
   capabilities: ["local", "produces-files", "long-running"],
   acceptedInputs: [IN.pdf()],
   outputs: [OUT.pdf()],
-  note: "Précision affichée sur la page de l'outil.",        // facultatif
+  note: "Précision affichée sur la page de l'outil.", // optional limitation
 }
 ```
 
-> **N'ajoutez cette déclaration que lorsque l'outil fonctionne.** La règle du
-> produit est que figurer au catalogue, c'est fonctionner : il n'existe pas
-> d'état « bientôt disponible », et un test échouera si le catalogue et la
-> table des implémentations divergent. Un outil futur vit dans
-> [ROADMAP.md](../../ROADMAP.md) ou dans un ticket, pas dans l'interface.
+> **Add this declaration only when the tool works.** Being in the catalog means
+> being usable: there is no “coming soon” state, and a test fails if the catalog
+> and implementation table diverge. Future work belongs in
+> [ROADMAP.md](../../ROADMAP.md) or an issue, not in the interface.
 
-Une fois les trois fichiers en place, l'outil apparaît dans sa catégorie, dans
-la recherche, dans l'accueil et sur sa propre page
-(`/tools/t/pdf-compress`).
+Once all three files exist, the tool appears in its category, search results,
+the home page, and its own route such as `/tools/t/pdf-compress`.
 
-### Bien choisir les `keywords` et `aliases`
+### Choosing `keywords` and `aliases`
 
-C'est ce qui fait la qualité de la recherche, et demain celle de l'assistant.
-Écrivez ce qu'un utilisateur taperait vraiment : « mon pdf est trop lourd »,
-« png en jpg », « enlever le gps d'une photo ». Un test dédié
-(`src/core/tools/search.test.ts`) verrouille les formulations importantes.
+These fields determine search quality and feed the intent resolver. Write what
+a user would genuinely type, such as “my PDF is too large,” “PNG to JPG,” or
+“remove GPS from a photo.” Add localized catalog metadata for every supported
+language. `src/core/tools/search.test.ts` locks down important phrasings.
 
-### Icônes
+### Icons
 
-`icon` est un nom d'icône [lucide](https://lucide.dev). Les icônes sont
-importées nommément dans `src/components/ui/icons.ts` pour que le bundle ne
-contienne que celles utilisées : **ajoutez-y le nom** s'il n'y est pas encore
-(sinon une icône de repli s'affiche).
+`icon` is a [Lucide](https://lucide.dev) icon name. Icons are imported by name
+in `src/components/ui/icons.ts` so the bundle contains only those in use. Add
+the icon there if necessary; otherwise the fallback icon is displayed.
 
----
+## 2. Write the business logic
 
-## 2. Écrire la logique métier
-
-Dans `src/tools/logic/`, un module pur, sans React ni DOM :
+Create a pure module without React or DOM dependencies under
+`src/tools/logic/`:
 
 ```ts
 // src/tools/logic/pdfCompress.ts
 export async function compressPdf(file: File, options, ctx: JobContext) { … }
 ```
 
-C'est ce module que les tests unitaires ciblent.
+Unit tests target this module.
 
----
+## 3. Build and connect the interface
 
-## 3. Écrire l'interface et la brancher
-
-Créez le composant dans `src/tools/impl/` :
+Create the component under `src/tools/impl/`:
 
 ```tsx
 // src/tools/impl/PdfCompressTool.tsx
@@ -94,12 +88,12 @@ export function PdfCompressTool({ tool }: ToolComponentProps) {
 
   return (
     <FileDropZone constraints={constraintsForTool(tool)} files={files} onChange={setFiles} />
-    // … puis job.run(async (ctx) => compressPdf(files[0].file!, options, ctx))
+    // … then job.run(async (ctx) => compressPdf(files[0].file!, options, ctx))
   );
 }
 ```
 
-Puis déclarez-le dans `src/tools/implementations.ts` :
+Register it in `src/tools/implementations.ts`:
 
 ```ts
 "pdf-compress": lazy(() =>
@@ -107,79 +101,75 @@ Puis déclarez-le dans `src/tools/implementations.ts` :
 ),
 ```
 
-> Un test vérifie que le catalogue et la table des implémentations
-> correspondent **exactement** : impossible d'oublier l'un des deux, ni
-> d'enregistrer un outil qui n'existe pas encore.
+A test requires the catalog and implementation table to match **exactly**, so
+neither side can be forgotten and an unfinished tool cannot be registered.
 
-### Ce que la page d'outil fournit déjà
+### What the tool page already provides
 
-Vous n'avez **pas** à écrire : l'en-tête, l'icône, le badge de statut, le bouton
-favori, l'enregistrement dans les récents, le fil d'Ariane vers la catégorie,
-le rappel de confidentialité. `ToolPage` s'en charge — votre composant ne
-contient que l'outil lui-même.
+You do **not** need to implement the heading, icon, status badge, favorite
+button, recent-tool tracking, category breadcrumb, or privacy reminder.
+`ToolPage` provides them. Your component contains only the tool itself.
 
-### Briques disponibles
+### Available building blocks
 
-| Besoin | À utiliser |
+| Need | Use |
 | --- | --- |
-| Recevoir des fichiers | `FileDropZone` + `constraintsForTool(tool)` |
-| Écrire un outil PDF | `PdfToolShell` — voir [PDF.md](../features/PDF.md) |
-| Écrire un outil Image par lot | `ImageToolShell` (`@/components/image`) — voir [IMAGES.md](../features/IMAGES.md) |
-| Traiter une image | `processImage` / `processImages` (`@/core/image`) |
-| Aperçu d'image (dont temps réel) | `ImagePreview`, `useSourceCanvas`, `useProcessedPreview` |
-| Reconnaître du texte (OCR) | `recognizeImages` (`@/core/ocr`) |
-| Traiter un audio (FFmpeg) | `runMedia` (`@/core/media`) + `MediaToolShell` — voir [MEDIA.md](../features/MEDIA.md) |
-| Écrire un outil vidéo | `VideoToolShell` (`@/components/media`) — voir [VIDEO.md](../features/VIDEO.md) |
-| Savoir quels codecs existent vraiment | `mediaCapabilities()` (`@/core/media/capabilities`) |
-| Lecteur / sélection visuelle sur une vidéo | `VideoPreview`, `CropOverlay` (`@/components/media`) |
-| Traitement long survivant à la navigation | `startBackgroundJob` (`@/features/jobs/background`) |
-| Générer/lire un QR code | `generateQrPng`/`decodeQr` (`@/core/image/qr`) |
-| Enregistrer le résultat | `saveFile` / `saveFilesToFolder` (`@/core/output/save`) |
-| Traitement long | `useJob()` (`@/core/jobs`) |
-| Message à l'utilisateur | `notify.success/error/warning/info/loading` |
-| Bouton, badge, état vide | `@/components/ui/*` |
-| Persister un réglage | `appStore` (`@/core/storage`) |
+| Accept files | `FileDropZone` + `constraintsForTool(tool)` |
+| Build a PDF tool | `PdfToolShell`; see [PDF](../features/PDF.md) |
+| Build a batch image tool | `ImageToolShell` from `@/components/image`; see [Images](../features/IMAGES.md) |
+| Process images | `processImage` / `processImages` from `@/core/image` |
+| Image preview, including live | `ImagePreview`, `useSourceCanvas`, `useProcessedPreview` |
+| OCR | `recognizeImages` from `@/core/ocr` |
+| Process audio with FFmpeg | `runMedia` + `MediaToolShell`; see [Media](../features/MEDIA.md) |
+| Build a video tool | `VideoToolShell` from `@/components/media`; see [Video](../features/VIDEO.md) |
+| Discover codecs that really work | `mediaCapabilities()` from `@/core/media/capabilities` |
+| Video player and visual selection | `VideoPreview`, `CropOverlay` from `@/components/media` |
+| Long-running work that survives navigation | `startBackgroundJob` from `@/features/jobs/background` |
+| Generate or read QR codes | `generateQrPng` / `decodeQr` from `@/core/image/qr` |
+| Save results | `saveFile` / `saveFilesToFolder` from `@/core/output/save` |
+| Component-scoped long operation | `useJob()` from `@/core/jobs` |
+| User notification | `notify.success/error/warning/info/loading` |
+| Buttons, badges, empty states | `@/components/ui/*` |
+| Persistent setting | `appStore` from `@/core/storage` |
 
----
+## Translate the tool
 
-## Traduire l'outil
+The source definition remains in French and is never duplicated. Add an entry
+with the same `id` to every file under `src/i18n/catalog/<locale>.json`, with a
+localized `name`, `description`, natural search `keywords`, `aliases`, and the
+optional `note`.
 
-La définition reste en français et n'est jamais dupliquée. Ajoutez l'entrée de
-l'outil (même `id`) dans chaque `src/i18n/catalog/<langue>.json` — au minimum
-`en.json`, que les tests exigent : `name`, `description`, `keywords` (écrits
-comme on les taperait dans cette langue), `aliases`, et `note` si l'outil en a
-une. Les textes de son interface s'écrivent avec `t("…")` ; lancez ensuite
-`pnpm i18n:extract`, traduisez les nouvelles clés dans `messages/en.json`
-(puis les autres langues) et vérifiez avec `pnpm i18n:status`. Voir
-[I18N.md](I18N.md).
+Wrap interface text with `t("…")`, run `pnpm i18n:extract`, and translate every
+new key in all 16 real locale catalogs under `src/i18n/messages/`. Then run
+`pnpm i18n:status`: every locale must report 100%. See
+[Internationalization](I18N.md).
 
-## Ajouter une catégorie
+## Add a category
 
-1. Ajoutez son identifiant au type `CategoryId` (`src/core/tools/types.ts`).
-2. Ajoutez son entrée dans `CATEGORIES` (`src/core/tools/categories.ts`) :
-   `name`, `description`, `icon`, `order`, `accent`, `keywords`.
-3. C'est tout : barre latérale, page Outils, filtres et compteurs se mettent à
-   jour seuls.
+1. Add its identifier to `CategoryId` in `src/core/tools/types.ts`.
+2. Add its `CATEGORIES` entry in `src/core/tools/categories.ts`, including
+   `name`, `description`, `icon`, `order`, `accent`, and `keywords`.
+3. Add complete catalog translations for all supported locales.
 
-L'`accent` doit être l'une des teintes définies dans `src/styles/app.css`
-(`[data-accent="…"]`). Pour en ajouter une, complétez le type `AccentName` et
-les deux blocs (clair et sombre) de la feuille de style.
+The sidebar, Tools page, filters, and counters update automatically.
 
----
+`accent` must be one of the shades defined by `[data-accent="…"]` in
+`src/styles/app.css`. To add one, extend `AccentName` and both the light and
+dark blocks in the stylesheet.
 
 ## Tests
 
 ```bash
-pnpm test          # tout
-pnpm test:watch    # pendant le développement
-pnpm verify        # lint + types + tests + build, avant de conclure
+pnpm test          # everything
+pnpm test:watch    # during development
+pnpm verify        # lint + types + tests + build, before finishing
 ```
 
-Pour un nouvel outil, ajoutez au minimum :
+At minimum, a new tool needs:
 
-- un test de la logique pure dans `src/tools/logic/` ;
-- si la formulation compte, une assertion de recherche dans
-  `src/core/tools/search.test.ts`.
+- a test for its pure logic under `src/tools/logic/`;
+- a search assertion in `src/core/tools/search.test.ts` when wording matters;
+- complete localized catalog and message entries for all 16 locales.
 
-Les fixtures d'essai sont dans [`test-assets/`](../../test-assets/README.md)
-(`pnpm test:assets` pour les régénérer).
+Test fixtures live in [`test-assets/`](../../test-assets/README.md). Regenerate
+them with `pnpm test:assets` when needed.

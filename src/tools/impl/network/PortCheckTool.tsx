@@ -17,7 +17,7 @@ import {
 } from "@/core/network/native";
 import { JobCancelledError } from "@/core/jobs/types";
 import type { ToolComponentProps } from "@/tools/implementations";
-import { t, tx } from "@/i18n";
+import { Trans, t, tx } from "@/i18n";
 
 const STATUS_CLASS: Record<PortStatus, string> = {
   open: "text-[var(--ft-success)] font-semibold",
@@ -137,11 +137,33 @@ export function PortCheckTool(_props: ToolComponentProps) {
       {summary && (
         <>
           <p className="ft-value">
-            {summary.host} ({summary.resolved}) · {summary.tested} port
-            {summary.tested > 1 ? "s" : ""} testé{summary.tested > 1 ? "s" : ""} ·{" "}
-            <strong>{summary.open} ouvert{summary.open > 1 ? "s" : ""}</strong> ·{" "}
-            {summary.closed} fermé{summary.closed > 1 ? "s" : ""} · {summary.filtered} sans réponse
-            {summary.cancelled && t(" · interrompu avant la fin")}
+            {summary.cancelled ? (
+              <Trans
+                source={"{host} ({resolved}) · {tested} {tested, plural, one {port testé} other {ports testés}} · <0>{open} {open, plural, one {ouvert} other {ouverts}}</0> · {closed} {closed, plural, one {fermé} other {fermés}} · {filtered} sans réponse · interrompu avant la fin"}
+                values={{
+                  host: summary.host,
+                  resolved: summary.resolved,
+                  tested: summary.tested,
+                  open: summary.open,
+                  closed: summary.closed,
+                  filtered: summary.filtered,
+                }}
+                components={[<strong />]}
+              />
+            ) : (
+              <Trans
+                source={"{host} ({resolved}) · {tested} {tested, plural, one {port testé} other {ports testés}} · <0>{open} {open, plural, one {ouvert} other {ouverts}}</0> · {closed} {closed, plural, one {fermé} other {fermés}} · {filtered} sans réponse"}
+                values={{
+                  host: summary.host,
+                  resolved: summary.resolved,
+                  tested: summary.tested,
+                  open: summary.open,
+                  closed: summary.closed,
+                  filtered: summary.filtered,
+                }}
+                components={[<strong />]}
+              />
+            )}
           </p>
 
           <section className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface)]">

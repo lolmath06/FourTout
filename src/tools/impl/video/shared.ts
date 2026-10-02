@@ -71,8 +71,9 @@ export function sizeOutcome(
       files: [file],
       summary: t("{prefix} {sizes} (aucun gain).", { prefix, sizes }),
       warning: join(
-        t("Ce fichier était déjà suffisamment optimisé : le résultat est plus volumineux que l'original ") +
-          `(+${formatFileSize(Math.abs(delta))}). Conservez plutôt la vidéo de départ, ou choisissez une compression plus forte.`,
+        t("Ce fichier était déjà suffisamment optimisé : le résultat est plus volumineux que l'original (+{size}). Conservez plutôt la vidéo de départ, ou choisissez une compression plus forte.", {
+          size: formatFileSize(Math.abs(delta)),
+        }),
         extraWarning,
       ),
     };

@@ -1,161 +1,155 @@
-# Contribuer à FourTout
+# Contributing to FourTout
 
-Merci de l'intérêt. Cette page dit comment démarrer, ce que le projet attend
-d'une contribution, et comment ajouter un outil.
+[English](CONTRIBUTING.md) | [Français](CONTRIBUTING.fr.md)
+
+Thank you for your interest. This page explains how to get started, what the
+project expects from contributions, and how to add a tool.
 
 ---
 
-## Démarrer
+## Getting started
 
 ```bash
-git clone <url-du-dépôt> FourTout
+git clone <repository-url> FourTout
 cd FourTout
 pnpm install
 pnpm app:dev
 ```
 
-Prérequis complets (Node, Rust, bibliothèques système) :
-[docs/DEVELOPMENT.md](docs/technical/DEVELOPMENT.md).
+See [the development guide](docs/technical/DEVELOPMENT.md) for all
+prerequisites, including Node, Rust, and system libraries.
 
 ---
 
-## Avant d'ouvrir une pull request
+## Before opening a pull request
 
 ```bash
 pnpm verify                              # lint + typecheck + test + build
 cd src-tauri && cargo test && cd ..
 ```
 
-Tout doit être vert. Si un test s'ignore parce que FFmpeg ou les fixtures
-manquent, lancez `pnpm test:assets` et installez FFmpeg — mieux vaut le savoir
-avant l'intégration continue.
+Everything must pass. If a test is skipped because FFmpeg or fixtures are
+missing, run `pnpm test:assets` and install FFmpeg. It is better to discover
+that before continuous integration does.
 
 ---
 
-## Branches et commits
+## Branches and commits
 
 ```bash
-git checkout -b sujet-de-la-modification
+git checkout -b topic-of-the-change
 ```
 
-Les messages de commit sont **en français** et décrivent ce que la
-modification change **pour l'utilisateur ou pour le code**, pas la liste des
-fichiers touchés.
+Commit messages describe what the change does **for the user or the code**, not
+the list of files it touches.
 
+```text
+Good: The regex tester no longer freezes the window on an expensive pattern
+Bad:  fix regex + update tests
 ```
-Bien : Le testeur de regex ne fige plus la fenêtre sur un motif coûteux
-Mal  : fix regex + update tests
-```
 
-Si la modification corrige un défaut, dites lequel et pourquoi la correction
-fonctionne. Le corps d'un commit est le meilleur endroit pour cela.
+When fixing a defect, state what was wrong and why the fix works. The commit
+body is the best place for that explanation.
 
 ---
 
-## Ce que le projet attend
+## What the project expects
 
-### Aucune promesse invérifiable
+### No unverifiable promises
 
-C'est la règle qui prime sur les autres. Si un outil a une limite —
-l'effacement n'est pas physique, la conversion Word n'est pas fidèle au pixel,
-un JWT décodé n'est pas un JWT vérifié — elle s'écrit dans la `note` du
-catalogue et s'affiche sur la page de l'outil.
+This rule takes precedence over every other one. If a tool has a limitation —
+erasure is not physical, Word conversion is not pixel-perfect, or a decoded
+JWT is not a verified JWT — describe it in the catalog `note` so it appears on
+the tool page.
 
-Un outil qui laisse croire qu'il fait plus qu'il ne fait est pire qu'un outil
-absent.
+A tool that implies it does more than it really does is worse than a missing
+tool.
 
-### Figurer au catalogue, c'est fonctionner
+### Being in the catalog means working
 
-Il n'y a pas d'état « bientôt disponible ». Un outil incomplet n'est pas
-enregistré, et un test garde le catalogue et la table des implémentations
-exactement alignés. Un outil futur vit dans [ROADMAP.md](ROADMAP.md) ou dans
-un ticket, pas dans l'interface.
+There is no “coming soon” state. An incomplete tool is not registered, and a
+test keeps the catalog and implementation table exactly aligned. Future tools
+belong in [ROADMAP.md](ROADMAP.md) or an issue, not in the interface.
 
-### Des tests qui éprouvent le comportement réel
+### Tests that exercise real behavior
 
-Un test qui vérifie la liste d'arguments passée à FFmpeg ne prouve pas que le
-fichier produit est lisible. Les tests de FourTout exécutent le vrai FFmpeg et
-relisent le résultat avec `ffprobe` ; ils relisent les PDF produits avec
-pdf.js ; ils relisent l'archive AES avec `7z` plutôt qu'avec le code qui l'a
-écrite.
+A test that only checks arguments passed to FFmpeg does not prove that the
+resulting file is readable. FourTout tests run the real FFmpeg and inspect the
+result with `ffprobe`; reopen generated PDFs with pdf.js; and read an AES
+archive with `7z`, rather than with the same code that wrote it.
 
-Quand l'environnement manque quelque chose, un test s'**ignore proprement en
-disant pourquoi** ; il n'échoue pas.
+When the environment lacks a dependency, a test must **skip cleanly and state
+why**; it must not fail.
 
-Et jamais l'inverse : on n'ajuste pas une assertion pour faire vert. Si un
-test échoue, soit le code a tort, soit l'assertion était imprécise — et la
-corriger doit la rendre *plus* stricte.
+Never do the reverse: do not weaken an assertion to make a test pass. Either
+the code is wrong or the assertion was imprecise, and correcting the latter
+must make it *stricter*.
 
-### Du français, et des commentaires qui expliquent pourquoi
+### English canonical documentation and useful comments
 
-L'interface, la documentation, les commentaires et les messages de commit sont
-en français. Un commentaire qui paraphrase le code ne sert à rien ; un
-commentaire qui explique **pourquoi ce choix plutôt qu'un autre** évite une
-régression dans six mois.
+Public documentation is canonical in English and mirrored in French. UI text
+goes through the localization system. A comment that paraphrases code adds
+nothing; a comment that explains **why this choice was made instead of
+another** can prevent a regression six months later.
 
-### Pas de `any` pour faire taire le compilateur
+### Do not use `any` to silence the compiler
 
-Ni de couleur en dur : les composants utilisent les jetons CSS `--ft-*`.
+Do not hard-code colors either: components use the `--ft-*` CSS tokens.
 
 ---
 
-## Ajouter un outil
+## Adding a tool
 
-Trois fichiers, dans cet ordre. La procédure détaillée est dans
-[docs/ADDING-A-TOOL.md](docs/technical/ADDING-A-TOOL.md).
+Touch these files in this order. The detailed procedure is in
+[the adding-a-tool guide](docs/technical/ADDING-A-TOOL.md).
 
-1. **Le catalogue** — `src/core/tools/catalog/<catégorie>.ts`. Nom,
-   description, icône, mots-clés (en langage courant : c'est ce que
-   l'utilisateur tape), entrées acceptées, sorties produites, capacités, et la
-   `note` si l'outil a une limite.
+1. **Catalog** — `src/core/tools/catalog/<category>.ts`. Declare the name,
+   description, icon, plain-language search keywords, accepted inputs,
+   produced outputs, capabilities, and a `note` for any limitation.
+2. **Implementation** — `src/tools/impl/<category>/MyTool.tsx`. Business logic
+   belongs in `src/core/`, not in the component, so it can be tested.
+3. **Implementation table** — add a lazy import to
+   `src/tools/implementations.ts`.
+4. **Tests** — cover behavior in `src/core/`, opening the screen in a page
+   test, and discoverability in the search matrix.
 
-2. **L'implémentation** — `src/tools/impl/<catégorie>/MonOutil.tsx`. La
-   logique métier va dans `src/core/`, pas dans le composant : c'est elle qui
-   se teste.
+Register the tool only once it works. A test will fail otherwise, by design.
 
-3. **La table** — `src/tools/implementations.ts`, en import paresseux.
+### Tools that need the native layer
 
-4. **Les tests.** Le comportement dans `src/core/`, l'ouverture de l'écran
-   dans un test de page, et la découvrabilité dans la matrice de recherche.
-
-N'enregistrez l'outil au catalogue que lorsqu'il fonctionne. Un test échouera
-sinon, et c'est voulu.
-
-### Si l'outil a besoin de la couche native
-
-Le code Rust va dans `src-tauri/src/`, la commande est enregistrée dans
-`src-tauri/src/lib.rs`, et le client TypeScript dans `src/core/…/native.ts`.
-Les opérations longues doivent rapporter leur progression et **être
-annulables** — une annulation ne laisse ni fichier partiel, ni temporaire.
+Rust code belongs in `src-tauri/src/`, the command is registered in
+`src-tauri/src/lib.rs`, and the TypeScript client belongs in a `native.ts` file
+under `src/core/…/`. Long-running operations must report progress and **be
+cancellable**. Cancellation must leave neither a partial output nor a
+temporary file.
 
 ---
 
-## Signaler un problème
+## Reporting an issue
 
-Les modèles de ticket demandent : version de FourTout, système
-d'exploitation, étapes de reproduction, comportement attendu et constaté.
+Issue templates ask for the FourTout version, operating system, reproduction
+steps, expected behavior, and observed behavior.
 
-**Une vulnérabilité de sécurité ne s'ouvre pas en ticket public.** Utilisez
-l'onglet Security → Report a vulnerability. Voir
-[docs/SECURITY.md](docs/legal/SECURITY.md#signaler-une-vulnérabilité).
+**Do not report a security vulnerability in a public issue.** Use
+Security → Report a vulnerability. See the
+[security policy](docs/legal/SECURITY.md#reporting-a-vulnerability).
 
 ---
 
-## Licence des contributions
+## Contribution license
 
-**FourTout est un logiciel propriétaire** — voir [LICENSE](LICENSE). Le code
-est publié pour être lu et audité, pas pour être réutilisé.
+**FourTout is proprietary software**; see [LICENSE](LICENSE). Its source is
+published for reading and auditing, not for reuse.
 
-Cela ne ferme pas la porte aux contributions, mais cela en change le cadre :
-**soumettre une contribution ne change pas la licence de FourTout.** En
-proposant une modification, vous accordez au titulaire des droits le droit de
-l'utiliser, de la modifier et de la distribuer au sein de FourTout, sous cette
-licence.
+Contributions are welcome, but they do not change that framework. **Submitting
+a contribution does not change FourTout's license.** By proposing a change,
+you grant the rights holder permission to use, modify, and distribute it as
+part of FourTout under that license.
 
-Aucun accord de contribution formel (*CLA*) n'est demandé à ce jour. Si le
-projet accepte un jour des contributions extérieures régulières, un tel accord
-pourrait devenir nécessaire ; ce sera une décision du propriétaire du projet,
-annoncée ici. Rien n'est signé par défaut aujourd'hui.
+No formal contributor license agreement (CLA) is currently required. If the
+project begins accepting regular external contributions, the owner may decide
+that one is necessary and will announce that decision here. Nothing is signed
+by default today.
 
-Avant d'engager un travail important, ouvrez un ticket : c'est vrai de tout
-projet, et particulièrement de celui-ci.
+Open an issue before investing in substantial work. That is good practice for
+any project, and especially for this one.

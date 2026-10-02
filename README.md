@@ -10,8 +10,8 @@ A desktop toolbox that brings together PDF, images, audio, video, documents,
 files, developer tools and privacy — 196 tools in a single application, and
 your files never leave your machine.
 
-[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-et-11)
-[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#autres-distributions-linux)
+[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-and-11)
+[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#other-linux-distributions)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
 [![Rust](https://img.shields.io/badge/Rust-native-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
 [![React 19](https://img.shields.io/badge/React-19-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
@@ -320,8 +320,8 @@ report a vulnerability:
 
 ## Documentation
 
-The full index: **[docs/README.md](docs/README.md)**. The documentation is
-written in French.
+The full English index is **[docs/README.md](docs/README.md)**, with a complete
+French mirror under **[docs/fr/](docs/fr/README.md)**.
 
 ## License
 

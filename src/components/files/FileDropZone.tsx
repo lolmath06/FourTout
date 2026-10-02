@@ -144,7 +144,7 @@ export function FileDropZone({
               <Icon name="File" size={14} className="shrink-0 text-[var(--ft-text-faint)]" />
               <span className="min-w-0 flex-1 truncate text-[13px]">{file.name}</span>
               <span className="ft-value shrink-0 uppercase text-[var(--ft-text-faint)]">
-                {file.extension || file.kind}
+                {file.extension || t("sans extension")}
               </span>
               <span className="ft-value shrink-0 text-[var(--ft-text-muted)]">
                 {formatFileSize(file.size)}

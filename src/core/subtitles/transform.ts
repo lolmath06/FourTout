@@ -216,17 +216,13 @@ export function normalizeCues(
   if (after.overlaps > 0) {
     remaining.push({
       kind: "overlap",
-      message:
-        t("{overlaps} {overlaps, plural, one {chevauchement} other {chevauchements}} : une réplique commence avant la fin de la précédente. ", { overlaps: after.overlaps }) +
-        t("Rien n'a été raccourci — décider laquelle doit céder demande de connaître le contenu."),
+      message: t("{overlaps} {overlaps, plural, one {chevauchement} other {chevauchements}} : une réplique commence avant la fin de la précédente. Rien n'a été raccourci — décider laquelle doit céder demande de connaître le contenu.", { overlaps: after.overlaps }),
     });
   }
   if (after.endBeforeStart > 0) {
     remaining.push({
       kind: "end-before-start",
-      message:
-        t("{endBeforeStart} réplique{endBeforeStart, plural, one { a} other {s ont}} une fin antérieure à son début : ", { endBeforeStart: after.endBeforeStart }) +
-        t("le lecteur ne l'affichera pas. Corrigez l'horodatage, ou demandez leur suppression."),
+      message: t("{count} {count, plural, one {réplique a} other {répliques ont}} une fin antérieure à son début : le lecteur ne {count, plural, one {l'affichera} other {les affichera}} pas. Corrigez l'horodatage, ou demandez leur suppression.", { count: after.endBeforeStart }),
     });
   }
 

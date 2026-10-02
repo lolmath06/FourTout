@@ -221,7 +221,9 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
     setEdits(new Map());
     notify.success(
       summary.inPlace ? t("Fichier modifié") : t("Fichier enregistré"),
-      t("{patchedBytes} octet(s) écrit(s)", { patchedBytes: summary.patchedBytes }),
+      t("{count} {count, plural, one {octet écrit} other {octets écrits}}", {
+        count: summary.patchedBytes,
+      }),
     );
     if (summary.inPlace) void load(path, offset);
   };
@@ -470,9 +472,9 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
             <>
               <Callout
                 tone="warning"
-                title={t("{size} octet(s) modifié(s), pas encore enregistré(s)", { size: edits.size })}
+                title={t("{count} {count, plural, one {octet modifié, pas encore enregistré} other {octets modifiés, pas encore enregistrés}}", { count: edits.size })}
               >
-                {t("Rien n'a été écrit sur le disque. Les modifications tiennent en {count} plage(s) contiguë(s).", { count: pendingPatches.length })}
+                {t("Rien n'a été écrit sur le disque. Les modifications tiennent en {count} {count, plural, one {plage contiguë} other {plages contiguës}}.", { count: pendingPatches.length })}
               </Callout>
 
               <Fieldset columns={1} title={t("Enregistrement")}>
@@ -498,7 +500,7 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
 
               {overwrite && (
                 <Callout tone="error" title={t("L'original sera écrasé")}>
-                  <Trans source={"Les {size} octet(s) seront réécrits directement dans <0>{path}</0>. Aucune copie de secours n'est faite."} values={{ size: edits.size, path }} components={[<code className="font-mono" />]} />
+                  <Trans source={"{count} {count, plural, one {octet sera réécrit} other {octets seront réécrits}} directement dans <0>{path}</0>. Aucune copie de secours n'est faite."} values={{ count: edits.size, path }} components={[<code className="font-mono" />]} />
                 </Callout>
               )}
 
@@ -535,7 +537,7 @@ export function HexEditorTool({ tool }: ToolComponentProps) {
                 </Button>
               }
             >
-              <Trans source={"{patchedBytes} octet(s) écrit(s) dans <0>{path}</0>. La taille du fichier est inchangée ({size})."} values={{ patchedBytes: writing.result.patchedBytes, path: writing.result.path, size: formatFileSize(writing.result.size) }} components={[<code className="font-mono" />]} />
+              <Trans source={"{count} {count, plural, one {octet écrit} other {octets écrits}} dans <0>{path}</0>. La taille du fichier est inchangée ({size})."} values={{ count: writing.result.patchedBytes, path: writing.result.path, size: formatFileSize(writing.result.size) }} components={[<code className="font-mono" />]} />
             </Callout>
           )}
 

@@ -1,196 +1,118 @@
-# Bloc Audio + voix
+# Audio and speech
+
+[English](AUDIO.md) | [Français](../fr/features/AUDIO.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+## Available audio tools
 
-- [Outils audio disponibles](#outils-audio-disponibles)
-- [Synthèse vocale (TTS) — `available`](#synthèse-vocale-tts--available)
-- [Transcription (STT) + sous-titres — `available`](#transcription-stt--sous-titres--available)
-- [PDF vers audio](#pdf-vers-audio)
-- [Fixtures](#fixtures)
+All tools use the local, cancelable FFmpeg foundation with progress reporting;
+see [MEDIA.md](MEDIA.md).
 
----
-
-## Outils audio disponibles
-
-Tous reposent sur le socle FFmpeg (voir [MEDIA.md](MEDIA.md)) — 100 % local,
-annulables, avec progression.
-
-| Outil | Ce qu'il fait |
+| Tool | Purpose |
 | --- | --- |
-| Convertir un audio | MP3 / WAV / FLAC / OGG / Opus / AAC-M4A. |
-| Compresser un audio | Légère / Équilibrée / Forte, vers MP3/Opus/AAC ; gain affiché. |
-| Découper un audio | Extrait une portion (`hh:mm:ss.mmm`), lecteur pour repérer les temps. |
-| Fusionner des audios | Plusieurs fichiers, ordre modifiable, transcodage/normalisation par FFmpeg. |
-| Régler le volume | Gain en dB, avertissement de saturation. |
-| Normaliser un audio | EBU R128 (`loudnorm`) : standard / podcast / musique. |
-| Changer la vitesse | 0,5×–2×, **hauteur (pitch) conservée** (`atempo`). |
-| Supprimer les silences | Seuil + durée minimale (`silenceremove`). |
-| Extraire l'audio d'une vidéo | Vers MP3/WAV/… ou **copie de piste** sans réencodage. |
-| Enregistrer au micro | Capture WebView (MediaRecorder), WAV via FFmpeg ou WebM. |
-| Texte vers parole | Synthèse locale (Piper), aperçu, WAV ou MP3. |
-| Fichier texte vers audio | TXT/Markdown déposé, texte corrigeable, même pipeline. |
-| PDF vers audio | Extraction (ou OCR) puis lecture, façon livre audio. |
-| Transcription audio | Audio **ou vidéo** vers texte horodaté (whisper.cpp). |
-| Générer des sous-titres | SRT et WebVTT depuis un audio ou une vidéo. |
+| Convert audio | MP3, WAV, FLAC, OGG, Opus, and AAC/M4A. |
+| Compress audio | Light, balanced, or strong MP3/Opus/AAC compression with displayed savings. |
+| Trim audio | Extract a `hh:mm:ss.mmm` range with a player for locating timestamps. |
+| Merge audio | Reorder files, then transcode and normalize with FFmpeg. |
+| Adjust volume | Apply gain in dB with clipping warnings. |
+| Normalize audio | EBU R128 `loudnorm` presets for standard, podcast, or music. |
+| Change speed | 0.5×–2× while **preserving pitch** with `atempo`. |
+| Remove silence | Configurable threshold and minimum duration with `silenceremove`. |
+| Extract video audio | Export MP3/WAV/etc. or **copy the track** without re-encoding. |
+| Record microphone | WebView MediaRecorder capture, exported through FFmpeg as WAV or WebM. |
+| Text to speech | Local Piper synthesis, preview, WAV, or MP3. |
+| Text file to audio | Editable TXT/Markdown input using the same pipeline. |
+| PDF to audio | Text extraction or OCR followed by audiobook-style speech. |
+| Transcribe audio | Timestamped text from **audio or video** with whisper.cpp. |
+| Generate subtitles | SRT and WebVTT from audio or video. |
 
-Lecteur audio réutilisable (`AudioPreview`) : lecture, pause, timeline, volume.
+`AudioPreview` provides reusable playback, pause, timeline, and volume controls.
 
-### Enregistrement microphone
+### Microphone recording
 
-La capture utilise `getUserMedia` + `MediaRecorder` dans la WebView.
+Capture uses `getUserMedia` and `MediaRecorder` in the WebView.
 
-**WebKitGTK (Linux) — permission.** WebKitGTK n'affiche aucun dialogue de
-permission et refuse toute capture par défaut ; sans intervention de
-l'application hôte, `getUserMedia` échoue immédiatement en `NotAllowedError`.
-Deux verrous sont levés côté natif (`src-tauri/src/microphone.rs`) :
+On Linux, WebKitGTK does not show a permission dialog by itself and rejects
+capture by default. `src-tauri/src/microphone.rs` enables media streams, then
+intercepts WebView permission requests. It accepts audio-only requests solely
+after user consent; camera and every other permission type are rejected.
 
-- `WebKitSettings:enable-media-stream` est activé au démarrage (aucune demande
-  n'est faite à ce moment-là : le réglage autorise seulement la question) ;
-- le signal `permission-request` de la WebView est intercepté. Une
-  `WebKitUserMediaPermissionRequest` **audio seule** est acceptée uniquement si
-  l'utilisateur a donné son accord ; toute demande incluant la caméra est
-  refusée, de même que les autres types de permission.
+`mic_request_permission` opens a real native **Allow** / **Deny** dialog only
+when the user clicks *Start*, never at application launch. The decision lasts
+for the session. After denial, **Allow microphone** can reopen the dialog. On
+macOS and Windows, the system WebView handles permission and
+`mic_permission_state` returns `granted`.
 
-L'accord est demandé par la commande `mic_request_permission`, qui ouvre un
-vrai dialogue natif (**Autoriser** / **Refuser**), appelée par l'outil au clic
-sur *Démarrer* — jamais au lancement de FourTout. La décision vaut pour la
-session : après un refus, le bouton **Autoriser le microphone** relance le
-dialogue. Sur macOS et Windows, la WebView s'appuie sur les réglages du système
-et FourTout n'ajoute pas de filtre (`mic_permission_state` y renvoie
-`granted`).
+Stopping, unmounting, or failing always stops every `MediaStream` track and
+`MediaRecorder`, closes the `AudioContext`, cancels the level loop, and revokes
+the object URL. A synchronous lock prevents double-clicks from opening two
+captures.
 
-**Libération.** À l'arrêt, au démontage de l'outil et après chaque échec :
-pistes `MediaStream` arrêtées (`readyState === "ended"`), `MediaRecorder`
-arrêté, `AudioContext` fermé, boucle de niveau annulée et URL objet révoquée.
-Aucun indicateur système ne doit rester actif. Un verrou synchrone empêche
-d'ouvrir deux captures sur un double-clic.
+The native GTK dialog and physical capture require a manual test: start a
+recording, allow access, speak, stop, replay, and confirm the system microphone
+indicator turns off. Repeat with denial and confirm the error and retry button.
 
-**Test manuel (non automatisable).** Le dialogue natif GTK et la capture réelle
-ne sont pas reproductibles en test : dans l'application, ouvrir *Enregistrer au
-micro*, cliquer **Démarrer**, répondre **Autoriser**, parler (le niveau et la
-durée doivent bouger), cliquer **Arrêter**, réécouter, puis vérifier que
-l'indicateur micro du système s'est éteint. Rejouer une fois en répondant
-**Refuser** : le message « L'accès au microphone a été refusé. » et le bouton
-**Autoriser le microphone** doivent apparaître, et le bouton doit rouvrir le
-dialogue.
+## Speech synthesis (TTS) — `available`
 
-## Synthèse vocale (TTS) — `available`
+Engine: **Piper**, with `fr_FR-siwis-medium` and `en_US-lessac-medium`. See
+[MODELS.md](../technical/MODELS.md) for installation, size, licenses, and
+measurements.
 
-Moteur : **Piper**, voix `fr_FR-siwis-medium` et `en_US-lessac-medium`.
-Installation, poids, licences et mesures : voir [MODELS.md](../technical/MODELS.md).
-
-### Pipeline
-
-```
-texte → normalisation → segmentation → synthèse segment par segment
-      → concaténation PCM → WAV (→ MP3 via FFmpeg)
+```text
+text → normalization → segmentation → per-segment synthesis
+     → PCM concatenation → WAV (→ MP3 through FFmpeg)
 ```
 
-La **segmentation** (`core/speech/segment.ts`) suit la langue et non un
-compteur : paragraphes, puis phrases, regroupées jusqu'à ~480 caractères. Les
-abréviations courantes (`M.`, `p.`, `Mr.`, `cf.`…) et les nombres décimaux ne
-ferment pas une phrase ; une phrase trop longue est coupée sur une virgule, à
-défaut sur un espace — jamais au milieu d'un mot.
+Segmentation in `core/speech/segment.ts` follows language boundaries, not a
+blind counter: paragraphs, then sentences, grouped to about 480 characters.
+Common abbreviations and decimal numbers do not end sentences. An overlong
+sentence is split at a comma or space, never inside a word.
 
-La **concaténation** est native (`speech/wav.rs`) : les segments d'une même voix
-partagent le format PCM, on recolle donc les données sous un nouvel en-tête.
-C'est exact, instantané, et cela évite un réencodage pour la sortie WAV.
+Native concatenation in `speech/wav.rs` joins the same voice's PCM segments
+under a new header. It is exact and immediate and avoids re-encoding WAV.
 
-### Aperçu
+**Listen to preview** synthesizes only the first sentence, capped at 200
+characters. Full generation is a global job in `features/jobs/speech.ts`, so it
+survives navigation. Cancellation kills Piper, stops the loop, and removes all
+temporary segments; partial output is never presented as a result.
 
-« Écouter un aperçu » ne synthétise que la **première phrase** (200 caractères
-au plus) : juger d'une voix ne doit jamais coûter vingt minutes de calcul.
+WAV is always available, with MP3 through FFmpeg. Results report duration,
+size, voice, and format. The measured full-pipeline throughput is 339
+characters per second on an i9-14900HX, about 20× faster than playback.
 
-### Job, progression et annulation
+## Transcription (STT) and subtitles — `available`
 
-La génération passe par le job **global** (`features/jobs/speech.ts`) : quitter
-l'outil ne l'arrête pas et n'en perd pas la trace. La barre indique le segment
-courant sur le total. L'annulation tue réellement le processus Piper en cours,
-interrompt la boucle et supprime tous les segments temporaires — aucun fichier
-partiel n'est jamais présenté comme un résultat.
+Engine: **whisper.cpp**, with `base` (*Fast*, default) and optional `small`
+(*Accurate*) models. The measured tradeoff is documented in
+[MODELS.md](../technical/MODELS.md).
 
-### Export
-
-WAV toujours ; MP3 via le socle FFmpeg existant. Le résultat annonce durée,
-taille, voix et format.
-
-Débit mesuré sur Fedora (i9-14900HX) : **339 caractères/seconde** sur le
-pipeline complet, soit environ **20× plus vite que la lecture**. Chiffres
-détaillés dans [MODELS.md](../technical/MODELS.md).
-
-## Transcription (STT) + sous-titres — `available`
-
-Moteur : **whisper.cpp**, modèles `base` (*Rapide*, par défaut) et `small`
-(*Précis*, facultatif). Le compromis est chiffré dans [MODELS.md](../technical/MODELS.md).
-
-### Pipeline
-
-```
-audio ou vidéo → FFmpeg (WAV 16 kHz mono, -vn) → whisper.cpp → passages horodatés
-              → texte, SRT, VTT
+```text
+audio or video → FFmpeg (mono 16 kHz WAV, -vn) → whisper.cpp
+               → timestamped segments → text, SRT, VTT
 ```
 
-Une vidéo (MP4, MKV, WebM, MOV) emprunte exactement le même chemin : la bande
-son est extraite par FFmpeg, il n'y a pas d'outil séparé.
+MP4, MKV, WebM, and MOV use the same path; FFmpeg extracts their audio. Users
+can select automatic detection, French, or English. Auto-detection is reliable
+after several seconds of speech; an explicit language is safer for short clips.
 
-### Langues
+Segments are shown with timestamps and can be edited individually. Editing
+preserves timings, so exported SRT/VTT uses corrected text at the original
+positions. Exports support copy, `.txt`, `.srt`, and `.vtt`; UTF-8 accents are
+preserved and durations are always positive. Progress comes from whisper.cpp,
+jobs survive navigation, and cancellation kills the process.
 
-`Détection automatique`, `Français`, `Anglais`. L'auto-détection de whisper.cpp
-est fiable au-delà de quelques secondes de parole ; sur un extrait très court,
-forcer la langue reste préférable.
+## PDF to audio
 
-### Résultats et correction
-
-Les passages sont affichés avec leur horodatage et **modifiables un par un**.
-Les temps ne bougent pas : un SRT exporté après correction porte donc le texte
-corrigé aux temps d'origine. Exports : Copier, `.txt`, `.srt`, `.vtt`.
-
-Format SRT produit :
-
-```
-1
-00:00:00,000 --> 00:00:02,350
-Bonjour, ceci est un test.
-```
-
-et WebVTT :
-
-```
-WEBVTT
-
-00:00:00.000 --> 00:00:02.350
-Bonjour, ceci est un test.
-```
-
-Les accents sont conservés (UTF-8) et aucune durée n'est nulle ou négative.
-
-### Job et annulation
-
-Même modèle global que la synthèse : progression relayée par whisper.cpp
-(`progress = N%`), navigation possible, annulation qui tue le processus. Aucun
-processus ne survit à un arrêt.
-
-## PDF vers audio
-
-Voir [PDF.md](PDF.md) : extraction de texte existante, nettoyage prudent des
-en-têtes et numéros de page, puis pipeline de synthèse ci-dessus. Un PDF sans
-couche texte le dit et propose l'OCR déjà présent.
+See [PDF.md](PDF.md). The tool extracts text, carefully removes repeating
+headers and page numbers, and runs the synthesis pipeline. A PDF without a text
+layer says so and offers the existing OCR tool.
 
 ## Fixtures
 
-`audio-tone.wav`, `audio-tone.mp3`, `audio-stereo.wav`, `audio-with-silences.wav`,
-`audio-quiet.wav`, `audio-loud.wav`, `audio-two-parts-a.wav`,
-`audio-two-parts-b.wav`, `video-with-audio.mp4`, `video-short.mp4`,
-`video-for-gif.mp4`, `qr-sample.png`, `watermark-logo.png`, `favicon-source.png`,
-`palette-photo.png`, `tts-short-fr.txt`, `tts-short-en.txt`, `tts-long-fr.txt`,
-`pdf-to-audio.pdf`.
-
-Les fixtures de **parole** `audio-speech-fr.wav` et `audio-speech-en.wav` sont
-produites par la **vraie** voix Piper installée, à partir de `tts-short-fr.txt`
-et `tts-short-en.txt` (`pnpm speech:assets`). Ce sont donc exactement les
-fichiers que la transcription doit savoir relire — c'est le test croisé
-TTS → STT de `src-tauri/tests/speech_integration.rs`. Le script s'arrête sans
-erreur si les moteurs ne sont pas encore installés : il ne télécharge jamais
-rien de lui-même.
+Audio, video, QR, watermark, favicon, palette, TTS text, and PDF-to-audio
+fixtures are generated under `test-assets/generated/`. The speech fixtures
+`audio-speech-fr.wav` and `audio-speech-en.wav` are created by the real Piper
+voices from their matching text (`pnpm speech:assets`). The native integration
+test then reads them with STT, providing a genuine TTS → STT cross-check. The
+generator exits cleanly when engines are absent and never downloads anything.

@@ -261,8 +261,7 @@ export function FolderSyncTool(_props: ToolComponentProps) {
             chiffres comptent simplement deux choses différentes.
           */}
           <p className="ft-meta tabular-nums" data-testid="sync-plan-total">
-            <Trans source={"<0>{value} {count, plural, one {opération} other {opérations}}</0> au total : {directories} création(s) de dossier, {copies} copie(s), {replacements} remplacement(s){value2}. Volume à écrire : {size}.{value3}"} values={{ value: formatNumber(plan.operations.length), count: plan.operations.length, directories: plan.directories, copies: plan.copies, replacements: plan.replacements, value2: plan.deletions > 0 && `, ${plan.deletions} suppression(s)`, size: formatSizeWithExact(plan.bytes), value3: plan.unchanged > 0 &&
-              t(" {unchanged} fichier(s) déjà conforme(s) ne seront pas touchés.", { unchanged: plan.unchanged }) }} components={[<strong className="text-[var(--ft-text)]" />]} />
+            <Trans source={"<0>{operations} {operations, plural, one {opération} other {opérations}}</0> au total : {directories} {directories, plural, one {création de dossier} other {créations de dossier}}, {copies} {copies, plural, one {copie} other {copies}}, {replacements} {replacements, plural, one {remplacement} other {remplacements}} et {deletions} {deletions, plural, one {suppression} other {suppressions}}. Volume à écrire : {size}. {unchanged} {unchanged, plural, one {fichier déjà conforme ne sera pas touché} other {fichiers déjà conformes ne seront pas touchés}}."} values={{ operations: plan.operations.length, directories: plan.directories, copies: plan.copies, replacements: plan.replacements, deletions: plan.deletions, size: formatSizeWithExact(plan.bytes), unchanged: plan.unchanged }} components={[<strong className="text-[var(--ft-text)]" />]} />
           </p>
 
           {plan.operations.length === 0 ? (
@@ -276,7 +275,7 @@ export function FolderSyncTool(_props: ToolComponentProps) {
           )}
 
           {plan.deletions > 0 && (
-            <Callout tone="error" title={t("{deletions} suppression(s) dans la destination", { deletions: plan.deletions })}>
+            <Callout tone="error" title={t("{count} {count, plural, one {suppression} other {suppressions}} dans la destination", { count: plan.deletions })}>
               <Trans source={"{size} seront définitivement effacés de <0>{destination}</0>. Cette opération ne passe pas par la corbeille."} values={{ size: formatFileSize(plan.freedBytes), destination: plan.destination }} components={[<code className="font-mono" />]} />
             </Callout>
           )}

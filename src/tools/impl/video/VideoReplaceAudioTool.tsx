@@ -68,7 +68,7 @@ export function VideoReplaceAudioTool({ tool }: ToolComponentProps) {
           files: [file],
           summary:
             mode === "add"
-              ? t("Piste « {name} » ajoutée ({value}, {value2} pistes audio).", { name: audioFile.name, value: CONTAINER_LABEL[pipeline.container], value2: (videoInfo?.audioStreams.length ?? 0) + 1 })
+              ? t("Piste « {name} » ajoutée ({container}, {count} {count, plural, one {piste audio} other {pistes audio}}).", { name: audioFile.name, container: CONTAINER_LABEL[pipeline.container], count: (videoInfo?.audioStreams.length ?? 0) + 1 })
               : t("Bande son remplacée par « {name} ».", { name: audioFile.name }),
         };
       }}

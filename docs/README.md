@@ -1,69 +1,71 @@
-# Documentation FourTout
+# FourTout documentation
 
-[← Retour au dépôt](../README.md)
+[English](README.md) | [Français](fr/README.md)
+
+[← Back to the repository](../README.md)
 
 ---
 
-## Utilisateur
+## User documentation
 
-| Document | Contenu |
+| Document | Contents |
 | --- | --- |
-| [Installation](guides/INSTALLATION.md) | Windows, Fedora, autres Linux. FFmpeg, modèles, vérification des téléchargements. |
-| [Guide d'utilisation](guides/USER_GUIDE.md) | Trouver un outil, déposer des fichiers, opérations longues, zoom, paramètres. |
-| [Tous les outils](guides/FEATURES.md) | Les 196 outils, catégorie par catégorie. |
-| [Dépannage](guides/TROUBLESHOOTING.md) | Ce qui peut coincer, et pourquoi. |
+| [Installation](guides/INSTALLATION.md) | Windows, Fedora, and other Linux distributions. FFmpeg, models, and download verification. |
+| [User guide](guides/USER_GUIDE.md) | Finding a tool, dropping files, long-running operations, zoom, and settings. |
+| [All tools](guides/FEATURES.md) | All 196 tools, category by category. |
+| [Troubleshooting](guides/TROUBLESHOOTING.md) | What can go wrong, and why. |
 
-## Confidentialité et sécurité
+## Privacy and security
 
-| Document | Contenu |
+| Document | Contents |
 | --- | --- |
-| [Confidentialité](legal/PRIVACY.md) | Ce qui reste local, ce qui sort, ce qui est stocké. |
-| [Sécurité](legal/SECURITY.md) | Modèle de menace, chiffrement, limites, signalement d'une vulnérabilité. |
+| [Privacy](legal/PRIVACY.md) | What stays local, what leaves the device, and what is stored. |
+| [Security](legal/SECURITY.md) | Threat model, encryption, limitations, and vulnerability reporting. |
 
-## Développeur
+## Development
 
-| Document | Contenu |
+| Document | Contents |
 | --- | --- |
-| [Développement](technical/DEVELOPMENT.md) | Prérequis, commandes, organisation du dépôt, conventions, pièges d'environnement. |
-| [Architecture](technical/ARCHITECTURE.md) | Structure et décisions de conception. |
-| [Ajouter un outil](technical/ADDING-A-TOOL.md) | La procédure, en trois fichiers. |
-| [Internationalisation](technical/I18N.md) | 16 langues : messages, catalogue traduit, repli, recherche multilingue. |
-| [Travaux longs](technical/JOBS.md) | Progression, annulation, notifications. |
-| [Modèles](technical/MODELS.md) | Moteurs et modèles installés à la demande. |
+| [Development](technical/DEVELOPMENT.md) | Prerequisites, commands, repository layout, conventions, and environment pitfalls. |
+| [Architecture](technical/ARCHITECTURE.md) | Structure and design decisions. |
+| [Adding a tool](technical/ADDING-A-TOOL.md) | The procedure, across three files. |
+| [Internationalization](technical/I18N.md) | 16 languages: messages, translated catalogs, fallback, and multilingual search. |
+| [Long-running jobs](technical/JOBS.md) | Progress, cancellation, and notifications. |
+| [Models](technical/MODELS.md) | Engines and models installed on demand. |
 
-## Construire et publier
+## Building and releasing
 
-| Document | Contenu |
+| Document | Contents |
 | --- | --- |
-| [Construction](technical/BUILD.md) | Produire les paquets Windows et Linux. |
-| [Publication](technical/RELEASE.md) | Checklist de publication, pas à pas. |
+| [Build](technical/BUILD.md) | Producing Windows and Linux packages. |
+| [Release](technical/RELEASE.md) | Step-by-step release checklist. |
 
-## Architecture par domaine
+## Architecture by domain
 
-| Document | Contenu |
+| Document | Contents |
 | --- | --- |
-| [PDF](features/PDF.md) | Bibliothèques, opérations, limites. |
-| [Mot de passe PDF](features/PDF-RECOVERY.md) | Moteur natif, corpus, règles. |
-| [Images](features/IMAGES.md) | Traitement d'images, OCR, détourage, contournements WebKitGTK. |
-| [Socle média](features/MEDIA.md) | FFmpeg, travaux longs, fichiers temporaires. |
-| [Audio](features/AUDIO.md) | Outils audio, capture microphone. |
-| [Vidéo](features/VIDEO.md) | Codecs éprouvés à l'exécution, préréglages, sous-titres. |
-| [Texte](features/TEXT.md) | Socle texte, assainissement HTML, lecture DOCX. |
-| [Fichiers](features/FILES.md) | Socle natif, sécurité des archives, portabilité. |
-| [Développeur](features/DEVELOPER.md) | Traitement des entrées non fiables, vérification JWT, explorateur SQLite. |
-| [Calculateurs](features/CALCULATORS.md) | Moteur d'unités, calculatrice, dates, devises, fuseaux, débits, intérêts. |
-| [Réseau](features/NETWORK.md) | Sondes bornées : ping ICMP, ports TCP, découverte du réseau local. |
-| [Diagnostic & récupération](features/DIAGNOSTICS.md) | ZIP, PDF et images abîmés : ce qui est prouvable, ce qui ne l'est pas. |
-| [Disques et santé](features/STORAGE.md) | Inventaire en lecture seule, SMART opportuniste, et ce qui reste hors périmètre. |
-| [Convertisseurs](features/CONVERTERS.md) | Convertisseur universel dérivé du registre. |
+| [PDF](features/PDF.md) | Libraries, operations, and limitations. |
+| [PDF password recovery](features/PDF-RECOVERY.md) | Native engine, corpus, and rules. |
+| [Images](features/IMAGES.md) | Image processing, OCR, background removal, and WebKitGTK workarounds. |
+| [Media foundation](features/MEDIA.md) | FFmpeg, long-running jobs, and temporary files. |
+| [Audio](features/AUDIO.md) | Audio tools and microphone capture. |
+| [Video](features/VIDEO.md) | Runtime-tested codecs, presets, and subtitles. |
+| [Text](features/TEXT.md) | Text foundation, HTML sanitization, and DOCX reading. |
+| [Files](features/FILES.md) | Native foundation, archive safety, and portability. |
+| [Developer tools](features/DEVELOPER.md) | Untrusted input handling, JWT verification, and the SQLite explorer. |
+| [Calculators](features/CALCULATORS.md) | Unit engine, calculator, dates, currencies, time zones, rates, and interest. |
+| [Network](features/NETWORK.md) | Bounded probes: ICMP ping, TCP ports, and local network discovery. |
+| [Diagnostics and recovery](features/DIAGNOSTICS.md) | Damaged ZIP, PDF, and image files: what can and cannot be proved. |
+| [Storage and health](features/STORAGE.md) | Read-only inventory, opportunistic SMART data, and what remains out of scope. |
+| [Converters](features/CONVERTERS.md) | Universal converter derived from the registry. |
 
-## À la racine du dépôt
+## At the repository root
 
-| Document | Contenu |
+| Document | Contents |
 | --- | --- |
-| [README](../README.md) | Présentation du projet. |
-| [LICENSE](../LICENSE) | Licence propriétaire. |
-| [CHANGELOG](../CHANGELOG.md) | Journal des versions. |
-| [ROADMAP](../ROADMAP.md) | Ce qui pourrait venir ensuite. |
-| [CONTRIBUTING](../CONTRIBUTING.md) | Contribuer. |
-| [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md) | Composants tiers et licences. |
+| [README](../README.md) | Project overview. |
+| [LICENSE](../LICENSE) | Proprietary license. |
+| [CHANGELOG](../CHANGELOG.md) | Release history. |
+| [ROADMAP](../ROADMAP.md) | What may come next. |
+| [CONTRIBUTING](../CONTRIBUTING.md) | How to contribute. |
+| [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md) | Third-party components and licenses. |

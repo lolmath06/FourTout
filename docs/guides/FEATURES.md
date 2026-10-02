@@ -1,380 +1,377 @@
-# Tous les outils de FourTout
+# All FourTout tools
+
+[English](FEATURES.md) | [Français](../fr/guides/FEATURES.md)
 
 [← Documentation](../README.md)
 
-196 outils, répartis en 12 catégories. Chaque outil de cette liste est
-**utilisable** : FourTout n'enregistre pas d'outil incomplet, et il n'existe
-donc pas d'état « bientôt disponible ».
+196 tools across 12 categories. Every tool in this list is **usable**: FourTout
+does not register incomplete tools and has no “coming soon” state.
 
-Un outil peut apparaître dans plusieurs catégories : il n'est implémenté
-qu'une fois, mais il est découvrable là où on le cherche. Ces rattachements
-secondaires sont signalés en fin de ligne.
+A tool may appear in several categories. It is implemented once but remains
+discoverable wherever users expect it; secondary categories appear at the end
+of its entry.
 
-Les notes en italique sont les limites réelles de l'outil. Elles apparaissent
-aussi dans l'application, sur la page de l'outil.
+Italic notes document real limitations and also appear on the tool page in the
+application.
 
-Cette liste est **dérivée du registre** (`pnpm docs:features`) : elle ne peut
-donc pas annoncer un outil qui n'existe pas, ni oublier celui qui vient
-d'arriver.
+This list is **generated from the registry** with `pnpm docs:features`, so it
+cannot advertise a missing tool or omit a newly registered one.
 
 <!-- OUTILS:DÉBUT -->
 
-## Sommaire
+## Contents
 
 - [PDF](#pdf-26)
 - [Images](#images-25)
 - [Audio](#audio-18)
-- [Vidéo](#vidéo-20)
-- [Texte & Documents](#texte--documents-20)
-- [Fichiers & Archives](#fichiers--archives-29)
-- [Convertisseurs](#convertisseurs-1)
-- [Développeur](#développeur-21)
-- [Calculateurs](#calculateurs-21)
-- [Réseau](#réseau-3)
-- [Diagnostic & récupération](#diagnostic--récupération-5)
-- [Sécurité & Confidentialité](#sécurité--confidentialité-7)
+- [Video](#video-20)
+- [Text & Documents](#text--documents-20)
+- [Files & Archives](#files--archives-29)
+- [Converters](#converters-1)
+- [Developer](#developer-21)
+- [Calculators](#calculators-21)
+- [Network](#network-3)
+- [Diagnostics & Recovery](#diagnostics--recovery-5)
+- [Security & Privacy](#security--privacy-7)
 
 ---
 
 ### PDF (26)
 
-_Fusionner, découper, compresser, convertir et sécuriser des PDF._
+_Merge, split, compress, convert and secure PDFs._
 
-- **Fusionner des PDF** — Assembler plusieurs PDF en un seul document, dans l'ordre de votre choix.
-- **Séparer un PDF** — Découper un PDF en plusieurs fichiers selon des intervalles de pages.
-- **Extraire des pages** — Créer un nouveau PDF à partir d'une sélection de pages.
-- **Supprimer des pages** — Retirer définitivement certaines pages d'un PDF.
-- **Réorganiser les pages** — Changer l'ordre des pages par glisser-déposer.
-- **Faire pivoter des pages** — Tourner tout ou partie des pages de 90, 180 ou 270 degrés.
-- **Compresser un PDF** — Réduire le poids d'un PDF en gardant une qualité de lecture correcte.
-- **Images vers PDF** — Transformer une série d'images en un document PDF paginé. · aussi dans *Images* et *Convertisseurs*
-- **PDF vers images** — Exporter chaque page d'un PDF en PNG ou JPEG, à la résolution voulue. · aussi dans *Images* et *Convertisseurs*
-- **Document vers PDF** — Convertir un fichier texte, Markdown ou HTML en PDF. · aussi dans *Texte & Documents* et *Convertisseurs*
-- **Ajouter du texte** — Écrire du texte sur un PDF pour remplir un formulaire ou annoter.
-- **Ajouter une image ou signature** — Insérer une image, un tampon ou une signature à l'endroit voulu.
-- **Ajouter un filigrane** — Apposer un texte en filigrane sur tout ou partie des pages.
-- **Numéroter les pages** — Ajouter une pagination personnalisable en en-tête ou pied de page.
-- **Protéger par mot de passe** — Chiffrer un PDF pour qu'il ne s'ouvre qu'avec un mot de passe. · aussi dans *Sécurité & Confidentialité*
-- **Déverrouiller un PDF** — Retirer la protection d'un PDF dont vous connaissez le mot de passe. · aussi dans *Sécurité & Confidentialité*
-  <br>_FourTout ne casse pas les protections : le mot de passe doit être connu. Pour un mot de passe oublié, voir « Retrouver un mot de passe PDF »._
-- **Métadonnées PDF** — Lire et modifier titre, auteur, sujet et mots-clés d'un PDF. · aussi dans *Sécurité & Confidentialité*
-- **Extraire les images d'un PDF** — Récupérer toutes les images intégrées dans un PDF. · aussi dans *Images*
-- **Extraire le texte d'un PDF** — Récupérer le texte sélectionnable d'un PDF, page par page. · aussi dans *Texte & Documents* et *Convertisseurs*
-- **Modifier le texte d'un PDF** — Corriger le texte directement sur la page : double-cliquez un mot et remplacez-le. · aussi dans *Texte & Documents*
-  <br>_Édition visuelle par remplacement : le texte d'origine est recouvert par la couleur de fond échantillonnée puis redessiné. Idéal pour du texte horizontal sur fond uni (documents, factures, rapports). Les zones sur fond non uni ou pivotées sont signalées et non modifiées._
-- **OCR d'un PDF scanné** — Reconnaître le texte d'un PDF scanné, page par page, en français ou en anglais. · aussi dans *Texte & Documents*
-  <br>_Moteur OCR local (tesseract.js) embarqué : aucune donnée n'est envoyée sur le réseau. Pour une image seule, voir « Extraire le texte d'une image »._
-- **Comparer deux PDF** — Mettre en évidence les différences entre deux versions d'un document. · aussi dans *Texte & Documents*
-- **Caviarder un PDF** — Masquer définitivement des zones sensibles, contenu supprimé et non simplement recouvert. · aussi dans *Sécurité & Confidentialité*
-- **PDF scanné vers PDF recherchable** — Reconnaître le texte d'un PDF numérisé et l'ajouter en couche invisible : Ctrl+F, sélection et copie fonctionnent, l'apparence ne bouge pas. · aussi dans *Texte & Documents*
-  <br>_La reconnaissance est entièrement locale. Les pages d'origine ne sont ni rasterisées ni recompressées : seule une couche de texte invisible leur est ajoutée. La qualité du résultat dépend de celle du scan._
-- **Extraire les tableaux d'un PDF** — Reconstruire lignes et colonnes à partir de la position du texte, puis exporter en CSV ou en classeur XLSX. · aussi dans *Texte & Documents* et *Convertisseurs*
-  <br>_Un PDF ne contient pas de tableaux, seulement du texte positionné : FourTout reconstruit les lignes et les colonnes à partir de ces positions. Les tableaux complexes — cellules fusionnées, texte sur plusieurs lignes — peuvent demander une correction avant export._
-- **Scans et photos vers PDF** — Assembler des pages numérisées ou photographiées en un seul PDF, avec nettoyage et mise en ordre des pages. · aussi dans *Images*
-  <br>_Le nettoyage s'applique à toutes les pages avec les mêmes réglages ; l'assemblage réutilise le moteur « Images vers PDF »._
+- **Merge PDFs** — Combine several PDFs into a single document, in the order you choose.
+- **Split a PDF** — Cut a PDF into several files by page ranges.
+- **Extract pages** — Create a new PDF from a selection of pages.
+- **Remove pages** — Permanently remove some pages from a PDF.
+- **Reorder pages** — Change the page order with drag and drop.
+- **Rotate pages** — Turn all or some pages by 90, 180 or 270 degrees.
+- **Compress a PDF** — Reduce a PDF's file size while keeping it easy to read.
+- **Images to PDF** — Turn a series of images into a paginated PDF document. · also in *Images* and *Converters*
+- **PDF to images** — Export each page of a PDF as PNG or JPEG, at the resolution you want. · also in *Images* and *Converters*
+- **Document to PDF** — Convert a text, Markdown or HTML file to PDF. · also in *Text & Documents* and *Converters*
+- **Add text** — Write text on a PDF to fill in a form or annotate it.
+- **Add an image or signature** — Insert an image, a stamp or a signature exactly where you want.
+- **Add a watermark** — Stamp a text watermark on all or some pages.
+- **Number pages** — Add customizable page numbers in the header or footer.
+- **Password-protect** — Encrypt a PDF so it only opens with a password. · also in *Security & Privacy*
+- **Unlock a PDF** — Remove the protection from a PDF whose password you know. · also in *Security & Privacy*
+  <br>_FourTout doesn't break protections: you need to know the password. For a forgotten password, see “Recover a PDF password”._
+- **PDF metadata** — Read and edit a PDF's title, author, subject and keywords. · also in *Security & Privacy*
+- **Extract images from a PDF** — Get back every image embedded in a PDF. · also in *Images*
+- **Extract text from a PDF** — Get the selectable text of a PDF, page by page. · also in *Text & Documents* and *Converters*
+- **Edit PDF text** — Fix text right on the page: double-click a word and replace it. · also in *Text & Documents*
+  <br>_Visual editing by replacement: the original text is covered with the sampled background color, then redrawn. Best for horizontal text on a plain background (documents, invoices, reports). Areas on a non-uniform background or rotated text are flagged and left unchanged._
+- **OCR a scanned PDF** — Recognize the text in a scanned PDF, page by page, in French or English. · also in *Text & Documents*
+  <br>_Local OCR engine (tesseract.js) bundled with the app: no data is sent over the network. For a single image, see “Extract text from an image”._
+- **Compare two PDFs** — Highlight the differences between two versions of a document. · also in *Text & Documents*
+- **Redact a PDF** — Permanently hide sensitive areas: content is removed, not just covered. · also in *Security & Privacy*
+- **Scanned PDF to searchable PDF** — Recognize the text of a scanned PDF and add it as an invisible layer: Ctrl+F, selection and copy work, and the appearance doesn't change. · also in *Text & Documents*
+  <br>_Recognition is entirely local. The original pages are neither rasterized nor recompressed: only an invisible text layer is added. Result quality depends on the quality of the scan._
+- **Extract tables from a PDF** — Rebuild rows and columns from the position of the text, then export to CSV or an XLSX workbook. · also in *Text & Documents* and *Converters*
+  <br>_A PDF doesn't contain tables, only positioned text: FourTout rebuilds rows and columns from those positions. Complex tables — merged cells, text over several lines — may need corrections before export._
+- **Scans and photos to PDF** — Combine scanned or photographed pages into a single PDF, with cleanup and page ordering. · also in *Images*
+  <br>_Cleanup applies to every page with the same settings; assembly reuses the “Images to PDF” engine._
 
 ### Images (25)
 
-_Convertir, compresser, redimensionner et nettoyer des images._
+_Convert, compress, resize and clean up images._
 
-- **Convertir une image** — Passer d'un format à un autre : PNG, JPG, WebP. Lecture aussi de GIF, BMP, TIFF, SVG. · aussi dans *Convertisseurs*
-- **Compresser une image** — Réduire le poids d'une image en contrôlant la perte de qualité.
-- **Redimensionner une image** — Changer les dimensions en pixels ou en pourcentage, avec ou sans ratio.
-- **Rogner une image** — Recadrer visuellement une image, librement ou selon un ratio (1:1, 4:3, 16:9, 3:2).
-- **Rotation et miroir** — Pivoter par quarts de tour et retourner en miroir, avec aperçu immédiat.
-- **Miroir horizontal ou vertical** — Retourner une image comme dans un miroir.
-- **Noir et blanc** — Convertir en niveaux de gris, ou en noir et blanc par seuil réglable.
-- **Ajuster une image** — Régler luminosité, contraste, saturation et gamma, avec aperçu en temps réel.
-- **Flouter ou pixelliser** — Masquer une information : flou ou mosaïque, sur toute l'image ou une zone dessinée. · aussi dans *Sécurité & Confidentialité*
-- **Supprimer la transparence** — Aplatir un PNG ou WebP transparent sur un fond uni (blanc, noir ou couleur).
-- **Retirer l'arrière-plan** — Détourer automatiquement le sujet d'une photo et rendre le fond transparent. · aussi dans *Sécurité & Confidentialité*
-  <br>_Le modèle de détourage s'installe une fois depuis Paramètres → Modèles, puis fonctionne hors ligne : l'image n'est jamais envoyée sur un serveur. Il reconnaît un sujet principal net et détaché ; il se trompe sur les scènes sans sujet évident et sur les détails très fins._
-- **Rendre une couleur transparente** — Effacer une couleur unie (fond) et la remplacer par de la transparence.
-- **Extraire le texte d'une image (OCR)** — Reconnaître le texte d'une image, en français ou en anglais, 100 % en local. · aussi dans *Texte & Documents*
-- **Texte sur une image** — Écrire du texte sur une image : légende, mème, annotation, avec placement au doigt.
-- **Lire les métadonnées d'une image** — Afficher EXIF, GPS, appareil photo, date de prise de vue.
-- **Supprimer les métadonnées d'une image** — Effacer EXIF et données GPS avant de partager une photo. · aussi dans *Sécurité & Confidentialité*
-- **Conversion d'images par lots** — Appliquer la même conversion à un dossier entier d'images. · aussi dans *Convertisseurs* et *Fichiers & Archives*
-- **Filigrane sur une image** — Ajouter un logo ou un texte en filigrane, à l'unité ou par lots.
-- **Générer un favicon** — Produire un favicon multi-tailles et le fichier .ico depuis une image. · aussi dans *Développeur*
-- **Générer plusieurs tailles** — Exporter d'un coup toutes les tailles d'icônes ou de miniatures utiles. · aussi dans *Développeur*
-- **Analyser et convertir une couleur** — Couleurs dominantes d'une image, pipette au pixel près, écritures HEX / RGB / HSL / HSV, et contraste WCAG entre un texte et son fond. · aussi dans *Développeur*
-- **Corriger la perspective d'un document** — Redresser la photo d'une feuille prise en biais : placez les quatre coins, FourTout la ramène à un rectangle vu de face. · aussi dans *Texte & Documents*
-  <br>_Les quatre coins se placent à la main : c'est toujours exact, là où une détection automatique se trompe. Les proportions déduites des coins sont approchées — imposez le format A4 ou Lettre pour un résultat exact._
-- **Nettoyer un scan** — Redresser un document légèrement penché, relever le contraste, blanchir un fond gris ou jauni, passer en niveaux de gris ou en noir et blanc. · aussi dans *Texte & Documents*
-  <br>_Chaque réglage est facultatif et visible en aperçu avant/après. Le blanchiment ne touche jamais aux pixels sombres : le texte fin garde sa densité._
-- **Comparer deux images** — Voir et mesurer ce qui change entre deux images : côte à côte, en superposition ou en différence, avec pixels différents, PSNR et SSIM.
-  <br>_Deux images de dimensions différentes ne sont jamais redimensionnées sans votre accord : le rééchantillonnage fabriquerait des écarts absents des fichiers._
-- **Créer une planche-contact** — Disposer plusieurs images en grille sur une seule feuille, avec le nom de chaque fichier.
+- **Convert an image** — Go from one format to another: PNG, JPG, WebP. Also reads GIF, BMP, TIFF and SVG. · also in *Converters*
+- **Compress an image** — Reduce an image's file size while controlling quality loss.
+- **Resize an image** — Change the dimensions in pixels or percent, with or without keeping the ratio.
+- **Crop an image** — Crop an image visually, freely or to a ratio (1:1, 4:3, 16:9, 3:2).
+- **Rotate and mirror** — Rotate by quarter turns and mirror, with an instant preview.
+- **Flip horizontally or vertically** — Flip an image as if in a mirror.
+- **Black and white** — Convert to grayscale, or to pure black and white with an adjustable threshold.
+- **Adjust an image** — Tune brightness, contrast, saturation and gamma, with a live preview.
+- **Blur or pixelate** — Hide information: blur or mosaic, on the whole image or a drawn area. · also in *Security & Privacy*
+- **Remove transparency** — Flatten a transparent PNG or WebP onto a solid background (white, black or a color).
+- **Remove background** — Automatically cut out the subject of a photo and make the background transparent. · also in *Security & Privacy*
+  <br>_The cutout model is installed once from Settings → Models, then works offline: the image is never sent to a server. It recognizes a sharp, well-separated main subject; it gets things wrong on scenes without an obvious subject and on very fine details._
+- **Make a color transparent** — Erase a solid color (such as the background) and replace it with transparency.
+- **Extract text from an image (OCR)** — Recognize the text in an image, in French or English, 100% locally. · also in *Text & Documents*
+- **Text on an image** — Write text on an image — caption, meme, annotation — and place it by hand.
+- **Read image metadata** — Show EXIF, GPS, camera and capture date.
+- **Remove image metadata** — Erase EXIF and GPS data before sharing a photo. · also in *Security & Privacy*
+- **Batch image conversion** — Apply the same conversion to a whole folder of images. · also in *Converters* and *Files & Archives*
+- **Image watermark** — Add a logo or text watermark, one image at a time or in batches.
+- **Generate a favicon** — Create a multi-size favicon and the .ico file from an image. · also in *Developer*
+- **Generate multiple sizes** — Export every useful icon or thumbnail size in one go. · also in *Developer*
+- **Analyze and convert a color** — Dominant colors of an image, pixel-precise eyedropper, HEX / RGB / HSL / HSV notations, and WCAG contrast between text and its background. · also in *Developer*
+- **Fix document perspective** — Straighten a photo of a page taken at an angle: place the four corners and FourTout turns it back into a rectangle seen head-on. · also in *Text & Documents*
+  <br>_The four corners are placed by hand: it's always exact, where automatic detection gets it wrong. Proportions inferred from the corners are approximate — force A4 or Letter for an exact result._
+- **Clean up a scan** — Straighten a slightly tilted document, boost contrast, whiten a gray or yellowed background, convert to grayscale or black and white. · also in *Text & Documents*
+  <br>_Each setting is optional and shown in a before/after preview. Whitening never touches dark pixels: fine text keeps its density._
+- **Compare two images** — See and measure what changes between two images: side by side, overlaid or as a difference, with differing pixels, PSNR and SSIM.
+  <br>_Two images of different sizes are never resized without your consent: resampling would create differences that aren't in the files._
+- **Create a contact sheet** — Lay out several images in a grid on a single sheet, with each file's name.
 
 ### Audio (18)
 
-_Convertir, découper, normaliser, transcrire et synthétiser du son._
+_Convert, trim, normalize, transcribe and synthesize sound._
 
-- **Enregistrer au micro** — Capturer un son depuis le microphone et l'enregistrer localement.
-- **Découper un audio** — Garder un extrait précis d'un fichier audio.
-- **Fusionner des audios** — Mettre plusieurs pistes bout à bout en un seul fichier.
-- **Convertir un audio** — Passer d'un format à un autre : MP3, WAV, FLAC, OGG, M4A, OPUS. · aussi dans *Convertisseurs*
-- **Compresser un audio** — Réduire le poids d'un fichier audio en ajustant le débit.
-- **Régler le volume** — Augmenter ou diminuer le volume global d'un fichier audio.
-- **Normaliser un audio** — Uniformiser le niveau sonore de plusieurs fichiers (loudness).
-- **Changer la vitesse** — Accélérer ou ralentir un audio, avec ou sans correction de hauteur.
-- **Supprimer les silences** — Détecter et couper automatiquement les blancs d'un enregistrement.
-- **Extraire l'audio d'une vidéo** — Récupérer la bande son d'une vidéo au format de votre choix. · aussi dans *Vidéo* et *Convertisseurs*
-- **Transcription audio** — Convertir la parole d'un fichier audio ou vidéo en texte, localement. · aussi dans *Texte & Documents* et *Vidéo*
-  <br>_Modèle de reconnaissance vocale exécuté sur votre machine, installé à la demande._
-- **Générer des sous-titres SRT** — Produire un fichier de sous-titres horodaté depuis un audio ou une vidéo. · aussi dans *Vidéo* et *Texte & Documents*
-- **Texte vers parole** — Lire un texte à voix haute et l'enregistrer en fichier audio, sans service en ligne. · aussi dans *Texte & Documents*
-- **PDF vers audio** — Transformer un PDF en livre audio grâce à la synthèse vocale locale. · aussi dans *PDF* et *Convertisseurs*
-- **Fichier texte vers audio** — Convertir un fichier TXT ou Markdown en fichier audio narré. · aussi dans *Texte & Documents* et *Convertisseurs*
-- **Convertir les canaux audio** — Passer un fichier en mono ou en stéréo, ou le laisser tel quel. Un fichier multicanal n'est jamais réduit sans qu'on le demande.
-  <br>_Du mono vers le stéréo, le canal est dupliqué : les deux voies portent le même signal. Aucune spatialisation n'est fabriquée._
-- **Modifier les étiquettes audio** — Lire et corriger titre, artiste, album, année, genre, piste et commentaire — sans réencoder le son.
-  <br>_L'écriture recopie le flux audio tel quel (-c copy) : le son produit est identique au bit près._
-- **Inspecter un média** — Tout ce qu'un fichier audio ou vidéo déclare : conteneur, codecs, résolution, cadence, débits, canaux, étiquettes. · aussi dans *Vidéo* et *Fichiers & Archives*
+- **Record from the microphone** — Capture sound from the microphone and save it locally.
+- **Trim audio** — Keep a precise excerpt of an audio file.
+- **Merge audio files** — Put several tracks end to end in a single file.
+- **Convert audio** — Go from one format to another: MP3, WAV, FLAC, OGG, M4A, OPUS. · also in *Converters*
+- **Compress audio** — Reduce an audio file's size by adjusting the bitrate.
+- **Change volume** — Raise or lower the overall volume of an audio file.
+- **Normalize audio** — Even out the loudness of several files.
+- **Change speed** — Speed up or slow down audio, with or without pitch correction.
+- **Remove silence** — Automatically detect and cut the gaps in a recording.
+- **Extract audio from a video** — Get a video's soundtrack in the format of your choice. · also in *Video* and *Converters*
+- **Audio transcription** — Turn speech in an audio or video file into text, locally. · also in *Text & Documents* and *Video*
+  <br>_Speech recognition model running on your machine, installed on demand._
+- **Generate SRT subtitles** — Create a timestamped subtitle file from audio or video. · also in *Video* and *Text & Documents*
+- **Text to speech** — Read text aloud and save it as an audio file, without any online service. · also in *Text & Documents*
+- **PDF to audio** — Turn a PDF into an audiobook using local speech synthesis. · also in *PDF* and *Converters*
+- **Text file to audio** — Convert a TXT or Markdown file into a narrated audio file. · also in *Text & Documents* and *Converters*
+- **Convert audio channels** — Switch a file to mono or stereo, or leave it as is. A multichannel file is never downmixed unless you ask.
+  <br>_From mono to stereo, the channel is duplicated: both sides carry the same signal. No spatialization is invented._
+- **Edit audio tags** — Read and fix title, artist, album, year, genre, track and comment — without re-encoding the sound.
+  <br>_Writing copies the audio stream as is (-c copy): the resulting sound is bit-for-bit identical._
+- **Inspect a media file** — Everything an audio or video file declares: container, codecs, resolution, frame rate, bitrates, channels, tags. · also in *Video* and *Files & Archives*
 
-### Vidéo (20)
+### Video (20)
 
-_Convertir, compresser, découper et sous-titrer des vidéos._
+_Convert, compress, trim and subtitle videos._
 
-- **Convertir une vidéo** — Passer d'un format à un autre : MP4, MKV, WebM, MOV. · aussi dans *Convertisseurs*
-  <br>_Seuls les codecs réellement présents dans le moteur installé sont proposés._
-- **Compresser une vidéo** — Réduire fortement le poids d'une vidéo en choisissant la qualité cible.
-- **Changer la résolution** — Passer une vidéo en 1080p, 720p, 480p ou une taille personnalisée.
-- **Découper une vidéo** — Garder uniquement un extrait, sans réencodage quand c'est possible.
-- **Fusionner des vidéos** — Assembler plusieurs vidéos bout à bout en un seul fichier.
-- **Rogner une vidéo** — Sélectionner visuellement la zone à conserver, avec proportions imposées. · aussi dans *Images*
-- **Vidéo vers GIF** — Transformer un extrait vidéo en GIF animé optimisé. · aussi dans *Images* et *Convertisseurs*
-- **GIF vers vidéo** — Convertir un GIF animé en MP4 ou WebM, bien plus léger. · aussi dans *Images* et *Convertisseurs*
-- **Extraire une image d'une vidéo** — Capturer une frame précise ou des captures à intervalle régulier. · aussi dans *Images* et *Convertisseurs*
-- **Changer la vitesse d'une vidéo** — Créer un accéléré ou un ralenti, audio inclus.
-- **Pivoter une vidéo** — Corriger une vidéo filmée dans le mauvais sens, ou la retourner en miroir.
-- **Supprimer le son d'une vidéo** — Produire une version muette de la vidéo, sans réencoder l'image.
-- **Remplacer la piste audio** — Remplacer la bande son d'une vidéo, ou lui ajouter une piste supplémentaire. · aussi dans *Audio*
-  <br>_Déposez la vidéo et le fichier audio ensemble._
-- **Régler le volume d'une vidéo** — Monter ou baisser le son d'une vidéo sans toucher à l'image. · aussi dans *Audio*
-- **Ajouter une piste de sous-titres** — Attacher un fichier SRT ou VTT à la vidéo, activable dans le lecteur. · aussi dans *Texte & Documents*
-  <br>_Déposez la vidéo et le fichier de sous-titres ensemble._
-- **Incruster des sous-titres** — Graver les sous-titres dans l'image : ils s'affichent sur tous les lecteurs. · aussi dans *Texte & Documents*
-  <br>_Déposez la vidéo et le fichier de sous-titres ensemble._
-- **Extraire les sous-titres d'une vidéo** — Exporter en SRT ou VTT les pistes de sous-titres déjà présentes. · aussi dans *Texte & Documents*
-  <br>_Seules les pistes textuelles sont exportables ; les pistes graphiques (PGS, DVD) sont des images._
-- **Générer les sous-titres d'une vidéo** — Transcrire automatiquement la parole d'une vidéo, puis exporter ou incruster. · aussi dans *Audio* et *Texte & Documents*
-  <br>_Utilise le modèle de transcription local déjà installé (aucun envoi sur le réseau)._
-- **Traitement vidéo par lots** — Convertir, compresser, redimensionner, pivoter ou extraire l'audio de plusieurs vidéos. · aussi dans *Fichiers & Archives*
-- **Changer la fréquence d'images** — Convertir une vidéo vers 24, 25, 30, 60 i/s ou une cadence personnalisée, par duplication et suppression d'images.
-  <br>_Aucune image intermédiaire n'est calculée : les images sont dupliquées ou supprimées. La sortie est à cadence constante._
+- **Convert a video** — Go from one format to another: MP4, MKV, WebM, MOV. · also in *Converters*
+  <br>_Only codecs actually available in the installed engine are offered._
+- **Compress a video** — Drastically reduce a video's file size by choosing the target quality.
+- **Change resolution** — Convert a video to 1080p, 720p, 480p or a custom size.
+- **Trim a video** — Keep just an excerpt, without re-encoding whenever possible.
+- **Merge videos** — Join several videos end to end into a single file.
+- **Crop a video** — Visually select the area to keep, with fixed proportions. · also in *Images*
+- **Video to GIF** — Turn a video clip into an optimized animated GIF. · also in *Images* and *Converters*
+- **GIF to video** — Convert an animated GIF to MP4 or WebM, which is much lighter. · also in *Images* and *Converters*
+- **Extract a frame from a video** — Capture a specific frame or take snapshots at regular intervals. · also in *Images* and *Converters*
+- **Change video speed** — Create a time-lapse or slow motion, audio included.
+- **Rotate a video** — Fix a video filmed the wrong way round, or mirror it.
+- **Remove sound from a video** — Create a silent version of the video, without re-encoding the picture.
+- **Replace the audio track** — Replace a video's soundtrack, or add an extra track to it. · also in *Audio*
+  <br>_Drop the video and the audio file together._
+- **Change video volume** — Turn a video's sound up or down without touching the picture. · also in *Audio*
+- **Add a subtitle track** — Attach an SRT or VTT file to the video, which can be turned on in the player. · also in *Text & Documents*
+  <br>_Drop the video and the subtitle file together._
+- **Burn in subtitles** — Burn subtitles into the picture so they show in every player. · also in *Text & Documents*
+  <br>_Drop the video and the subtitle file together._
+- **Extract subtitles from a video** — Export existing subtitle tracks as SRT or VTT. · also in *Text & Documents*
+  <br>_Only text tracks can be exported; image-based tracks (PGS, DVD) are pictures._
+- **Generate subtitles for a video** — Automatically transcribe a video's speech, then export or burn in the subtitles. · also in *Audio* and *Text & Documents*
+  <br>_Uses the local transcription model already installed (nothing is sent over the network)._
+- **Batch video processing** — Convert, compress, resize, rotate or extract the audio of several videos. · also in *Files & Archives*
+- **Change frame rate** — Convert a video to 24, 25, 30 or 60 fps or a custom rate, by duplicating and dropping frames.
+  <br>_No in-between frames are computed: frames are duplicated or dropped. The output has a constant frame rate._
 
-### Texte & Documents (20)
+### Text & Documents (20)
 
-_Analyser, nettoyer, comparer et transformer du texte._
+_Analyze, clean up, compare and transform text._
 
-- **Compteur de mots et caractères** — Mots, caractères, phrases, paragraphes et temps de lecture estimé.
-- **Changer la casse** — MAJUSCULES, minuscules, Première Lettre, camelCase, snake_case, kebab-case.
-- **Nettoyer un texte** — Retirer espaces superflus, lignes vides, tabulations et caractères invisibles.
-- **Rechercher et remplacer** — Remplacer du texte en masse, avec ou sans expression régulière.
-- **Comparer deux textes** — Voir ligne par ligne ce qui a été ajouté, supprimé ou modifié. · aussi dans *Développeur*
-- **Supprimer les doublons** — Ne garder qu'une occurrence de chaque ligne, en option sans tenir compte de la casse.
-- **Trier des lignes** — Classer des lignes par ordre alphabétique, numérique ou aléatoire.
-- **Markdown ↔ HTML / texte** — Convertir du Markdown en HTML ou en texte brut, et l'inverse. · aussi dans *Convertisseurs* et *Développeur*
-- **Extraire les URL** — Récupérer toutes les adresses web contenues dans un texte.
-- **Extraire les adresses e-mail** — Isoler toutes les adresses e-mail présentes dans un texte.
-- **Extraire les nombres** — Sortir tous les nombres d'un texte et en calculer la somme.
-- **Lorem Ipsum** — Générer du faux texte : mots, phrases ou paragraphes. · aussi dans *Développeur*
-- **Normaliser Unicode** — Uniformiser l'écriture des accents (NFC, NFD, NFKC, NFKD) entre systèmes. · aussi dans *Développeur*
-- **Convertir les fins de ligne** — Passer de CRLF (Windows) à LF (Unix) et inversement, avec détection préalable. · aussi dans *Fichiers & Archives* et *Développeur*
-- **Word (DOCX) vers texte, Markdown ou HTML** — Extraire le contenu d'un document Word : titres, paragraphes, listes et tableaux. · aussi dans *Convertisseurs*
-  <br>_La mise en page complexe (colonnes, images, styles) n'est pas restituée : FourTout extrait le contenu et sa structure._
-- **Word (DOCX) vers PDF** — Convertir un document Word en PDF : titres, paragraphes, listes et tableaux simples. · aussi dans *PDF* et *Convertisseurs*
-  <br>_FourTout reprend le contenu et sa structure — titres, paragraphes, gras, italique, listes, tableaux simples — mais pas la maquette Word : colonnes, zones flottantes, en-têtes et pieds de page, polices spécifiques et images peuvent différer ou disparaître. Pour un rendu fidèle au pixel, exportez en PDF depuis Word ou LibreOffice._
-- **Comparer deux documents** — Comparer le contenu de deux documents — PDF, Word, texte, Markdown ou HTML — même de formats différents, ligne par ligne et mot par mot. · aussi dans *PDF* et *Fichiers & Archives*
-  <br>_La comparaison porte sur le texte, pas sur la mise en page : elle dit ce qui a changé dans le contenu, y compris entre deux formats différents. Un PDF scanné doit d'abord passer par « PDF scanné vers PDF recherchable »._
-- **Détecter l'encodage d'un fichier texte** — Identifier l'encodage, la marque d'ordre des octets et la convention de fin de ligne d'un fichier, avec le degré de certitude réel. · aussi dans *Développeur* et *Fichiers & Archives*
-  <br>_Hors marque d'ordre des octets, aucun fichier ne déclare son encodage : la détection reste une hypothèse, et FourTout affiche sa certitude réelle plutôt qu'un verdict trompeur._
-- **Convertir l'encodage d'un fichier texte** — Passer d'un encodage à un autre — UTF-8, UTF-8 avec BOM, UTF-16 LE/BE, Windows-1252, Latin-1 — sans perdre un caractère à votre insu. · aussi dans *Développeur* et *Fichiers & Archives*
-  <br>_Si l'encodage de destination ne peut pas écrire certains caractères, la conversion est refusée et les caractères concernés sont listés. Le remplacement n'a lieu que si vous le demandez explicitement._
-- **Modifier des sous-titres** — Convertir entre SRT et WebVTT, décaler les horodatages, fusionner deux fichiers, vérifier et réparer. · aussi dans *Vidéo* et *Convertisseurs*
-  <br>_Ce qui est mécaniquement sûr est corrigé (ordre, numérotation, fins de ligne) ; les chevauchements sont signalés mais jamais raccourcis d'office._
+- **Word and character counter** — Words, characters, sentences, paragraphs and estimated reading time.
+- **Change case** — UPPERCASE, lowercase, Title Case, camelCase, snake_case, kebab-case.
+- **Clean up text** — Remove extra spaces, blank lines, tabs and invisible characters.
+- **Find and replace** — Replace text in bulk, with or without a regular expression.
+- **Compare two texts** — See line by line what was added, removed or changed. · also in *Developer*
+- **Remove duplicates** — Keep only one occurrence of each line, optionally ignoring case.
+- **Sort lines** — Sort lines alphabetically, numerically or randomly.
+- **Markdown ↔ HTML / text** — Convert Markdown to HTML or plain text, and back. · also in *Converters* and *Developer*
+- **Extract URLs** — Get every web address contained in a text.
+- **Extract email addresses** — Pull out every email address in a text.
+- **Extract numbers** — Pull every number out of a text and add them up.
+- **Lorem Ipsum** — Generate dummy text: words, sentences or paragraphs. · also in *Developer*
+- **Normalize Unicode** — Make accents consistent across systems (NFC, NFD, NFKC, NFKD). · also in *Developer*
+- **Convert line endings** — Switch from CRLF (Windows) to LF (Unix) and back, with detection first. · also in *Files & Archives* and *Developer*
+- **Word (DOCX) to text, Markdown or HTML** — Extract the content of a Word document: headings, paragraphs, lists and tables. · also in *Converters*
+  <br>_Complex layout (columns, images, styles) isn't reproduced: FourTout extracts the content and its structure._
+- **Word (DOCX) to PDF** — Convert a Word document to PDF: headings, paragraphs, lists and simple tables. · also in *PDF* and *Converters*
+  <br>_FourTout keeps the content and its structure — headings, paragraphs, bold, italics, lists, simple tables — but not the Word layout: columns, floating boxes, headers and footers, specific fonts and images may differ or be missing. For a pixel-perfect result, export to PDF from Word or LibreOffice._
+- **Compare two documents** — Compare the content of two documents — PDF, Word, text, Markdown or HTML — even in different formats, line by line and word by word. · also in *PDF* and *Files & Archives*
+  <br>_The comparison is about the text, not the layout: it tells you what changed in the content, even across two different formats. A scanned PDF must first go through “Scanned PDF to searchable PDF”._
+- **Detect a text file's encoding** — Identify a file's encoding, byte order mark and line-ending convention, with the actual level of certainty. · also in *Developer* and *Files & Archives*
+  <br>_Apart from a byte order mark, no file declares its encoding: detection remains an educated guess, and FourTout shows its real certainty rather than a misleading verdict._
+- **Convert a text file's encoding** — Switch from one encoding to another — UTF-8, UTF-8 with BOM, UTF-16 LE/BE, Windows-1252, Latin-1 — without silently losing a character. · also in *Developer* and *Files & Archives*
+  <br>_If the target encoding can't represent some characters, the conversion is refused and those characters are listed. Replacement only happens if you explicitly ask for it._
+- **Edit subtitles** — Convert between SRT and WebVTT, shift timestamps, merge two files, check and repair. · also in *Video* and *Converters*
+  <br>_Whatever is mechanically safe is fixed (order, numbering, line endings); overlaps are flagged but never shortened automatically._
 
-### Fichiers & Archives (29)
+### Files & Archives (29)
 
-_Compresser, extraire, comparer, renommer et organiser des fichiers._
+_Compress, extract, compare, rename and organize files._
 
-- **Créer une archive** — Compresser des fichiers ou dossiers en ZIP, 7z, TAR, TAR.GZ ou TAR.XZ, arborescence conservée.
-  <br>_Le 7z produit ici n'est pas chiffré : pour une archive protégée par mot de passe, utilisez « Archive protégée », dont le ZIP AES-256 s'ouvre avec 7-Zip, WinRAR, Keka et l'Explorateur Windows._
-- **Extraire une archive** — Décompresser une archive ZIP, 7z, TAR, TAR.GZ ou TAR.XZ vers le dossier de votre choix.
-  <br>_Aucun fichier n'est écrit hors du dossier choisi : les entrées dont le chemin remonte (« ../ »), les chemins absolus et les liens symboliques sont refusés et listés. Le format RAR n'est pas pris en charge._
-- **Archive protégée par mot de passe** — Créer ou ouvrir une archive chiffrée par mot de passe. · aussi dans *Sécurité & Confidentialité*
-  <br>_Chiffrement WinZip AES-256 : l'archive s'ouvre avec 7-Zip, WinRAR, PeaZip, Keka et l'Explorateur Windows. Le « ZipCrypto » historique, cassable en quelques secondes, n'est jamais employé. Les noms de fichiers, eux, restent lisibles sans le mot de passe — c'est une limite du format ZIP._
-- **Calculer une empreinte (hash)** — Obtenir le SHA-256, SHA-512, SHA-1 ou MD5 d'un ou plusieurs fichiers, quelle que soit leur taille. · aussi dans *Sécurité & Confidentialité* et *Développeur*
-- **Vérifier une empreinte** — Comparer l'empreinte d'un fichier à celle annoncée par sa source. · aussi dans *Sécurité & Confidentialité*
-- **Trouver les fichiers en double** — Détecter les doublons d'un dossier par contenu et non par nom.
-- **Comparer deux fichiers** — Vérifier si deux fichiers sont identiques, octet par octet ou ligne par ligne.
-- **Renommage en masse** — Renommer des centaines de fichiers avec un modèle, une numérotation ou une regex.
-- **Nettoyer les noms de fichiers** — Retirer accents, espaces et caractères problématiques des noms de fichiers.
-- **Organiser un dossier** — Ranger automatiquement les fichiers par extension, par date ou par type.
-- **Analyser l'espace d'un dossier** — Voir ce qui occupe réellement l'espace : plus gros fichiers, plus gros sous-dossiers, répartition par type.
-  <br>_Seules les métadonnées du système de fichiers sont lues : le contenu des fichiers n'est jamais ouvert. Les dossiers illisibles sont signalés plutôt que comptés à zéro, et les liens symboliques ne sont pas suivis (leur cible serait comptée deux fois)._
-- **Suppression sécurisée** — Écraser le contenu d'un fichier avant de le supprimer, pour rendre sa récupération logicielle très improbable. · aussi dans *Sécurité & Confidentialité*
-  <br>_Effacement logiciel renforcé, pas effacement physique : sur SSD, carte mémoire, Btrfs/ZFS/APFS, ou en présence d'instantanés et de sauvegardes, aucun logiciel ne peut garantir la disparition de toutes les copies antérieures._
-- **Diviser un gros fichier** — Découper un fichier volumineux en morceaux numérotés, avec manifeste de vérification.
-- **Réassembler un fichier** — Reconstituer un fichier à partir de ses morceaux .part001, avec vérification d'empreinte.
-- **Générer l'arborescence d'un dossier** — Produire l'arborescence en texte d'un dossier, prête à coller dans un README. · aussi dans *Développeur*
-- **Inspecter un fichier** — Type réel détecté par signature, cohérence de l'extension, encodage, dates, empreintes et premiers octets. · aussi dans *Sécurité & Confidentialité*
-  <br>_Le type affiché est celui des premiers octets, pas celui de l'extension : un « .jpg » contenant un PNG est signalé comme tel. Rien n'est renommé automatiquement — la correction reste une action que vous demandez._
-- **Comparer deux dossiers** — Voir ce qui est identique, modifié, ou présent d'un seul côté entre deux arborescences.
-  <br>_Le mode rapide compare type et taille sans rien lire : deux fichiers de même taille y sont dits « probablement identiques ». Seul le mode fiable confirme l'égalité par le contenu — et il ne lit que les fichiers de même taille, une taille différente suffisant à conclure._
-- **Synchroniser des dossiers** — Mettre une destination à jour depuis une source, avec plan détaillé avant toute écriture.
-  <br>_Synchronisation à sens unique : la source fait foi, la destination la suit. Rien n'est écrit avant que vous ayez lu le plan. Le mode miroir supprime de la destination ce qui n'existe plus dans la source, et demande une confirmation distincte._
-- **Rechercher dans des fichiers** — Trouver des fichiers par nom, type, taille, date — ou par le texte qu'ils contiennent. · aussi dans *Texte & Documents*
-  <br>_Recherche à la demande : FourTout n'indexe rien en fond et ne conserve rien entre deux recherches. La recherche de contenu n'ouvre que ce qui ressemble vraiment à du texte — un binaire n'est jamais interprété comme tel._
-- **Prévisualiser un fichier** — Ouvrir n'importe quel fichier sans son application : texte, image, PDF, audio, vidéo, archive ou octets bruts.
-  <br>_L'aperçu est choisi d'après le contenu réel, pas d'après l'extension. Les fichiers texte volumineux ne sont chargés que partiellement, et l'aperçu le dit._
-- **Éditer en hexadécimal** — Lire et corriger les octets d'un fichier, fenêtre par fenêtre, sans jamais le charger en entier. · aussi dans *Développeur*
-  <br>_Éditeur volontairement borné : pas de modèles binaires, pas de script, pas d'insertion ni de suppression d'octets — seulement des corrections en place, qui ne changent jamais la taille du fichier. Par défaut, le résultat est enregistré dans un nouveau fichier._
-- **Sauvegarder un dossier** — Copier un dossier avec un manifeste d'empreintes, pour pouvoir vérifier et restaurer plus tard. · aussi dans *Sécurité & Confidentialité*
-  <br>_Format transparent : un dossier « donnees » qui reproduit votre arborescence, et un « manifeste.json » lisible. Aucun conteneur propriétaire — même sans FourTout, vos fichiers restent accessibles. Ce n'est pas une sauvegarde versionnée : chaque sauvegarde est une copie complète et datée._
-- **Restaurer une sauvegarde** — Vérifier une sauvegarde FourTout, puis la remettre en place sans écraser ce que vous n'avez pas choisi. · aussi dans *Sécurité & Confidentialité*
-  <br>_L'intégrité est vérifiée avant toute écriture : un fichier abîmé dans la sauvegarde est nommé, pas restauré en silence. Restaurer ne supprime jamais rien dans la destination._
-- **Créer un manifeste d'empreintes** — Produire un fichier .sha256 listant l'empreinte de chaque fichier d'un dossier. · aussi dans *Sécurité & Confidentialité* et *Développeur*
-  <br>_Le format texte produit est celui de sha256sum : il se relit avec les outils du système, sur n'importe quelle machine. MD5 et SHA-1 restent proposés pour vérifier des empreintes anciennes, mais sont signalés comme inadaptés à un usage de sécurité._
-- **Vérifier un manifeste d'empreintes** — Comparer un dossier à un fichier de checksums : intact, modifié, manquant ou illisible, fichier par fichier. · aussi dans *Sécurité & Confidentialité*
-  <br>_Un manifeste est une donnée, pas une instruction : une entrée qui remonterait hors du dossier vérifié (« ../ », chemin absolu) est refusée et listée, jamais suivie._
-- **Compresser un fichier (GZ, XZ)** — Réduire un fichier seul en .gz ou .xz — sans en faire une archive. · aussi dans *Convertisseurs*
-  <br>_« .gz » et « .xz » ne contiennent qu'un seul fichier, sans nom de dossier ni arborescence. Pour compresser plusieurs fichiers en conservant leur organisation, utilisez « Créer une archive » et son format TAR.GZ ou TAR.XZ._
-- **Décompresser un fichier (GZ, XZ)** — Retrouver le fichier d'origine d'un .gz ou d'un .xz. · aussi dans *Convertisseurs*
-  <br>_Un « .tar.gz » contient une arborescence : passez plutôt par « Extraire une archive », qui la rétablira. Ici, un .tar.gz redonnerait simplement le .tar._
-- **Inspecter une archive** — Lister le contenu d'une archive sans l'extraire : chemins, tailles, taux de compression, entrées suspectes.
-  <br>_Rien n'est décompressé : seule la table des matières de l'archive est lue. Les entrées dont le chemin sortirait du dossier d'extraction sont signalées avant même que vous n'envisagiez d'extraire._
-- **Tester une archive** — Vérifier qu'une archive est intacte en la décompressant entièrement, sans rien écrire sur le disque. · aussi dans *Sécurité & Confidentialité*
-  <br>_Le contenu est réellement décompressé et ses sommes de contrôle vérifiées — lister une archive ne prouverait rien, seul son en-tête serait lu. Rien n'est écrit : les octets sont comptés puis jetés._
+- **Create an archive** — Compress files or folders into ZIP, 7z, TAR, TAR.GZ or TAR.XZ, keeping the folder structure.
+  <br>_The 7z created here isn't encrypted: for a password-protected archive, use “Password-protected archive”, whose AES-256 ZIP opens with 7-Zip, WinRAR, Keka and Windows Explorer._
+- **Extract an archive** — Decompress a ZIP, 7z, TAR, TAR.GZ or TAR.XZ archive into the folder of your choice.
+  <br>_No file is ever written outside the chosen folder: entries whose path climbs up (“../”), absolute paths and symbolic links are refused and listed. RAR isn't supported._
+- **Password-protected archive** — Create or open a password-encrypted archive. · also in *Security & Privacy*
+  <br>_WinZip AES-256 encryption: the archive opens with 7-Zip, WinRAR, PeaZip, Keka and Windows Explorer. The legacy “ZipCrypto”, crackable in seconds, is never used. File names, however, stay readable without the password — a limitation of the ZIP format._
+- **Compute a hash** — Get the SHA-256, SHA-512, SHA-1 or MD5 of one or more files, whatever their size. · also in *Security & Privacy* and *Developer*
+- **Verify a hash** — Compare a file's hash with the one published by its source. · also in *Security & Privacy*
+- **Find duplicate files** — Detect duplicates in a folder by content, not by name.
+- **Compare two files** — Check whether two files are identical, byte by byte or line by line.
+- **Bulk rename** — Rename hundreds of files with a pattern, numbering or a regex.
+- **Clean up file names** — Remove accents, spaces and problematic characters from file names.
+- **Organize a folder** — Automatically sort files by extension, date or type.
+- **Analyze folder space** — See what's really taking up space: biggest files, biggest subfolders, breakdown by type.
+  <br>_Only file system metadata is read: file contents are never opened. Unreadable folders are flagged rather than counted as zero, and symbolic links aren't followed (their target would be counted twice)._
+- **Secure delete** — Overwrite a file's contents before deleting it, making software recovery very unlikely. · also in *Security & Privacy*
+  <br>_Hardened software erasure, not physical destruction: on an SSD, memory card, Btrfs/ZFS/APFS, or when snapshots and backups exist, no software can guarantee every earlier copy is gone._
+- **Split a large file** — Cut a large file into numbered pieces, with a verification manifest.
+- **Reassemble a file** — Rebuild a file from its .part001 pieces, with hash verification.
+- **Generate a folder tree** — Produce a text tree of a folder, ready to paste into a README. · also in *Developer*
+- **Inspect a file** — Real type detected from its signature, extension consistency, encoding, dates, hashes and first bytes. · also in *Security & Privacy*
+  <br>_The type shown comes from the first bytes, not the extension: a “.jpg” that contains a PNG is reported as such. Nothing is renamed automatically — fixing it stays an action you ask for._
+- **Compare two folders** — See what's identical, changed, or present on only one side between two folder trees.
+  <br>_Quick mode compares type and size without reading anything: two files of the same size are called “probably identical”. Only reliable mode confirms equality by content — and it only reads files of the same size, since a different size is enough to conclude._
+- **Sync folders** — Update a destination from a source, with a detailed plan before anything is written.
+  <br>_One-way sync: the source is the reference and the destination follows it. Nothing is written until you've read the plan. Mirror mode deletes from the destination whatever no longer exists in the source, and asks for a separate confirmation._
+- **Search in files** — Find files by name, type, size or date — or by the text they contain. · also in *Text & Documents*
+  <br>_On-demand search: FourTout doesn't index anything in the background and keeps nothing between searches. Content search only opens what genuinely looks like text — a binary is never interpreted as text._
+- **Preview a file** — Open any file without its app: text, image, PDF, audio, video, archive or raw bytes.
+  <br>_The preview is chosen from the actual content, not the extension. Large text files are only partly loaded, and the preview says so._
+- **Hex editor** — Read and fix a file's bytes, window by window, without ever loading it whole. · also in *Developer*
+  <br>_A deliberately limited editor: no binary templates, no scripting, no inserting or deleting bytes — only in-place fixes that never change the file size. By default, the result is saved to a new file._
+- **Back up a folder** — Copy a folder with a hash manifest, so you can verify and restore it later. · also in *Security & Privacy*
+  <br>_Transparent format: a “donnees” folder that mirrors your folder structure, and a readable “manifeste.json”. No proprietary container — your files stay accessible even without FourTout. This isn't a versioned backup: each backup is a full, dated copy._
+- **Restore a backup** — Verify a FourTout backup, then put it back without overwriting anything you didn't choose. · also in *Security & Privacy*
+  <br>_Integrity is checked before anything is written: a damaged file in the backup is named, not silently restored. Restoring never deletes anything in the destination._
+- **Create a checksum manifest** — Produce a .sha256 file listing the hash of every file in a folder. · also in *Security & Privacy* and *Developer*
+  <br>_The text format produced is sha256sum's: it can be checked with system tools on any machine. MD5 and SHA-1 are still offered to verify old hashes, but are flagged as unsuitable for security use._
+- **Verify a checksum manifest** — Compare a folder with a checksum file: intact, modified, missing or unreadable, file by file. · also in *Security & Privacy*
+  <br>_A manifest is data, not an instruction: an entry that would climb out of the verified folder (“../”, absolute path) is refused and listed, never followed._
+- **Compress a file (GZ, XZ)** — Shrink a single file into .gz or .xz — without making it an archive. · also in *Converters*
+  <br>_“.gz” and “.xz” hold a single file, with no folder name or structure. To compress several files and keep their organization, use “Create an archive” with its TAR.GZ or TAR.XZ format._
+- **Decompress a file (GZ, XZ)** — Get back the original file from a .gz or .xz. · also in *Converters*
+  <br>_A “.tar.gz” contains a folder tree: use “Extract an archive” instead, which will restore it. Here, a .tar.gz would simply give back the .tar._
+- **Inspect an archive** — List an archive's contents without extracting it: paths, sizes, compression ratios, suspicious entries.
+  <br>_Nothing is decompressed: only the archive's table of contents is read. Entries whose path would escape the extraction folder are flagged before you even consider extracting._
+- **Test an archive** — Check that an archive is intact by fully decompressing it, without writing anything to disk. · also in *Security & Privacy*
+  <br>_The content is actually decompressed and its checksums verified — listing an archive would prove nothing, since only its header would be read. Nothing is written: the bytes are counted, then discarded._
 
-### Convertisseurs (1)
+### Converters (1)
 
-_Passer d'un format à un autre, quel que soit le type de fichier._
+_Go from one format to another, whatever the file type._
 
-- **Convertisseur universel** — Déposez un fichier : FourTout propose les conversions possibles vers les formats compatibles.
-  <br>_Les conversions proposées sont dérivées des entrées/sorties déclarées par les outils du registre : aucune table séparée à maintenir, et jamais de conversion annoncée sans outil derrière._
+- **Universal converter** — Drop a file and FourTout suggests the possible conversions to compatible formats.
+  <br>_Suggested conversions are derived from the inputs and outputs declared by the tools in the registry: no separate table to maintain, and never a conversion offered without a tool behind it._
 
-### Développeur (21)
+### Developer (21)
 
-_Formater, encoder, générer et inspecter les formats techniques._
+_Format, encode, generate and inspect technical formats._
 
-- **JSON — formater et valider** — Indenter, minifier et vérifier la validité d'un JSON, avec message d'erreur précis.
-- **XML — formater** — Indenter et valider un document XML.
-- **YAML — formater et convertir** — Formater du YAML et le convertir depuis ou vers JSON. · aussi dans *Convertisseurs*
-- **SQL — formater** — Rendre lisible une requête SQL compacte ou générée.
-- **Base64 — encoder et décoder** — Convertir du texte en Base64 et inversement, y compris en base64url.
-- **URL — encoder et décoder** — Encoder ou décoder une URL et ses paramètres (percent-encoding). · aussi dans *Texte & Documents*
-- **JWT — décoder** — Lire l'en-tête et la charge utile d'un token JWT, sans l'envoyer nulle part. · aussi dans *Sécurité & Confidentialité*
-  <br>_Le token est décodé localement : il ne quitte jamais votre machine._
-- **Générer des UUID** — Produire des identifiants uniques v4 ou v7, à l'unité ou par lots.
-- **Testeur d'expressions régulières** — Tester une regex en direct, voir les correspondances et les groupes.
-- **Timestamp Unix** — Convertir un timestamp en date lisible et inversement, avec fuseaux horaires. · aussi dans *Calculateurs*
-- **Générer un hash de texte** — Calculer MD5, SHA-1, SHA-256 ou SHA-512 d'une chaîne de caractères. · aussi dans *Sécurité & Confidentialité*
-- **Générer un QR Code** — Créer un QR code pour une URL, un texte, un contact ou un réseau Wi-Fi. · aussi dans *Images*
-- **Lire un QR Code** — Décoder un QR code depuis une image ou une capture d'écran. · aussi dans *Images*
-- **Convertir HEX, décimal, binaire** — Passer d'une base à l'autre : binaire, octal, décimal, hexadécimal. · aussi dans *Calculateurs* et *Convertisseurs*
-- **Diff de code** — Comparer deux blocs de code avec coloration des ajouts et suppressions.
-- **Minifier HTML, CSS, JS** — Réduire la taille du code en supprimant espaces et commentaires.
-- **Formater HTML, CSS, JS** — Réindenter du code minifié ou mal formaté pour le rendre lisible.
-- **Assistant cron** — Construire et expliquer une expression cron en langage clair.
-- **TOML — formater et valider** — Vérifier un fichier TOML et le réécrire sous une forme canonique.
-  <br>_Le reformatage reconstruit le document depuis ses données : les commentaires et l'ordre d'écriture d'origine sont perdus. La validation, elle, ne touche à rien._
-- **Base32 — encoder et décoder** — Convertir du texte en Base32 et inversement, selon la RFC 4648.
-- **Base SQLite — explorer** — Ouvrir une base SQLite en lecture seule : schéma, données, requêtes, export CSV. · aussi dans *Fichiers & Archives*
-  <br>_Explorateur strictement en lecture : la base est ouverte en lecture seule et aucune requête ne peut la modifier._
+- **JSON — format and validate** — Indent, minify and validate JSON, with a precise error message.
+- **XML — format** — Indent and validate an XML document.
+- **YAML — format and convert** — Format YAML and convert it to or from JSON. · also in *Converters*
+- **SQL — format** — Make a compact or generated SQL query readable.
+- **Base64 — encode and decode** — Convert text to Base64 and back, including base64url.
+- **URL — encode and decode** — Encode or decode a URL and its parameters (percent-encoding). · also in *Text & Documents*
+- **JWT — decode** — Read a JWT's header and payload, without sending it anywhere. · also in *Security & Privacy*
+  <br>_The token is decoded locally: it never leaves your machine._
+- **Generate UUIDs** — Create unique v4 or v7 identifiers, one at a time or in batches.
+- **Regular expression tester** — Test a regex live and see the matches and groups.
+- **Unix timestamp** — Convert a timestamp to a readable date and back, with time zones. · also in *Calculators*
+- **Hash a text** — Compute the MD5, SHA-1, SHA-256 or SHA-512 of a string. · also in *Security & Privacy*
+- **Generate a QR code** — Create a QR code for a URL, text, contact or Wi-Fi network. · also in *Images*
+- **Read a QR code** — Decode a QR code from an image or screenshot. · also in *Images*
+- **Convert hex, decimal, binary** — Switch between bases: binary, octal, decimal, hexadecimal. · also in *Calculators* and *Converters*
+- **Code diff** — Compare two blocks of code with additions and deletions highlighted.
+- **Minify HTML, CSS, JS** — Reduce code size by removing whitespace and comments.
+- **Format HTML, CSS, JS** — Re-indent minified or badly formatted code to make it readable.
+- **Cron helper** — Build a cron expression and explain it in plain language.
+- **TOML — format and validate** — Check a TOML file and rewrite it in a canonical form.
+  <br>_Reformatting rebuilds the document from its data: comments and the original ordering are lost. Validation, on the other hand, changes nothing._
+- **Base32 — encode and decode** — Convert text to Base32 and back, per RFC 4648.
+- **SQLite database — explore** — Open a SQLite database read-only: schema, data, queries, CSV export. · also in *Files & Archives*
+  <br>_Strictly read-only explorer: the database is opened read-only and no query can modify it._
 
-### Calculateurs (21)
+### Calculators (21)
 
-_Unités, pourcentages, dates, durées et calculs du quotidien._
+_Units, percentages, dates, durations and everyday math._
 
-- **Convertisseur — longueurs** — Mètres, kilomètres, miles, pieds, pouces, milles marins. · aussi dans *Convertisseurs*
-- **Convertisseur — poids et masses** — Grammes, kilos, tonnes, livres, onces. · aussi dans *Convertisseurs*
-- **Convertisseur — températures** — Celsius, Fahrenheit, Kelvin. · aussi dans *Convertisseurs*
-- **Convertisseur — volumes** — Litres, millilitres, gallons, pintes, tasses, cuillères. · aussi dans *Convertisseurs*
-- **Convertisseur — surfaces** — Mètres carrés, hectares, acres, pieds carrés. · aussi dans *Convertisseurs*
-- **Convertisseur — vitesses** — km/h, m/s, mph, nœuds. · aussi dans *Convertisseurs*
-- **Convertisseur — pressions** — Pascal, bar, PSI, atmosphères, mmHg. · aussi dans *Convertisseurs*
-- **Convertisseur — énergie** — Joules, calories, kWh, BTU. · aussi dans *Convertisseurs*
-- **Convertisseur — puissance** — Watts, kilowatts, chevaux. · aussi dans *Convertisseurs*
-- **Convertisseur — données informatiques** — Octets, Ko, Mo, Go, To, et leurs équivalents binaires (Kio, Mio). · aussi dans *Convertisseurs*
-- **Calculs de pourcentages** — Pourcentage d'un nombre, évolution, remise, TVA, part du total.
-- **Règle de trois** — Résoudre une proportion : si A vaut B, combien vaut C ?
-- **Calculs de dates** — Nombre de jours entre deux dates, ajouter ou retirer une durée.
-- **Calculs de durées** — Additionner et soustraire des heures, minutes et secondes.
-- **Calculer un âge** — Âge exact en années, mois et jours à partir d'une date de naissance.
-- **Calculatrice scientifique** — Opérations avancées : puissances, racines, trigonométrie, logarithmes.
-- **Convertisseur de devises** — Convertir des montants entre devises avec des taux récents. · aussi dans *Convertisseurs*
-  <br>_Seul outil de FourTout à nécessiter Internet, uniquement pour récupérer les taux du jour. Les derniers taux connus sont réutilisés hors ligne._
-- **Convertir entre fuseaux horaires** — Passer d'une heure locale à une autre, heure d'été comprise.
-  <br>_Les décalages viennent de la base de fuseaux du système, à la date demandée : les changements d'heure sont donc respectés, et les heures ambiguës ou inexistantes signalées._
-- **Calculer une bande passante** — Déduire un débit moyen d'un volume transféré et d'une durée.
-- **Calculer un temps de transfert** — Estimer la durée d'un transfert à partir d'une taille et d'un débit.
-  <br>_Calcul théorique : taille ÷ débit. Il ignore l'en-tête des protocoles, la latence et la congestion — un transfert réel est toujours plus long._
-- **Calculer des intérêts** — Intérêts simples ou composés, avec versements réguliers facultatifs.
-  <br>_Outil mathématique, pas conseil financier : fiscalité, inflation et frais ne sont pas pris en compte._
+- **Converter — length** — Meters, kilometers, miles, feet, inches, nautical miles. · also in *Converters*
+- **Converter — weight and mass** — Grams, kilograms, tonnes, pounds, ounces. · also in *Converters*
+- **Converter — temperature** — Celsius, Fahrenheit, Kelvin. · also in *Converters*
+- **Converter — volume** — Liters, milliliters, gallons, pints, cups, spoons. · also in *Converters*
+- **Converter — area** — Square meters, hectares, acres, square feet. · also in *Converters*
+- **Converter — speed** — km/h, m/s, mph, knots. · also in *Converters*
+- **Converter — pressure** — Pascals, bar, PSI, atmospheres, mmHg. · also in *Converters*
+- **Converter — energy** — Joules, calories, kWh, BTU. · also in *Converters*
+- **Converter — power** — Watts, kilowatts, horsepower. · also in *Converters*
+- **Converter — digital storage** — Bytes, KB, MB, GB, TB, and their binary equivalents (KiB, MiB). · also in *Converters*
+- **Percentage calculations** — Percentage of a number, change, discount, VAT, share of a total.
+- **Rule of three** — Solve a proportion: if A is B, what is C?
+- **Date calculations** — Number of days between two dates; add or subtract a duration.
+- **Duration calculations** — Add and subtract hours, minutes and seconds.
+- **Calculate an age** — Exact age in years, months and days from a date of birth.
+- **Scientific calculator** — Advanced operations: powers, roots, trigonometry, logarithms.
+- **Currency converter** — Convert amounts between currencies with recent rates. · also in *Converters*
+  <br>_The only FourTout tool that needs the Internet, solely to fetch today's rates. The last known rates are reused offline._
+- **Convert between time zones** — Convert one local time to another, daylight saving time included.
+  <br>_Offsets come from the system's time zone database, for the requested date: clock changes are respected, and ambiguous or nonexistent times are flagged._
+- **Calculate bandwidth** — Work out an average rate from an amount of data and a duration.
+- **Calculate transfer time** — Estimate how long a transfer takes from a size and a rate.
+  <br>_Theoretical calculation: size ÷ rate. It ignores protocol overhead, latency and congestion — a real transfer always takes longer._
+- **Calculate interest** — Simple or compound interest, with optional regular deposits.
+  <br>_A math tool, not financial advice: taxes, inflation and fees aren't taken into account._
 
-### Réseau (3)
+### Network (3)
 
-_Diagnostiquer une connexion, tester des ports, voir ce qui est branché chez soi._
+_Diagnose a connection, test ports, see what's plugged into your home network._
 
-- **Ping** — Mesurer si un hôte répond, et en combien de temps.
-  <br>_Envoie de vrais paquets ICMP, quatre par défaut. Si le système refuse les sockets ICMP, l'outil le dit plutôt que de mesurer autre chose._
-- **Tester des ports** — Voir quels ports TCP d'un hôte acceptent une connexion.
-  <br>_Un seul hôte, 256 ports au maximum par lancement, par connexion TCP ordinaire. Ce n'est pas un scanner : ni furtivité, ni détection de service, ni recherche de vulnérabilité._
-- **Découvrir les appareils du réseau local** — Lister les machines qui se manifestent sur votre sous-réseau.
-  <br>_Limité au sous-réseau directement connecté et à 256 adresses. La plage exacte est annoncée avant tout envoi, et rien ne part sans confirmation._
+- **Ping** — Check whether a host responds, and how fast.
+  <br>_Sends real ICMP packets, four by default. If the system refuses ICMP sockets, the tool says so rather than measuring something else._
+- **Test ports** — See which TCP ports on a host accept a connection.
+  <br>_One host, at most 256 ports per run, using ordinary TCP connections. This isn't a scanner: no stealth, no service detection, no vulnerability search._
+- **Discover local network devices** — List the machines that show up on your subnet.
+  <br>_Limited to the directly connected subnet and to 256 addresses. The exact range is shown before anything is sent, and nothing goes out without confirmation._
 
-### Diagnostic & récupération (5)
+### Diagnostics & Recovery (5)
 
-_Comprendre ce qu'un fichier abîmé a de cassé, et sauver ce qui peut l'être._
+_Understand what's broken in a damaged file, and rescue what can be saved._
 
-- **Diagnostiquer un fichier** — Comprendre ce qu'un fichier est vraiment, et ce qui lui manque. · aussi dans *Fichiers & Archives*
-  <br>_Le fichier d'origine n'est jamais modifié. FourTout analyse la structure interne du ZIP, du PDF, du PNG et du JPEG, et le dit franchement pour les autres formats._
-- **Archive ZIP endommagée** — Diagnostiquer une archive illisible et récupérer ce qu'elle contient encore. · aussi dans *Fichiers & Archives*
-  <br>_Récupère par balayage des en-têtes locaux, même sans répertoire central. Les entrées dont les données sont tronquées sont déclarées perdues — elles ne sont jamais reconstituées. L'archive d'origine n'est pas touchée._
-- **PDF endommagé** — Diagnostiquer un PDF illisible et le réparer quand c'est démontrable. · aussi dans *PDF*
-  <br>_Chaque fichier produit est rouvert par le moteur PDF et ses pages comptées : si le moteur le refuse, la réparation est déclarée manquée et le fichier supprimé. Une réécriture invalide toute signature numérique._
-- **Image endommagée** — Diagnostiquer un PNG ou un JPEG abîmé et sauver les pixels lisibles. · aussi dans *Images*
-  <br>_Une somme de contrôle fausse n'est jamais recalculée, et les lignes manquantes d'une image tronquée ne sont jamais inventées. La récupération visuelle réencode les pixels décodés : elle sauve l'image, pas le fichier._
-- **Inspecter les disques et partitions** — Voir les disques, partitions, volumes et indicateurs de santé du système. · aussi dans *Fichiers & Archives*
-  <br>_Lecture seule, sans exception : FourTout ne sait ni partitionner, ni formater, ni monter, ni cloner, ni effacer un disque. Les indicateurs de santé détaillés dépendent de `smartctl`, que FourTout n'embarque pas._
+- **Diagnose a file** — Understand what a file really is, and what it's missing. · also in *Files & Archives*
+  <br>_The original file is never modified. FourTout analyzes the internal structure of ZIP, PDF, PNG and JPEG files, and says so plainly for other formats._
+- **Damaged ZIP archive** — Diagnose an unreadable archive and recover what it still contains. · also in *Files & Archives*
+  <br>_Recovers by scanning local headers, even without a central directory. Entries whose data is truncated are reported as lost — they're never reconstructed. The original archive isn't touched._
+- **Damaged PDF** — Diagnose an unreadable PDF and repair it when the fix can be proven. · also in *PDF*
+  <br>_Every file produced is reopened by the PDF engine and its pages counted: if the engine rejects it, the repair is reported as failed and the file deleted. Rewriting invalidates any digital signature._
+- **Damaged image** — Diagnose a damaged PNG or JPEG and save the readable pixels. · also in *Images*
+  <br>_A wrong checksum is never recomputed, and the missing rows of a truncated image are never invented. Visual recovery re-encodes the decoded pixels: it saves the picture, not the file._
+- **Inspect disks and partitions** — See the system's disks, partitions, volumes and health indicators. · also in *Files & Archives*
+  <br>_Read-only, no exceptions: FourTout can't partition, format, mount, clone or erase a disk. Detailed health indicators depend on `smartctl`, which FourTout doesn't bundle._
 
-### Sécurité & Confidentialité (7)
+### Security & Privacy (7)
 
-_Mots de passe, chiffrement, empreintes et effacement de données._
+_Passwords, encryption, hashes and data erasure._
 
-- **Retrouver un mot de passe PDF** — Tester des mots de passe probables pour rouvrir un PDF dont vous avez oublié le mot de passe. · aussi dans *PDF*
-  <br>_Récupération locale par dictionnaire et règles, sur un document que vous êtes autorisé à ouvrir. Ce n'est pas une recherche exhaustive : un mot de passe absent du corpus ne sera pas trouvé._
-- **Calculer un HMAC** — Signer un texte ou un fichier avec une clé secrète, en HMAC-SHA-256 ou SHA-512. · aussi dans *Développeur* et *Fichiers & Archives*
-  <br>_La clé n'est ni enregistrée, ni journalisée, ni ajoutée aux récents : elle sert au calcul et disparaît. Elle est effacée de l'écran dès que vous quittez l'outil._
-- **Générer un mot de passe** — Créer des mots de passe forts ou des phrases de passe mémorisables. · aussi dans *Développeur*
-- **Tester la robustesse d'un mot de passe** — Estimer le temps nécessaire pour casser un mot de passe, hors ligne.
-  <br>_L'analyse est purement locale : le mot de passe saisi n'est jamais transmis._
-- **Chiffrer des fichiers** — Protéger des fichiers par un mot de passe avec un chiffrement moderne.
-- **Déchiffrer des fichiers** — Retrouver le contenu d'un fichier chiffré avec FourTout.
-- **Supprimer les métadonnées d'un fichier** — Nettoyer auteur, dates, appareil et position avant de partager un document. · aussi dans *Fichiers & Archives*
+- **Recover a PDF password** — Try likely passwords to reopen a PDF whose password you've forgotten. · also in *PDF*
+  <br>_Local recovery using a dictionary and rules, on a document you're authorized to open. It isn't an exhaustive search: a password that isn't in the word list won't be found._
+- **Compute an HMAC** — Sign a text or file with a secret key, using HMAC-SHA-256 or SHA-512. · also in *Developer* and *Files & Archives*
+  <br>_The key is never saved, logged or added to recents: it's used for the calculation, then discarded. It's cleared from the screen as soon as you leave the tool._
+- **Generate a password** — Create strong passwords or memorable passphrases. · also in *Developer*
+- **Test password strength** — Estimate how long it would take to crack a password, offline.
+  <br>_The analysis is entirely local: the password you type is never transmitted._
+- **Encrypt files** — Protect files with a password using modern encryption.
+- **Decrypt files** — Get back the content of a file encrypted with FourTout.
+- **Remove a file's metadata** — Clean out author, dates, device and location before sharing a document. · also in *Files & Archives*
 
 <!-- OUTILS:FIN -->
 
-## Une note sur le réseau
+## A note about network access
 
-Un seul outil de cette liste a besoin d'**Internet** : **Convertisseur de
-devises**, pour récupérer les taux de référence de la Banque centrale
-européenne.
+Only one listed tool requires the **Internet**: **Currency converter**, which
+retrieves European Central Bank reference rates.
 
-Trois autres ouvrent de vraies connexions, mais **sur votre réseau seulement** :
-**Ping**, **Tester des ports** et **Découvrir les appareils du réseau local**.
-Ils ne parlent à aucun service distant, n'envoient rien nulle part, et ne sondent
-que ce que vous leur désignez — un hôte que vous saisissez, ou le sous-réseau
-auquel votre machine est directement connectée, borné à 256 adresses. Voir
+Three others open real connections, but **only on your network**: **Ping**,
+**Check ports**, and **Discover local network devices**. They contact no remote
+service and probe only an explicit host or the directly connected subnet,
+bounded to 256 addresses. See
 [NETWORK.md](../features/NETWORK.md).
 
-Tous les autres travaillent hors ligne.
+Every other tool works offline.
 
-Les outils qui s'appuient sur un modèle — **Texte vers parole**,
-**Transcription audio**, **Générer des sous-titres**, **PDF vers audio** et
-**Retirer l'arrière-plan** — téléchargent le leur une fois, à votre demande,
-puis fonctionnent hors ligne. Voir
+Model-backed tools—**Text to speech**, **Audio transcription**, **Generate
+subtitles**, **PDF to audio**, and **Remove background**—download their model
+once on request and then work offline. See
 [MODELS.md](../technical/MODELS.md).

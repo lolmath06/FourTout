@@ -1,242 +1,202 @@
-# Guide d'utilisation
+# User guide
+
+[English](USER_GUIDE.md) | [Français](../fr/guides/USER_GUIDE.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+FourTout is designed to work without a manual. This page covers the details
+that are not immediately obvious.
 
-- [Trouver un outil](#trouver-un-outil)
-- [Déposer des fichiers](#déposer-des-fichiers)
-- [Opérations longues](#opérations-longues)
-- [Enregistrer un résultat](#enregistrer-un-résultat)
-- [Taille de l'interface](#taille-de-linterface)
-- [Paramètres](#paramètres)
-- [Confidentialité, en une ligne](#confidentialité-en-une-ligne)
-- [Quelques outils qui méritent une explication](#quelques-outils-qui-méritent-une-explication)
-- [Un problème ?](#un-problème-)
+## Finding a tool
 
----
+### Describe what you want to do
 
-FourTout s'utilise sans lire de mode d'emploi. Cette page est là pour les
-détails qui ne se devinent pas.
+The home page asks one question: **“What do you want to do?”** Answer in
+ordinary language, in any of the 16 supported locales.
 
----
-
-## Trouver un outil
-
-### Décrire ce que vous voulez faire
-
-La page d'accueil pose une seule question : **« Que voulez-vous faire ? »**.
-Répondez en français courant.
-
-| Vous tapez | FourTout propose |
+| You type | FourTout offers |
 | --- | --- |
-| `réduire la taille d'un pdf` | Compresser un PDF |
-| `gif en vidéo` | GIF vers vidéo — et pas l'inverse |
-| `km en miles` | Convertisseur — longueurs |
-| `mon âge` | Calculer un âge |
-| `retirer métadonnées` | Supprimer les métadonnées d'un fichier |
+| `reduce the size of a pdf` | Compress a PDF |
+| `gif to video` | GIF to video, not the reverse operation |
+| `km to miles` | Converter — lengths |
+| `my age` | Calculate an age |
+| `remove metadata` | Remove metadata from a file |
 
-La recherche comprend le sens de la direction : « gif en vidéo » et « vidéo en
-gif » ne donnent pas le même premier résultat.
+Search understands direction: “GIF to video” and “video to GIF” do not return
+the same first result. It **never invents a result**; when nothing matches, it
+says so instead of suggesting an approximate tool.
 
-**FourTout n'invente jamais de résultat.** Si rien ne correspond, il le dit
-plutôt que de proposer un outil approximatif.
+### Browse
 
-### Parcourir
+**Tools** displays the twelve categories. A tool relevant to several families
+may appear in each without being duplicated: it has one implementation and is
+discoverable wherever users are likely to look.
 
-**Outils** montre les douze catégories. Un outil qui a du sens dans plusieurs
-familles y apparaît sans être dupliqué : il est implémenté une fois, et
-découvrable là où on le cherche.
+### Favorites and recent tools
 
-### Favoris et récents
+The star on a tool page adds it to **Favorites**. Opening tools populates
+**Recently used**. Both sections appear on the home page.
 
-L'étoile de la page d'un outil l'ajoute aux **Favoris**. Les outils que vous
-ouvrez alimentent **Récemment utilisés**. Les deux apparaissent sur l'accueil.
+## Dropping files
 
----
+Every tool accepts drag and drop from the system file manager. Clicking the
+drop zone opens the usual file picker.
 
-## Déposer des fichiers
+Some tools expect **two files at once**. Drop them together, for example a
+video and an audio file for *Replace audio track*, or a video and `.srt` file
+for subtitle tools.
 
-Chaque outil accepte le glisser-déposer, y compris depuis le gestionnaire de
-fichiers du système. Un clic sur la zone ouvre le sélecteur habituel.
+### Universal converter
 
-Certains outils attendent **deux fichiers à la fois** : déposez-les ensemble.
-C'est le cas de « Remplacer la piste audio » (la vidéo et l'audio) et des
-outils de sous-titres (la vidéo et le `.srt`).
+If you do not know which tool to use, drop the file into the **Universal
+converter**. FourTout identifies its type, offers only conversions that are
+actually implemented, and opens the specialized tool **already populated**.
 
-### Le convertisseur universel
+The converter implements no operation itself. Its options are derived from
+the inputs and outputs declared by registered tools, so every proposed
+conversion has a working implementation behind it.
 
-Vous ne savez pas quel outil il vous faut ? Déposez le fichier dans le
-**Convertisseur universel** : FourTout lit son type et propose les conversions
-réellement possibles, puis ouvre l'outil spécialisé **déjà prérempli**.
+## Long-running operations
 
-Il n'implémente aucune conversion lui-même : il dérive la liste des
-entrées/sorties déclarées par les outils. Aucune conversion n'est donc
-proposée sans outil derrière.
+Video compression, OCR, and duplicate searches over large folders take time.
 
----
+- Progress appears both inside the tool and in the task bar at the bottom of
+  the window.
+- You may **leave the page**; the operation continues and the app notifies you
+  when it finishes.
+- **Cancel** is real cancellation: the process stops, temporary files are
+  removed, and a partial output is never presented as a result.
 
-## Opérations longues
+## Saving a result
 
-Compresser une vidéo, faire un OCR, chercher des doublons dans un gros
-dossier : ces travaux prennent du temps.
+Nothing is written to disk without your request. When processing finishes:
 
-- La progression s'affiche dans l'outil, **et** dans la barre de tâches en bas
-  de la fenêtre.
-- Vous pouvez **quitter la page** : le travail continue et vous êtes prévenu à
-  la fin.
-- **Annuler** est réellement une annulation : le processus est arrêté, les
-  fichiers temporaires sont supprimés, et aucun résultat partiel n'est
-  présenté comme un résultat.
+- **Save** opens the system location picker;
+- **Open folder** reveals the produced file in the file manager.
 
----
+Batch tools ask for a destination folder. **Existing files are never silently
+overwritten**; a numbered suffix is added on collision.
 
-## Enregistrer un résultat
+Destructive tools such as batch rename, folder organization, and secure delete
+require explicit confirmation. The most dangerous require typing an exact
+confirmation phrase.
 
-Rien n'est écrit sur le disque sans que vous le demandiez. Quand une opération
-se termine, vous choisissez :
+## Interface scale
 
-- **Enregistrer** — ouvre le sélecteur d'emplacement du système ;
-- **Ouvrir le dossier** — révèle le fichier produit dans le gestionnaire de
-  fichiers.
-
-Les outils qui traitent un lot proposent un dossier de destination. **Aucun
-fichier existant n'est jamais écrasé sans le dire** : en cas de collision, un
-suffixe numéroté est ajouté.
-
-Les outils destructifs — renommage en masse, organisation de dossier,
-suppression sécurisée — demandent une confirmation explicite et, pour les plus
-dangereux, la saisie exacte d'une phrase.
-
----
-
-## Taille de l'interface
-
-FourTout se règle comme un logiciel desktop.
-
-| Geste | Effet |
+| Action | Effect |
 | --- | --- |
-| `Ctrl` `+` | Agrandir de 10 % |
-| `Ctrl` `-` | Réduire de 10 % |
-| `Ctrl` `0` | Revenir à 100 % |
-| `Ctrl` + molette | Ajuster par pas de 5 % |
+| `Ctrl` `+` | Increase by 10% |
+| `Ctrl` `-` | Decrease by 10% |
+| `Ctrl` `0` | Reset to 100% |
+| `Ctrl` + mouse wheel | Adjust in 5% steps |
 
-L'échelle va de **80 % à 150 %**, elle est enregistrée, et elle est
-synchronisée avec le curseur de **Paramètres → Apparence**. Sur macOS, la
-touche Commande fait la même chose.
+Scale ranges from **80% to 150%**, persists across restarts, and stays in sync
+with Settings → Appearance. Command provides the equivalent shortcuts on macOS.
 
-Le zoom demande à la fenêtre elle-même de changer d'échelle : la page est
-**remise en page**, le texte reste net, et les outils visuels — rognage
-d'image, rognage vidéo, éditeur PDF, réorganisation des pages — gardent des
-coordonnées justes.
+Scaling changes the window's layout rather than merely magnifying pixels, so
+text remains sharp and visual tools such as image/video cropping, PDF editing,
+and page reordering retain correct coordinates.
 
----
+## Settings
 
-## Paramètres
+### Appearance
 
-### Apparence
-
-| Réglage | Valeurs |
+| Setting | Values |
 | --- | --- |
-| **Thème** | Système, Clair, Sombre |
-| **Taille de l'interface** | 80 % à 150 % |
-| **Densité** | Compacte (défaut) ou Confortable — change la hauteur des contrôles et l'espacement des listes |
-| **Animations** | Normales ou Réduites |
+| **Theme** | System, Light, Dark |
+| **Interface size** | 80% to 150% |
+| **Density** | Compact (default) or Comfortable |
+| **Animations** | Normal or Reduced |
 
-*Réinitialiser les préférences d'interface* remet ces quatre réglages par
-défaut sans toucher aux favoris, aux récents ni aux modèles.
+*Reset interface preferences* restores these four defaults without touching
+favorites, recent tools, or installed models.
 
-### Rappels de confidentialité
+### Language
 
-Les pages d'outil affichent un rappel « traitement local ». Vous pouvez le
-masquer une fois lu.
+Choose one of the 16 complete locales or **System**. System follows the first
+supported operating-system language and reacts to system language changes. The
+choice persists and applies immediately without changing the open tool.
 
-### Modèles
+### Privacy reminders
 
-La synthèse vocale, la transcription et le détourage d'image ont besoin d'un
-modèle, téléchargé à votre demande. Cette page permet de les installer, de voir
-leur taille et leur licence, et de les supprimer. Voir [MODELS.md](../technical/MODELS.md).
+Tool pages show a local-processing reminder. You may hide it after reading it.
 
-### Données locales
+### Models
 
-FourTout ne conserve que vos préférences, vos favoris, vos outils récents et
-le dernier relevé de taux de change. Cette page permet de tout effacer.
+Speech synthesis, transcription, and background removal need models downloaded
+on request. The Models page installs and removes them and displays size, source,
+and license. See [Models](../technical/MODELS.md).
 
----
+### Local data
 
-## Confidentialité, en une ligne
+FourTout retains preferences, favorites, recent-tool IDs, and the last exchange
+rate table. This page can erase all of it.
 
-Tout se passe sur votre machine, sauf le **convertisseur de devises** (taux de
-la Banque centrale européenne) et le **téléchargement initial des modèles de
-parole**. Les deux le disent dans l'interface. Le détail :
-[PRIVACY.md](../legal/PRIVACY.md).
+## Privacy in one sentence
 
----
+Processing stays on your device, except for the ECB request made by the
+**currency converter**, initial **model downloads**, and local-network probes
+you explicitly start. Each exception is identified in the interface. See
+[Privacy](../legal/PRIVACY.md).
 
-## Quelques outils qui méritent une explication
+## Tools that deserve an explanation
 
-### Caviarder un PDF
+### Redact a PDF
 
-Le contenu masqué est **réellement supprimé** du fichier, pas simplement
-recouvert d'un rectangle noir. C'est la différence entre un caviardage et une
-illusion de caviardage.
+Selected content is **actually removed**, not merely covered by a black
+rectangle. That is the difference between redaction and the appearance of
+redaction. Always inspect the result because PDFs may contain data outside the
+parts FourTout understands.
 
-### Retrouver un mot de passe PDF
+### Recover a PDF password
 
-Teste des mots de passe probables sur un document que vous êtes autorisé à
-ouvrir. Ce n'est pas une recherche exhaustive : un mot de passe absent du
-corpus ne sera pas trouvé.
+Tests likely passwords against a document you are authorized to access. This
+is not exhaustive: a password absent from the corpus will not be found.
 
-### Suppression sécurisée
+### Secure deletion
 
-Écrase le contenu avant de supprimer. Sur SSD, carte mémoire ou système de
-fichiers à copie sur écriture, **aucun logiciel ne peut garantir** la
-disparition de toutes les copies antérieures. L'outil l'affiche avant l'action.
+Overwrites current file content before deletion. On an SSD, memory card, or
+copy-on-write file system, **no software can guarantee** that all earlier
+physical copies disappear. The tool states this before acting.
 
-### JWT — décoder
+### JWT — decode
 
-Décode et affiche les *claims*. **Décodé n'est pas vérifié** : sans la clé,
-personne ne peut dire si la signature est authentique. FourTout ne montre
-jamais de badge « valide ».
+Decoding displays claims. **Decoded does not mean verified**: without a key,
+the signature's authenticity is unknown. FourTout never labels a merely
+decoded token as valid. Use the separate verification operation when a key is
+available.
 
-### Word (DOCX) vers PDF
+### Word (DOCX) to PDF
 
-Reprend le contenu et sa structure — titres, paragraphes, gras, italique,
-listes, tableaux simples. La maquette Word (colonnes, zones flottantes,
-en-têtes, polices spécifiques, images) peut différer. Pour un rendu fidèle au
-pixel, exportez depuis Word ou LibreOffice.
+Preserves content and structure — headings, paragraphs, emphasis, lists, and
+simple tables — but not Word's layout engine. Columns, floating elements,
+headers, footers, specific fonts, and images may differ or disappear. Export
+from Word or LibreOffice when pixel fidelity matters.
 
-### Retirer l'arrière-plan
+### Remove background
 
-À ne pas confondre avec « Rendre une couleur transparente », qui efface une
-couleur que vous désignez. Celui-ci **reconnaît le sujet** — une personne, un
-animal, un objet — et rend transparent tout le reste, sans rien décrire.
+Unlike *Make a color transparent*, this tool identifies a subject — person,
+animal, or object — and makes the remainder transparent without describing the
+image.
 
-Le modèle s'installe une fois (Paramètres → Modèles), puis tout se passe sur
-votre machine : la photo n'est envoyée nulle part. Il fonctionne bien quand le
-sujet est net et se détache du fond ; il se trompe sur les scènes sans sujet
-évident, les fonds de la couleur du sujet, et les détails très fins comme une
-mèche de cheveux isolée. Les deux réglages — adoucir le bord, corriger le
-seuil — rattrapent les petits écarts.
+Install the model once under Settings → Models. Processing then stays local.
+It works best with a distinct subject and may struggle when there is no clear
+subject, foreground and background share colors, or isolated hair is very fine.
+Edge feathering and threshold correction can refine small errors. Output is
+**PNG**, the common format that preserves transparency.
 
-La sortie est en **PNG** : c'est le seul format courant qui conserve la
-transparence.
+### Currency converter
 
-### Convertisseur de devises
+The result always shows the **date of the rate table**. Offline, FourTout
+reuses and dates the last known table; without one, it displays no invented
+number.
 
-Affiche toujours **la date du relevé** utilisé. Hors ligne, il réutilise le
-dernier relevé connu en le datant ; s'il n'en a aucun, il le dit et n'affiche
-aucun chiffre.
+### Audio and video tools
 
-### Outils audio et vidéo
+These require FFmpeg. FourTout offers only formats and codecs that the FFmpeg
+**installed on your machine** proves it can produce through a test encode. See
+[Installation](INSTALLATION.md#ffmpeg-audio-and-video).
 
-Ils ont besoin de FFmpeg. Les formats et codecs proposés sont ceux que le
-FFmpeg **installé sur votre machine** sait réellement produire : FourTout les
-éprouve par un encodage d'essai, il ne se contente pas de lire la liste
-annoncée. Voir [INSTALLATION.md](INSTALLATION.md#ffmpeg-audio-et-vidéo).
+## Problems
 
----
-
-## Un problème ?
-
-[TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+See [Troubleshooting](TROUBLESHOOTING.md).

@@ -101,7 +101,7 @@ export function FileInspectTool({ tool }: ToolComponentProps) {
             certain: detection.certain,
             confidence: detection.confidence,
             reason: detection.reason,
-            bom: detection.bom === "none" ? "aucun" : detection.bom.toUpperCase(),
+            bom: detection.bom === "none" ? t("aucun") : detection.bom.toUpperCase(),
             newline: detection.newline.dominant,
           };
         }
@@ -152,7 +152,7 @@ function Report({ inspection }: { inspection: Inspection }) {
       {!info.extensionMatches && (
         <Callout tone="warning" title={t("L'extension ne correspond pas au contenu")}>
           <span className="block">
-            <Trans source={"Extension : <0>{value}</0> — Type détecté : <1>{magicLabel}</1>."} values={{ value: info.extension.toUpperCase() || "aucune", magicLabel: info.magicLabel }} components={[<strong />, <strong />]} />
+            <Trans source={"Extension : <0>{value}</0> — Type détecté : <1>{magicLabel}</1>."} values={{ value: info.extension.toUpperCase() || t("aucune"), magicLabel: info.magicLabel }} components={[<strong />, <strong />]} />
           </span>
           <Trans source={"<0>Le fichier a sans doute été renommé. FourTout ne le renomme pas de lui-même : sur une bibliothèque entière, une correction automatique fondée sur une supposition fait plus de dégâts qu'un nom trompeur. Le bouton « Renommer ce fichier » ouvre le renommage par lot avec ce fichier déjà chargé.</0>"} components={[<span className="mt-1 block" />]} />
         </Callout>
@@ -184,7 +184,11 @@ function Report({ inspection }: { inspection: Inspection }) {
           <Row label={t("Type")} value={info.isDir ? t("Dossier") : t("Fichier")} />
           <Row
             label={t("Taille")}
-            value={`${formatFileSize(info.size)} (${formatNumber(info.size)} octets)`}
+            value={t("{size} ({bytes} {count, plural, one {octet} other {octets}})", {
+              size: formatFileSize(info.size),
+              bytes: formatNumber(info.size),
+              count: info.size,
+            })}
           />
           <Row label={t("Extension")} value={info.extension || "—"} mono />
           <Row label={t("Type MIME (d'après l'extension)")} value={info.mime} mono />
@@ -194,14 +198,14 @@ function Report({ inspection }: { inspection: Inspection }) {
           />
           <Row
             label={t("Extension cohérente")}
-            value={info.extensionMatches ? "oui" : t("non — voir l'avertissement ci-dessus")}
+            value={info.extensionMatches ? t("oui") : t("non — voir l'avertissement ci-dessus")}
           />
           <Row label={t("Famille")} value={info.family} />
           <Row label={t("Modifié le")} value={formatDate(info.modified)} />
           <Row label={t("Créé le")} value={formatDate(info.created)} />
           <Row label={t("Dernier accès")} value={formatDate(info.accessed)} />
-          <Row label={t("Lecture seule")} value={info.readOnly ? "oui" : "non"} />
-          <Row label={t("Lien symbolique")} value={info.isSymlink ? "oui" : "non"} />
+          <Row label={t("Lecture seule")} value={info.readOnly ? t("oui") : t("non")} />
+          <Row label={t("Lien symbolique")} value={info.isSymlink ? t("oui") : t("non")} />
         </dl>
       </Panel>
 
@@ -210,11 +214,16 @@ function Report({ inspection }: { inspection: Inspection }) {
           <dl className="grid gap-x-4 gap-y-1 p-3 text-xs sm:grid-cols-[14rem_1fr]">
             <Row
               label={t("Encodage")}
-              value={`${ENCODING_LABELS[encoding.id]}${
+              value={
                 encoding.certain
-                  ? " (certain : le fichier le déclare)"
-                  : ` (hypothèse, ${Math.round(encoding.confidence * 100)} %)`
-              }`}
+                  ? t("{encoding} (certain : le fichier le déclare)", {
+                      encoding: ENCODING_LABELS[encoding.id],
+                    })
+                  : t("{encoding} (hypothèse, {confidence} %)", {
+                      encoding: ENCODING_LABELS[encoding.id],
+                      confidence: Math.round(encoding.confidence * 100),
+                    })
+              }
             />
             <Row label={t("Marque d'ordre des octets (BOM)")} value={encoding.bom} />
             <Row label={t("Fins de ligne")} value={encoding.newline.toUpperCase()} />

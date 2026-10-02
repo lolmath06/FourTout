@@ -89,10 +89,16 @@ export function ContactSheetTool({ tool }: ToolComponentProps) {
                 mimeType: format === "jpeg" ? "image/jpeg" : "image/png",
               },
             ],
-            summary:
-              t("{count} {count, plural, one {image} other {images}} en {columns} colonne", { count: items.length, columns: layout.columns }) +
-              `${layout.columns > 1 ? "s" : ""} × ${layout.rows} ligne${layout.rows > 1 ? "s" : ""} ` +
-              t("— planche de {width} × {height} px.", { width: layout.width, height: layout.height }),
+            summary: t(
+              "{count} {count, plural, one {image} other {images}} sur {columns} {columns, plural, one {colonne} other {colonnes}} × {rows} {rows, plural, one {ligne} other {lignes}} — planche de {width} × {height} px.",
+              {
+                count: items.length,
+                columns: layout.columns,
+                rows: layout.rows,
+                width: layout.width,
+                height: layout.height,
+              },
+            ),
           };
         } finally {
           // Une planche de cent vignettes tient autant de surfaces ouvertes :

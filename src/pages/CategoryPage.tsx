@@ -65,7 +65,7 @@ export function CategoryPage() {
       </div>
 
       <p className="ft-meta ft-num mb-1.5">
-        {tools.length} outil{tools.length > 1 ? "s" : ""}
+        {t("{count} {count, plural, one {outil} other {outils}}", { count: tools.length })}
       </p>
 
       {tools.length > 0 ? (

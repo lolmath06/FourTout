@@ -129,7 +129,7 @@ export function decodeJwt(token: string, now: Date = new Date()): DecodedJwt {
     claims.push({ name, raw, description });
   }
 
-  const algorithm = typeof header.alg === "string" ? header.alg : "inconnu";
+  const algorithm = typeof header.alg === "string" ? header.alg : t("inconnu");
   if (algorithm.toLowerCase() === "none") {
     warnings.push(
       t("L'en-tête annonce l'algorithme « none » : ce token n'est pas signé du tout."),

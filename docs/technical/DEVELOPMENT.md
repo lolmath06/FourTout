@@ -1,31 +1,31 @@
-# Développement
+# Development
+
+[English](DEVELOPMENT.md) | [Français](../fr/technical/DEVELOPMENT.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+## Contents
 
-- [Prérequis](#prérequis)
-- [Démarrer](#démarrer)
-- [Commandes](#commandes)
-- [Organisation du dépôt](#organisation-du-dépôt)
-- [Le registre : la seule source de vérité](#le-registre--la-seule-source-de-vérité)
-- [Écrire des tests](#écrire-des-tests)
+- [Prerequisites](#prerequisites)
+- [Getting started](#getting-started)
+- [Commands](#commands)
+- [Repository layout](#repository-layout)
+- [The registry: the single source of truth](#the-registry-the-single-source-of-truth)
+- [Writing tests](#writing-tests)
 - [Conventions](#conventions)
-- [Pièges connus de l'environnement](#pièges-connus-de-lenvironnement)
+- [Known environment pitfalls](#known-environment-pitfalls)
 
----
+## Prerequisites
 
-## Prérequis
-
-| Outil | Version testée | Installation |
+| Tool | Tested version | Installation |
 | --- | --- | --- |
-| **Node.js** | 22.22 | [nodejs.org](https://nodejs.org) ou `nvm install 22` |
+| **Node.js** | 22.22 | [nodejs.org](https://nodejs.org) or `nvm install 22` |
 | **pnpm** | 11.22 | `corepack enable` |
 | **Rust** | 1.98 (minimum 1.77.2) | [rustup.rs](https://rustup.rs) |
 
-### Bibliothèques système (Linux)
+### Linux system libraries
 
-Tauri 2 s'appuie sur WebKitGTK.
+Tauri 2 relies on WebKitGTK.
 
 ```bash
 # Fedora
@@ -39,67 +39,60 @@ sudo apt install libwebkit2gtk-4.1-dev libsoup-3.0-dev libgtk-3-dev \
 
 ### Windows
 
-- **Build Tools Visual Studio** avec la charge de travail « Développement
-  desktop en C++ ». Ils servent aussi à compiler SQLite, que `rusqlite`
-  embarque en mode `bundled` : la bibliothèque est bâtie avec l'application
-  plutôt que cherchée sur la machine de l'utilisateur, au prix d'environ une
-  minute au premier `cargo build`.
-- **WebView2**, présent d'origine sur Windows 11 et sur Windows 10 à jour.
+- Install **Visual Studio Build Tools** with the “Desktop development with
+  C++” workload. This also compiles the SQLite library bundled by `rusqlite`;
+  the first `cargo build` therefore takes about one extra minute.
+- Install **WebView2**. It is included with Windows 11 and current Windows 10.
 
-### Facultatif mais recommandé
+### Optional but recommended
 
-**FFmpeg** dans le `PATH`. Sans lui, les 34 outils audio et vidéo sont
-inutilisables et une partie de la suite de tests média se met en pause plutôt
-que d'échouer.
+Install **FFmpeg** in `PATH`. Without it, the 34 audio and video tools are
+unavailable and part of the media test suite is skipped instead of failing.
 
 ```bash
 sudo dnf install ffmpeg-free    # Fedora
 sudo apt install ffmpeg         # Debian, Ubuntu
 ```
 
----
-
-## Démarrer
+## Getting started
 
 ```bash
-git clone <url-du-dépôt> FourTout
+git clone <repository-url> FourTout
 cd FourTout
 pnpm install
 pnpm app:dev
 ```
 
-`pnpm install` déclenche `predev`/`prebuild`/`pretest`, qui recopient dans
-`public/` les ressources de pdf.js et de Tesseract depuis `node_modules`. Ces
-dossiers ne sont pas versionnés : ils sont reconstruits à la demande.
+`pnpm install` triggers the `predev`, `prebuild`, and `pretest` hooks, which
+copy pdf.js and Tesseract resources from `node_modules` into `public/`. These
+directories are generated on demand and are not versioned.
 
-Pour travailler sur l'interface seule, sans compiler la partie native :
+To work on the interface without compiling the native application:
 
 ```bash
 pnpm dev     # http://localhost:1420
 ```
 
-Les outils qui appellent la couche native affichent alors « Application
-installée requise » — c'est le comportement attendu dans un navigateur.
+Native-backed tools then show “Installed application required,” which is the
+expected browser behavior.
 
----
+## Commands
 
-## Commandes
-
-### Vérification
+### Verification
 
 ```bash
-pnpm verify        # lint + typecheck + test + build — à lancer avant de committer
+pnpm verify        # lint + typecheck + test + build; run before committing
 ```
 
-| Commande | Rôle |
+| Command | Purpose |
 | --- | --- |
 | `pnpm lint` | ESLint |
-| `pnpm typecheck` | TypeScript sans émission |
-| `pnpm test` | Suite Vitest |
-| `pnpm test:watch` | Vitest en mode watch |
-| `pnpm build` | Vérification TypeScript puis build Vite |
+| `pnpm typecheck` | TypeScript without emitting files |
+| `pnpm test` | Vitest suite |
+| `pnpm test:watch` | Vitest watch mode |
+| `pnpm build` | TypeScript check followed by the Vite build |
 
-### Côté natif
+### Native application
 
 ```bash
 cd src-tauri
@@ -110,143 +103,104 @@ cargo clippy --all-targets
 
 ### Application
 
-| Commande | Rôle |
+| Command | Purpose |
 | --- | --- |
-| `pnpm dev` | Interface seule, dans un navigateur |
-| `pnpm app:dev` | Application desktop complète, avec rechargement à chaud |
-| `pnpm app:build` | Construit les installeurs — voir [BUILD.md](BUILD.md) |
+| `pnpm dev` | Browser-only interface |
+| `pnpm app:dev` | Full desktop application with hot reload |
+| `pnpm app:build` | Builds installers; see [BUILD.md](BUILD.md) |
 
-### Ressources
+### Resources
 
-| Commande | Rôle |
+| Command | Purpose |
 | --- | --- |
-| `pnpm test:assets` | Régénère `test-assets/generated/` (PDF, images, média, archives, DOCX, parole, TOML, jetons JWT, base SQLite, fichiers abîmés de la phase 12) et `CONTRAT.json` |
-| `pnpm pdfjs:assets` | Recopie les ressources pdf.js dans `public/` |
-| `pnpm ocr:assets` | Recopie le worker et les données Tesseract dans `public/` |
-| `pnpm wordlist` | Régénère le corpus de récupération de mot de passe PDF |
-| `pnpm speech:assets` | Régénère les fixtures de parole |
+| `pnpm test:assets` | Regenerates `test-assets/generated/` and `CONTRAT.json` |
+| `pnpm pdfjs:assets` | Copies pdf.js resources into `public/` |
+| `pnpm ocr:assets` | Copies the Tesseract worker and data into `public/` |
+| `pnpm wordlist` | Regenerates the PDF password-recovery corpus |
+| `pnpm speech:assets` | Regenerates speech fixtures |
 
-Les fixtures ne sont pas versionnées : elles sont **reproductibles**. Lancez
-`pnpm test:assets` après un clone si vous voulez exécuter les tests
-d'intégration natifs, qui se mettent sinon en pause proprement.
+The generated test assets cover PDFs, images, media, archives, DOCX, speech,
+TOML, JWTs, SQLite, and damaged files. They are reproducible and not versioned.
+Run `pnpm test:assets` after cloning to enable native integration tests; those
+tests otherwise skip cleanly.
 
----
+## Repository layout
 
-## Organisation du dépôt
-
-```
+```text
 src/
-  app/          Routes, tests de bout en bout de l'application
-  components/   Composants réutilisables (ui/, tools/, pdf/, media/, files/, calc/…)
-  core/         Logique métier, sans React
-    tools/      Registre des outils : catalogue, catégories, recherche
-    image/      Traitement d'images, dont le détourage (background, segmentation)
+  app/          Routes and end-to-end application tests
+  components/   Reusable UI, tool, PDF, media, file, and calculator components
+  core/         Framework-independent business logic
+    tools/      Tool registry, categories, and search
+    image/      Image processing and background removal
     pdf/ media/ files/ text/ code/ calc/ units/ security/ currency/ convert/
-    jobs/       Travaux longs, progression, annulation
-  features/     État applicatif (favoris, récents, paramètres, jobs, notifications)
-  pages/        Pages de navigation
-  tools/impl/   Une implémentation par outil du catalogue
-  test/         Utilitaires de test (rendu Node, sondes FFmpeg, fixtures)
+    jobs/       Long-running jobs, progress, and cancellation
+  features/     Favorites, recents, settings, jobs, and notifications
+  pages/        Navigation pages
+  tools/impl/   One implementation per catalog tool
+  test/         Render helpers, FFmpeg probes, and fixtures
 
 src-tauri/
   src/
-    files/      Archives, empreintes, découpage, chiffrement, effacement, organisation
-    media/      Pilotage de FFmpeg, détection réelle des codecs
-    models/     Gestionnaire de modèles (parole, détourage)
-    recovery/   Récupération de mot de passe PDF
-    rates.rs    Taux BCE — la seule sortie réseau de l'application
-  tests/        Tests d'intégration natifs
+    files/      Archives, hashes, splitting, encryption, deletion, organization
+    media/      FFmpeg control and real codec detection
+    models/     Speech and segmentation model manager
+    recovery/   PDF password recovery
+    rates.rs    ECB rates, the application's only outbound network request
+  tests/        Native integration tests
 
-docs/
-  guides/       Documentation utilisateur (installation, usage, dépannage)
-  technical/    Développement, architecture, construction, publication
-  features/     Architecture par domaine (PDF, images, média, texte…)
-  legal/        Confidentialité et sécurité
-  assets/       Identité visuelle et captures d'écran
-
-scripts/        Générateurs de fixtures (`generate-*`) et synchronisation des
-                ressources embarquées (`sync-*`). Volontairement à plat : les
-                deux préfixes suffisent à s'y retrouver, et onze fichiers ne
-                justifient pas une arborescence.
-
-test-assets/    `generated/` uniquement : toutes les fixtures sont produites
-                par `pnpm test:assets` et donc exclues de Git.
+docs/           User, technical, feature, legal, and media documentation
+scripts/        Fixture generators (`generate-*`) and resource sync (`sync-*`)
+test-assets/    Reproducible files generated by `pnpm test:assets`
 ```
 
----
+## The registry: the single source of truth
 
-## Le registre : la seule source de vérité
+A tool is declared once in `src/core/tools/catalog/`. Navigation, category
+counts, search, the universal converter, and drag-and-drop routing derive from
+that declaration.
 
-Un outil est décrit **une fois**, dans `src/core/tools/catalog/`. De cette
-déclaration dérivent la navigation, les compteurs de catégorie, la recherche,
-le convertisseur universel et le routage par glisser-déposer.
+**Product rule: if it is in the catalog, it works.** There is no “coming soon”
+state. Incomplete tools are not registered, and a test keeps the catalog and
+implementation map exactly aligned. Future tools belong in
+[ROADMAP.md](../../ROADMAP.md) or an issue. See
+[ADDING-A-TOOL.md](ADDING-A-TOOL.md) to add one.
 
-**Règle du produit : figurer au catalogue, c'est fonctionner.** Il n'existe
-pas d'état « bientôt disponible ». Un outil incomplet n'est simplement pas
-enregistré, et un test garde le catalogue et la table des implémentations
-exactement alignés.
+## Writing tests
 
-Un outil futur vit dans [ROADMAP.md](../../ROADMAP.md) ou dans un ticket, pas
-dans l'interface.
+The suite contains more than one thousand passing tests. Its guiding rules are:
 
-Ajouter un outil : [ADDING-A-TOOL.md](ADDING-A-TOOL.md).
-
----
-
-## Écrire des tests
-
-La suite compte plus de mille tests, et elle est verte. Quelques principes
-qu'elle applique :
-
-**Éprouver le comportement réel, pas la construction des arguments.** Les
-tests média exécutent le vrai FFmpeg et relisent le résultat avec `ffprobe`.
-Les tests PDF relisent le PDF produit avec pdf.js. Un fichier qui s'écrit
-n'est pas un fichier qui se lit.
-
-**Vérifier une promesse là où elle peut mentir.** L'archive AES est relue par
-`7z`, pas par le code qui l'a écrite. Le flux BCE est interrogé pour de vrai.
-
-**Se mettre en pause plutôt que d'échouer** quand l'environnement manque : les
-tests qui ont besoin de FFmpeg, de `7z` ou des fixtures générées s'ignorent
-proprement en expliquant pourquoi.
-
-**Donner son vrai délai à un test lourd.** Le délai par défaut de Vitest — cinq
-secondes — est taillé pour un test unitaire. Un test qui lance FFmpeg, un moteur
-d'inférence ou l'application entière déclare le sien avec les constantes de
-`src/test/timeouts.ts`, sur la suite (`describe(nom, { timeout: … }, …)`) et sur
-ses hooks, qui ne l'héritent pas. Un exécutant d'intégration partagé est
-plusieurs fois plus lent qu'une machine de développement : sans cela, il échoue
-sur le délai au lieu d'échouer sur le code. Les tests unitaires, eux, gardent le
-délai court, qui les protège des boucles infinies.
-
-**Ne jamais ajuster une assertion pour faire vert.** Si un test échoue, c'est
-soit le code qui a tort, soit l'assertion qui était imprécise — et dans le
-second cas, la corriger doit rendre le test *plus* strict, pas moins.
-
----
+- **Test real behavior, not only argument construction.** Media tests run the
+  real FFmpeg and inspect output with ffprobe; PDF tests reopen output with
+  pdf.js.
+- **Verify a promise where it can fail.** AES archives are read with `7z`, not
+  the writer under test; the ECB feed is queried for real.
+- **Skip cleanly when the environment lacks FFmpeg, `7z`, or generated
+  fixtures.** Missing optional infrastructure is not a product failure.
+- **Give heavy tests an explicit timeout.** Use `src/test/timeouts.ts` on suites
+  and hooks. Shared integration runners can be much slower than developer
+  machines; unit tests keep the short default timeout.
+- **Never weaken an assertion just to make it pass.** A correction must make an
+  inaccurate test more precise, not less strict.
 
 ## Conventions
 
-- **Commentaires en français**, comme le reste du produit. Ils expliquent
-  *pourquoi*, jamais *quoi*.
-- **Pas de `any`** pour faire taire le compilateur.
-- **Pas de couleur en dur** : les composants utilisent les jetons CSS
-  (`--ft-*`). Une nouvelle couleur se déclare dans `src/styles/app.css`.
-- **Pas de `transform: scale()`** pour dimensionner l'interface : cela floute
-  le texte et décale les coordonnées de pointeur. Voir `src/core/ui/zoom.ts`.
-- **Aucune promesse invérifiable dans l'interface.** Si un outil a une limite,
-  elle s'écrit dans sa `note` de catalogue et s'affiche sur sa page.
+- Comments may use the language most natural to existing code, and explain
+  *why*, never merely *what*.
+- Do not use `any` to silence the compiler.
+- Do not hard-code colors; use `--ft-*` CSS tokens and declare new tokens in
+  `src/styles/app.css`.
+- Do not size the interface with `transform: scale()`: it blurs text and shifts
+  pointer coordinates. See `src/core/ui/zoom.ts`.
+- Do not make unverifiable UI promises. Document every limitation in the
+  catalog entry's `note` so it appears on the tool page.
 
----
+## Known environment pitfalls
 
-## Pièges connus de l'environnement
-
-Ils sont documentés pour éviter de les redécouvrir.
-
-| Piège | Détail |
+| Pitfall | Detail |
 | --- | --- |
-| **WebKitGTK et `toBlob` en WebP** | La WebView de Linux ne sait pas encoder en WebP côté canvas. L'export passe par le moteur natif. Voir [IMAGES.md](../features/IMAGES.md). |
-| **WebKitGTK et `container-type: size`** | Effondre les aperçus. À éviter. Voir [PDF.md](../features/PDF.md). |
-| **Workers de type module** | Ne sont pas garantis sur toutes les WebView visées. Les workers de FourTout sont bundlés en script classique (`worker.format: "iife"` dans `vite.config.ts`). |
-| **Encodeurs FFmpeg annoncés** | `ffmpeg -encoders` liste ce avec quoi FFmpeg a été compilé, pas ce que la machine sait faire. FourTout éprouve chaque encodeur par un encodage d'essai. Voir [VIDEO.md](../features/VIDEO.md). |
-| **Permission microphone** | WebKitGTK demande un arbitrage natif. Voir [AUDIO.md](../features/AUDIO.md). |
+| **WebKitGTK and WebP `toBlob`** | Linux WebView cannot encode canvas WebP; export uses the native engine. See [IMAGES.md](../features/IMAGES.md). |
+| **WebKitGTK and `container-type: size`** | It collapses previews and must be avoided. See [PDF.md](../features/PDF.md). |
+| **Module workers** | They are not guaranteed in every target WebView. Workers are bundled as classic scripts with `worker.format: "iife"`. |
+| **Advertised FFmpeg encoders** | `ffmpeg -encoders` shows compiled support, not usable hardware. FourTout test-encodes with every proposed encoder. See [VIDEO.md](../features/VIDEO.md). |
+| **Microphone permission** | WebKitGTK requires native mediation. See [AUDIO.md](../features/AUDIO.md). |

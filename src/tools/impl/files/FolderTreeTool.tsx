@@ -52,7 +52,7 @@ export function FolderTreeTool(_props: ToolComponentProps) {
       renderResult={(result) => (
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-3 rounded-md border border-[var(--ft-border)] bg-[var(--ft-surface-2)] px-3 py-2 text-sm">
-            <Trans source={"<0>{directories} dossier(s) · {files} fichier(s)</0>"} values={{ directories: result.directories, files: result.files }} components={[<span className="tabular-nums" />]} />
+            <Trans source={"<0>{directories} {directories, plural, one {dossier} other {dossiers}} · {files} {files, plural, one {fichier} other {fichiers}}</0>"} values={{ directories: result.directories, files: result.files }} components={[<span className="tabular-nums" />]} />
             {result.truncated && (
               <span className="flex items-center gap-1.5 text-xs text-[var(--ft-warn)]">
                 <Icon name="TriangleAlert" size={13} />{" "}{t("profondeur maximale atteinte")}

@@ -10,8 +10,8 @@
 видео, документы, файлы, инструменты разработчика и защиту данных: 196
 инструментов в одном приложении, и ваши файлы никогда не покидают компьютер.
 
-[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-et-11)
-[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#autres-distributions-linux)
+[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-and-11)
+[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#other-linux-distributions)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
 [![Rust](https://img.shields.io/badge/Rust-native-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
 [![React 19](https://img.shields.io/badge/React-19-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
@@ -321,8 +321,8 @@ Windows.
 
 ## Документация
 
-Полное оглавление: **[docs/README.md](docs/README.md)**. Документация написана
-на французском языке.
+Полное оглавление на английском: **[docs/README.md](docs/README.md)**. Полная
+французская версия находится в **[docs/fr/](docs/fr/README.md)**.
 
 ## Лицензия
 

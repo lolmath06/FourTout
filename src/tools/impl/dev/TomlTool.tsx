@@ -76,7 +76,9 @@ export function TomlTool(_props: ToolComponentProps) {
         summary={
           analysis && !analysis.error && summary ? (
             <>
-              {t("Document valide · {topLevelKeys} {topLevelKeys, plural, one {clé} other {clés}} à la racine · {tables} {tables, plural, one {table} other {tables}} · {arraysOfTables} {arraysOfTables, plural, one {tableau} other {tableaux}} de tables · profondeur {depth}{value}", { topLevelKeys: summary.topLevelKeys, tables: summary.tables, arraysOfTables: summary.arraysOfTables, depth: summary.depth, value: summary.dates > 0 && ` · ${summary.dates} date${summary.dates > 1 ? "s" : ""}` })}
+              {summary.dates > 0
+                ? t("Document valide · {topLevelKeys} {topLevelKeys, plural, one {clé} other {clés}} à la racine · {tables} {tables, plural, one {table} other {tables}} · {arraysOfTables} {arraysOfTables, plural, one {tableau} other {tableaux}} de tables · profondeur {depth} · {dates} {dates, plural, one {date} other {dates}}", { topLevelKeys: summary.topLevelKeys, tables: summary.tables, arraysOfTables: summary.arraysOfTables, depth: summary.depth, dates: summary.dates })
+                : t("Document valide · {topLevelKeys} {topLevelKeys, plural, one {clé} other {clés}} à la racine · {tables} {tables, plural, one {table} other {tables}} · {arraysOfTables} {arraysOfTables, plural, one {tableau} other {tableaux}} de tables · profondeur {depth}", { topLevelKeys: summary.topLevelKeys, tables: summary.tables, arraysOfTables: summary.arraysOfTables, depth: summary.depth })}
             </>
           ) : undefined
         }

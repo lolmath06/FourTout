@@ -134,7 +134,9 @@ export function PingTool(_props: ToolComponentProps) {
             <ul className="divide-y divide-[var(--ft-rule)]">
               {summary.attempts.map((attempt) => (
                 <li key={attempt.sequence} className="ft-row-py flex items-baseline gap-2 px-3">
-                  <span className="ft-meta w-12 shrink-0">n° {attempt.sequence + 1}</span>
+                  <span className="ft-meta w-12 shrink-0">
+                    {t("n° {number}", { number: attempt.sequence + 1 })}
+                  </span>
                   <span
                     className={`ft-value flex-1 ${
                       attempt.rttMs === null ? "text-[var(--ft-danger)]" : ""

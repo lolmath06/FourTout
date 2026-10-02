@@ -1,229 +1,181 @@
-# Dépannage
+# Troubleshooting
+
+[English](TROUBLESHOOTING.md) | [Français](../fr/guides/TROUBLESHOOTING.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+## The application does not start
 
-- [L'application ne démarre pas](#lapplication-ne-démarre-pas)
-- [Les outils audio ou vidéo sont indisponibles](#les-outils-audio-ou-vidéo-sont-indisponibles)
-- [La reconnaissance vocale ou la synthèse ne marche pas](#la-reconnaissance-vocale-ou-la-synthèse-ne-marche-pas)
-- [Le micro ne fonctionne pas (Linux)](#le-micro-ne-fonctionne-pas-linux)
-- [Une opération est très lente](#une-opération-est-très-lente)
-- [« Mot de passe incorrect » alors qu'il est bon](#-mot-de-passe-incorrect--alors-quil-est-bon)
-- [Le convertisseur de devises n'affiche rien](#le-convertisseur-de-devises-naffiche-rien)
-- [Une archive protégée ne s'ouvre pas ailleurs](#une-archive-protégée-ne-souvre-pas-ailleurs)
-- [Une conversion Word vers PDF ne ressemble pas au document](#une-conversion-word-vers-pdf-ne-ressemble-pas-au-document)
-- [L'interface est trop grande ou trop petite](#linterface-est-trop-grande-ou-trop-petite)
-- [Repartir de zéro](#repartir-de-zéro)
-- [Signaler un problème](#signaler-un-problème)
+### Linux — `error while loading shared libraries: libwebkit2gtk-4.1.so.0`
 
----
+Install WebKitGTK:
 
----
-
-## L'application ne démarre pas
-
-### Linux — « error while loading shared libraries: libwebkit2gtk-4.1.so.0 »
-
-WebKitGTK n'est pas installé.
-
-| Distribution | Paquet |
+| Distribution | Package |
 | --- | --- |
 | Fedora | `sudo dnf install webkit2gtk4.1` |
 | Debian, Ubuntu | `sudo apt install libwebkit2gtk-4.1-0` |
 | Arch | `sudo pacman -S webkit2gtk-4.1` |
 | openSUSE | `sudo zypper install libwebkit2gtk-4_1-0` |
 
-Le `.rpm` et le `.deb` déclarent cette dépendance : le gestionnaire de paquets
-l'installe pour vous. Seule l'AppImage peut manquer de cette bibliothèque.
+The `.rpm` and `.deb` declare this dependency, so their package managers
+install it. Only the AppImage can encounter a missing library.
 
-### Linux — fenêtre blanche ou rendu cassé
+### Linux — blank window or broken rendering
 
-Certains pilotes graphiques posent problème à l'accélération matérielle de
-WebKitGTK. Essayez de la désactiver :
+Some graphics drivers have problems with WebKitGTK hardware acceleration. Try:
 
 ```bash
 WEBKIT_DISABLE_COMPOSITING_MODE=1 fourtout
 ```
 
-Si cela règle le problème, ajoutez la variable au lanceur de votre bureau.
+If that fixes the problem, add the variable to your desktop launcher.
 
-### Windows — « WebView2 introuvable »
+### Windows — WebView2 not found
 
-Installez le *Evergreen Runtime* depuis
-[developer.microsoft.com/microsoft-edge/webview2](https://developer.microsoft.com/microsoft-edge/webview2/).
-Windows 11 et Windows 10 à jour l'ont d'origine.
+Install the *Evergreen Runtime* from
+[Microsoft's WebView2 page](https://developer.microsoft.com/microsoft-edge/webview2/).
+Windows 11 and current Windows 10 installations already include it.
 
-### Windows — SmartScreen bloque l'installeur
+### Windows — SmartScreen blocks the installer
 
-Attendu : les installeurs ne sont pas encore signés. **Informations
-complémentaires** → **Exécuter quand même**. Vérifiez d'abord l'empreinte
-SHA-256 du fichier téléchargé contre le `SHA256SUMS.txt` de la publication.
+This is expected while installers remain unsigned. Choose **More info** →
+**Run anyway**, after comparing the downloaded file's SHA-256 digest with the
+release's `SHA256SUMS.txt`.
 
----
+## Audio or video tools are unavailable
 
-## Les outils audio ou vidéo sont indisponibles
+When FFmpeg is missing, the relevant page says so. Install it:
 
-FourTout affiche « FFmpeg est introuvable » sur la page concernée.
-
-FFmpeg n'est pas embarqué. Installez-le :
-
-| Système | Commande |
+| System | Command |
 | --- | --- |
 | Fedora | `sudo dnf install ffmpeg-free` |
 | Debian, Ubuntu | `sudo apt install ffmpeg` |
 | Arch | `sudo pacman -S ffmpeg` |
-| Windows | `winget install Gyan.FFmpeg`, ou [ffmpeg.org](https://ffmpeg.org/download.html) puis ajouter `bin` au `PATH` |
+| Windows | `winget install Gyan.FFmpeg`, or use [ffmpeg.org](https://ffmpeg.org/download.html) and add `bin` to `PATH` |
 
-Vérifiez ensuite :
+Then check:
 
 ```bash
 ffmpeg -version
 ffprobe -version
 ```
 
-**Sur Windows, redémarrez FourTout après avoir modifié le `PATH`** : un
-processus ne relit pas son environnement.
+**Restart FourTout on Windows after changing `PATH`** because a running process
+does not reload its environment.
 
-### Un codec attendu n'est pas proposé
+### An expected codec is not offered
 
-C'est voulu. FourTout ne propose que les encodeurs que votre FFmpeg sait
-**réellement** utiliser : chacun est éprouvé par un encodage d'essai au
-démarrage. Un `h264_nvenc` compilé dans FFmpeg mais inutilisable faute de
-carte ou de pilote est annoncé exactement comme un encodeur fonctionnel, puis
-échoue plusieurs secondes après le clic. FourTout préfère ne pas le proposer.
+This is deliberate. FourTout offers only encoders that the installed FFmpeg
+can **actually use**, testing each with a short encode at startup. FFmpeg may
+advertise `h264_nvenc` even when the required GPU or driver is absent; FourTout
+prefers not to offer an encoder that will fail after the user starts a job.
 
-`ffmpeg-free`, de Fedora, est compilé sans certains codecs brevetés. Pour un
-FFmpeg complet, ajoutez le dépôt RPM Fusion.
+Fedora's `ffmpeg-free` omits some patent-encumbered codecs. RPM Fusion provides
+a more complete FFmpeg build.
 
----
+## Speech recognition or synthesis does not work
 
-## La reconnaissance vocale ou la synthèse ne marche pas
+These tools require a model, which is not bundled. Install it under
+**Settings → Models**. Internet access is needed once for the download; see
+[Models](../technical/MODELS.md).
 
-Ces outils ont besoin d'un modèle, qui n'est pas livré avec l'application.
-**Paramètres → Modèles** permet de l'installer. Il faut une connexion pour ce
-téléchargement, une seule fois. Voir [MODELS.md](../technical/MODELS.md).
+If a download fails with a digest error, nothing is installed. The integrity
+check is doing its job; retry the download.
 
-Si un téléchargement échoue avec une erreur d'empreinte, rien n'est installé :
-c'est la vérification qui a fait son travail. Relancez le téléchargement.
+## The microphone does not work on Linux
 
----
+WebKitGTK requires native arbitration of microphone permission. FourTout grants
+it when the recorder asks. If nothing happens:
 
-## Le micro ne fonctionne pas (Linux)
+1. Confirm the microphone works elsewhere with `gnome-sound-recorder` or
+   `arecord -l`.
+2. Confirm PipeWire or PulseAudio is running.
+3. Under Flatpak or Snap, confirm microphone access is allowed.
 
-WebKitGTK demande un arbitrage natif de la permission microphone. FourTout
-l'accorde à la demande de l'enregistreur. Si rien ne se passe :
+## An operation is very slow
 
-1. Vérifiez que le micro fonctionne ailleurs (`gnome-sound-recorder`,
-   `arecord -l`).
-2. Vérifiez que PipeWire ou PulseAudio tourne.
-3. Sous Flatpak ou Snap, vérifiez que l'accès au microphone est autorisé.
+Video compression, OCR, duplicate searches over large folders, and PDF
+password recovery are inherently expensive.
 
----
+- Progress appears in the tool and task indicator.
+- You can leave the page; the job continues.
+- **Cancel** stops the real process and removes temporary files.
 
-## Une opération est très lente
+File encryption begins with an Argon2id derivation that takes about one second
+and uses 64 MiB. This is **intentional**: it makes brute-force attacks costly.
 
-Certaines opérations sont intrinsèquement coûteuses : compression vidéo, OCR,
-recherche de doublons sur un gros dossier, récupération de mot de passe PDF.
+## “Wrong password” even though it is correct
 
-- La progression s'affiche dans l'outil et dans la barre de tâches.
-- Vous pouvez quitter la page : le travail continue.
-- **Annuler** arrête réellement le processus et nettoie les fichiers
-  temporaires.
+The exact message is “Wrong password, or altered file.” Authenticated
+encryption cannot distinguish these two conditions; that is not a defect.
 
-Le chiffrement de fichiers commence par une dérivation Argon2id qui prend
-environ une seconde et consomme 64 Mio. C'est **voulu** : c'est ce qui rend
-une attaque par force brute coûteuse.
+Check that:
 
----
+- the `.ftenc` file was not truncated by an incomplete transfer;
+- FourTout produced it — the signature is checked, and another format gives a
+  different error;
+- the keyboard layout matches the one used when the password was entered.
 
-## « Mot de passe incorrect » alors qu'il est bon
+There is **no recovery mechanism**. This is expected behavior.
 
-Le message exact est « Mot de passe incorrect, ou fichier altéré ». Les deux
-cas sont indistinguables : c'est une propriété du chiffrement authentifié, pas
-un défaut.
+## The currency converter shows nothing
 
-Vérifiez :
+It is the only tool that requires Internet access.
 
-- que le fichier `.ftenc` n'a pas été tronqué par un transfert incomplet
-  (comparez sa taille avec celle d'origine) ;
-- qu'il a bien été produit par FourTout — la signature est vérifiée, un autre
-  format donne un message différent ;
-- la disposition du clavier au moment de la saisie initiale.
+- **Offline with cached rates:** FourTout uses the last known table and shows
+  its date. Check the date before trusting the amount.
+- **Offline without cached rates:** FourTout says so and shows no invented
+  value.
+- **Online but failing:** the European Central Bank publishes once per working
+  day. A corporate firewall or proxy may block `ecb.europa.eu`.
 
-Il n'existe **aucune récupération**. C'est le comportement attendu.
+## A protected archive does not open elsewhere
 
----
+FourTout produces **WinZip AES-256**, supported by 7-Zip, WinRAR, PeaZip, Keka,
+and Windows Explorer. Very old tools and old versions of `unzip` do not support
+ZIP AES and will fail.
 
-## Le convertisseur de devises n'affiche rien
+ZIP **filenames** remain visible without the password; only contents are
+encrypted. That is a format limitation. To hide names as well, encrypt the
+archive with the file-encryption tool.
 
-C'est le seul outil qui a besoin d'Internet.
+## A Word-to-PDF result does not resemble the document
 
-- **Hors ligne avec un relevé en cache** : FourTout utilise le dernier relevé
-  connu et affiche sa date. Vérifiez cette date avant de vous fier au montant.
-- **Hors ligne sans relevé** : FourTout le dit et n'affiche aucun chiffre.
-  Aucun taux n'est inventé.
-- **En ligne mais en erreur** : la Banque centrale européenne publie une fois
-  par jour ouvré. Un pare-feu d'entreprise ou un proxy peut bloquer l'accès à
-  `ecb.europa.eu`.
+This is an explicit limitation on the tool page. FourTout preserves content
+and structure — headings, paragraphs, bold, italic, lists, and simple tables —
+but not Word layout. Columns, floating objects, headers, footers, specific
+fonts, and images may differ or disappear.
 
----
+Pixel-perfect reproduction requires a Word layout engine. Export from Word or
+LibreOffice when exact layout matters.
 
-## Une archive protégée ne s'ouvre pas ailleurs
+## The interface is too large or too small
 
-FourTout produit du **WinZip AES-256**, lisible par 7-Zip, WinRAR, PeaZip,
-Keka et l'Explorateur Windows. Les outils très anciens, ou `unzip` en version
-ancienne, ne connaissent pas l'AES du ZIP et échoueront.
+Use `Ctrl` `+`, `Ctrl` `-`, `Ctrl` `0`, or `Ctrl` plus the mouse wheel. The
+same setting is available under **Settings → Appearance** from 80% to 150% and
+is persisted.
 
-Note : les **noms de fichiers** d'une archive ZIP restent lisibles sans le mot
-de passe, seul le contenu est chiffré. C'est une limite du format. Pour cacher
-aussi les noms, chiffrez l'archive avec l'outil de chiffrement de fichiers.
+If the interface looks enlarged twice, the WebView may be applying its own
+zoom on top. `Ctrl` `0` resets it.
 
----
+## Starting from scratch
 
-## Une conversion Word vers PDF ne ressemble pas au document
+**Settings → Local data → Erase everything** resets preferences, favorites,
+recent tools, and cached rates.
 
-Attendu, et dit sur la page de l'outil. FourTout reprend le contenu et sa
-structure — titres, paragraphes, gras, italique, listes, tableaux simples —
-mais pas la maquette Word : colonnes, zones flottantes, en-têtes et pieds de
-page, polices spécifiques et images peuvent différer ou disparaître.
+To remove installed models as well, delete the application data directory:
 
-Reproduire Word demanderait un moteur de mise en page Word. Pour un rendu
-fidèle au pixel, exportez en PDF depuis Word ou LibreOffice.
-
----
-
-## L'interface est trop grande ou trop petite
-
-`Ctrl` `+`, `Ctrl` `-`, `Ctrl` `0`, ou `Ctrl` + molette. Le réglage est aussi
-dans **Paramètres → Apparence**, de 80 % à 150 %, et il est conservé.
-
-Si l'interface paraît doublement agrandie, c'est que la WebView applique son
-propre zoom par-dessus. `Ctrl` `0` remet tout à plat.
-
----
-
-## Repartir de zéro
-
-**Paramètres → Données locales → Tout effacer** remet FourTout à son état
-initial : préférences, favoris, récents, taux en cache.
-
-Pour retirer aussi les modèles de parole, supprimez le dossier de données de
-l'application :
-
-| Système | Chemin |
+| System | Path |
 | --- | --- |
 | Linux | `~/.local/share/app.fourtout.desktop/` |
 | Windows | `%APPDATA%\app.fourtout.desktop\` |
 
-Aucun de vos fichiers de travail n'y est stocké.
+No working file is stored there.
 
----
+## Reporting a problem
 
-## Signaler un problème
+Open a GitHub issue with the FourTout version, operating system, reproduction
+steps, and exact error message.
 
-Ouvrez un ticket sur GitHub avec la version de FourTout, votre système, les
-étapes de reproduction et le message d'erreur exact.
-
-**Une vulnérabilité de sécurité ne s'ouvre pas en ticket public** : voir
-[SECURITY.md](../legal/SECURITY.md#signaler-une-vulnérabilité).
+**Do not open a public issue for a security vulnerability.** See
+[Security](../legal/SECURITY.md#reporting-a-vulnerability).

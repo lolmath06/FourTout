@@ -93,9 +93,9 @@ describe("résumé du plan de synchronisation", () => {
     // Le total et sa composition, pour que « 5 » devant sept lignes cesse
     // d'être une énigme.
     expect(total).toHaveTextContent("7 opérations");
-    expect(total).toHaveTextContent("1 création(s) de dossier");
-    expect(total).toHaveTextContent("5 copie(s)");
-    expect(total).toHaveTextContent("1 remplacement(s)");
+    expect(total).toHaveTextContent("1 création de dossier");
+    expect(total).toHaveTextContent("5 copies");
+    expect(total).toHaveTextContent("1 remplacement");
 
     // Un dossier créé n'est jamais compté comme un fichier copié.
     const grid = screen.getByTestId("stat-grid");

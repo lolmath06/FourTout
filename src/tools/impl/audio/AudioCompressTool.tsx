@@ -43,7 +43,11 @@ export function AudioCompressTool({ tool }: ToolComponentProps) {
           summary:
             gain > 0
               ? t("{size} → {size2} · {percent}% de gain ({value} {bitrate} kb/s).", { size: formatFileSize(original), size2: formatFileSize(file.bytes.length), percent, value: format.toUpperCase(), bitrate })
-              : `Sortie ${format.toUpperCase()} ${bitrate} kb/s (${formatFileSize(file.bytes.length)}).`,
+              : t("Sortie {format} {bitrate} kb/s ({size}).", {
+                  format: format.toUpperCase(),
+                  bitrate,
+                  size: formatFileSize(file.bytes.length),
+                }),
           warning: gain <= 0 ? t("Aucun gain : le fichier d'origine était déjà plus compact.") : undefined,
         };
       }}

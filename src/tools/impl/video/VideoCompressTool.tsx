@@ -75,10 +75,10 @@ export function VideoCompressTool({ tool }: ToolComponentProps) {
               value={infos[0]?.width ? `${infos[0].width} × ${infos[0].height}` : "—"}
             />
             <Row label={t("Codec vidéo")} value={infos[0]?.videoCodec ?? "—"} />
-            <Row label={t("Codec audio")} value={infos[0]?.audioCodec ?? "aucun"} />
+            <Row label={t("Codec audio")} value={infos[0]?.audioCodec ?? t("aucun")} />
             <Row
               label={t("Débit")}
-              value={infos[0]?.bitRate ? `${Math.round(infos[0].bitRate / 1000)} kb/s` : "inconnu"}
+              value={infos[0]?.bitRate ? `${Math.round(infos[0].bitRate / 1000)} kb/s` : t("inconnu")}
             />
           </dl>
         </div>

@@ -485,8 +485,10 @@ export function softSubtitlePipeline(
   }
   if (!supported.includes(container)) {
     throw new Error(
-      t("Le moteur installé ne sait pas écrire de sous-titres dans un {value} ", { value: container.toUpperCase() }) +
-        `(encodeur ${SUBTITLE_ENCODER[container]} absent).`,
+      t("Le moteur installé ne sait pas écrire de sous-titres dans un {container} (encodeur {encoder} absent).", {
+        container: container.toUpperCase(),
+        encoder: SUBTITLE_ENCODER[container],
+      }),
     );
   }
   return copyPipeline(addSubtitleTrack({ container, language: options.language }), container);
@@ -502,7 +504,7 @@ export function extractSubtitlePipeline(
   const track = tracks.find((entry) => entry.order === options.order) ?? tracks[0];
   if (!track.textBased) {
     throw new Error(
-      t("La piste sélectionnée est au format image ({value}) : elle ne peut pas être convertie en texte.", { value: track.codecName ?? "inconnu" }),
+      t("La piste sélectionnée est au format image ({value}) : elle ne peut pas être convertie en texte.", { value: track.codecName ?? t("inconnu") }),
     );
   }
   return { operation: extractSubtitleTrack(track.order, options.format), alternatives: [], track };

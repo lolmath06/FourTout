@@ -8,7 +8,7 @@ export function PageRangeInput({
   onChange,
   pageCount,
   state,
-  label = "Pages",
+  label = t("Pages"),
   placeholder = "1-3, 7, 10-12",
   autoFocus = false,
 }: {
@@ -58,7 +58,10 @@ export function PageRangeInput({
       ) : (
         <p className="text-xs text-[var(--ft-text-faint)]">
           {state.valid
-            ? `${state.pages.length} page${state.pages.length > 1 ? "s" : ""} : ${formatPageRange(state.pages)}`
+            ? t("{count} {count, plural, one {page} other {pages}} : {range}", {
+                count: state.pages.length,
+                range: formatPageRange(state.pages),
+              })
             : t("Exemples : 1,3,5 · 1-4 · 1-3,7 · 5- (jusqu'à la fin). Document de {pageCount} {pageCount, plural, one {page} other {pages}}.", { pageCount })}
         </p>
       )}

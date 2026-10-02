@@ -307,8 +307,12 @@ export function AgeTool(_props: ToolComponentProps) {
         <>
           <ResultBlock
             value={String(age.years)}
-            unit={age.years > 1 ? "ans" : "an"}
-            formula={`${age.years} an${age.years > 1 ? "s" : ""}, ${age.months} mois et ${age.days} jour${age.days > 1 ? "s" : ""}`}
+            unit={t("{count, plural, one {an} other {ans}}", { count: age.years })}
+            formula={t("{years} {years, plural, one {an} other {ans}}, {months} mois et {days} {days, plural, one {jour} other {jours}}", {
+              years: age.years,
+              months: age.months,
+              days: age.days,
+            })}
           />
           <ValueTable
             caption={t("Détail")}
@@ -318,7 +322,10 @@ export function AgeTool(_props: ToolComponentProps) {
               { label: t("Prochain anniversaire"), value: toDateOnly(age.nextBirthday) },
               {
                 label: t("Dans"),
-                value: `${formatNumber(age.daysUntilNextBirthday)} jour${age.daysUntilNextBirthday > 1 ? "s" : ""}`,
+                value: t("{days} {count, plural, one {jour} other {jours}}", {
+                  days: formatNumber(age.daysUntilNextBirthday),
+                  count: age.daysUntilNextBirthday,
+                }),
               },
             ]}
           />

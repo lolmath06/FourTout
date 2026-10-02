@@ -10,8 +10,8 @@ Uma caixa de ferramentas desktop que reúne PDF, imagens, áudio, vídeo,
 documentos, arquivos, ferramentas para desenvolvedores e privacidade — 196
 ferramentas em um só aplicativo, e seus arquivos nunca saem do seu computador.
 
-[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-et-11)
-[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#autres-distributions-linux)
+[![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-and-11)
+[![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#other-linux-distributions)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
 [![Rust](https://img.shields.io/badge/Rust-native-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
 [![React 19](https://img.shields.io/badge/React-19-0b1a2e?style=flat-square)](docs/technical/ARCHITECTURE.md)
@@ -322,8 +322,8 @@ e como relatar uma vulnerabilidade:
 
 ## Documentação
 
-O índice completo: **[docs/README.md](docs/README.md)**. A documentação está
-escrita em francês.
+O índice completo em inglês está em **[docs/README.md](docs/README.md)**, com
+um espelho integral em francês em **[docs/fr/](docs/fr/README.md)**.
 
 ## Licença
 

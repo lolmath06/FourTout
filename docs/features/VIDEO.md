@@ -1,276 +1,113 @@
-# Architecture Vidéo
+# Video architecture
+
+[English](VIDEO.md) | [Français](../fr/features/VIDEO.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+The video suite builds on the shared [media foundation](MEDIA.md): the same
+native commands, temporary files, progress, and real cancellation.
 
-- [Principe directeur : ne jamais proposer ce que le moteur ne sait pas faire](#principe-directeur--ne-jamais-proposer-ce-que-le-moteur-ne-sait-pas-faire)
-- [Qualité : une table par encodeur, pas une valeur universelle](#qualité--une-table-par-encodeur-pas-une-valeur-universelle)
-- [Honnêteté sur la compression](#honnêteté-sur-la-compression)
-- [Dimensions](#dimensions)
-- [Fusion : jamais de concaténation naïve](#fusion--jamais-de-concaténation-naïve)
-- [Sous-titres](#sous-titres)
-- [Jobs : survivre à la navigation](#jobs--survivre-à-la-navigation)
-- [Fichiers temporaires](#fichiers-temporaires)
-- [Erreurs](#erreurs)
-- [Un seul point de décision : `video/pipelines.ts`](#un-seul-point-de-décision--videopipelinests)
-- [Ossature d'interface](#ossature-dinterface)
-- [Tests](#tests)
+## Offer only what the engine can do
 
----
+FFmpeg builds expose different codecs. Fedora may provide `libopenh264` but not
+`libx264` or `mov_text`; GPU encoders can be compiled in yet unusable on the
+current hardware. FourTout therefore distinguishes:
 
-La suite Vidéo est bâtie **au-dessus du socle média** décrit dans
-[MEDIA.md](MEDIA.md) : mêmes commandes natives, mêmes fichiers temporaires,
-même annulation. Ce document décrit ce que la phase 5 ajoute par-dessus.
+1. `media_encoders`: encoders FFmpeg advertises;
+2. `media_probe_encoders`: candidates that pass a real, 12-second-bounded
+   64×64 test encode.
 
-## Principe directeur : ne jamais proposer ce que le moteur ne sait pas faire
+Only the second list drives the UI. Results are cached per session and retain
+accepted and rejected encoders for diagnostics. Container-specific helpers in
+`capabilities.ts` determine codecs, maximum compatibility, and subtitle support.
 
-Le même binaire FFmpeg n'a pas les mêmes encodeurs selon la plateforme. Sur un
-build complet, H.264 passe par `libx264` et un MP4 peut porter une piste de
-sous-titres (`mov_text`). Sur le FFmpeg de Fedora, `libx264` est absent —
-H.264 passe par `libopenh264`, qui **ne comprend pas `-crf`** — et l'encodeur
-`mov_text` n'existe pas.
+Software encoders are preferred for reliability—such as `libx264`, then
+`libopenh264`, before NVENC/QSV/VAAPI. Pipelines also provide ordered runtime
+fallbacks because real files can expose profile, resolution, or memory failures
+not seen by the probe. Retries occur only for recognized encoder-unavailable
+errors and are disclosed. An explicitly selected custom encoder never changes
+behind the user's back.
 
-### Annoncé n'est pas utilisable
+## Encoder-specific quality
 
-`ffmpeg -encoders` ne dit pas ce qui fonctionne : il dit ce avec quoi le binaire
-a été **compilé**. Le paquet FFmpeg de Fedora annonce `h264_nvenc`, `h264_vaapi`
-et `h264_qsv` sur toutes les machines, y compris celles sans GPU exploitable,
-sans pilote compatible, ou dans une session où le périphérique est hors
-d'atteinte. L'encodeur échoue alors **à l'ouverture**, plusieurs secondes après
-le clic :
+`src/core/media/video/presets.ts` maps an intent such as high quality or small
+file to each encoder's real controls: CRF and presets for x264/x265, VP9 and AV1
+specific scales, and a source-aware target bitrate for OpenH264 and hardware
+encoders. A universal CRF would fail on OpenH264. `yuv420p` is always selected
+for broad playback compatibility.
 
-```
-[h264_nvenc] Error while opening encoder - maybe incorrect parameters...
-Error while filtering: Operation not permitted
-Conversion failed!
-```
+`sizeOutcome()` never describes a larger output as a successful saving. It says
+the source was already sufficiently optimized and never reports a false 0%
+gain.
 
-FourTout applique donc **deux niveaux de vérité** :
+## Dimensions and cropping
 
-1. `media_encoders` — ce que FFmpeg annonce ;
-2. `media_probe_encoders` — un **encodage réel** de test (image 64x64 vers
-   `null`, borné a 12 s) pour chaque candidat.
+`dimensions.ts` enforces even dimensions for `yuv420p` and never upscales
+silently. Vertical video remains vertical; “720p” refers to its short side.
+Displayed crop fractions become even, contained source pixels through
+`cropRectFor`, so the exported region matches the overlay. Aspect constraints
+are applied in source pixels.
 
-Un encodeur vidéo absent du second niveau n'est jamais proposé, jamais choisi,
-et n'apparaît pas dans « Compatibilité maximale ». Les deux listes sont
-conservées (`usableVideo`, `rejectedVideo`) pour le diagnostic. La détection a
-lieu **une fois par session** et son résultat est mis en cache côté natif ;
-`media_reset_encoder_probes` la relance si nécessaire.
+## Merging
 
-| Élément | Rôle |
-| --- | --- |
-| `buildCapabilities({announced, usableVideo})` | Deux listes vers familles utilisables (fonction pure, testée) |
-| `videoEncoderCandidates()` | Encodeurs à tester réellement |
-| `videoCodecsFor(container)` | Codecs acceptés **par le conteneur** et utilisables ici |
-| `preferredVideoCodec(container)` | **Unique** point de décision du codec |
-| `mostCompatible()` | La combinaison « compatibilité maximale » réellement possible |
-| `subtitleContainers` | Conteneurs capables de porter une piste de sous-titres textuelle |
+`concatCompatible()` compares codecs, dimensions, frame rate, and audio. Fully
+compatible files use the concat demuxer with `-c copy`. Others use a
+`filter_complex` pipeline that scales without distortion, pads, sets square
+pixels, normalizes frame rate, and resamples stereo audio at 48 kHz. Silent
+inputs receive duration-matched silence so tracks remain aligned.
 
-### Ordre de préférence : fiabilité avant vitesse
+## Subtitles
 
-Les encodeurs logiciels passent devant les encodeurs matériels, même quand les
-deux fonctionnent :
-
-```
-h264 : libx264 > libopenh264 > h264_nvenc > h264_qsv > h264_vaapi > h264_v4l2m2m
-```
-
-Un encodeur matériel n'est retenu que s'il a passé son test **et** qu'aucun
-encodeur logiciel de la même famille n'est disponible.
-
-### Repli à l'exécution
-
-La détection écarte les encodeurs qui ne démarrent pas, mais un encodeur peut
-encore échouer sur un fichier réel (définition, profil, mémoire vidéo). Chaque
-pipeline fournit donc ses variantes de repli, et `runMedia` les essaie **dans
-l'ordre**, uniquement sur une erreur reconnue comme une indisponibilité
-d'encodeur (`isEncoderUnavailable`). Un fichier illisible ou un disque plein ne
-déclenchent aucune nouvelle tentative. Le repli est signalé à l'utilisateur :
-
-> L'accélération matérielle n'était pas disponible ; l'encodage a été refait en
-> logiciel.
-
-En mode **Personnalisé**, l'encodeur est un choix explicite de l'utilisateur :
-l'erreur est affichée plutôt que contournée dans son dos.
-
-## Qualité : une table par encodeur, pas une valeur universelle
-
-`src/core/media/video/presets.ts` traduit une intention (« qualité élevée »,
-« fichier plus léger ») en arguments adaptés à l'encodeur retenu :
-
-- `libx264` / `libx265` : `-crf` + `-preset medium` ;
-- `libvpx-vp9` : `-crf` avec `-b:v 0` et `-row-mt 1` ;
-- `libsvtav1` / `libaom-av1` : `-crf` avec leurs propres échelles ;
-- `libopenh264` et les encodeurs matériels : **débit cible**, calculé à partir
-  du débit réel de la source (ou, à défaut, d'une estimation par pixel).
-
-Recopier un CRF de `libx264` vers `libopenh264` produirait un échec à
-l'exécution ; un test verrouille ce point.
-
-`-pix_fmt yuv420p` est systématique : c'est ce qui rend le fichier lisible
-partout.
-
-## Honnêteté sur la compression
-
-`sizeOutcome()` (`src/tools/impl/video/shared.ts`) compare la taille produite à
-la taille d'origine. Si le résultat est plus gros, il n'est **pas** présenté
-comme un succès : le panneau affiche
-
-> Ce fichier était déjà suffisamment optimisé : le résultat est plus volumineux
-> que l'original.
-
-Un gain de 0 % n'est jamais affiché comme un gain.
-
-## Dimensions
-
-`src/core/media/video/dimensions.ts` tient deux règles sans exception :
-
-1. **dimensions paires** — `yuv420p` sous-échantillonne la chrominance, une
-   largeur impaire fait échouer l'encodage ;
-2. **aucun agrandissement silencieux** — passer une source 720p en 1080p
-   n'ajoute aucun détail ; l'outil l'annonce et exige une confirmation.
-
-Une vidéo verticale reste verticale : « 720p » porte sur le petit côté.
-
-Le rognage convertit la sélection affichée (fractions) en pixels pairs contenus
-dans l'image (`cropRectFor`) : **ce que l'utilisateur voit est ce qu'il
-obtient**. Le rapport imposé (1:1, 16:9, 9:16…) est contraint en pixels de la
-source, pas en fractions — sans quoi « 1:1 » sur une source 16:9 donnerait un
-rectangle.
-
-## Fusion : jamais de concaténation naïve
-
-`concatCompatible()` compare codecs, définition, cadence, présence et format de
-l'audio.
-
-- **Compatibles** → démultiplexeur `concat` avec `-c copy`. La liste de
-  fichiers est préparée par `stageText` (voir plus bas) puis supprimée comme
-  tout autre temporaire.
-- **Hétérogènes** → `filter_complex` de normalisation : mise à l'échelle sans
-  déformation (`force_original_aspect_ratio=decrease` + `pad`), `setsar=1`,
-  cadence commune, audio rééchantillonné en 48 kHz stéréo. Une source **muette**
-  reçoit un silence de sa durée (`anullsrc`), faute de quoi les pistes audio se
-  décaleraient.
-
-## Sous-titres
-
-Trois opérations distinctes, volontairement séparées :
-
-| Outil | Effet | Réencodage |
+| Tool | Effect | Re-encoding |
 | --- | --- | --- |
-| Ajouter une piste | Le texte devient une piste activable dans le lecteur | Non (`-c copy`) |
-| Incruster | Le texte fait partie des pixels, visible partout | Oui (image seulement) |
-| Extraire | Les pistes textuelles existantes ressortent en SRT/VTT | Non |
+| Add track | Creates a player-switchable text track | No (`-c copy`) |
+| Burn in | Renders text into video pixels | Video only |
+| Extract | Writes existing text tracks as SRT/VTT | No |
 
-L'ajout de piste dépend du conteneur : `srt` en MKV, `webvtt` en WebM,
-`mov_text` en MP4. Quand le build n'a pas `mov_text`, l'outil bascule sur MKV
-**et le dit**. L'extraction distingue les pistes textuelles des pistes
-graphiques (PGS, DVD, DVB) : ces dernières sont des images, leur conversion en
-texte demanderait une reconnaissance de caractères que cet outil ne fait pas —
-c'est annoncé, pas promis à tort.
+Soft tracks use SRT in MKV, WebVTT in WebM, and `mov_text` in MP4. When
+`mov_text` is unavailable, FourTout switches to MKV and says so. Bitmap subtitle
+formats are reported but not falsely presented as text; OCR would be required.
+Burning escapes FFmpeg filter paths safely, including Windows drive letters,
+commas, and colons.
 
-L'incrustation passe par le filtre `subtitles`. Le chemin est échappé
-(`escapeFilterPath`) puis entouré de guillemets simples : le lexer de FFmpeg
-découpe sur `:` et `,`, et un `C:\Films\a,b.srt` casserait sinon le graphe.
+Automatic video subtitles reuse the existing `TranscriptWorkbench` and
+whisper.cpp pipeline. The optional burn step has a separate job ID so it does
+not replace the transcription job.
 
-### Sous-titres automatiques
+## Jobs and temporary files
 
-`video-generate-subtitles` **ne crée aucun second moteur** : il réutilise
-exactement la chaîne de la phase 4C — `TranscriptWorkbench` + `transcribe()`
-(whisper.cpp), avec le modèle déjà installé. L'extraction de la bande son est
-faite par FFmpeg, comme pour un fichier audio.
+Long encodes live in the global background-job controller, not a React
+component. FFmpeg `-progress pipe:1` drives progress; cancellation calls
+`media_cancel` and kills the child process; no partial result is returned.
+Notifications and result state survive navigation.
 
-Le seul ajout propre à la vidéo est le panneau d'incrustation, qui tourne dans
-un job **distinct** (`<outil>:burn`) pour ne pas chasser la transcription du
-gestionnaire de travaux.
+`runMedia` stages user files, generated inputs, and derived text files such as
+concat lists, then cleans every temporary in `finally` after success, error, or
+cancellation. Original files are never modified or deleted.
 
-## Jobs : survivre à la navigation
+## Errors and one decision point
 
-Un réencodage se compte en minutes. Il ne peut donc pas appartenir au composant
-React qui l'a lancé.
+`src/core/media/errors.ts` translates known FFmpeg failures—invalid input,
+missing codecs or tracks, incompatible containers, full disk, denied access,
+and cancellation—while retaining unknown technical messages rather than
+inventing an explanation.
 
-`src/features/jobs/background.ts` porte le contrôleur générique (progression,
-annulation réelle, résultat conservé hors du store). `speech.ts` et `media.ts`
-n'en sont que le vocabulaire : la parole et la vidéo partagent le même
-mécanisme, déjà éprouvé en phase 4C.
+All tools call `src/core/media/video/pipelines.ts`, the single place selecting
+containers, encoders, quality, filters, and fallbacks. This lets the integration
+matrix test the exact decisions made by the interface.
 
-- progression réelle via `media://progress` (FFmpeg `-progress pipe:1`) ;
-- annulation → `media_cancel` → le processus enfant est **tué** ;
-- aucun résultat partiel : `runMedia` ne renvoie qu'après un succès ;
-- notification de fin, et reconnexion de l'interface en revenant sur l'outil.
+## Shared interface
 
-## Fichiers temporaires
-
-Chaque exécution prépare ses entrées (`media_stage`), réserve sa sortie
-(`media_temp`), puis nettoie **dans tous les cas** — succès, erreur, annulation
-— dans le `finally` de `runMedia`. Trois sortes d'entrées coexistent :
-
-| Source | Mécanisme |
-| --- | --- |
-| Fichiers de l'utilisateur | `files` |
-| Contenu produit par l'application (SRT généré…) | `extraInputs` |
-| Fichier dérivé des chemins préparés (liste `concat`) | `operation.stageText` |
-
-Le fichier d'origine de l'utilisateur n'est **jamais** modifié ni supprimé.
-
-## Erreurs
-
-`src/core/media/errors.ts` reformule les échecs FFmpeg fréquents : fichier
-illisible, codec absent, conteneur incompatible, piste inexistante, disque
-plein, accès refusé, annulation. Un message non reconnu est **conservé tel
-quel** — mieux vaut une phrase obscure qu'une explication fausse. Le détail
-technique reste accessible derrière « Détail technique ».
-
-## Un seul point de décision : `video/pipelines.ts`
-
-Chaque outil de la suite se réduit à un appel de `src/core/media/video/pipelines.ts`
-(`convertPipeline`, `compressPipeline`, `resizePipeline`, `cropPipeline`,
-`transformPipeline`, `speedPipeline`, `trimPipeline`, `mergePipeline`,
-`burnPipeline`, `softSubtitlePipeline`, `volumePipeline`, `batchPipeline`...).
-C'est **là** que sont décidés le conteneur, l'encodeur, la qualité et les
-filtres.
-
-Cette centralisation n'est pas cosmétique. Tant que chaque écran choisissait son
-encodeur dans son coin, une erreur de sélection cassait dix outils sans qu'aucun
-test ne la voie : les tests appelaient les constructeurs d'arguments avec un
-encodeur écrit en dur, donc validaient la mécanique et jamais la décision. Un
-seul point de décision, c'est un seul point à tester — et la matrice
-d'intégration exerce exactement ce que l'interface exécute.
-
-## Ossature d'interface
-
-| Brique | Rôle |
-| --- | --- |
-| `VideoToolShell` | Dépôt, ffprobe (mis en cache par fichier), capacités, job global, erreurs, résultat |
-| `VideoPreview` | Lecteur natif + position courante + calque libre |
-| `CropOverlay` | Sélection rectangulaire en fractions, rapport contraint en pixels |
-| `VideoInfoList` | Carte d'identité des fichiers, réordonnancement par glisser-déposer |
-| `shared.ts` | Conteneur par défaut, recopie ou réencodage de l'audio, bilan de taille |
-
-Volontairement **pas** un logiciel de montage : FourTout reste une suite
-d'outils simples.
+`VideoToolShell` handles drop, cached ffprobe data, capabilities, global jobs,
+errors, and results. `VideoPreview`, `CropOverlay`, `VideoInfoList`, and
+`shared.ts` provide playback, crop selection, reordering, container defaults,
+audio copy/re-encode choices, and size reports. FourTout intentionally remains
+a collection of focused tools, not a video editor.
 
 ## Tests
 
-- `src/core/media/toolMatrix.test.ts` — **la** garde de non-régression : vraie
-  détection (liste annoncée puis encodage d'essai), puis exécution de chaque
-  pipeline d'outil sur les vraies fixtures, résultat relu par ffprobe. Un
-  encodeur annoncé mais non fonctionnel y est explicitement interdit.
-- `src/core/media/video.test.ts` — constructeurs purs **et** exécution réelle de
-  chaque opération sur une petite mire, résultat relu par ffprobe (dimensions,
-  durée, pistes). La détection des capacités y est réelle, jamais simulée
-  (`src/test/ffmpegProbe.ts` rejoue les deux étapes natives).
-- `src/core/media/pipeline.test.ts` — cycle complet avec un pont natif simulé :
-  préparation, liste de concaténation, nettoyage après succès, après erreur et
-  après annulation.
-- `src/core/media/capabilities.test.ts` — les environnements réels, dont celui
-  qui a cassé la phase 5 : NVENC annoncé, NVENC inutilisable.
-- `src-tauri/tests/media_integration.rs` — le test d'encodeur natif confronté à
-  un encodage 640x360 réel.
-- `src/core/media/video/dimensions.test.ts`, `presets.test.ts`,
-  `src/core/media/errors.test.ts` — logique pure.
-- `src/features/jobs/mediaJobs.test.ts` — survie à la navigation, annulation,
-  cohabitation avec les jobs de parole.
-- `src/tools/impl/video/videoCatalog.test.ts` — catalogue ↔ implémentations ↔
-  validation des fichiers déposés.
+The test matrix performs real capability detection and executes every tool
+pipeline against fixtures, then inspects output with ffprobe. Additional suites
+cover operation builders, staging and cleanup, hardware encoders that are
+advertised but unusable, native probes, dimensions, presets, errors, job
+survival/cancellation, and catalog-to-implementation alignment.

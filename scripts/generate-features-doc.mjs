@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Régénère `docs/guides/FEATURES.md` à partir du **registre des outils**.
+ * Regenerates the English and French feature indexes from the tool registry.
  *
  * La liste était tenue à la main, et elle avait dérivé : des notes y
  * annonçaient encore comme absentes des fonctions livrées depuis. Un catalogue
@@ -15,7 +15,13 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const TARGET = join(ROOT, "docs", "guides", "FEATURES.md");
+const TARGETS = {
+  en: join(ROOT, "docs", "guides", "FEATURES.md"),
+  fr: join(ROOT, "docs", "fr", "guides", "FEATURES.md"),
+};
+const englishCatalog = JSON.parse(
+  readFileSync(join(ROOT, "src", "i18n", "catalog", "en.json"), "utf8"),
+);
 
 // Le catalogue est du TypeScript : on le charge via le transpileur de Vite,
 // qui est déjà une dépendance du projet — aucun outil supplémentaire.
@@ -41,7 +47,13 @@ const byCategory = new Map(
     ALL_TOOLS.filter((tool) => tool.category === category.id),
   ]),
 );
-const nameOf = (id) => ordered.find((category) => category.id === id)?.name ?? id;
+const sourceCategory = (category) => ({
+  name: category.name,
+  description: category.description,
+});
+const englishCategory = (category) => englishCatalog.categories[category.id] ?? sourceCategory(category);
+const sourceTool = (tool) => ({ name: tool.name, description: tool.description, note: tool.note });
+const englishTool = (tool) => englishCatalog.tools[tool.id] ?? sourceTool(tool);
 
 /**
  * Ancre GitHub d'un titre.
@@ -58,52 +70,55 @@ function anchor(title) {
     .replace(/\s/g, "-");
 }
 
-const lines = [];
-lines.push("## Sommaire", "");
-for (const category of ordered) {
-  const count = byCategory.get(category.id).length;
-  lines.push(`- [${category.name}](#${anchor(`${category.name} ${count}`)})`);
-}
-lines.push("", "---", "");
-
-for (const category of ordered) {
-  const tools = byCategory.get(category.id);
-  lines.push(`### ${category.name} (${tools.length})`, "", `_${category.description}_`, "");
-  for (const tool of tools) {
-    // Un outil rattaché ailleurs est signalé là où on pourrait le chercher.
-    const elsewhere = (tool.alsoIn ?? []).map((id) => `*${nameOf(id)}*`);
-    const also = elsewhere.length > 0 ? ` · aussi dans ${elsewhere.join(" et ")}` : "";
-    lines.push(`- **${tool.name}** — ${tool.description}${also}`);
-    if (tool.note) lines.push(`  <br>_${tool.note}_`);
+function generatedLines(locale) {
+  const categoryText = locale === "en" ? englishCategory : sourceCategory;
+  const toolText = locale === "en" ? englishTool : sourceTool;
+  const lines = [];
+  lines.push(locale === "en" ? "## Contents" : "## Sommaire", "");
+  for (const category of ordered) {
+    const text = categoryText(category);
+    const count = byCategory.get(category.id).length;
+    lines.push(`- [${text.name}](#${anchor(`${text.name} ${count}`)})`);
   }
-  lines.push("");
+  lines.push("", "---", "");
+
+  for (const category of ordered) {
+    const tools = byCategory.get(category.id);
+    const categoryCopy = categoryText(category);
+    lines.push(`### ${categoryCopy.name} (${tools.length})`, "", `_${categoryCopy.description}_`, "");
+    for (const tool of tools) {
+      const copy = toolText(tool);
+      const elsewhere = (tool.alsoIn ?? []).map((id) => `*${categoryText(ordered.find((item) => item.id === id)).name}*`);
+      const also = elsewhere.length > 0
+        ? locale === "en"
+          ? ` · also in ${elsewhere.join(" and ")}`
+          : ` · aussi dans ${elsewhere.join(" et ")}`
+        : "";
+      lines.push(`- **${copy.name}** — ${copy.description}${also}`);
+      if (copy.note) lines.push(`  <br>_${copy.note}_`);
+    }
+    lines.push("");
+  }
+  return lines;
 }
 
 const BEGIN = "<!-- OUTILS:DÉBUT -->";
 const END = "<!-- OUTILS:FIN -->";
-const current = readFileSync(TARGET, "utf8");
-if (!current.includes(BEGIN) || !current.includes(END)) {
-  throw new Error(
-    `Les marqueurs ${BEGIN} / ${END} sont absents de ${TARGET} : impossible de savoir quoi remplacer.`,
-  );
+for (const [locale, target] of Object.entries(TARGETS)) {
+  const current = readFileSync(target, "utf8");
+  if (!current.includes(BEGIN) || !current.includes(END)) {
+    throw new Error(`Missing ${BEGIN} / ${END} markers in ${target}.`);
+  }
+  const head = current.slice(0, current.indexOf(BEGIN) + BEGIN.length);
+  const tail = current.slice(current.indexOf(END));
+  let updated = `${head}\n\n${generatedLines(locale).join("\n").trimEnd()}\n\n${tail}`;
+  if (locale === "en") {
+    updated = updated.replace(/^\d+ tools across \d+ categories\./m, `${ALL_TOOLS.length} tools across ${ordered.length} categories.`);
+  } else {
+    const words = ["zéro", "une", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf", "dix"];
+    updated = updated.replace(/^\d+ outils, répartis en \w+ catégories\./m, `${ALL_TOOLS.length} outils, répartis en ${words[ordered.length] ?? ordered.length} catégories.`);
+  }
+  writeFileSync(target, updated);
+  console.log(`${target} regenerated: ${ALL_TOOLS.length} tools, ${ordered.length} categories.`);
 }
-
-const head = current.slice(0, current.indexOf(BEGIN) + BEGIN.length);
-const tail = current.slice(current.indexOf(END));
-const updated = `${head}\n\n${lines.join("\n").trimEnd()}\n\n${tail}`.replace(
-  /^(\d+|[A-Z][^\n]*?)\d+ outils, répartis/m,
-  (match) => match,
-);
-
-writeFileSync(
-  TARGET,
-  updated.replace(/^\d+ outils, répartis en \w+ catégories\./m, () => {
-    const words = [
-      "zéro", "une", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf", "dix",
-    ];
-    return `${ALL_TOOLS.length} outils, répartis en ${words[ordered.length] ?? ordered.length} catégories.`;
-  }),
-);
-
-console.log(`${TARGET} régénéré : ${ALL_TOOLS.length} outils, ${ordered.length} catégories.`);
 export {};

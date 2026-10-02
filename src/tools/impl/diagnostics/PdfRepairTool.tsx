@@ -71,7 +71,7 @@ export function PdfRepairTool({ tool }: ToolComponentProps) {
           title: t("Réparation manquée"),
           tone: "error",
           summary:
-            t("Le fichier produit a bien été écrit, puis rouvert par le moteur PDF de FourTout — qui le refuse ({value}). La transformation appliquée ne suffit pas à rendre ce document lisible, et il serait malhonnête de vous laisser un fichier en le présentant comme réparé. Il a donc été supprimé.", { value: verification.error ?? "raison inconnue" }),
+            t("Le fichier produit a bien été écrit, puis rouvert par le moteur PDF de FourTout — qui le refuse ({value}). La transformation appliquée ne suffit pas à rendre ce document lisible, et il serait malhonnête de vous laisser un fichier en le présentant comme réparé. Il a donc été supprimé.", { value: verification.error ?? t("raison inconnue") }),
           kept: [],
           lost: [t("Aucun fichier produit : la structure de ce document reste irrécupérable")],
         };
@@ -82,15 +82,12 @@ export function PdfRepairTool({ tool }: ToolComponentProps) {
       return {
         title: pagesMatch ? t("Document réparé") : t("Document réparé, pages en moins"),
         tone: pagesMatch ? "success" : "warning",
-        summary:
-          t("Le fichier produit a été rouvert par le moteur PDF : il s'ouvre, et compte ") +
-          `${verification.pages} page${verification.pages > 1 ? "s" : ""}.` +
-          (pagesMatch
-            ? t(" C'est le nombre d'objets page trouvés dans la source : rien n'a été perdu en route.")
-            : t(" La source portait {before} objet(s) page : la différence est une perte réelle, pas un effet d'affichage.", { before })),
+        summary: pagesMatch
+          ? t("Le fichier produit a été rouvert par le moteur PDF : il s'ouvre et compte {pages} {pages, plural, one {page} other {pages}}. C'est le nombre d'objets page trouvés dans la source : rien n'a été perdu en route.", { pages: verification.pages })
+          : t("Le fichier produit a été rouvert par le moteur PDF : il s'ouvre et compte {pages} {pages, plural, one {page} other {pages}}. La source portait {before} {before, plural, one {objet page} other {objets page}} : la différence est une perte réelle, pas un effet d'affichage.", { pages: verification.pages, before }),
         kept: [
           ...result.preserved,
-          t("{pages} page(s) lisibles par le moteur PDF", { pages: verification.pages }),
+          t("{pages} {pages, plural, one {page lisible} other {pages lisibles}} par le moteur PDF", { pages: verification.pages }),
         ],
         lost: [
           ...(result.removedBytes > 0
@@ -99,7 +96,13 @@ export function PdfRepairTool({ tool }: ToolComponentProps) {
           ...(report.details.pdf?.signed
             ? [t("La signature numérique du document, invalidée par tout déplacement d'octets")]
             : []),
-          ...(pagesMatch ? [] : [`${before - verification.pages} page(s)`]),
+          ...(pagesMatch
+            ? []
+            : [
+                t("{pages} {pages, plural, one {page perdue} other {pages perdues}}", {
+                  pages: before - verification.pages,
+                }),
+              ]),
         ],
         output: destination,
         extra: report.details.pdf?.signed ? (
@@ -131,7 +134,7 @@ export function PdfRepairTool({ tool }: ToolComponentProps) {
           <StructureTable
             caption={t("Structure du document")}
             rows={[
-              { label: t("Version annoncée"), value: pdf.version ? `PDF ${pdf.version}` : "illisible" },
+              { label: t("Version annoncée"), value: pdf.version ? `PDF ${pdf.version}` : t("illisible") },
               { label: t("Objets indirects trouvés"), value: String(pdf.objects) },
               {
                 label: t("Objets complets (avec leur « endobj »)"),
@@ -141,7 +144,7 @@ export function PdfRepairTool({ tool }: ToolComponentProps) {
                 label: t("Objets tronqués"),
                 value:
                   pdf.structure.incompleteObjects.length === 0
-                    ? "aucun"
+                    ? t("aucun")
                     : pdf.structure.incompleteObjects.join(", "),
               },
               {
@@ -159,36 +162,48 @@ export function PdfRepairTool({ tool }: ToolComponentProps) {
                 label: t("Références sans destination"),
                 value:
                   pdf.structure.danglingReferences.length === 0
-                    ? "aucune"
+                    ? t("aucune")
                     : pdf.structure.danglingReferences.join(" ; "),
               },
               {
                 label: t("Catalogue du document"),
-                value: pdf.rootObject === null ? "introuvable" : `objet ${pdf.rootObject}`,
+                value:
+                  pdf.rootObject === null
+                    ? t("introuvable")
+                    : t("objet {object}", { object: pdf.rootObject }),
               },
               {
                 label: t("Pointeur startxref"),
                 value:
                   pdf.startxrefValue === null
-                    ? "absent"
-                    : `octet ${pdf.startxrefValue} — ${pdf.startxrefValid ? "valide" : t("ne désigne rien")}`,
+                    ? t("absent")
+                    : t("octet {offset} — {status}", {
+                        offset: pdf.startxrefValue,
+                        status: pdf.startxrefValid ? t("valide") : t("ne désigne rien"),
+                      }),
               },
               {
                 label: t("Table xref classique"),
-                value: pdf.xrefOffset === null ? "absente" : `octet ${pdf.xrefOffset}`,
+                value:
+                  pdf.xrefOffset === null
+                    ? t("absente")
+                    : t("octet {offset}", { offset: pdf.xrefOffset }),
               },
-              { label: t("Trailer classique"), value: pdf.trailer ? t("présent") : "absent" },
+              { label: t("Trailer classique"), value: pdf.trailer ? t("présent") : t("absent") },
               {
                 label: t("Marque de fin %%EOF"),
-                value: pdf.eofOffset === null ? "absente" : `octet ${pdf.eofOffset}`,
+                value:
+                  pdf.eofOffset === null
+                    ? t("absente")
+                    : t("octet {offset}", { offset: pdf.eofOffset }),
               },
               {
                 label: t("Octets après la fin"),
-                value: pdf.trailingBytes > 0 ? formatSize(pdf.trailingBytes) : "aucun",
+                value: pdf.trailingBytes > 0 ? formatSize(pdf.trailingBytes) : t("aucun"),
               },
-              { label: t("Flux d'objets (/ObjStm)"), value: pdf.objectStreams ? "oui" : "non" },
-              { label: t("Table de références en flux"), value: pdf.xrefStreams ? "oui" : "non" },
-              { label: t("Signature numérique détectée"), value: pdf.signed ? "oui" : "non" },
+              { label: t("Flux d'objets (/ObjStm)"), value: pdf.objectStreams ? t("oui") : t("non") },
+              { label: t("Table de références en flux"), value: pdf.xrefStreams ? t("oui") : t("non") },
+              { label: t("Signature numérique détectée"), value: pdf.signed ? t("oui") : t("non") },
             ]}
           />
         );

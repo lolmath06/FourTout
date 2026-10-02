@@ -82,7 +82,11 @@ export function VideoInfoList({
             <span className="text-[var(--ft-text-muted)]">{formatFileSize(file.size)}</span>
             <span className="w-full text-[11px] text-[var(--ft-text-faint)] sm:w-auto sm:basis-full">
               {describeVideo(info)}
-              {info?.subtitles.length ? t(" · {count} piste(s) de sous-titres", { count: info.subtitles.length }) : ""}
+              {info?.subtitles.length
+                ? t(" · {count} {count, plural, one {piste} other {pistes}} de sous-titres", {
+                    count: info.subtitles.length,
+                  })
+                : ""}
             </span>
             {!disabled && (onMove || onRemove) && (
               <span className="flex gap-0.5">

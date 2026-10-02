@@ -187,7 +187,9 @@ function Details({ details, file }: { details: MediaDetails; file: SelectedFile 
               label={t("Débit vidéo")}
               value={
                 stream.bitRate
-                  ? `${formatBitRate(stream.bitRate)}${stream.bitRateInferred ? " (déduit)" : ""}`
+                  ? stream.bitRateInferred
+                    ? t("{bitRate} (déduit)", { bitRate: formatBitRate(stream.bitRate) })
+                    : formatBitRate(stream.bitRate)
                   : undefined
               }
               hint={stream.bitRateInferred ? t("Le flux ne déclare pas son débit : celui du conteneur est repris.") : undefined}
@@ -211,7 +213,9 @@ function Details({ details, file }: { details: MediaDetails; file: SelectedFile 
               label={t("Débit audio")}
               value={
                 stream.bitRate
-                  ? `${formatBitRate(stream.bitRate)}${stream.bitRateInferred ? " (déduit)" : ""}`
+                  ? stream.bitRateInferred
+                    ? t("{bitRate} (déduit)", { bitRate: formatBitRate(stream.bitRate) })
+                    : formatBitRate(stream.bitRate)
                   : undefined
               }
             />

@@ -236,9 +236,11 @@ export function TranscriptWorkbench({
         <div className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs text-[var(--ft-text-muted)]">
-              {segments.length} passage{segments.length > 1 ? "s" : ""}
+              {t("{count} {count, plural, one {passage} other {passages}}", {
+                count: segments.length,
+              })}
               {result?.language && t(" · langue détectée : {language}", { language: result.language })}
-              {result && t(" · modèle {value}", { value: STT_MODELS.find((m) => m.id === result.modelId)?.label ?? result.modelId })}
+              {result && t(" · modèle {value}", { value: STT_MODELS.find((m) => m.id === result.modelId)?.label ?? t("inconnu") })}
             </p>
             <span className="flex flex-wrap gap-2">
               <Button size="sm" onClick={() => void copy()}>

@@ -149,7 +149,9 @@ export function cellText(cell: Cell): string {
     case "text":
       return cell.value;
     case "blob":
-      return `BLOB · ${cell.preview.size} octet${cell.preview.size > 1 ? "s" : ""}`;
+      return t("BLOB · {count} {count, plural, one {octet} other {octets}}", {
+        count: cell.preview.size,
+      });
   }
 }
 

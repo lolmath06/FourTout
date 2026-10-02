@@ -1,186 +1,137 @@
-# Texte et documents
+# Text and documents
+
+[English](TEXT.md) | [Français](../fr/features/TEXT.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+This page describes FourTout's text foundation, its organization, and the
+promises it intentionally does not make.
 
-- [Principe : instantané, local, sans backend](#principe--instantané-local-sans-backend)
-- [Une seule ossature d'interface](#une-seule-ossature-dinterface)
-- [Sécurité du HTML : jamais exécuté, toujours reconstruit](#sécurité-du-html--jamais-exécuté-toujours-reconstruit)
-- [Nettoyage : aucune transformation implicite](#nettoyage--aucune-transformation-implicite)
-- [Comparaison de deux textes](#comparaison-de-deux-textes)
-- [Statistiques : ce sont des estimations, et c'est écrit](#statistiques--ce-sont-des-estimations-et-cest-écrit)
-- [Documents](#documents)
-- [Fins de ligne](#fins-de-ligne)
-- [Ce que le socle texte ne fait pas](#ce-que-le-socle-texte-ne-fait-pas)
+## Immediate, local, backend-free processing
 
----
+Text tools run synchronously in the WebView as pure functions under
+`src/core/text/`. They use no native command, job, or progress stream. A task
+large enough to require streaming belongs in the file tools instead.
 
-Cette page décrit le socle Texte de FourTout : ce qu'il fait, comment il est
-organisé, et ce qu'il ne promet pas.
-
-## Principe : instantané, local, sans backend
-
-Un outil texte n'a pas de raison d'être asynchrone. Tout est calculé dans la
-WebView, à la frappe, par des **fonctions pures** rassemblées dans
-`src/core/text/`. Aucune commande native, aucun job, aucune progression : si un
-traitement texte devenait assez lourd pour en avoir besoin, c'est qu'il devrait
-vivre dans les outils Fichiers, sur des chemins et en flux.
-
-```
+```text
 src/core/text/
-├── clean.ts      # nettoyage à options explicites
-├── lines.ts      # découpage, fins de ligne, doublons, tri
-├── replace.ts    # rechercher/remplacer, regex comprise
-├── diff.ts       # comparaison ligne et mot (LCS)
-├── markdown.ts   # Markdown → HTML
-├── html.ts       # assainissement, HTML → texte, HTML → Markdown
-├── url.ts        # percent-encoding
-├── unicode.ts    # NFC / NFD / NFKC / NFKD
-├── extract.ts    # URL, e-mails, nombres
-├── lorem.ts      # faux texte
-└── stats.ts      # comptages, durées, lisibilité
+├── clean.ts      # explicit cleanup options
+├── lines.ts      # splitting, line endings, duplicates, sorting
+├── replace.ts    # text and regular-expression replacement
+├── diff.ts       # line- and word-level LCS comparison
+├── markdown.ts   # Markdown to HTML
+├── html.ts       # sanitization and HTML conversions
+├── url.ts        # percent encoding
+├── unicode.ts    # NFC, NFD, NFKC, NFKD
+├── extract.ts    # URLs, email addresses, numbers
+├── lorem.ts      # placeholder text
+└── stats.ts      # counts, durations, readability
 ```
 
-Ces modules ne connaissent ni React ni le DOM (à l'exception de `html.ts`, qui
-a besoin de `DOMParser` — voir plus bas). Ils sont donc testables directement :
-`src/core/text/text.test.ts` couvre les 68 cas de la phase 6.
+Except for `html.ts`, which needs `DOMParser`, these modules know nothing about
+React or the DOM and can be tested directly.
 
-## Une seule ossature d'interface
+## A shared interface shell
 
-`src/components/text/TextToolShell.tsx` factorise ce que les quinze outils
-texte font tous : zone de saisie, dépôt d'un fichier `.txt`/`.md`, compteur
-caractères/mots/lignes, ouverture d'un fichier, exemple, effacement, copie,
-téléchargement, et « reprendre le résultat comme entrée ».
+`src/components/text/TextToolShell.tsx` supplies the common UI used by the text
+tools: input, `.txt`/`.md` drop, character/word/line counts, file opening,
+examples, clearing, copying, downloading, and reusing output as input.
 
-Deux dispositions : empilée (nettoyage, tri) ou côte à côte (conversions,
-comparaison). Un outil qui a besoin d'un rendu particulier — aperçu Markdown,
-tableau de diff — fournit son propre `outputSlot`.
+Tools can use stacked or side-by-side layouts and provide a custom `outputSlot`
+for Markdown previews or diff tables. Input is capped at **8 MB** because a
+`textarea` is not a large-file editor; refusing clearly is safer than freezing.
 
-La zone de saisie refuse au-delà de **8 Mo** : une `textarea` n'est pas un
-éditeur de gros fichiers, et le dire vaut mieux que de figer l'interface.
+## HTML safety: never execute, always rebuild
 
-## Sécurité du HTML : jamais exécuté, toujours reconstruit
+User HTML—pasted, dropped, or extracted from DOCX—is never injected directly.
 
-C'est la règle non négociable de cette phase. Le HTML fourni par l'utilisateur
-(fichier déposé, collé, ou issu d'un DOCX) n'est **jamais** injecté tel quel.
+1. `DOMParser` parses it as `text/html` without loading resources or running
+   scripts.
+2. The result is rebuilt from explicit `ALLOWED_TAGS` and
+   `ALLOWED_ATTRIBUTES` lists.
+3. `script`, `style`, `iframe`, `object`, `embed`, `form`, form controls,
+   `svg`, and `math` are removed together with their content.
+4. No `on*` event attribute is allowed.
+5. Unknown elements become their text content.
+6. Link `href` accepts only HTTP(S), `mailto:`, anchors, or relative paths;
+   image `src` accepts HTTP(S) or `data:image/…`.
 
-1. Il est analysé par `DOMParser` (`text/html`), qui ne charge aucune ressource
-   et n'exécute aucun script.
-2. Il est **reconstruit** à partir d'une liste blanche de balises
-   (`ALLOWED_TAGS`) et d'attributs (`ALLOWED_ATTRIBUTES`).
-3. `script`, `style`, `iframe`, `object`, `embed`, `form`, les champs de
-   saisie, `svg` et `math` sont supprimés **avec leur contenu**.
-4. Les attributs `on*` ne figurent dans aucune liste blanche : ils disparaissent.
-5. Une balise inconnue est remplacée par son contenu textuel.
-6. `href` n'accepte que `http:`, `https:`, `mailto:`, une ancre ou un chemin
-   relatif ; `src` d'image n'accepte que `http(s):` ou un `data:image/…`.
+`markdownToHtml` first escapes all raw HTML in Markdown, then builds its own
+output. Previews still pass through `sanitizeHtml` as defense in depth.
 
-Le rendu Markdown suit la même logique en amont : `markdownToHtml` **échappe**
-tout HTML brut présent dans le Markdown avant de composer sa propre sortie. Un
-`.md` reçu de l'extérieur ne peut donc rien injecter, même avant assainissement
-— et l'aperçu passe malgré tout par `sanitizeHtml`, par défense en profondeur.
+## Cleanup never changes content implicitly
 
-## Nettoyage : aucune transformation implicite
+`cleanText` applies only selected options and always shows before/after counts.
+The exact order is Unicode normalization → invisible characters → typography →
+line operations → line endings.
 
-`cleanText` n'applique que des options cochées. C'est délibéré : un outil qui
-« range » de lui-même abîme des données sans qu'on le voie. L'écran affiche
-systématiquement le décompte avant/après (caractères, lignes, mots).
+Zero-width characters are removed, while non-breaking and thin spaces become
+ordinary spaces. Converting French guillemets around a word to straight quotes
+also removes their surrounding French spacing.
 
-Ordre d'application, dans cet ordre exact : normalisation Unicode → caractères
-invisibles → typographie → opérations ligne à ligne → fins de ligne.
+## Comparing two texts
 
-Deux détails qui comptent :
+The diff uses longest common subsequence (LCS) on lines, groups consecutive
+deletions and additions as modifications, then refines them with word-level
+LCS. Above four million cells—roughly 2,000 × 2,000 lines—it falls back to
+position-by-position alignment and reports the limitation rather than freezing
+the tab. Results support side-by-side, unified, and `.diff` export views.
 
-- les caractères de **largeur nulle** sont supprimés, tandis que les espaces
-  insécables et fines sont ramenés à une espace ordinaire (les premiers ne
-  séparent rien, les seconds si) ;
-- convertir `« mot »` en `"mot"` retire l'espace d'encadrement français, sinon
-  le résultat serait `" mot "`.
+## Statistics are documented estimates
 
-## Comparaison de deux textes
+- Silent reading: 200 words per minute; reading aloud: 130.
+- Syllables are approximated by vowel groups.
+- French uses Kandel and Moles readability; English uses Flesch Reading Ease.
 
-Plus longue sous-séquence commune (LCS) sur les lignes, après regroupement des
-suppressions et des ajouts consécutifs : une paire supprimé/ajouté devient une
-**modification**, affinée par un second passage LCS au niveau des mots.
-
-Garde-fou : au-delà de 4 millions de cellules (environ 2 000 × 2 000 lignes),
-la comparaison bascule sur un alignement position par position et le signale.
-Mieux vaut un diff moins fin qu'un onglet figé.
-
-Sorties : vue côte à côte, vue unifiée, et export `.diff` au format unifié.
-
-## Statistiques : ce sont des estimations, et c'est écrit
-
-- Lecture silencieuse : 200 mots/minute. Lecture à voix haute : 130.
-- Syllabes comptées par groupes de voyelles — approximation assumée.
-- Lisibilité française : formule de Kandel & Moles (adaptation française de
-  Flesch). Lisibilité anglaise : Flesch Reading Ease.
-
-L'interface affiche ces hypothèses sous le tableau. Un indice de lisibilité
-donne un ordre de grandeur ; il ne remplace pas une relecture.
+The assumptions are displayed below the result. A readability score is a guide,
+not a substitute for review.
 
 ## Documents
 
-### TXT, Markdown, HTML
+### TXT, Markdown, and HTML
 
-Lus directement par l'interface. Le Markdown et le HTML disposent d'un aperçu
-assaini, et de conversions croisées (`markdown-convert`).
+The interface reads these directly. Markdown and HTML have sanitized previews
+and cross-conversion through `markdown-convert`.
 
 ### DOCX
 
-Un `.docx` est une archive ZIP de XML. FourTout la lit **côté natif**
-(`src-tauri/src/files/docx.rs`) : le ZIP y est déjà disponible, et un fichier
-volumineux ne transite pas par la WebView.
+A `.docx` is a ZIP archive containing XML. FourTout reads it natively in
+`src-tauri/src/files/docx.rs`, where ZIP support already exists and large files
+do not need to cross the WebView boundary.
 
-Ce qui est extrait : titres (styles `Heading1`…`Titre1`), paragraphes, listes
-(`w:numPr`), gras et italique, contenu des tableaux, et les propriétés du
-document (`docProps/core.xml`, `docProps/app.xml`).
+The extractor handles headings, paragraphs, lists, bold and italic runs, table
+content, and core/application document properties. It explicitly does not
+preserve images, columns, layout styles, headers, footers, or pagination. Its
+purpose-built XML parser covers the regular Word structures involved without a
+full XML dependency; table paragraphs are counted exactly once in document
+order.
 
-Ce qui ne l'est pas, et que l'outil annonce à chaque conversion : images,
-colonnes, styles de mise en page, en-têtes/pieds de page, pagination.
+### DOCX to PDF: content, not page layout
 
-L'analyseur XML est volontairement maison : les documents Word sont réguliers,
-et embarquer une bibliothèque XML complète pour une dizaine de balises ne se
-justifie pas. Les paragraphes situés dans un tableau ne sont comptés qu'une
-fois, à leur place dans le document.
+`docx-to-pdf` combines the native DOCX reader with `documentToPdf`. Headings,
+paragraphs, emphasis, lists, simple tables, and UTF-8 are preserved. Images,
+columns, floating objects, headers/footers, document fonts, and original
+pagination are not. Pixel-perfect Word rendering would require a full external
+layout engine such as LibreOffice and conflict with the bundled-only promise.
 
-### DOCX → PDF : le contenu, pas la maquette
+The limitation is permanent and visible in the tool, catalog note, and result,
+which reports omitted images. Tests read the generated DOCX natively, convert
+the actual extracted Markdown, then reopen the PDF with pdf.js and verify pages,
+headings, lists, tables, and accents.
 
-`docx-to-pdf` enchaîne les deux moteurs déjà en place : le lecteur DOCX natif
-produit du Markdown, `documentToPdf` le met en page. Titres, paragraphes,
-gras, italique, listes et tableaux simples passent ; l'UTF-8 aussi.
+## Line endings
 
-Ce qui ne passe pas : images, colonnes, zones flottantes, en-têtes et pieds de
-page, polices du document, pagination d'origine. Reproduire fidèlement une
-mise en page Word demanderait un moteur de rendu complet (LibreOffice),
-c'est-à-dire une dépendance externe lourde qui casserait la promesse « tout est
-embarqué ».
+`text-line-endings` detects LF, CRLF, CR, and mixed files, reports each count,
+then converts. Detection always precedes conversion, explaining visible `^M`
+characters in Windows-originated files.
 
-L'outil existe donc, **et il le dit** : un encart permanent, la note du
-catalogue et le nombre d'images non reprises annoncés dans le résultat. Pour un
-rendu fidèle au pixel, l'utilisateur est renvoyé vers l'export PDF de Word ou
-de LibreOffice.
+## Deliberate limits
 
-La recette couvre les deux moitiés séparément : côté Rust,
-`reads_the_generated_docx` vérifie la lecture de la fixture ; côté frontend,
-`src/core/pdf/operations/docxToPdf.test.ts` part du Markdown **réellement**
-produit par le lecteur natif sur cette même fixture, construit le PDF, puis le
-**relit avec pdf.js** — nombre de pages, titres, listes, tableau, accents.
-
-## Fins de ligne
-
-`text-line-endings` détecte LF, CRLF, CR et les mélanges, affiche le décompte
-de chacun, puis convertit. La détection précède toujours la conversion : c'est
-elle qui explique les `^M` d'un fichier venu de Windows.
-
-## Ce que le socle texte ne fait pas
-
-| Sujet | Raison |
+| Topic | Reason |
 | --- | --- |
-| Rendu Word fidèle au pixel | Demanderait un moteur de mise en page Word ; l'outil reprend le contenu et sa structure, et l'annonce |
-| Éditeur de texte riche | Hors périmètre : FourTout transforme, il n'édite pas |
-| Lecture des `.doc` (Word 97) | Format binaire distinct du `.docx` ; seul le `.docx` est lu |
+| Pixel-perfect Word rendering | It requires a full Word layout engine; FourTout preserves content and structure and states that limit. |
+| Rich-text editing | FourTout transforms content; it is not an editor. |
+| Legacy `.doc` files | The binary Word 97 format differs from `.docx`; only `.docx` is read. |
 
-Les formats techniques — JSON, YAML, XML, SQL — sont traités par la catégorie
-Développeur, voir [DEVELOPER.md](DEVELOPER.md).
+Technical formats such as JSON, YAML, XML, and SQL are covered in
+[DEVELOPER.md](DEVELOPER.md).

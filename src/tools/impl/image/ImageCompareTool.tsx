@@ -361,7 +361,7 @@ function Metrics({
         <Metric label={t("Écart maximal")} value={String(result.maxDifference)} />
         <Metric
           label="PSNR"
-          value={result.psnr === undefined ? "∞ (identiques)" : `${result.psnr.toFixed(2)} dB`}
+          value={result.psnr === undefined ? t("∞ (identiques)") : `${result.psnr.toFixed(2)} dB`}
           hint={t("Rapport signal sur bruit de crête : plus il est élevé, plus les images sont proches. Au-delà de 40 dB, l'écart est généralement imperceptible.")}
         />
         <Metric
@@ -479,7 +479,9 @@ function Views({
         )}
       </PreviewFrame>
       <p className="text-xs text-[var(--ft-text-muted)]">
-        {t("Le noir signale l'absence d'écart ; plus un pixel est clair, plus les deux images y divergent{value}.", { value: amplify > 1 ? ` (amplification ×${amplify} pour la lisibilité)` : "" })}
+        {amplify > 1
+          ? t("Le noir signale l'absence d'écart ; plus un pixel est clair, plus les deux images y divergent (amplification ×{amplify} pour la lisibilité).", { amplify })
+          : t("Le noir signale l'absence d'écart ; plus un pixel est clair, plus les deux images y divergent.")}
       </p>
     </div>
   );

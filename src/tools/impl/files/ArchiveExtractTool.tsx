@@ -76,17 +76,28 @@ export function ArchiveExtractTool({ tool }: ToolComponentProps) {
       actionIcon="PackageOpen"
       actionDisabled={target.length === 0 || listing === null}
       run={(context) => extractArchive(paths[0], target, overwrite, context)}
-      successMessage={(summary) => `${summary.extracted} fichier(s) extrait(s)`}
+      successMessage={(summary) =>
+        t("{count} {count, plural, one {fichier extrait} other {fichiers extraits}}", {
+          count: summary.extracted,
+        })
+      }
       renderResult={(summary) => (
         <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklch,var(--ft-ok)_45%,var(--ft-border))] bg-[color-mix(in_oklch,var(--ft-ok)_6%,transparent)] p-4">
           <p className="flex items-center gap-2 text-sm font-medium">
             <Icon name="CircleCheck" size={17} className="text-[var(--ft-ok)]" />
-            {t("{extracted} fichier(s) extrait(s) — {size}", { extracted: summary.extracted, size: formatFileSize(summary.bytes) })}
+            {t("{count} {count, plural, one {fichier extrait} other {fichiers extraits}} — {size}", {
+              count: summary.extracted,
+              size: formatFileSize(summary.bytes),
+            })}
           </p>
           <p className="mt-1 break-all text-xs text-[var(--ft-text-muted)]">{summary.destination}</p>
           {summary.skipped.length > 0 && (
             <div className="mt-2 rounded-md border border-[var(--ft-warn)] px-2.5 py-2 text-xs text-[var(--ft-warn)]">
-              <p className="font-medium">{t("{count} entrée(s) refusée(s) par sécurité", { count: summary.skipped.length })}</p>
+              <p className="font-medium">
+                {t("{count} {count, plural, one {entrée refusée} other {entrées refusées}} par sécurité", {
+                  count: summary.skipped.length,
+                })}
+              </p>
               <ul className="mt-1 max-h-32 overflow-y-auto font-mono">
                 {summary.skipped.map((entry) => (
                   <li key={entry} className="truncate">
@@ -113,7 +124,7 @@ export function ArchiveExtractTool({ tool }: ToolComponentProps) {
       {listing && (
         <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-3 text-sm">
           <p className="tabular-nums">
-            <Trans source={"Archive {value} · <0>{files}</0> fichier(s) · {size} compressés → <1>{size2}</1> décompressés"} values={{ value: listing.format.toUpperCase(), files: listing.files, size: formatFileSize(listing.archiveSize), size2: formatFileSize(listing.totalSize) }} components={[<strong />, <strong />]} />
+            <Trans source={"Archive {value} · <0>{files}</0> {files, plural, one {fichier} other {fichiers}} · {size} compressés → <1>{size2}</1> décompressés"} values={{ value: listing.format.toUpperCase(), files: listing.files, size: formatFileSize(listing.archiveSize), size2: formatFileSize(listing.totalSize) }} components={[<strong />, <strong />]} />
           </p>
           {listing.suspicious && (
             <p className="mt-1.5 flex items-start gap-1.5 text-xs text-[var(--ft-warn)]">
@@ -124,12 +135,12 @@ export function ArchiveExtractTool({ tool }: ToolComponentProps) {
           {listing.rejected > 0 && (
             <p className="mt-1.5 flex items-start gap-1.5 text-xs text-[var(--ft-danger)]">
               <Icon name="ShieldCheck" size={13} className="mt-px shrink-0" />
-              {t("{rejected} entrée(s) seront ignorées : leur chemin sortirait du dossier de destination (remontée « .. », chemin absolu ou lien symbolique).", { rejected: listing.rejected })}
+              {t("{count} {count, plural, one {entrée sera ignorée} other {entrées seront ignorées}} : leur chemin sortirait du dossier de destination (remontée « .. », chemin absolu ou lien symbolique).", { count: listing.rejected })}
             </p>
           )}
           <details className="mt-2">
             <summary className="cursor-pointer text-xs text-[var(--ft-text-muted)]">
-              {t("Voir le contenu ({count} entrée(s))", { count: listing.entries.length })}
+              {t("Voir le contenu ({count} {count, plural, one {entrée} other {entrées}})", { count: listing.entries.length })}
             </summary>
             <ul className="mt-1.5 max-h-56 overflow-y-auto font-mono text-[11px]">
               {listing.entries.slice(0, 500).map((entry) => (

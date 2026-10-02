@@ -123,7 +123,9 @@ export function PdfOcrTool({ tool }: ToolComponentProps) {
               className="w-full resize-y rounded-md border border-[var(--ft-border)] bg-[var(--ft-bg)] p-2.5 font-mono text-sm outline-none focus:border-[var(--ft-accent)]"
               placeholder={t("Aucun texte détecté.")}
             />
-            <p className="mt-1 text-right text-xs text-[var(--ft-text-muted)]">{words} mot{words > 1 ? "s" : ""}</p>
+            <p className="mt-1 text-right text-xs text-[var(--ft-text-muted)]">
+              {t("{count} {count, plural, one {mot} other {mots}}", { count: words })}
+            </p>
           </div>
         );
       })}

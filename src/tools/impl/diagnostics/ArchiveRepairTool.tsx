@@ -20,7 +20,7 @@ import { localized, t } from "@/i18n";
 const STATE_LABELS: Record<ZipEntryState, string> = localized(() => ({
   recoverable: t("Récupérable"),
   checksumMismatch: t("Somme de contrôle fausse"),
-  lost: "Perdue",
+  lost: t("Perdue"),
   encrypted: t("Chiffrée"),
   rejected: t("Chemin refusé"),
 }));
@@ -151,7 +151,10 @@ export function ArchiveRepairTool({ tool }: ToolComponentProps) {
               rows={[
                 {
                   label: t("Fin de répertoire central"),
-                  value: zip.eocdOffset === null ? "absente" : `octet ${zip.eocdOffset}`,
+                  value:
+                    zip.eocdOffset === null
+                      ? t("absente")
+                      : t("octet {offset}", { offset: zip.eocdOffset }),
                 },
                 {
                   label: t("Entrées annoncées"),
@@ -161,10 +164,10 @@ export function ArchiveRepairTool({ tool }: ToolComponentProps) {
                 { label: t("En-têtes d'entrée retrouvés par balayage"), value: String(zip.localHeaders) },
                 {
                   label: t("Octets parasites en fin de fichier"),
-                  value: zip.trailingBytes > 0 ? formatSize(zip.trailingBytes) : "aucun",
+                  value: zip.trailingBytes > 0 ? formatSize(zip.trailingBytes) : t("aucun"),
                 },
-                { label: t("Archive protégée par mot de passe"), value: zip.encrypted ? "oui" : "non" },
-                { label: t("Format ZIP64"), value: zip.zip64 ? "oui" : "non" },
+                { label: t("Archive protégée par mot de passe"), value: zip.encrypted ? t("oui") : t("non") },
+                { label: t("Format ZIP64"), value: zip.zip64 ? t("oui") : t("non") },
               ]}
             />
 

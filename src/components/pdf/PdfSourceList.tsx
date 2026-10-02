@@ -53,7 +53,9 @@ export function PdfSourceList({
                   <span className="text-[var(--ft-warn)]">{t("Protégé par un mot de passe")}</span>
                 ) : (
                   <>
-                    {document.info?.pageCount} page{(document.info?.pageCount ?? 0) > 1 ? "s" : ""}
+                    {t("{count} {count, plural, one {page} other {pages}}", {
+                      count: document.info?.pageCount ?? 0,
+                    })}
                     {document.info?.firstPageSize && (
                       <>
                         {" "}{t("· {value} × {value2} pt", { value: Math.round(document.info.firstPageSize.width), value2: Math.round(document.info.firstPageSize.height) })}

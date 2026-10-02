@@ -1,61 +1,40 @@
-# Publier une version
+# Releasing a version
+
+[English](RELEASE.md) | [Français](../fr/technical/RELEASE.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+Follow this checklist in order. Decisions are made in steps 0 and 5, not while
+the release is already in progress.
 
-- [0. Décisions préalables — une fois pour toutes](#0-décisions-préalables--une-fois-pour-toutes)
-- [1. Le dépôt est propre](#1-le-dépôt-est-propre)
-- [2. Tout est vert](#2-tout-est-vert)
-- [3. Les paquets Linux se construisent et s'installent](#3-les-paquets-linux-se-construisent-et-sinstallent)
-- [4. Le paquet Windows se construit et s'installe](#4-le-paquet-windows-se-construit-et-sinstalle)
-- [5. Choisir la version](#5-choisir-la-version)
-- [6. Mettre à jour le journal](#6-mettre-à-jour-le-journal)
-- [7. Étiqueter et pousser](#7-étiqueter-et-pousser)
-- [8. Laisser le workflow travailler](#8-laisser-le-workflow-travailler)
-- [9. Vérifier les artefacts publiés](#9-vérifier-les-artefacts-publiés)
-- [10. Publier](#10-publier)
-- [Après publication](#après-publication)
-- [En cas de problème après publication](#en-cas-de-problème-après-publication)
+## 0. One-time decisions
 
----
+Resolve these points **before the first public release**:
 
-Checklist à suivre dans l'ordre. Rien à décider en chemin : les décisions sont
-prises aux étapes 0 et 5.
+- [x] **License:** proprietary; see [`LICENSE`](../../LICENSE). Copyright ©
+  2026 Matheo Dolmen, all rights reserved.
+- [x] **Icon:** FourTout branding is in place. The source is
+  `docs/assets/branding/fourtout-logo.png`; regenerate the icon set with
+  `pnpm tauri icon docs/assets/branding/fourtout-icon-1024.png`.
+- [ ] **Windows signing:** without a code-signing certificate, SmartScreen
+  warns on first launch. If a certificate is acquired, store the Base64 `.pfx`
+  in `WINDOWS_CERTIFICATE` and its password in
+  `WINDOWS_CERTIFICATE_PASSWORD` in GitHub repository secrets. The workflow is
+  ready to use them. **Never commit a key.**
 
----
-
-## 0. Décisions préalables — une fois pour toutes
-
-Ces trois points doivent être tranchés **avant la première publication
-publique**. Ils ne se reposent pas à chaque version.
-
-- [x] **Licence.** Propriétaire — voir [`LICENSE`](../../LICENSE).
-      Copyright © 2026 Matheo Dolmen, tous droits réservés.
-- [x] **Icône.** Identité FourTout en place. Le master est
-      `docs/assets/branding/fourtout-logo.png` ; le jeu d'icônes se régénère
-      par `pnpm tauri icon docs/assets/branding/fourtout-icon-1024.png`.
-- [ ] **Signature Windows.** Sans certificat de signature de code, SmartScreen
-      avertit au premier lancement. Si un certificat est acquis, déposer
-      `WINDOWS_CERTIFICATE` (le `.pfx` en base64) et
-      `WINDOWS_CERTIFICATE_PASSWORD` dans les secrets GitHub du dépôt. Le
-      workflow les utilise déjà. **Ne jamais versionner de clé.**
-
----
-
-## 1. Le dépôt est propre
+## 1. Confirm a clean repository
 
 ```bash
-git status              # rien en attente
-git log --oneline -10   # l'historique dit ce qui a changé
+git status
+git log --oneline -10
 ```
 
-## 2. Tout est vert
+## 2. Make everything green
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm test:assets        # fixtures nécessaires aux tests d'intégration natifs
-pnpm verify             # lint + typecheck + test + build
+pnpm test:assets
+pnpm verify
 
 cd src-tauri
 cargo check --all-targets
@@ -63,72 +42,65 @@ cargo test
 cd ..
 ```
 
-Notez les chiffres exacts : ils vont dans le corps de la publication.
+Record the exact test counts for the release notes.
 
-## 3. Les paquets Linux se construisent et s'installent
+## 3. Build and install the Linux packages
 
 ```bash
 pnpm tauri build --bundles rpm,appimage
-```
-
-```bash
 RPM=src-tauri/target/release/bundle/rpm/FourTout-*.x86_64.rpm
 rpm -qip $RPM && rpm -qlp $RPM && rpm -K --nosignature $RPM
 ```
 
-- [ ] Installer réellement le RPM sur une machine de test :
-      `sudo dnf install ./FourTout-*.rpm`
-- [ ] L'icône affichée est bien celle de FourTout, pas une icône générique
-- [ ] FourTout apparaît au menu Applications, avec son icône
-- [ ] L'application se lance depuis le menu
-- [ ] Deux ou trois outils fonctionnent (un PDF, un calculateur, un
-      développeur)
-- [ ] Désinstallation propre : `sudo dnf remove four-tout`
-- [ ] L'AppImage se lance : `chmod +x …AppImage && ./…AppImage`
+- [ ] Install the RPM on a test machine with `sudo dnf install ./FourTout-*.rpm`.
+- [ ] Confirm that the FourTout icon is shown, not a generic icon.
+- [ ] Confirm the Applications-menu entry and launch it from there.
+- [ ] Exercise two or three tools: one PDF, one calculator, one developer tool.
+- [ ] Uninstall cleanly with `sudo dnf remove four-tout`.
+- [ ] Launch the AppImage directly.
 
-## 4. Le paquet Windows se construit et s'installe
+## 4. Build and install the Windows package
 
-Sur une machine Windows, ou en laissant faire le workflow de publication.
+On Windows, or through the release workflow:
 
 ```powershell
 pnpm install
 pnpm tauri build --bundles nsis
 ```
 
-Puis suivre la liste **« Vérifier une installation Windows »** de
-[docs/guides/INSTALLATION.md](../guides/INSTALLATION.md#vérifier-une-installation-windows) :
-installation sans droit administrateur, menu Démarrer, icône, trois outils
-sans dépendance, un outil vidéo, un outil à modèle, zoom, désinstallation.
+Then follow the [Windows installation checklist](../guides/INSTALLATION.md#verifying-a-windows-installation):
+current-user installation, Start menu, icon, three dependency-free tools, a
+video tool, a model-based tool, zoom persistence, and uninstallation.
 
-## 5. Choisir la version
+## 5. Choose the version
 
-Trois fichiers doivent porter le **même** numéro :
+These files must contain the **same** version:
 
-- `package.json` → `version`
-- `src-tauri/tauri.conf.json` → `version`
-- `src-tauri/Cargo.toml` → `[package] version`
+- `package.json` → `version`;
+- `src-tauri/tauri.conf.json` → `version`;
+- `src-tauri/Cargo.toml` → `[package] version`.
 
 ```bash
 grep -m1 '"version"' package.json src-tauri/tauri.conf.json
 grep -m1 '^version' src-tauri/Cargo.toml
 ```
 
-Après modification, régénérez `Cargo.lock` :
+After changing it, refresh `Cargo.lock` with:
 
 ```bash
 cd src-tauri && cargo check && cd ..
 ```
 
-## 6. Mettre à jour le journal
+## 6. Update the changelog
 
-Ajoutez la section de version dans [`CHANGELOG.md`](../../CHANGELOG.md) : ce que
-l'utilisateur gagne, pas la liste des commits.
+Add the version section to [`CHANGELOG.md`](../../CHANGELOG.md), describing
+what users gain rather than listing commits.
 
 ```bash
 git add -A && git commit -m "Version X.Y.Z"
 ```
 
-## 7. Étiqueter et pousser
+## 7. Tag and push
 
 ```bash
 git tag -a vX.Y.Z -m "FourTout X.Y.Z"
@@ -136,58 +108,49 @@ git push origin main
 git push origin vX.Y.Z
 ```
 
-## 8. Laisser le workflow travailler
+## 8. Let the workflow run
 
-Le poussée d'une étiquette `v*` déclenche `.github/workflows/release.yml`, qui
-construit sur Ubuntu **et** sur Windows, calcule les empreintes SHA-256, et
-crée une publication **en brouillon**.
+Pushing a `v*` tag triggers `.github/workflows/release.yml`. Ubuntu and Windows
+runners build their packages, calculate SHA-256 digests, and create a **draft**
+release.
 
-Le rassemblement des paquets **échoue bruyamment** lorsqu'un format attendu
-manque : une publication à laquelle il manquerait le RPM ou l'installeur
-Windows sans que personne ne s'en aperçoive serait pire qu'une publication qui
-n'a pas lieu — l'utilisateur qui cherche son paquet trouverait une page
-incomplète. La version portable Windows cherche l'exécutable au lieu de
-supposer son nom, qui dépend de la version de Tauri.
+Artifact collection **fails loudly** if an expected format is missing. A
+release silently lacking an RPM or Windows installer would be worse than no
+release at all. The portable Windows step discovers the executable instead of
+assuming a name that may change with Tauri versions.
 
-- [ ] Le workflow est vert sur les deux plateformes
-- [ ] La publication brouillon contient, nommés par système :
-      `FourTout-<version>-Fedora-x86_64.rpm`,
-      `FourTout-<version>-Linux-amd64.deb`,
-      `FourTout-<version>-Linux-x86_64.AppImage`,
-      `FourTout-<version>-Windows-x64-Setup.exe`,
-      `FourTout-<version>-Windows-x64.msi`,
-      `FourTout-<version>-Windows-x64-Portable.zip`, et `SHA256SUMS.txt`
+- [ ] Both platform jobs pass.
+- [ ] The draft includes:
+  `FourTout-<version>-Fedora-x86_64.rpm`,
+  `FourTout-<version>-Linux-amd64.deb`,
+  `FourTout-<version>-Linux-x86_64.AppImage`,
+  `FourTout-<version>-Windows-x64-Setup.exe`,
+  `FourTout-<version>-Windows-x64.msi`,
+  `FourTout-<version>-Windows-x64-Portable.zip`, and `SHA256SUMS.txt`.
 
-## 9. Vérifier les artefacts publiés
+## 9. Verify published artifacts
 
 ```bash
 sha256sum -c SHA256SUMS.txt --ignore-missing
 ```
 
-- [ ] Télécharger le RPM depuis la publication et l'installer sur une machine
-      propre
-- [ ] Télécharger l'installeur Windows et l'installer sur une machine propre
-- [ ] Les deux se lancent et ouvrent un outil
+- [ ] Download and install the published RPM on a clean machine.
+- [ ] Download and install the Windows installer on a clean machine.
+- [ ] Launch both and open a tool.
 
-## 10. Publier
+## 10. Publish
 
-- [ ] Rédiger le corps de la publication : nouveautés, corrections, limites
-      connues
-- [ ] Rappeler que les installeurs Windows ne sont pas signés, tant que
-      c'est le cas
-- [ ] Retirer l'état « brouillon »
+- [ ] Write release notes covering features, fixes, and known limitations.
+- [ ] Mention that Windows installers are unsigned while that remains true.
+- [ ] Remove draft status.
 
----
+## After publishing
 
-## Après publication
+- [ ] Check the links in `README.md` from GitHub.
+- [ ] Open issues for deferred work.
 
-- [ ] Vérifier que les liens du `README.md` fonctionnent depuis GitHub
-- [ ] Ouvrir un ticket pour ce qui a été reporté
+## If a published release has a problem
 
----
-
-## En cas de problème après publication
-
-Repassez la publication en brouillon plutôt que de supprimer l'étiquette : les
-liens déjà partagés cesseront de pointer vers un binaire défectueux, et
-l'historique reste lisible. Corrigez, puis publiez un correctif `X.Y.Z+1`.
+Return the release to draft instead of deleting its tag. Existing links then
+stop serving the defective binary while history remains readable. Fix the
+problem and publish a patch release `X.Y.Z+1`.

@@ -199,7 +199,7 @@ export function SubtitleEditTool({ tool }: ToolComponentProps) {
               <ul className="ml-4 list-disc space-y-0.5">
                 {primary.warnings.slice(0, 6).map((warning, index) => (
                   <li key={index}>
-                    {warning.line ? `Ligne ${warning.line} : ` : ""}
+                    {warning.line ? t("Ligne {line} : ", { line: warning.line }) : ""}
                     {tx(warning.message)}
                   </li>
                 ))}

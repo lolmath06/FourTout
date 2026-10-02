@@ -283,27 +283,27 @@ function JwtVerificationPanel({
       {result && (
         <div className="space-y-2">
           {result.signature === "refused" ? (
-            <Callout tone="error" title="VÉRIFICATION REFUSÉE">
+            <Callout tone="error" title={t("VÉRIFICATION REFUSÉE")}>
               {result.refusal}
             </Callout>
           ) : result.signature === "valid" ? (
-            <Callout tone="success" title="SIGNATURE VALIDE">
+            <Callout tone="success" title={t("SIGNATURE VALIDE")}>
               {t("Le calcul a été refait avec la clé fournie et il concorde : ce token a bien été produit par le détenteur de cette clé, et son contenu n'a pas été modifié depuis.")}
             </Callout>
           ) : (
-            <Callout tone="error" title="SIGNATURE INVALIDE">
+            <Callout tone="error" title={t("SIGNATURE INVALIDE")}>
               {t("Le calcul ne concorde pas : soit la clé n'est pas la bonne, soit le token a été modifié après signature.")}
             </Callout>
           )}
 
           {result.signature === "valid" && result.claims.expired && (
-            <Callout tone="warning" title="EXPIRÉ">
+            <Callout tone="warning" title={t("EXPIRÉ")}>
               {t("La signature est authentique, mais la date d'expiration est dépassée. Ce sont deux choses différentes : le token est vrai, et inutilisable.")}
             </Callout>
           )}
 
           {result.signature === "valid" && result.claims.notYetValid && (
-            <Callout tone="warning" title="PAS ENCORE VALIDE">
+            <Callout tone="warning" title={t("PAS ENCORE VALIDE")}>
               <Trans source={"La signature est authentique, mais le claim <0>nbf</0> place le début de validité dans le futur."} components={[<code />]} />
             </Callout>
           )}
@@ -657,7 +657,11 @@ export function NumberBaseTool(_props: ToolComponentProps) {
           <ResultBlock
             value={views.decimal}
             unit={t("décimal")}
-            formula={`${raw} en base ${activeBase} · ${views.bits} bit${views.bits > 1 ? "s" : ""}`}
+            formula={t("{value} en base {base} · {bits} {bits, plural, one {bit} other {bits}}", {
+              value: raw,
+              base: activeBase,
+              bits: views.bits,
+            })}
           />
           <ValueTable
             caption={t("Toutes les bases")}

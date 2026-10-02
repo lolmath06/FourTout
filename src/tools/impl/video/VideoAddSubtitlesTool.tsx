@@ -59,9 +59,10 @@ export function VideoAddSubtitlesTool({ tool }: ToolComponentProps) {
         );
         return {
           files: [file],
-          summary:
-            t("Piste de sous-titres ajoutée ({value}, ", { value: CONTAINER_LABEL[pipeline.container] }) +
-            `encodeur ${SUBTITLE_ENCODER[pipeline.container]}).`,
+          summary: t("Piste de sous-titres ajoutée ({container}, encodeur {encoder}).", {
+            container: CONTAINER_LABEL[pipeline.container],
+            encoder: SUBTITLE_ENCODER[pipeline.container],
+          }),
         };
       }}
     >

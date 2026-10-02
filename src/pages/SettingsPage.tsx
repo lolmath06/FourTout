@@ -378,11 +378,11 @@ function MediaDiagnostics() {
         <dl className="ft-props">
           <Info
             label={t("Encodeurs vidéo utilisables")}
-            value={caps.usableVideo.length > 0 ? caps.usableVideo.join(", ") : "aucun"}
+            value={caps.usableVideo.length > 0 ? caps.usableVideo.join(", ") : t("aucun")}
           />
           <Info
             label={t("Annoncés mais inutilisables")}
-            value={caps.rejectedVideo.length > 0 ? caps.rejectedVideo.join(", ") : "aucun"}
+            value={caps.rejectedVideo.length > 0 ? caps.rejectedVideo.join(", ") : t("aucun")}
           />
           <Info
             label={t("Sous-titres en piste")}

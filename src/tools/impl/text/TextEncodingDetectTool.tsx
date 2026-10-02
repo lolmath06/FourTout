@@ -34,7 +34,7 @@ const EOL_LABELS: Record<Eol, string> = {
 };
 
 const BOM_LABELS: Record<BomKind, string> = {
-  none: "Aucune",
+  none: t("Aucune"),
   "utf-8": "UTF-8 (EF BB BF)",
   "utf-16le": "UTF-16 petit-boutien (FF FE)",
   "utf-16be": "UTF-16 grand-boutien (FE FF)",

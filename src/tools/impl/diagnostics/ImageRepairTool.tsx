@@ -54,7 +54,7 @@ export function ImageRepairTool({ tool }: ToolComponentProps) {
           ? t("Les octets des pixels ont été recopiés tels quels : l'image produite est rigoureusement identique à l'originale, débarrassée de ce qui ne faisait pas partie d'elle. {width} × {height} pixels.", { width: result.width, height: result.height })
           : t("Les pixels que le décodeur accepte de rendre ont été réencodés en PNG sans perte. C'est l'image qui est sauvée, pas le fichier d'origine : {width} × {height} pixels. Ce n'est pas une réparation — le fichier produit est un nouveau fichier, pas l'ancien remis d'aplomb.", { width: result.width, height: result.height }),
         kept: [
-          `${result.width} × ${result.height} pixels`,
+          t("{width} × {height} pixels", { width: result.width, height: result.height }),
           ...result.steps,
           t("Sortie PNG sans perte, {size}", { size: formatSize(result.outputSize) }),
         ],
@@ -95,19 +95,23 @@ export function ImageRepairTool({ tool }: ToolComponentProps) {
                 {
                   label: t("Dimensions"),
                   value:
-                    image.width && image.height ? `${image.width} × ${image.height} pixels` : "illisibles",
+                    image.width && image.height
+                      ? t("{width} × {height} pixels", { width: image.width, height: image.height })
+                      : t("illisibles"),
                 },
                 {
                   label: t("Le décodeur accepte-t-il le fichier ?"),
-                  value: image.decodes ? "oui" : t("non — {value}", { value: image.decodeError ?? "raison inconnue" }),
+                  value: image.decodes
+                    ? t("oui")
+                    : t("non — {value}", { value: image.decodeError ?? t("raison inconnue") }),
                 },
                 {
                   label: t("Marque de fin"),
-                  value: image.endMarker ? t("présente") : "absente",
+                  value: image.endMarker ? t("présente") : t("absente"),
                 },
                 {
                   label: t("Octets après l'image"),
-                  value: image.trailingBytes > 0 ? formatSize(image.trailingBytes) : "aucun",
+                  value: image.trailingBytes > 0 ? formatSize(image.trailingBytes) : t("aucun"),
                 },
                 ...(image.format === "png"
                   ? [
@@ -149,7 +153,7 @@ export function ImageRepairTool({ tool }: ToolComponentProps) {
                             {chunk.kind}
                           </th>
                           <td className="ft-value">
-                            {chunk.ancillary ? "auxiliaire" : "essentiel"}
+                            {chunk.ancillary ? t("auxiliaire") : t("essentiel")}
                           </td>
                           <td className="ft-value text-right tabular-nums">{chunk.length}</td>
                           <td
@@ -157,7 +161,7 @@ export function ImageRepairTool({ tool }: ToolComponentProps) {
                               chunk.crcValid ? "" : "text-[var(--ft-danger)] font-medium"
                             }`}
                           >
-                            {chunk.crcValid ? "valide" : "fausse"}
+                            {chunk.crcValid ? t("valide") : t("fausse")}
                           </td>
                         </tr>
                       ))}
@@ -175,7 +179,19 @@ export function ImageRepairTool({ tool }: ToolComponentProps) {
                 <ul className="ft-meta max-h-64 divide-y divide-[var(--ft-rule)] overflow-auto">
                   {image.segments.map((segment) => (
                     <li key={`${segment.offset}-${segment.marker}`} className="px-3 py-1">
-                      <Trans source={"<0>{label}</0> · octet {offset}{value}"} values={{ label: segment.label, offset: segment.offset, value: segment.length > 0 && ` · ${segment.length} octets` }} components={[<span className="ft-value" />]} />
+                      {segment.length > 0 ? (
+                        <Trans
+                          source={"<0>{label}</0> · octet {offset} · {length} {length, plural, one {octet} other {octets}}"}
+                          values={{ label: segment.label, offset: segment.offset, length: segment.length }}
+                          components={[<span className="ft-value" />]}
+                        />
+                      ) : (
+                        <Trans
+                          source={"<0>{label}</0> · octet {offset}"}
+                          values={{ label: segment.label, offset: segment.offset }}
+                          components={[<span className="ft-value" />]}
+                        />
+                      )}
                     </li>
                   ))}
                 </ul>

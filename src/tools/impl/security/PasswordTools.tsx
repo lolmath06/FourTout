@@ -350,7 +350,10 @@ export function PasswordStrengthTool(_props: ToolComponentProps) {
 
           <ResultBlock
             value={result.label}
-            formula={`Score ${result.score} sur 4 · ${result.length} caractère${result.length > 1 ? "s" : ""}`}
+            formula={t("Score {score} sur 4 · {length} {length, plural, one {caractère} other {caractères}}", {
+              score: result.score,
+              length: result.length,
+            })}
             secondary={[
               { label: t("Essais estimés"), value: result.guesses.toExponential(2) },
               {

@@ -105,8 +105,9 @@ export function explainCron(
     for (let i = 0; i < occurrenceCount; i += 1) occurrences.push(iterator.next().toDate());
   } catch (error) {
     warnings.push(
-      t("Les prochaines occurrences n'ont pas pu être calculées : ") +
-        (error instanceof Error ? error.message : "expression trop inhabituelle."),
+      t("Les prochaines occurrences n'ont pas pu être calculées : {reason}", {
+        reason: error instanceof Error ? error.message : t("expression trop inhabituelle."),
+      }),
     );
   }
 

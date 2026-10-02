@@ -50,13 +50,13 @@ export function FileDuplicatesTool(_props: ToolComponentProps) {
       successMessage={(report) =>
         report.groups.length === 0
           ? t("Aucun doublon trouvé")
-          : t("{count} groupe(s), {size} récupérables", { count: report.groups.length, size: formatFileSize(report.reclaimable) })
+          : t("{count} {count, plural, one {groupe} other {groupes}}, {size} récupérables", { count: report.groups.length, size: formatFileSize(report.reclaimable) })
       }
       renderResult={(report) => (
         <div className="space-y-3" data-testid="duplicates-report">
           <div className="rounded-[var(--radius-card)] border border-[var(--ft-border)] bg-[var(--ft-surface-2)] p-3 text-sm">
             <p className="tabular-nums">
-              <Trans source={"{scanned} fichiers analysés · <0>{count}</0> groupe(s) de doublons · {duplicateFiles} fichier(s) en trop · <1>{size}</1> récupérables"} values={{ scanned: report.scanned, count: report.groups.length, duplicateFiles: report.duplicateFiles, size: formatFileSize(report.reclaimable) }} components={[<strong />, <strong />]} />
+              <Trans source={"{scanned} {scanned, plural, one {fichier analysé} other {fichiers analysés}} · <0>{count}</0> {count, plural, one {groupe de doublons} other {groupes de doublons}} · {duplicateFiles} {duplicateFiles, plural, one {fichier en trop} other {fichiers en trop}} · <1>{size}</1> récupérables"} values={{ scanned: report.scanned, count: report.groups.length, duplicateFiles: report.duplicateFiles, size: formatFileSize(report.reclaimable) }} components={[<strong />, <strong />]} />
             </p>
             {report.groups.length > 0 && (
               <p className="mt-1 flex items-start gap-1.5 text-xs text-[var(--ft-text-muted)]">

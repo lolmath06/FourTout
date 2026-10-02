@@ -328,7 +328,9 @@ function Editor({
           </Button>
           {editCount > 0 && (
             <span className="ml-1 rounded bg-[var(--ft-accent-soft)] px-2 py-0.5 text-[11px] font-medium text-[var(--ft-accent-text)]">
-              {editCount} modification{editCount > 1 ? "s" : ""}
+              {t("{count} {count, plural, one {modification} other {modifications}}", {
+                count: editCount,
+              })}
             </span>
           )}
         </div>
@@ -455,7 +457,6 @@ function Editor({
     </div>
   );
 }
-
 
 
 

@@ -82,7 +82,7 @@ export function FileHashTool({ tool }: ToolComponentProps) {
                       </code>
                       {matches && (
                         <span className="flex items-center gap-1 text-xs text-[var(--ft-ok)]">
-                          <Icon name="CircleCheck" size={14} /> correspond
+                          <Icon name="CircleCheck" size={14} /> {t("correspond")}
                         </span>
                       )}
                       {mismatches && (

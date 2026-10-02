@@ -1,100 +1,102 @@
-# Convertisseur universel
+# Universal converter
+
+[English](CONVERTERS.md) | [Français](../fr/features/CONVERTERS.md)
 
 [← Documentation](../README.md)
 
-Le convertisseur universel est un **aiguilleur**. Il ne convertit rien
-lui-même.
+The universal converter is a **router**. It does not perform conversions
+itself.
 
-## Le problème qu'il résout
+## The problem it solves
 
-L'utilisateur a un fichier et une intention (« je veux en faire un PDF »), mais
-il ne sait pas dans quelle catégorie chercher. Le convertisseur universel prend
-le fichier, identifie son format, et propose ce qui est réellement possible.
+A user has a file and an intention (“I want to make a PDF from this”), but may
+not know which category to search. The universal converter accepts the file,
+identifies its format, and offers the operations that are actually possible.
 
-## Ce qu'il ne fait surtout pas
+## What it deliberately does not do
 
-Il ne réimplémente ni la conversion d'images, ni FFmpeg, ni PDF, ni la synthèse
-vocale. Dupliquer ces moteurs garantirait deux comportements divergents pour la
-même conversion : celui de l'outil dédié, et celui du convertisseur. Il n'y a
-donc qu'un seul chemin de code par conversion.
+It does not reimplement image conversion, FFmpeg, PDF handling, or speech
+synthesis. Duplicating those engines would guarantee two diverging behaviors
+for the same conversion: one in the dedicated tool and one in the converter.
+Every conversion therefore has a single code path.
 
-## Le graphe est dérivé, pas écrit
+## The graph is derived, not handwritten
 
-`src/core/convert/graph.ts` construit les arêtes à partir du **registre**.
-Aucune table de conversion n'est maintenue à la main.
+`src/core/convert/graph.ts` builds its edges from the central **registry**. No
+conversion table is maintained by hand.
 
-Une arête `from → to` existe si et seulement si un outil :
+An edge `from → to` exists if and only if a tool:
 
-1. a le statut `available` (donc il est réellement branché — un test le vérifie
-   contre `TOOL_IMPLEMENTATIONS`) ;
-2. appartient à la catégorie « Convertisseurs », en propre ou via `alsoIn` ;
-3. accepte `from` dans l'une de ses `acceptedInputs` ;
-4. produit `to` dans l'une de ses `outputs` (`kind` ≠ `none`, extension ≠ `*`) ;
-5. et `from` ≠ `to`.
+1. has the `available` status, meaning that it is actually wired up (a test
+   checks this against `TOOL_IMPLEMENTATIONS`);
+2. belongs to the Converters category, directly or through `alsoIn`;
+3. accepts `from` in one of its `acceptedInputs`;
+4. produces `to` in one of its `outputs` (`kind` is not `none`, and the
+   extension is not `*`); and
+5. has different source and target formats.
 
-Conséquences directes, et c'est tout l'intérêt :
+This has three direct consequences:
 
-- rendre un outil disponible suffit à l'exposer dans le convertisseur ;
-- une arête n'existe que si l'outil qui la porte est au catalogue, et donc
-  implémenté — le graphe ne peut pas proposer une conversion inexécutable ;
-- retirer un outil retire ses conversions, sans autre modification.
+- making a tool available is enough to expose it in the converter;
+- an edge exists only when its tool is registered and therefore implemented,
+  so the graph cannot offer a conversion that cannot run;
+- removing a tool removes its conversions without another edit.
 
-Quand deux outils produisent le même format cible, le premier du catalogue
-gagne — l'ordre y place les outils unitaires avant les traitements par lot.
+If two tools produce the same target format, the first one in the catalog wins.
+The catalog order places single-file tools before batch tools.
 
-## Exemples de couverture
+## Coverage examples
 
-| Entrée | Sorties proposées |
+| Input | Offered outputs |
 | --- | --- |
-| PNG | JPEG, WebP, BMP, TIFF… et PDF |
-| MP4 | WebM, MKV, MOV, AVI, GIF, MP3/WAV/FLAC…, PNG/JPG (image fixe) |
-| PDF | PNG, JPG, TXT, MD, et audio (synthèse vocale) |
-| TXT | PDF, HTML, MD, audio |
-| DOCX | TXT, MD, HTML |
-| MP3 | WAV, FLAC, OGG, Opus, M4A, AAC |
+| PNG | JPEG, WebP, BMP, TIFF, and PDF |
+| MP4 | WebM, MKV, MOV, AVI, GIF, MP3/WAV/FLAC, and PNG/JPG still images |
+| PDF | PNG, JPG, TXT, MD, and speech-synthesized audio |
+| TXT | PDF, HTML, MD, and audio |
+| DOCX | TXT, MD, and HTML |
+| MP3 | WAV, FLAC, OGG, Opus, M4A, and AAC |
 
-Ces correspondances sont verrouillées par `src/core/convert/graph.test.ts`.
+`src/core/convert/graph.test.ts` locks down these mappings.
 
-## Le relais vers l'outil spécialisé
+## Handing off to the specialized tool
 
-Cliquer sur un format n'ouvre pas une interface de conversion dupliquée : cela
-**ouvre l'outil spécialisé**, avec le fichier déjà chargé et le format déjà
-sélectionné. Les réglages fins (qualité, codec, résolution) restent disponibles
-là où ils ont un sens.
+Selecting a format does not open a duplicated conversion interface. It
+**opens the specialized tool** with the file already loaded and the requested
+format selected. Fine controls such as quality, codec, and resolution remain
+available where they make sense.
 
-Le mécanisme est générique : `src/features/handoff/store.ts`.
+The generic mechanism lives in `src/features/handoff/store.ts`:
 
-```
+```text
 setHandoff({ toolId, files, preset }) → navigate(toolRoute(toolId))
-                                      → useHandoff(toolId) dans l'outil
+                                      → useHandoff(toolId) in the tool
 ```
 
-Le relais vit **hors de React** (module singleton) : il survit à la navigation,
-et il est consommé **une seule fois**. Revenir sur l'outil plus tard ne
-recharge pas un fichier oublié là.
+The handoff lives **outside React** in a singleton module, so it survives
+navigation, and it is consumed **exactly once**. Returning to the tool later
+does not reload a forgotten file.
 
-| Point de consommation | Ce qu'il reprend |
+| Consumer | Restored data |
 | --- | --- |
-| `PdfToolShell`, `ImageToolShell`, `MediaToolShell`, `VideoToolShell` | Le fichier déposé |
+| `PdfToolShell`, `ImageToolShell`, `MediaToolShell`, `VideoToolShell` | The dropped file |
 | `ImageConvertTool` | `format` → PNG / JPEG / WebP |
-| `AudioConvertTool` | `format` → l'un des formats audio |
-| `VideoConvertTool` | `format` → conteneur, en mode personnalisé |
-| `TextCompareTool` | `left` / `right` (depuis « Comparer deux fichiers ») |
+| `AudioConvertTool` | `format` → one of the audio formats |
+| `VideoConvertTool` | `format` → container, in custom mode |
+| `TextCompareTool` | `left` / `right`, from “Compare two files” |
 
-Un outil qui ne lit pas le relais s'ouvre simplement vide : le mécanisme est
-facultatif, jamais bloquant.
+A tool that does not consume handoff data simply opens empty. The mechanism is
+optional and never blocks a tool.
 
-## Détection du format
+## Format detection
 
-Le convertisseur s'appuie sur l'extension et le type MIME du fichier déposé.
-Pour aller plus loin — savoir ce qu'un fichier **est** réellement, par-delà son
-nom — l'outil « Informations sur un fichier » lit la signature des premiers
-octets et signale les incohérences (`photo.jpg` qui commence par `%PDF-`).
+The converter uses the dropped file's extension and MIME type. To go further
+and determine what a file **actually is**, independently of its name, the
+*File information* tool reads the signature in its first bytes and reports
+inconsistencies, such as a `photo.jpg` beginning with `%PDF-`.
 
-## Limite assumée
+## Deliberate limitation
 
-Le convertisseur ne chaîne pas les conversions. `DOCX → HTML → PDF` n'est pas
-proposé comme une conversion en un clic : les conversions en chaîne accumulent
-les pertes sans que l'utilisateur voie l'étape intermédiaire. Les deux étapes
-restent disponibles séparément, et le résultat de la première est visible avant
-d'engager la seconde.
+The converter does not chain conversions. `DOCX → HTML → PDF` is not offered
+as a one-click operation because chained conversions accumulate losses without
+letting the user inspect the intermediate step. Both conversions remain
+available separately, and the first result is visible before the second begins.

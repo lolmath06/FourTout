@@ -1,88 +1,77 @@
-# Construire les paquets
+# Building packages
+
+[English](BUILD.md) | [Français](../fr/technical/BUILD.md)
 
 [← Documentation](../README.md)
 
-## Sommaire
+## Contents
 
-- [Principe](#principe)
-- [Vérifier avant de construire](#vérifier-avant-de-construire)
-- [Construire](#construire)
-- [Où atterrissent les fichiers](#où-atterrissent-les-fichiers)
-- [Vérifier un paquet Linux sans l'installer](#vérifier-un-paquet-linux-sans-linstaller)
-- [Dépendances déclarées](#dépendances-déclarées)
+- [Principle](#principle)
+- [Checks before building](#checks-before-building)
+- [Building](#building)
+- [Output locations](#output-locations)
+- [Inspecting a Linux package without installing it](#inspecting-a-linux-package-without-installing-it)
+- [Declared dependencies](#declared-dependencies)
 - [Windows](#windows)
-- [Reproductibilité](#reproductibilité)
+- [Reproducibility](#reproducibility)
 
----
+Building FourTout produces an executable and installers. This page documents
+what is produced on each platform and which checks remain manual.
 
-Construire FourTout produit un exécutable et des installeurs. Cette page
-décrit ce qui est produit, sur quelle machine, et ce qui reste à faire à la
-main.
+## Principle
 
----
+Tauri builds **for the platform on which it runs**. There is no simple Linux
+to Windows cross-build because the WebView, system libraries, and packager are
+different.
 
-## Principe
-
-Tauri construit **pour la plateforme sur laquelle il s'exécute**. Il n'existe
-pas de compilation croisée simple vers Windows depuis Linux : la WebView, les
-bibliothèques système et l'empaqueteur diffèrent.
-
-| Machine de construction | Paquets produits |
+| Build machine | Packages |
 | --- | --- |
 | Fedora / Linux x86-64 | `.rpm`, `.deb`, `.AppImage` |
 | Windows x86-64 | `.exe` (NSIS), `.msi` |
 
-C'est pourquoi le workflow de publication utilise deux exécuteurs — voir
-[RELEASE.md](RELEASE.md).
+The release workflow therefore uses two runners. See [Release](RELEASE.md).
 
----
-
-## Vérifier avant de construire
+## Checks before building
 
 ```bash
-pnpm verify                              # lint + typecheck + test + build
+pnpm verify
 cd src-tauri && cargo test && cd ..
 ```
 
----
+## Building
 
-## Construire
-
-### Tous les paquets de la plateforme courante
+### All packages for the current platform
 
 ```bash
 pnpm app:build
 ```
 
-Les cibles déclarées dans `src-tauri/tauri.conf.json` sont `deb`, `rpm`,
-`appimage`, `nsis` et `msi` ; Tauri ignore silencieusement celles qui ne
-correspondent pas à la plateforme.
+`src-tauri/tauri.conf.json` declares `deb`, `rpm`, `appimage`, `nsis`, and
+`msi`. Tauri silently ignores targets for other platforms.
 
-### Une cible précise
+### Specific targets
 
 ```bash
 pnpm tauri build --bundles rpm
 pnpm tauri build --bundles rpm,appimage
-pnpm tauri build --bundles nsis          # sur Windows
+pnpm tauri build --bundles nsis          # on Windows
 ```
 
-### L'exécutable seul, sans empaquetage
+### Executable only, without packaging
 
 ```bash
 pnpm tauri build --no-bundle
 ```
 
-Utile pour vérifier que la construction en profil `release` passe, sans
-attendre l'empaquetage. Environ une minute et quart sur une machine de
-développement, contre plusieurs minutes pour l'AppImage.
+This verifies the release-profile build without waiting for packaging. It
+takes roughly 75 seconds on a development machine, compared with several
+minutes for an AppImage.
 
----
+## Output locations
 
-## Où atterrissent les fichiers
-
-```
+```text
 src-tauri/target/release/
-  fourtout                                        exécutable
+  fourtout                                        executable
   bundle/
     rpm/FourTout-1.0.0-1.x86_64.rpm
     deb/FourTout_1.0.0_amd64.deb
@@ -91,31 +80,29 @@ src-tauri/target/release/
     msi/FourTout_1.0.0_x64_en-US.msi              (Windows)
 ```
 
----
+## Inspecting a Linux package without installing it
 
-## Vérifier un paquet Linux sans l'installer
-
-Utile en intégration continue, et sur un poste que l'on ne veut pas modifier.
+This is useful in CI and on machines that must not be modified.
 
 ```bash
 RPM=src-tauri/target/release/bundle/rpm/FourTout-1.0.0-1.x86_64.rpm
 
-rpm -qip "$RPM"                 # nom, version, description
-rpm -qlp "$RPM"                 # contenu
-rpm -qRp "$RPM"                 # dépendances strictes
-rpm -q --recommends -p "$RPM"   # dépendances recommandées
-rpm -K --nosignature "$RPM"     # intégrité de la charge utile
+rpm -qip "$RPM"                 # name, version, description
+rpm -qlp "$RPM"                 # contents
+rpm -qRp "$RPM"                 # strict dependencies
+rpm -q --recommends -p "$RPM"   # recommended dependencies
+rpm -K --nosignature "$RPM"     # payload integrity
 
-# Extraire et inspecter sans installer
+# Extract and inspect without installing
 mkdir /tmp/ft && cd /tmp/ft
 rpm2cpio "$RPM" | cpio -idm
 desktop-file-validate usr/share/applications/FourTout.desktop
 file usr/share/icons/hicolor/*/apps/fourtout.png
 ```
 
-Le paquet doit contenir :
+The package must contain:
 
-```
+```text
 /usr/bin/fourtout
 /usr/lib/FourTout/resources/wordlists/seeds.txt.gz
 /usr/lib/FourTout/resources/wordlists/seeds.meta
@@ -123,84 +110,69 @@ Le paquet doit contenir :
 /usr/share/icons/hicolor/{32x32,128x128,256x256@2}/apps/fourtout.png
 ```
 
-L'AppImage se teste directement, sans rien installer :
+Test the AppImage directly:
 
 ```bash
 chmod +x src-tauri/target/release/bundle/appimage/FourTout_1.0.0_amd64.AppImage
 ./src-tauri/target/release/bundle/appimage/FourTout_1.0.0_amd64.AppImage
 ```
 
----
+## Declared dependencies
 
-## Dépendances déclarées
-
-| Type | Paquets | Pourquoi |
+| Type | Packages | Reason |
 | --- | --- | --- |
-| **Requises** | `libwebkit2gtk-4.1`, `libgtk-3` | Sans elles, l'application ne démarre pas. Présentes sur toute installation de bureau. |
-| **Recommandées** | `ffmpeg-free` (RPM), `ffmpeg` (DEB) | Nécessaire aux 34 outils audio et vidéo, inutile aux 117 autres. `dnf` et `apt` l'installent par défaut, sans que l'absence de FFmpeg empêche l'installation. |
+| **Required** | `libwebkit2gtk-4.1`, `libgtk-3` | The app cannot start without them; every desktop installation provides them. |
+| **Recommended** | `ffmpeg-free` (RPM), `ffmpeg` (DEB) | Needed by 34 audio/video tools but not the other 117. `dnf` and `apt` install it by default, while its absence does not block FourTout installation. |
 
-FFmpeg **n'est pas embarqué** dans les paquets : il est cherché dans les
-ressources de l'application (`resources/ffmpeg/`) puis dans le `PATH`. Ce
-choix évite de redistribuer FFmpeg et les obligations de licence qui vont
-avec — voir [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md).
+FFmpeg is **not bundled**. FourTout first searches application resources under
+`resources/ffmpeg/`, then the system `PATH`. This avoids redistributing FFmpeg
+and assuming its licensing obligations; see
+[THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md).
 
-Pour produire un paquet **autonome** contenant FFmpeg, placez les binaires
-dans `src-tauri/resources/ffmpeg/` et ajoutez-les à `bundle.resources` : la
-fonction `resolve_binary` les trouvera avant le `PATH`. C'est alors vous qui
-redistribuez FFmpeg, avec les obligations LGPL ou GPL correspondantes.
-
----
+To make a **self-contained** package, place the binaries under
+`src-tauri/resources/ffmpeg/` and add them to `bundle.resources`.
+`resolve_binary` will find them before `PATH`. You then become the distributor
+of FFmpeg and must meet the applicable LGPL or GPL obligations.
 
 ## Windows
 
-### Ce que produit la construction
+### Build outputs
 
-- **NSIS** (`.exe`) — l'installeur recommandé. Configuré en
-  `installMode: currentUser` : **aucun droit administrateur n'est requis**,
-  FourTout s'installe dans le dossier de l'utilisateur et apparaît au menu
-  Démarrer. Sélecteur de langue désactivé, français et anglais disponibles.
-- **MSI** — pour les déploiements par stratégie de groupe.
-- **ZIP portable** — assemblé par le workflow de publication à partir de
-  `FourTout.exe` et de ses ressources : on décompresse, on lance. Il n'est
-  produit que si l'exécutable existe réellement ; le workflow ne fabrique pas
-  une archive vide pour avoir un fichier de plus. Les modèles téléchargés à la
-  demande atterrissent dans `%APPDATA%`, comme pour une installation normale.
+- **NSIS (`.exe`)** is the recommended installer. With
+  `installMode: currentUser`, it requires **no administrator rights**, installs
+  in the user's directory, and creates a Start-menu entry. The installer's
+  language picker is disabled; English and French are included.
+- **MSI** supports Group Policy deployments.
+- A **portable ZIP** is assembled by the release workflow from `FourTout.exe`
+  and its resources. It is created only when the executable actually exists;
+  the workflow never emits an empty archive merely to add an artifact. Models
+  installed on demand still go to `%APPDATA%`.
 
-### Signature
+### Signing
 
-Les installeurs ne sont **pas signés**. Sans certificat de signature de code,
-SmartScreen affiche un avertissement au premier lancement. C'est dit dans
-[INSTALLATION.md](../guides/INSTALLATION.md).
+The installers are currently **unsigned**, so SmartScreen warns on first
+launch, as stated in [Installation](../guides/INSTALLATION.md).
 
-Mettre en place la signature ne demande **aucune modification du code**. Le
-workflow de publication est déjà écrit pour recevoir, depuis les secrets
-GitHub :
+Adding signing requires no code change. The workflow already accepts these
+GitHub secrets:
 
-| Secret | Contenu |
+| Secret | Contents |
 | --- | --- |
-| `WINDOWS_CERTIFICATE` | Le certificat `.pfx`, encodé en base64 |
-| `WINDOWS_CERTIFICATE_PASSWORD` | Son mot de passe |
-| `TAURI_SIGNING_PRIVATE_KEY` | Clé de signature des mises à jour Tauri, si un jour elles sont activées |
-| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Son mot de passe |
+| `WINDOWS_CERTIFICATE` | Base64-encoded `.pfx` certificate |
+| `WINDOWS_CERTIFICATE_PASSWORD` | Certificate password |
+| `TAURI_SIGNING_PRIVATE_KEY` | Tauri updater signing key, if updates are enabled later |
+| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Its password |
 
-Tant que `WINDOWS_CERTIFICATE` est absent, l'étape est simplement sautée et la
-construction produit un installeur non signé — ce que la documentation annonce.
+When `WINDOWS_CERTIFICATE` is absent, signing is skipped and the documented
+unsigned installer is produced. **No key is generated or committed here.**
 
-**Aucune clé n'est générée ni versionnée dans ce dépôt.**
+## Reproducibility
 
----
-
-## Reproductibilité
-
-`pnpm-lock.yaml` et `src-tauri/Cargo.lock` sont versionnés : une construction
-à partir d'un clone propre utilise exactement les mêmes versions.
-
-Rien dans la construction ne dépend d'un chemin absolu, d'un modèle installé
-manuellement, ni d'un fichier non versionné. Les seules ressources récupérées
-à la construction sont celles de pdf.js et de Tesseract, recopiées depuis
-`node_modules` par les scripts `pre*` — donc verrouillées par le lockfile.
-
-Pour le vérifier :
+Both `pnpm-lock.yaml` and `src-tauri/Cargo.lock` are committed, so a clean clone
+uses the same dependency versions. The build does not depend on an absolute
+path, a manually installed model, or an untracked file. Build-time pdf.js and
+Tesseract resources are copied from `node_modules` by `pre*` scripts and are
+therefore locked as well.
 
 ```bash
 git archive HEAD | (mkdir -p /tmp/ft-clean && tar -x -C /tmp/ft-clean)
