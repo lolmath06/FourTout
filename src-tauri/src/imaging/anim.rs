@@ -286,16 +286,18 @@ pub fn convert(
     let mut args: Vec<String> = ["-f", "concat", "-safe", "0", "-i"].iter().map(|s| s.to_string()).collect();
     args.push(list_path.to_string_lossy().to_string());
     let mut push = |items: &[&str]| args.extend(items.iter().map(|s| s.to_string()));
+    // `-fps_mode` (FFmpeg ≥ 5.1) ou `-vsync` (anciens FFmpeg) : sondé une fois.
+    let [vfr_flag, vfr_value] = encode::vfr_args_for(ffmpeg);
     match target {
         Target::Gif => {
             let filter = join(vec![
                 scale.clone().unwrap_or_default(),
                 "split[a][b];[a]palettegen=reserve_transparent=on[p];[b][p]paletteuse=alpha_threshold=128".into(),
             ]);
-            push(&["-vf", &filter, "-fps_mode", "vfr", "-loop", "0"]);
+            push(&["-vf", &filter, vfr_flag, vfr_value, "-loop", "0"]);
         }
         Target::Apng => {
-            push(&["-vf", &join(vec![scale.clone().unwrap_or_default(), "format=rgba".into()]), "-c:v", "apng", "-plays", "0", "-fps_mode", "vfr", "-f", "apng"]);
+            push(&["-vf", &join(vec![scale.clone().unwrap_or_default(), "format=rgba".into()]), "-c:v", "apng", "-plays", "0", vfr_flag, vfr_value, "-f", "apng"]);
         }
         Target::Webp => {
             let encoders = encode::list_encoders(ffmpeg);
@@ -304,7 +306,7 @@ pub fn convert(
                 .find(|e| encoders.iter().any(|x| x == e))
                 .ok_or_else(|| InternetError::new(ErrorKind::FfmpegMissing, "Ce FFmpeg ne sait pas produire de WebP animé."))?;
             let quality = options.quality.clamp(1, 100).to_string();
-            push(&["-vf", &join(vec![scale.clone().unwrap_or_default(), "format=rgba".into()]), "-c:v", encoder, "-lossless", if options.quality >= 100 { "1" } else { "0" }, "-q:v", &quality, "-loop", "0", "-fps_mode", "vfr"]);
+            push(&["-vf", &join(vec![scale.clone().unwrap_or_default(), "format=rgba".into()]), "-c:v", encoder, "-lossless", if options.quality >= 100 { "1" } else { "0" }, "-q:v", &quality, "-loop", "0", vfr_flag, vfr_value]);
         }
         Target::Mp4 | Target::Webm => {
             let container = if target == Target::Mp4 { Container::Mp4 } else { Container::Webm };

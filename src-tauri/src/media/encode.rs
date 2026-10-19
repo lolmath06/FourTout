@@ -87,6 +87,53 @@ fn audio_encoder_listed(ffmpeg: &Path, name: &str) -> bool {
     list_encoders(ffmpeg).iter().any(|e| e == name)
 }
 
+/// `true` si l'aide (`ffmpeg -h long`) déclare l'option `-fps_mode`.
+///
+/// `-fps_mode` remplace `-vsync` depuis FFmpeg 5.1 ; les FFmpeg plus anciens
+/// (Ubuntu 22.04 : 4.4) la refusent avec « Unrecognized option ».
+pub fn help_declares_fps_mode(help: &str) -> bool {
+    help.lines().any(|line| {
+        let line = line.trim_start();
+        line.strip_prefix("-fps_mode").is_some_and(|rest| rest.is_empty() || rest.starts_with(|c: char| c.is_whitespace() || c == '[' || c == ':'))
+    })
+}
+
+/// Arguments « cadence variable » : `-fps_mode vfr` quand il est connu,
+/// `-vsync vfr` (équivalent historique) sinon.
+pub fn vfr_args(fps_mode_supported: bool) -> [&'static str; 2] {
+    if fps_mode_supported {
+        ["-fps_mode", "vfr"]
+    } else {
+        ["-vsync", "vfr"]
+    }
+}
+
+/// Ce FFmpeg connaît-il `-fps_mode` ? Sondé une seule fois par binaire
+/// (une exécution de `-h long`), puis mémorisé : jamais une sonde par image.
+pub fn supports_fps_mode(ffmpeg: &Path) -> bool {
+    use std::collections::HashMap;
+    use std::sync::{Mutex, OnceLock};
+    static CACHE: OnceLock<Mutex<HashMap<PathBuf, bool>>> = OnceLock::new();
+    let cache = CACHE.get_or_init(|| Mutex::new(HashMap::new()));
+    if let Some(known) = cache.lock().ok().and_then(|c| c.get(ffmpeg).copied()) {
+        return known;
+    }
+    let supported = Command::new(ffmpeg)
+        .args(["-hide_banner", "-h", "long"])
+        .output()
+        .map(|o| help_declares_fps_mode(&String::from_utf8_lossy(&o.stdout)) || help_declares_fps_mode(&String::from_utf8_lossy(&o.stderr)))
+        .unwrap_or(false);
+    if let Ok(mut c) = cache.lock() {
+        c.insert(ffmpeg.to_path_buf(), supported);
+    }
+    supported
+}
+
+/// Arguments « cadence variable » adaptés à ce FFmpeg.
+pub fn vfr_args_for(ffmpeg: &Path) -> [&'static str; 2] {
+    vfr_args(supports_fps_mode(ffmpeg))
+}
+
 /// Exécute FFmpeg. `total_ms` alimente la progression (0 = indéterminée).
 pub fn run(
     ffmpeg: &Path,
@@ -487,6 +534,20 @@ pub const fn minutes(n: u64) -> Duration {
 mod tests {
     use super::*;
     use crate::media::budget::{plan as budget_plan, Source};
+
+    #[test]
+    fn fps_mode_is_detected_from_the_help_and_falls_back_to_vsync() {
+        let modern = "Global options (affect whole program instead of just one file):\n-vsync              set video sync method globally; deprecated, use -fps_mode\n\nPer-file options:\n-fps_mode           set framerate mode for matching video streams; overrides vsync\n";
+        let legacy = "Global options:\n-vsync              set video sync method globally\n-vsync_foo\n";
+        assert!(help_declares_fps_mode(modern));
+        assert!(!help_declares_fps_mode(legacy), "« use -fps_mode » in a description is not the option");
+        assert!(help_declares_fps_mode("-fps_mode[:<stream_spec>] <string>"));
+        assert!(!help_declares_fps_mode(""));
+        assert_eq!(vfr_args(true), ["-fps_mode", "vfr"]);
+        assert_eq!(vfr_args(false), ["-vsync", "vfr"]);
+        // Unknown binary: no probe result, the legacy form is chosen.
+        assert_eq!(vfr_args_for(Path::new("/nonexistent/ffmpeg")), ["-vsync", "vfr"]);
+    }
 
     fn plan() -> Plan {
         budget_plan(
