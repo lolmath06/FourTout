@@ -260,15 +260,22 @@ mod tests {
 
     #[test]
     fn a_running_search_stops_on_a_shared_flag_and_the_system_recovers() {
-        use std::sync::atomic::{AtomicBool, Ordering};
+        use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
         use std::sync::Arc;
         use std::thread;
-        use std::time::Duration;
 
-        // Une vraie recherche longue lancée sur un fil, annulée depuis l'extérieur.
+        // Une vraie recherche longue, sur un fil séparé, annulée depuis
+        // l'extérieur par un `Arc<AtomicBool>` — exactement le mécanisme de
+        // production (`RecoveryState::cancel` dans `recovery::command`). Le
+        // déclenchement est déterministe (un nombre d'appels), jamais une
+        // horloge murale : un essai partagé par CI, ralenti par la charge du
+        // runner, ne doit jamais rendre ce test flaky.
+        const CANCEL_AFTER: usize = 3_000;
         let cancel = Arc::new(AtomicBool::new(false));
-        let seeds: Vec<String> = (0..2_000_000).map(|i| format!("absent{i}")).collect();
+        let calls = Arc::new(AtomicUsize::new(0));
+        let seeds: Vec<String> = (0..500_000).map(|i| format!("absent{i}")).collect();
         let flag = cancel.clone();
+        let seen_calls = calls.clone();
         let handle = thread::spawn(move || {
             let verifier = verifier();
             search(
@@ -277,26 +284,35 @@ mod tests {
                 Tier::Full,
                 u64::MAX,
                 |_| {},
-                move || flag.load(Ordering::SeqCst),
+                move || {
+                    seen_calls.fetch_add(1, Ordering::Relaxed);
+                    flag.load(Ordering::SeqCst)
+                },
             )
         });
 
-        thread::sleep(Duration::from_millis(50));
-        let asked_at = Instant::now();
+        // Attend, sans jamais dormir ni mesurer un délai, que la recherche ait
+        // réellement commencé à vérifier des candidats, puis pose le drapeau
+        // depuis l'extérieur : le scénario de production (annulation demandée
+        // pendant qu'un lot est en cours de vérification sur tous les cœurs).
+        while calls.load(Ordering::Relaxed) < CANCEL_AFTER {
+            thread::yield_now();
+        }
         cancel.store(true, Ordering::SeqCst);
         let outcome = handle.join().expect("le fil de recherche se termine");
-        let stop_latency = asked_at.elapsed();
 
         assert!(matches!(outcome, Outcome::Cancelled { .. }), "arrêt attendu");
-        // Le corpus (2 M graines × 40 variantes = 80 M candidats) mettrait
-        // plusieurs minutes à être parcouru : un arrêt en une poignée de
-        // centaines de ms prouve que l'on n'attend pas la fin de la recherche.
-        // La cible « < 500 ms » vise le mode release réel (vérificateur ~50× plus
-        // rapide qu'en debug) ; ici on borde large pour rester fiable en debug.
-        assert!(
-            stop_latency < Duration::from_secs(3),
-            "arrêt trop lent : {stop_latency:?}"
-        );
+        // Preuve déterministe que l'on n'a pas attendu la fin du corpus (500 k
+        // graines × ~40 variantes, soit plusieurs dizaines de millions de
+        // candidats) : le nombre de candidats comptabilisés comme testés
+        // reste très inférieur au corpus, quelle que soit la vitesse du
+        // runner — jamais un délai mesuré.
+        if let Outcome::Cancelled { tested, .. } = outcome {
+            assert!(
+                tested < 1_000_000,
+                "l'annulation aurait dû court-circuiter la recherche ({tested} testés)"
+            );
+        }
 
         // Le système reste fonctionnel : une seconde recherche retrouve un mot
         // de passe atteignable, sans état résiduel de la première.
