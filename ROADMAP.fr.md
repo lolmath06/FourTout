@@ -2,7 +2,7 @@
 
 [English](ROADMAP.md) | [Français](ROADMAP.fr.md)
 
-FourTout est complet pour l’usage qu’il vise : 196 outils, tous utilisables.
+FourTout est complet pour l’usage qu’il vise : 211 outils, tous utilisables.
 Cette page liste ce qui pourrait venir ensuite. Rien de ce qui y figure n'est
 promis, et **aucun de ces éléments n'apparaît dans l'application** : le
 catalogue ne contient que des outils qui fonctionnent.

@@ -46,7 +46,7 @@ plutôt que de proposer un outil approximatif.
 
 ### Parcourir
 
-**Outils** montre les douze catégories. Un outil qui a du sens dans plusieurs
+**Outils** montre les treize catégories. Un outil qui a du sens dans plusieurs
 familles y apparaît sans être dupliqué : il est implémenté une fois, et
 découvrable là où on le cherche.
 
@@ -155,7 +155,7 @@ masquer une fois lu.
 
 ### Modèles
 
-La synthèse vocale, la transcription et le détourage d'image ont besoin d'un
+La synthèse vocale, la transcription, le détourage d'image et l'agrandissement par IA ont besoin d'un
 modèle, téléchargé à votre demande. Cette page permet de les installer, de voir
 leur taille et leur licence, et de les supprimer. Voir [MODELS.md](../technical/MODELS.md).
 
@@ -168,9 +168,12 @@ le dernier relevé de taux de change. Cette page permet de tout effacer.
 
 ## Confidentialité, en une ligne
 
-Tout se passe sur votre machine, sauf le **convertisseur de devises** (taux de
-la Banque centrale européenne) et le **téléchargement initial des modèles de
-parole**. Les deux le disent dans l'interface. Le détail :
+Tout se passe sur votre machine, sauf les outils dont le but est le réseau : les
+outils **Internet & Web** (téléchargements, raccourcisseur d'URL, capture web),
+le **test de débit**, le **convertisseur de devises** (taux de la Banque
+centrale européenne), le **téléchargement initial des modèles et de yt-dlp** et
+les sondes du réseau local que vous lancez vous-même. Chaque exception le dit
+dans l'interface, et aucune n'envoie vos fichiers. Le détail :
 [PRIVACY.md](../legal/PRIVACY.md).
 
 ---
@@ -238,6 +241,61 @@ FFmpeg **installé sur votre machine** sait réellement produire : FourTout les
 annoncée. Voir [INSTALLATION.md](INSTALLATION.md#ffmpeg-audio-et-vidéo).
 
 ---
+
+### Outils Internet & Web
+
+Ces outils **contactent bel et bien le réseau**, et le disent sur leur page.
+
+- **Télécharger un fichier** reprend un téléchargement interrompu quand le
+  serveur le permet, vérifie une somme SHA-256 facultative et n'écrase jamais un
+  fichier sans demander.
+- **Télécharger un média en ligne** utilise yt-dlp, installé depuis sa page de
+  publication officielle la première fois que vous le demandez, et vérifié par la
+  somme officielle. Il ne traite que les **contenus publics** : pas de DRM, pas
+  de connexion, pas de cookies. Les choix de résolution n'agrandissent jamais une
+  vidéo. Fusionner l'audio et la vidéo ou convertir en MP3 exige FFmpeg.
+- **Raccourcir une URL** envoie l'adresse au service que vous choisissez, qui la
+  conserve. Ne raccourcissez rien de privé.
+- **Page web vers PDF, image ou MHTML** exige Chrome, Chromium, Edge ou Brave
+  déjà installé. La page se charge dans un profil jetable, comme un visiteur
+  anonyme : ni cookies, ni historique.
+- **Test de débit** mesure latence, gigue, téléchargement et envoi vers le
+  service de mesure de Cloudflare. Les résultats varient avec le VPN, le Wi-Fi et
+  le trafic concurrent.
+
+Plus de détails : [Internet & Web](../features/INTERNET.md).
+
+### Créer, inspecter et extraire une image ISO
+
+*Créer* empaquette un dossier dans un fichier ISO 9660 à noms longs (Joliet et
+Rock Ridge). Il écrit un fichier `.iso` ordinaire et ne touche jamais un disque
+ou une clé USB ; l'image n'est pas amorçable. Un fichier de 4 Gio ou plus est
+refusé. *Inspecter* montre le volume, les systèmes de fichiers, l'arbre et les
+informations de démarrage sans rien extraire. *Extraire* copie tout ou seulement
+les entrées cochées ; les noms à l'intérieur de l'image sont tenus pour hostiles
+et rien n'est écrit hors du dossier choisi. Voir [Images ISO](../features/ISO.md).
+
+### Compresser à une taille maximale
+
+Choisissez une vidéo, un son, une image ou un PDF et une cible comme 25 Mo.
+FourTout calcule un budget avec une marge de sécurité, recommence plus bas si
+besoin et dit quand la cible est irréaliste. Il ne promet jamais la taille à
+l'octet près et n'agrandit jamais une image.
+
+### Agrandir une image par IA
+
+Double ou quadruple la résolution avec un modèle qui s'exécute sur votre
+ordinateur (environ 5 Mo, téléchargé une fois à la demande). Il reconstruit des
+détails plausibles ; il ne peut pas récupérer ce que l'image ne contenait pas. Une
+grande photo en ×4 peut prendre plusieurs minutes. Voir
+[Modèles](../technical/MODELS.md#modèle-dagrandissement-par-ia).
+
+### Images animées
+
+Un WebP animé ou un APNG ne garde son animation que dans les outils qui la
+gèrent. Si vous en déposez un dans un outil d'image fixe, FourTout avertit que
+seule la première image serait conservée et propose **Convertir une image
+animée** (GIF, APNG, WebP animé, MP4, WebM ou série d'images).
 
 ## Un problème ?
 

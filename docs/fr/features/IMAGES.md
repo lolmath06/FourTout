@@ -342,3 +342,36 @@ Le modèle cherche un **sujet principal**. Il se trompe sur les scènes sans
 sujet évident, les fonds de la couleur du sujet, et les détails très fins. La
 note du catalogue et un encart sur la page le disent, plutôt que de laisser
 l'utilisateur le découvrir.
+
+## HEIC, HEIF, AVIF, WebP animé et APNG
+
+- **HEIC / HEIF (fixes)** sont décodés par un décodeur en Rust pur (`zune-heic`)
+  dans `src-tauri/src/imaging/`, vérifié sur une vraie fixture HEIC. Il se
+  comporte de la même façon sur Fedora et Windows et n'exige aucun codec du
+  système. Les *séquences* HEIF (plusieurs images) sont refusées avec un
+  message. Les espaces colorimétriques non pris en charge sont signalés plutôt
+  que devinés. **Note de brevets :** HEIC repose sur HEVC ; FourTout ne fait que
+  le décoder, sur votre machine, à partir de fichiers que vous possédez déjà, et
+  n'embarque aucun encodeur.
+- **AVIF** est décodé par le FFmpeg de la machine. Comme les compilations
+  diffèrent, FourTout ne se fie pas à la liste de codecs : il décode un
+  échantillon embarqué de 397 octets et n'annonce l'AVIF que si cela réussit.
+  Les séquences AVIF animées sont refusées (images fixes seulement).
+- **WebP animé et APNG** sont décodés image par image (`image_anim_info`,
+  `image_anim_convert`) et reconstruits par FFmpeg en conservant la durée de
+  chaque image, vers GIF, APNG, WebP animé, MP4, WebM ou une série de PNG.
+  L'outil dit ce que la cible ne peut pas garder : transparence (MP4, WebM),
+  boucle (vidéo), profondeur de couleur (GIF). Des bornes sur le nombre d'images
+  et la taille empêchent un fichier hostile d'épuiser la mémoire.
+- Un outil d'image fixe qui reçoit une animation **avertit** (seule la première
+  image serait conservée) et propose de passer à *Convertir une image animée*.
+
+## Agrandissement par IA (`image-upscale`)
+
+Agrandissement ×2 et ×4 avec Real-ESRGAN *general x4 v3*, exécuté localement par
+ONNX Runtime après un téléchargement unique du modèle, vérifié par somme. Le
+modèle, sa source épinglée, le découpage en tuiles, le traitement de la
+transparence et les limites sont décrits dans
+[Modèles](../technical/MODELS.md#modèle-dagrandissement-par-ia). Le résultat est
+plafonné à 64 mégapixels. Le réseau invente des détails plausibles ; il ne peut
+pas récupérer ce qui n'a jamais été dans l'image, et l'outil le dit.

@@ -75,7 +75,14 @@ describe("catégorie Vidéo", () => {
   });
 
   it("garde chaque outil vidéo local, et déclare FFmpeg dès qu'il touche à une vidéo", () => {
-    for (const tool of videoTools) {
+    // Les outils Internet & Web rangés ici en secondaire (téléchargement d'un
+    // média, extrait en ligne, GIF depuis un lien) ne sont pas locaux et le
+    // disent : ils déclarent « internet », et c'est tout ce qu'on exige d'eux.
+    const online = videoTools.filter((tool) => tool.capabilities.includes("internet"));
+    expect(online.map((tool) => tool.id).sort()).toEqual(["media-download", "media-url-excerpt", "media-url-gif"]);
+    for (const tool of online) expect(tool.capabilities).not.toContain("local");
+
+    for (const tool of videoTools.filter((candidate) => !online.includes(candidate))) {
       expect(tool.capabilities, `${tool.id}`).toContain("local");
       expect(tool.capabilities).not.toContain("network");
 

@@ -4,7 +4,7 @@
 
 [← Documentation](../README.md)
 
-196 outils, répartis en 12 catégories. Chaque outil de cette liste est
+211 outils, répartis en 13 catégories. Chaque outil de cette liste est
 **utilisable** : FourTout n'enregistre pas d'outil incomplet, et il n'existe
 donc pas d'état « bientôt disponible ».
 
@@ -24,15 +24,16 @@ d'arriver.
 ## Sommaire
 
 - [PDF](#pdf-26)
-- [Images](#images-25)
+- [Images](#images-27)
 - [Audio](#audio-18)
 - [Vidéo](#vidéo-20)
 - [Texte & Documents](#texte--documents-20)
-- [Fichiers & Archives](#fichiers--archives-29)
+- [Fichiers & Archives](#fichiers--archives-33)
 - [Convertisseurs](#convertisseurs-1)
 - [Développeur](#développeur-21)
 - [Calculateurs](#calculateurs-21)
-- [Réseau](#réseau-3)
+- [Internet & Web](#internet--web-8)
+- [Réseau](#réseau-4)
 - [Diagnostic & récupération](#diagnostic--récupération-5)
 - [Sécurité & Confidentialité](#sécurité--confidentialité-7)
 
@@ -75,7 +76,7 @@ _Fusionner, découper, compresser, convertir et sécuriser des PDF._
 - **Scans et photos vers PDF** — Assembler des pages numérisées ou photographiées en un seul PDF, avec nettoyage et mise en ordre des pages. · aussi dans *Images*
   <br>_Le nettoyage s'applique à toutes les pages avec les mêmes réglages ; l'assemblage réutilise le moteur « Images vers PDF »._
 
-### Images (25)
+### Images (27)
 
 _Convertir, compresser, redimensionner et nettoyer des images._
 
@@ -108,6 +109,10 @@ _Convertir, compresser, redimensionner et nettoyer des images._
 - **Comparer deux images** — Voir et mesurer ce qui change entre deux images : côte à côte, en superposition ou en différence, avec pixels différents, PSNR et SSIM.
   <br>_Deux images de dimensions différentes ne sont jamais redimensionnées sans votre accord : le rééchantillonnage fabriquerait des écarts absents des fichiers._
 - **Créer une planche-contact** — Disposer plusieurs images en grille sur une seule feuille, avec le nom de chaque fichier.
+- **Agrandir une image avec l'IA** — Doubler ou quadrupler la définition d'une image grâce à un réseau de super-résolution qui tourne sur votre machine.
+  <br>_Le modèle (5 Mo, licence BSD-3) est téléchargé une seule fois, à votre demande ; ensuite tout se passe sur votre machine et l'image n'est envoyée nulle part. La transparence est conservée, mais agrandie par interpolation ordinaire._
+- **Convertir une image animée** — Passer un WebP ou un PNG animé (APNG) en GIF, APNG, WebP animé, MP4, WebM ou suite d'images, sans perdre l'animation. · aussi dans *Vidéo*
+  <br>_Les durées de chaque image sont conservées. L'outil annonce ce qui se perd selon la destination : transparence (MP4, WebM), boucle (vidéo), couleurs (GIF)._
 
 ### Audio (18)
 
@@ -198,7 +203,7 @@ _Analyser, nettoyer, comparer et transformer du texte._
 - **Modifier des sous-titres** — Convertir entre SRT et WebVTT, décaler les horodatages, fusionner deux fichiers, vérifier et réparer. · aussi dans *Vidéo* et *Convertisseurs*
   <br>_Ce qui est mécaniquement sûr est corrigé (ordre, numérotation, fins de ligne) ; les chevauchements sont signalés mais jamais raccourcis d'office._
 
-### Fichiers & Archives (29)
+### Fichiers & Archives (33)
 
 _Compresser, extraire, comparer, renommer et organiser des fichiers._
 
@@ -250,6 +255,14 @@ _Compresser, extraire, comparer, renommer et organiser des fichiers._
   <br>_Rien n'est décompressé : seule la table des matières de l'archive est lue. Les entrées dont le chemin sortirait du dossier d'extraction sont signalées avant même que vous n'envisagiez d'extraire._
 - **Tester une archive** — Vérifier qu'une archive est intacte en la décompressant entièrement, sans rien écrire sur le disque. · aussi dans *Sécurité & Confidentialité*
   <br>_Le contenu est réellement décompressé et ses sommes de contrôle vérifiées — lister une archive ne prouverait rien, seul son en-tête serait lu. Rien n'est écrit : les octets sont comptés puis jetés._
+- **Créer une image ISO** — Réunir un dossier dans un fichier ISO 9660 avec noms longs (Joliet et Rock Ridge).
+  <br>_Produit un fichier .iso ordinaire, jamais une écriture sur un disque ou une clé USB. L'image contient des données : elle n'est pas amorçable._
+- **Inspecter une image ISO** — Lire le nom de volume, les systèmes de fichiers, l'arborescence et les données de démarrage d'une ISO.
+  <br>_Seuls les descripteurs et les répertoires sont lus : l'image n'est ni extraite ni modifiée. Une image UDF pure (certains ISO Windows) n'est lue que par sa partie ISO 9660._
+- **Extraire une image ISO** — Copier tout le contenu d'une ISO, ou seulement les fichiers choisis, dans un dossier.
+  <br>_Les noms contenus dans l'image sont traités comme hostiles : rien ne peut être écrit hors du dossier choisi, et rien n'est écrasé sans que vous l'ayez demandé._
+- **Compresser jusqu'à une taille maximale** — Passer sous une taille visée, par exemple 25 Mo, pour une vidéo, un son, une image ou un PDF. · aussi dans *Vidéo* et *Audio* et *Images* et *PDF*
+  <br>_La taille visée n'est jamais promise à l'octet près : l'outil calcule un débit avec une marge de sécurité, réessaie plus bas si besoin, n'agrandit jamais l'image et prévient quand la cible est irréaliste._
 
 ### Convertisseurs (1)
 
@@ -317,7 +330,28 @@ _Unités, pourcentages, dates, durées et calculs du quotidien._
 - **Calculer des intérêts** — Intérêts simples ou composés, avec versements réguliers facultatifs.
   <br>_Outil mathématique, pas conseil financier : fiscalité, inflation et frais ne sont pas pris en compte._
 
-### Réseau (3)
+### Internet & Web (8)
+
+_Télécharger un fichier ou un média, capturer une page web, raccourcir un lien, mesurer sa connexion._
+
+- **Télécharger un fichier depuis une URL** — Enregistrer un fichier HTTP ou HTTPS, avec reprise, progression et vérification d'empreinte.
+  <br>_FourTout contacte l'adresse que vous indiquez, et elle seule. Le fichier n'apparaît sous son nom définitif qu'une fois complet._
+- **Télécharger un média depuis Internet** — Récupérer une vidéo ou un son public en MP4, WebM, MP3, M4A, Opus, WAV ou FLAC, via yt-dlp. · aussi dans *Vidéo* et *Audio*
+  <br>_yt-dlp contacte le service de médias ; il est installé à votre demande, vérifié par empreinte. Seuls les contenus publics sont pris en charge : ni DRM, ni compte, ni cookies._
+- **Télécharger un extrait d'une vidéo en ligne** — Ne récupérer que la partie voulue d'une vidéo publique, de tel instant à tel instant. · aussi dans *Vidéo* et *Audio*
+  <br>_Quand le service le permet, seul l'extrait est téléchargé ; sinon la source entière l'est, puis découpée ici — l'outil vous dit lequel des deux s'est produit._
+- **Vidéo en ligne vers GIF ou WebP animé** — Créer un GIF ou un WebP animé de taille raisonnable à partir de quelques secondes d'un lien public. · aussi dans *Vidéo* et *Images*
+  <br>_Seul l'extrait demandé est utilisé, en 720 p au plus : une animation n'a pas besoin de plus. Des réglages modestes sont proposés par défaut, car un GIF grossit très vite._
+- **Raccourcir une URL** — Obtenir un lien court auprès d'un service public (is.gd, v.gd ou TinyURL), à copier en un clic.
+  <br>_L'adresse d'origine est envoyée au service que vous choisissez, qui la conserve : ne raccourcissez rien de confidentiel. FourTout n'ajoute aucun suivi._
+- **Page web vers PDF** — Imprimer une page web en PDF avec un navigateur Chromium déjà installé, format et marges au choix. · aussi dans *PDF*
+  <br>_La page est chargée par un navigateur isolé (profil temporaire vierge : ni vos cookies, ni votre historique). Chrome, Chromium ou Edge doit être installé._
+- **Page web vers image** — Capturer une page web, en entier ou à la taille de la fenêtre, en PNG, JPEG ou WebP. · aussi dans *Images*
+  <br>_La page est chargée par un navigateur isolé (profil temporaire vierge). Une capture pleine page est plafonnée à 20 000 pixels de haut._
+- **Enregistrer une page web hors ligne** — Sauvegarder une page et ses ressources dans un seul fichier MHTML, lisible sans connexion.
+  <br>_La page est chargée par un navigateur isolé (profil temporaire vierge). Le fichier MHTML s'ouvre dans Chrome, Edge et la plupart des navigateurs Chromium._
+
+### Réseau (4)
 
 _Diagnostiquer une connexion, tester des ports, voir ce qui est branché chez soi._
 
@@ -327,6 +361,8 @@ _Diagnostiquer une connexion, tester des ports, voir ce qui est branché chez so
   <br>_Un seul hôte, 256 ports au maximum par lancement, par connexion TCP ordinaire. Ce n'est pas un scanner : ni furtivité, ni détection de service, ni recherche de vulnérabilité._
 - **Découvrir les appareils du réseau local** — Lister les machines qui se manifestent sur votre sous-réseau.
   <br>_Limité au sous-réseau directement connecté et à 256 adresses. La plage exacte est annoncée avant tout envoi, et rien ne part sans confirmation._
+- **Test de débit Internet** — Mesurer latence, gigue, débit descendant et débit montant de votre connexion. · aussi dans *Internet & Web*
+  <br>_Du trafic de test généré par FourTout est échangé avec le service de mesure de Cloudflare (speed.cloudflare.com) ; aucun fichier à vous n'est envoyé. Les résultats varient : VPN, Wi-Fi, distance du serveur et trafic concurrent les modifient._
 
 ### Diagnostic & récupération (5)
 

@@ -14,7 +14,12 @@ use serde::Serialize;
 use super::textscan::Encoding;
 
 /// Nombre d'octets à lire en tête de fichier pour décider.
-pub const HEAD_BYTES: usize = 512;
+///
+/// 512 octets suffisaient aux signatures d'origine. Deux formats exigent plus :
+/// un APNG ne se distingue d'un PNG que par son bloc `acTL`, qui peut suivre un
+/// profil colorimétrique de plusieurs kilo-octets, et une image ISO 9660 ne se
+/// reconnaît qu'à son descripteur de volume, à l'octet 32 769.
+pub const HEAD_BYTES: usize = 36 * 1024;
 
 /// Format reconnu : identifiant stable, libellé affichable, extensions usuelles.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
@@ -28,6 +33,9 @@ pub struct Signature {
     pub extensions: &'static [&'static str],
     /// Famille, pour router vers le bon aperçu.
     pub family: Family,
+    /// Le contenu porte plusieurs images : WebP ou PNG animé, séquence HEIF ou
+    /// AVIF. Un convertisseur qui l'ignore aplatit silencieusement l'animation.
+    pub animated: bool,
 }
 
 /// Grande famille d'un format : c'est ce qui décide de l'aperçu proposé.
@@ -51,7 +59,12 @@ const fn sig(
     extensions: &'static [&'static str],
     family: Family,
 ) -> Signature {
-    Signature { id, label, extensions, family }
+    Signature { id, label, extensions, family, animated: false }
+}
+
+/// Variante animée (ou multi-images) d'une signature.
+const fn animated(signature: Signature) -> Signature {
+    Signature { animated: true, ..signature }
 }
 
 /// Format inconnu : ni erreur, ni mensonge — on ne sait pas.
@@ -166,9 +179,25 @@ pub fn identify(head: &[u8]) -> Signature {
         return sig("utf8bom", "Texte UTF-8 avec BOM", TEXT_EXTENSIONS, Family::Text);
     }
 
+    // Une image ISO hybride (isohybrid) commence par un secteur de démarrage
+    // MBR, voire un exécutable : seul son descripteur de volume la désigne, et
+    // il est inattendu ailleurs, d'où le test avant les signatures courtes.
+    // Descripteur de volume ISO 9660 : « CD001 » à l'octet 32 769, après les
+    // seize secteurs de zone système.
+    if at(32_769, b"CD001") {
+        return sig("iso", "Image disque ISO 9660", &["iso", "img"], Family::Archive);
+    }
+
     // --- conteneurs à en-tête composé -------------------------------------
     if starts(b"RIFF") && at(8, b"WEBP") {
-        return sig("webp", "Image WebP", &["webp"], Family::Image);
+        let still = sig("webp", "Image WebP", &["webp"], Family::Image);
+        // Le bloc étendu `VP8X` porte les drapeaux ; le bit 0x02 annonce une
+        // animation. Une WebP sans `VP8X` est forcément une image fixe.
+        return if at(12, b"VP8X") && head.len() > 20 && head[20] & 0x02 != 0 {
+            animated(sig("webp", "Image WebP animée", &["webp"], Family::Image))
+        } else {
+            still
+        };
     }
     if starts(b"RIFF") && at(8, b"WAVE") {
         return sig("wav", "Audio WAV", &["wav"], Family::Audio);
@@ -177,17 +206,7 @@ pub fn identify(head: &[u8]) -> Signature {
         return sig("avi", "Vidéo AVI", &["avi"], Family::Video);
     }
     if at(4, b"ftyp") {
-        // La marque de format (major brand) départage MP4, MOV et AVIF.
-        let brand = if head.len() >= 12 { &head[8..12] } else { b"    " };
-        return match brand {
-            b"qt  " => sig("mov", "Vidéo QuickTime", &["mov"], Family::Video),
-            b"avif" | b"avis" => sig("avif", "Image AVIF", &["avif"], Family::Image),
-            b"heic" | b"heix" | b"hevc" | b"mif1" => {
-                sig("heic", "Image HEIC", &["heic", "heif"], Family::Image)
-            }
-            b"M4A " => sig("m4a", "Audio M4A", &["m4a"], Family::Audio),
-            _ => sig("mp4", "Vidéo MP4", &["mp4", "m4v", "m4a", "mov"], Family::Video),
-        };
+        return identify_isobmff(head);
     }
     if at(257, b"ustar") {
         return sig("tar", "Archive TAR", &["tar"], Family::Archive);
@@ -211,7 +230,11 @@ pub fn identify(head: &[u8]) -> Signature {
 
     // --- images ------------------------------------------------------------
     if starts(&[0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A]) {
-        return sig("png", "Image PNG", &["png"], Family::Image);
+        return if png_is_animated(head) {
+            animated(sig("apng", "Image PNG animée (APNG)", &["png", "apng"], Family::Image))
+        } else {
+            sig("png", "Image PNG", &["png"], Family::Image)
+        };
     }
     if starts(&[0xFF, 0xD8, 0xFF]) {
         return sig("jpg", "Image JPEG", &["jpg", "jpeg"], Family::Image);
@@ -240,7 +263,13 @@ pub fn identify(head: &[u8]) -> Signature {
         return sig("mp3", "Audio MP3", &["mp3", "mp2"], Family::Audio);
     }
     if starts(&[0x1A, 0x45, 0xDF, 0xA3]) {
-        return sig("mkv", "Conteneur Matroska", &["mkv", "webm"], Family::Video);
+        // Le DocType de l'en-tête EBML départage WebM (sous-ensemble de
+        // Matroska : VP8/VP9/AV1, Vorbis/Opus) du Matroska général.
+        return if ebml_doc_type(head) == Some(b"webm".as_slice()) {
+            sig("webm", "Vidéo WebM", &["webm", "mkv"], Family::Video)
+        } else {
+            sig("mkv", "Conteneur Matroska", &["mkv", "mka", "webm"], Family::Video)
+        };
     }
 
     // --- archives et compression -------------------------------------------
@@ -290,6 +319,127 @@ pub fn identify(head: &[u8]) -> Signature {
         return sig("sqlite", "Base SQLite", &["sqlite", "db", "sqlite3"], Family::Data);
     }
     UNKNOWN
+}
+
+/// Lit le DocType de l'en-tête EBML (`webm`, `matroska`).
+///
+/// L'élément DocType a l'identifiant `42 82` et une taille sur un octet pour
+/// toute valeur réelle ; on le cherche dans l'en-tête, qui reste court.
+fn ebml_doc_type(head: &[u8]) -> Option<&[u8]> {
+    let window = &head[..head.len().min(80)];
+    let at = window.windows(2).position(|pair| pair == [0x42, 0x82])?;
+    let size_byte = *window.get(at + 2)?;
+    if size_byte & 0x80 == 0 {
+        return None;
+    }
+    let length = (size_byte & 0x7F) as usize;
+    window.get(at + 3..at + 3 + length)
+}
+
+/// Un PNG contient-il un bloc `acTL` avant ses données d'image ?
+///
+/// C'est la définition de l'APNG : un PNG ordinaire s'ouvre dans tout lecteur
+/// et n'affiche que sa première image si l'on ignore ce bloc, un APNG est un
+/// PNG *dont le bloc de contrôle d'animation précède le premier `IDAT`*.
+fn png_is_animated(head: &[u8]) -> bool {
+    let mut offset = 8;
+    while offset + 8 <= head.len() {
+        let length = u32::from_be_bytes([head[offset], head[offset + 1], head[offset + 2], head[offset + 3]]) as usize;
+        match &head[offset + 4..offset + 8] {
+            b"acTL" => return true,
+            b"IDAT" | b"IEND" => return false,
+            _ => {}
+        }
+        // Données + CRC (4 octets) ; un débordement signifie un fichier tronqué.
+        offset = match offset.checked_add(12).and_then(|n| n.checked_add(length)) {
+            Some(next) => next,
+            None => return false,
+        };
+    }
+    false
+}
+
+/// Distingue les fichiers ISO-BMFF (MP4, MOV, HEIC, HEIF, AVIF…) d'après leur
+/// boîte `ftyp` : marque principale, puis marques compatibles.
+fn identify_isobmff(head: &[u8]) -> Signature {
+    let major: [u8; 4] = head.get(8..12).and_then(|b| b.try_into().ok()).unwrap_or(*b"    ");
+    let declared = head
+        .get(0..4)
+        .map(|b| u32::from_be_bytes([b[0], b[1], b[2], b[3]]) as usize)
+        .unwrap_or(0);
+    let end = declared.clamp(16, head.len().max(16)).min(head.len());
+    let compatible: Vec<[u8; 4]> = head
+        .get(16..end)
+        .unwrap_or(&[])
+        .chunks_exact(4)
+        .map(|c| [c[0], c[1], c[2], c[3]])
+        .collect();
+    let has = |brand: &[u8; 4]| major == *brand || compatible.contains(brand);
+
+    let avif = sig("avif", "Image AVIF", &["avif"], Family::Image);
+    let heic = sig("heic", "Image HEIC", &["heic", "heif"], Family::Image);
+    let heif = sig("heif", "Image HEIF", &["heif", "heic"], Family::Image);
+
+    match &major {
+        b"qt  " => return sig("mov", "Vidéo QuickTime", &["mov"], Family::Video),
+        b"M4A " | b"M4B " => return sig("m4a", "Audio M4A", &["m4a"], Family::Audio),
+        _ => {}
+    }
+    // Les marques d'image priment sur « isom » : un AVIF annonce parfois
+    // `mif1` en principale et `avif` en compatible.
+    if has(b"avis") {
+        return animated(sig("avif", "Image AVIF animée", &["avif"], Family::Image));
+    }
+    if has(b"avif") {
+        return avif;
+    }
+    if has(b"hevc") || has(b"hevx") || has(b"hevm") || has(b"hevs") || has(b"heis") {
+        return animated(sig("heic", "Séquence HEIC", &["heic", "heif"], Family::Image));
+    }
+    if has(b"heic") || has(b"heix") || has(b"heim") {
+        return heic;
+    }
+    if has(b"msf1") {
+        return animated(sig("heif", "Séquence HEIF", &["heif", "heic"], Family::Image));
+    }
+    if has(b"mif1") {
+        return heif;
+    }
+    sig("mp4", "Vidéo MP4", &["mp4", "m4v", "m4a", "mov"], Family::Video)
+}
+
+/// Type MIME d'un format reconnu par signature (`None` s'il est inconnu).
+pub fn mime_of_signature(signature: &Signature) -> Option<&'static str> {
+    Some(match signature.id {
+        "png" => "image/png",
+        "apng" => "image/apng",
+        "jpg" => "image/jpeg",
+        "gif" => "image/gif",
+        "webp" => "image/webp",
+        "avif" => "image/avif",
+        "heic" => "image/heic",
+        "heif" => "image/heif",
+        "bmp" => "image/bmp",
+        "tiff" => "image/tiff",
+        "ico" => "image/x-icon",
+        "pdf" => "application/pdf",
+        "mp4" => "video/mp4",
+        "mov" => "video/quicktime",
+        "webm" => "video/webm",
+        "mkv" => "video/x-matroska",
+        "avi" => "video/x-msvideo",
+        "mp3" => "audio/mpeg",
+        "wav" => "audio/wav",
+        "flac" => "audio/flac",
+        "ogg" => "audio/ogg",
+        "m4a" => "audio/mp4",
+        "zip" => "application/zip",
+        "gz" => "application/gzip",
+        "7z" => "application/x-7z-compressed",
+        "rar" => "application/vnd.rar",
+        "iso" => "application/x-iso9660-image",
+        _ => return None,
+    })
 }
 
 /// L'extension annoncée est-elle cohérente avec le contenu réel ?
@@ -427,5 +577,125 @@ mod tests {
 
         // Un contenu non reconnu ne contredit rien.
         assert!(extension_matches(&UNKNOWN, "quelconque"));
+    }
+
+    // --- fixtures synthétiques : octets réels, pas de dépendance au disque ---
+
+    fn riff_webp(chunk: &[u8; 4], flags: u8) -> Vec<u8> {
+        let mut bytes = b"RIFF\0\0\0\0WEBP".to_vec();
+        bytes.extend_from_slice(chunk);
+        bytes.extend_from_slice(&10u32.to_le_bytes());
+        bytes.push(flags);
+        bytes.extend_from_slice(&[0; 9]);
+        bytes
+    }
+
+    #[test]
+    fn tells_static_from_animated_webp() {
+        let still = identify(&riff_webp(b"VP8X", 0x10));
+        assert_eq!(still.id, "webp");
+        assert!(!still.animated);
+        let lossy = identify(b"RIFF\0\0\0\0WEBPVP8 \x10\0\0\0");
+        assert!(!lossy.animated);
+        let moving = identify(&riff_webp(b"VP8X", 0x12));
+        assert_eq!(moving.id, "webp");
+        assert!(moving.animated);
+        assert!(extension_matches(&moving, "webp"));
+    }
+
+    fn png_with(chunks: &[(&[u8; 4], usize)]) -> Vec<u8> {
+        let mut bytes = vec![0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
+        for (kind, length) in chunks {
+            bytes.extend_from_slice(&(*length as u32).to_be_bytes());
+            bytes.extend_from_slice(*kind);
+            bytes.extend(std::iter::repeat_n(0_u8, *length + 4));
+        }
+        bytes
+    }
+
+    #[test]
+    fn tells_png_from_apng_by_the_animation_control_chunk() {
+        let plain = identify(&png_with(&[(b"IHDR", 13), (b"IDAT", 20), (b"IEND", 0)]));
+        assert_eq!(plain.id, "png");
+        assert!(!plain.animated);
+
+        // acTL après IDAT n'est pas une animation : la définition l'exige avant.
+        let late = identify(&png_with(&[(b"IHDR", 13), (b"IDAT", 20), (b"acTL", 8)]));
+        assert_eq!(late.id, "png");
+
+        // Un profil colorimétrique volumineux ne doit pas cacher le bloc acTL.
+        let apng = identify(&png_with(&[(b"IHDR", 13), (b"iCCP", 3000), (b"acTL", 8), (b"IDAT", 20)]));
+        assert_eq!(apng.id, "apng");
+        assert!(apng.animated);
+        assert!(extension_matches(&apng, "png"), "un APNG s'appelle souvent .png");
+    }
+
+    fn ebml(doc_type: &[u8]) -> Vec<u8> {
+        let mut bytes = vec![0x1A, 0x45, 0xDF, 0xA3, 0x9F, 0x42, 0x86, 0x81, 0x01, 0x42, 0xF7, 0x81, 0x01];
+        bytes.extend_from_slice(&[0x42, 0x82, 0x80 | doc_type.len() as u8]);
+        bytes.extend_from_slice(doc_type);
+        bytes
+    }
+
+    #[test]
+    fn tells_webm_from_matroska() {
+        assert_eq!(identify(&ebml(b"webm")).id, "webm");
+        assert_eq!(identify(&ebml(b"matroska")).id, "mkv");
+        // WebM est un sous-ensemble de Matroska : l'extension .mkv reste cohérente.
+        assert!(extension_matches(&identify(&ebml(b"webm")), "mkv"));
+    }
+
+    fn ftyp(major: &[u8; 4], compatible: &[&[u8; 4]]) -> Vec<u8> {
+        let size = 16 + 4 * compatible.len();
+        let mut bytes = (size as u32).to_be_bytes().to_vec();
+        bytes.extend_from_slice(b"ftyp");
+        bytes.extend_from_slice(major);
+        bytes.extend_from_slice(&[0; 4]);
+        for brand in compatible {
+            bytes.extend_from_slice(*brand);
+        }
+        bytes.extend_from_slice(&[0; 32]);
+        bytes
+    }
+
+    #[test]
+    fn reads_isobmff_brands_not_extensions() {
+        assert_eq!(identify(&ftyp(b"avif", &[b"mif1", b"miaf"])).id, "avif");
+        assert_eq!(identify(&ftyp(b"mif1", &[b"avif", b"miaf"])).id, "avif");
+        assert!(identify(&ftyp(b"avis", &[b"avif"])).animated);
+        assert_eq!(identify(&ftyp(b"heic", &[b"mif1", b"heic"])).id, "heic");
+        // Majeure générique, compatible HEVC : c'est un HEIC.
+        assert_eq!(identify(&ftyp(b"mif1", &[b"heic"])).id, "heic");
+        // Majeure générique seule : un HEIF, que l'on ne prétend pas HEIC.
+        assert_eq!(identify(&ftyp(b"mif1", &[b"miaf"])).id, "heif");
+        let sequence = identify(&ftyp(b"msf1", &[b"hevc", b"iso8"]));
+        assert_eq!(sequence.id, "heic");
+        assert!(sequence.animated, "une séquence n'est pas une photo ordinaire");
+        assert_eq!(identify(&ftyp(b"isom", &[b"mp42"])).id, "mp4");
+        assert_eq!(identify(&ftyp(b"qt  ", &[])).id, "mov");
+    }
+
+    #[test]
+    fn recognises_an_iso_9660_volume_descriptor() {
+        let mut bytes = vec![0_u8; 40_000];
+        bytes[32_768] = 1;
+        bytes[32_769..32_774].copy_from_slice(b"CD001");
+        let iso = identify(&bytes);
+        assert_eq!(iso.id, "iso");
+        assert_eq!(iso.family, Family::Archive);
+        assert_eq!(mime_of_signature(&iso), Some("application/x-iso9660-image"));
+        // Sans le descripteur, rien d'ISO — ni avec un en-tête trop court.
+        assert_eq!(identify(&[0_u8; 40_000]).id, "inconnu");
+        assert_eq!(identify(&bytes[..32_000]).id, "inconnu");
+    }
+
+    #[test]
+    fn content_wins_over_a_misleading_extension() {
+        let apng = identify(&png_with(&[(b"IHDR", 13), (b"acTL", 8), (b"IDAT", 4)]));
+        assert!(!extension_matches(&apng, "jpg"));
+        let avif = identify(&ftyp(b"avif", &[]));
+        assert!(!extension_matches(&avif, "mp4"), "un AVIF renommé .mp4 est démasqué");
+        // Sans extension : le contenu suffit, rien à comparer.
+        assert_eq!(identify(&ebml(b"webm")).id, "webm");
     }
 }

@@ -22,8 +22,8 @@ import { handoffTargetIds, DIAGNOSTIC_SPECIALISTS } from "@/features/handoff/tar
  * le retrait d'un outil ; les voir changer sans qu'on l'ait voulu est un
  * signal.
  */
-export const TOOL_COUNT = 196;
-export const CATEGORY_COUNT = 12;
+export const TOOL_COUNT = 211;
+export const CATEGORY_COUNT = 13;
 
 /** Formulations qui trahiraient une fonction annoncée mais absente. */
 const PLACEHOLDER_PATTERNS = [
@@ -169,10 +169,10 @@ describe("intégrité du catalogue", () => {
   });
 });
 
-describe("découvrabilité des 196 outils", () => {
+describe("découvrabilité des 211 outils", () => {
   /**
    * Un outil que la recherche ne trouve pas n'existe pas pour l'utilisateur :
-   * la page Outils compte douze catégories et deux cents entrées, personne ne
+   * la page Outils compte treize catégories et plus de deux cents entrées, personne ne
    * la parcourt à l'œil. Ces tests vérifient donc le minimum vital — le nom
    * propre de l'outil le remonte — plutôt que d'inventer des mots-clés.
    */

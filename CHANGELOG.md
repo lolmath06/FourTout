@@ -8,6 +8,39 @@ change pour lui. Pour l'historique détaillé du code, `git log`.
 
 ---
 
+## [Non publié]
+
+Cette étape porte FourTout à **211 outils, tous utilisables**, répartis en treize catégories. La version de l'application reste 1.0.1 : rien n'est publié ici.
+
+### Internet & Web (nouvelle catégorie)
+
+- **Télécharger un fichier par URL** : reprise après interruption, progression, annulation, vérification SHA-256 facultative, aucun écrasement silencieux.
+- **Télécharger un média en ligne** (yt-dlp) en MP4, WebM, MP3, M4A, Opus, WAV ou FLAC, avec choix de résolution (jamais agrandie) et taille maximale. Le moteur s'installe à la demande, après vérification de sa somme SHA-256 officielle. Contenus publics uniquement : pas de DRM, pas de compte, pas de cookies.
+- **Extrait d'une vidéo en ligne** et **vidéo en ligne vers GIF ou WebP animé**.
+- **Raccourcisseur d'URL** (is.gd, v.gd, TinyURL) : l'adresse est envoyée au service choisi, et l'outil le dit.
+- **Page web vers PDF, vers image, vers MHTML** avec le navigateur Chromium déjà installé (Chrome, Chromium, Edge, Brave), dans un profil temporaire vierge.
+- **Test de débit** (latence, gigue, téléchargement, envoi) via le service de mesure de Cloudflare.
+
+### Fichiers
+
+- **Créer, inspecter et extraire une image ISO** (ISO 9660 avec Joliet et Rock Ridge, lecture d'El Torito, détection hybride MBR/GPT et UDF). Extraction protégée contre les chemins hostiles, sans écrasement silencieux, avec annulation propre.
+- **Compresser à une taille maximale** : vidéo, audio, image et PDF, avec marge de sécurité, nouvel essai et avertissement quand la cible est irréaliste.
+
+### Images
+
+- **Agrandissement par IA** (Real-ESRGAN général, ×2 et ×4, par tuiles), modèle téléchargé une fois à la demande puis exécuté localement.
+- **Convertir une image animée** (WebP animé, APNG) sans perdre l'animation.
+- Prise en charge de **HEIC/HEIF** (décodage natif), d'**AVIF** (selon les capacités réelles de FFmpeg), de WebP animé, d'APNG et de WebM.
+
+### Convertisseur universel
+
+- Il regarde désormais le **contenu** du fichier, pas seulement son extension, et ne propose que des conversions réellement possibles sur la machine.
+- Détection de contenu améliorée : ISO, WebM contre Matroska, WebP animé, APNG, marques ISOBMFF.
+
+### Internationalisation
+
+- 478 nouveaux messages et les 15 nouveaux outils traduits dans les 16 langues.
+
 ## [1.0.1] — 2026-10-02
 
 ### Internationalisation

@@ -2,13 +2,16 @@
 
 [English](README.md) · [Français](README.fr.md) · **Español** · [Português (Brasil)](README.pt-BR.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
 
-<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — 196 tools. 12 categories. One local desktop app." width="100%">
+<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — one local-first desktop app for PDF, images, audio, video, files, ISO, Internet &amp; Web, developer tools and more." width="100%">
 
-### 196 herramientas. 12 categorías. Una sola aplicación de escritorio local.
+### 211 herramientas. 13 categorías. Una sola aplicación de escritorio local.
 
-Una caja de herramientas de escritorio que reúne PDF, imágenes, audio, vídeo,
-documentos, archivos, herramientas para desarrolladores y privacidad: 196
-herramientas en una sola aplicación, y sus archivos nunca salen de su equipo.
+Una caja de herramientas de escritorio «local primero» que reúne PDF, imágenes,
+audio, vídeo, documentos, archivos, herramientas ISO, utilidades de Internet y
+Web, herramientas para desarrolladores, diagnóstico y seguridad: 211
+herramientas en una sola aplicación. El procesamiento se queda en su equipo;
+solo las herramientas de Internet y Web y la prueba de velocidad contactan con
+los servicios que necesitan, y lo indican.
 
 [![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-and-11)
 [![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#other-linux-distributions)
@@ -81,7 +84,7 @@ contraseñas, metadatos.
 </tr>
 </table>
 
-La tabla completa de las doce categorías está [más abajo](#funciones); la
+La tabla completa de las trece categorías está [más abajo](#funciones); la
 lista herramienta por herramienta está en **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.
 
 ## Idiomas
@@ -107,7 +110,7 @@ GitHub), hechas con archivos ficticios. Muestran la interfaz en francés.
 <td width="50%">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/accueil-dark.webp">
-  <img src="docs/assets/screenshots/accueil-light.webp" alt="Inicio: favoritos, herramientas recientes y las doce categorías">
+  <img src="docs/assets/screenshots/accueil-light.webp" alt="Inicio: favoritos, herramientas recientes y las trece categorías">
 </picture>
 <p align="center"><sub><b>Inicio</b> — favoritos, recientes, categorías</sub></p>
 </td>
@@ -196,19 +199,20 @@ Tres principios sostienen el producto:
 | Categoría | Herramientas | Ejemplos |
 | --- | ---: | --- |
 | **PDF** | 26 | Unir, dividir, comprimir, censurar, OCR, recuperar una contraseña olvidada |
-| **Imágenes** | 25 | Convertir, comprimir, recortar, marca de agua, OCR, **quitar el fondo**, borrar el EXIF |
+| **Imágenes** | 27 | Convertir, comprimir, recortar, marca de agua, OCR, **quitar el fondo**, borrar el EXIF |
 | **Audio** | 18 | Convertir, normalizar, cortar silencios, texto a voz, transcripción |
 | **Vídeo** | 20 | Convertir, comprimir, recortar, subtitular, incrustar, vídeo ↔ GIF |
 | **Texto y documentos** | 20 | Limpiar, comparar, Markdown ↔ HTML, leer y convertir un DOCX |
-| **Archivos y comprimidos** | 29 | Comprimidos, hashes, duplicados, renombrado por lotes, copias de seguridad, editor hexadecimal |
+| **Archivos y comprimidos** | 33 | Comprimidos, hashes, duplicados, renombrado por lotes, copias de seguridad, editor hexadecimal |
 | **Conversores** | 1 | Suelte un archivo: FourTout propone las conversiones posibles |
 | **Desarrollo** | 21 | JSON, XML, YAML, TOML, SQL, Base32, JWT **verificado**, **base SQLite**, regex, cron |
 | **Calculadoras** | 21 | Unidades, porcentajes, fechas, **zonas horarias**, **ancho de banda**, **intereses**, divisas |
-| **Red** | 3 | Ping, prueba de puertos, descubrimiento de la red local: acotados, y nunca más allá |
+| **Internet y web** | 8 | Descargar un archivo o un vídeo público, capturar una página web en PDF o imagen, acortar un enlace |
+| **Red** | 4 | Ping, prueba de puertos, descubrimiento de la red local: acotados, y nunca más allá |
 | **Diagnóstico y recuperación** | 5 | Archivo corrupto, comprimido ilegible, PDF roto, imagen dañada, discos y particiones |
 | **Seguridad** | 7 | Contraseñas, cifrado de archivos, HMAC, eliminación de metadatos |
 
-Cada herramienta se cuenta en la categoría a la que pertenece: 196 en total.
+Cada herramienta se cuenta en la categoría a la que pertenece: 211 en total.
 Una herramienta también puede ofrecerse en otras categorías, donde se la busca;
 por eso la aplicación muestra cifras más altas por categoría.
 
@@ -216,22 +220,34 @@ La lista completa, herramienta por herramienta: **[docs/guides/FEATURES.md](docs
 
 ## Privacidad
 
-Todo el procesamiento de archivos es local: PDF, imágenes, audio, vídeo, texto,
-comprimidos, hashes, cifrado, recorte de fondo. Ningún archivo se sube. Ni
-cuenta, ni analítica, ni telemetría, ni actualizaciones automáticas.
+El procesamiento es local por defecto: PDF, imágenes, audio, vídeo, texto,
+comprimidos, hashes, cifrado, recorte de fondo, ampliación con IA, imágenes ISO.
+Las herramientas que procesan sus archivos nunca los suben. Ni cuenta, ni
+analítica, ni telemetría, ni actualizaciones automáticas.
 
-Dos funciones son la excepción, y ambas lo dicen en la interfaz:
+Algunas funciones sí acceden a la red, y cada una lo dice en su interfaz:
 
+- las herramientas de **Internet y web** (descarga de archivos, descarga de
+  medios, fragmento y GIF de vídeo en línea, acortador de URL, captura de
+  páginas web) se conectan a la dirección que usted indica y a ningún otro
+  sitio. El acortador envía esa dirección al servicio que usted elige, que la
+  conserva. La captura web controla un navegador Chromium ya instalado, con un
+  perfil temporal vacío;
+- la **prueba de velocidad** intercambia tráfico de prueba generado por
+  FourTout con el servicio de medición de Cloudflare. No se envía ninguno de
+  sus archivos;
 - el **conversor de divisas** consulta el flujo de referencia diario del Banco
   Central Europeo. El importe que se convierte nunca sale del equipo; sin
   conexión, se reutilizan los últimos tipos conocidos **con su fecha**;
-- los **modelos** de síntesis de voz, transcripción y recorte de fondo se
-  descargan una sola vez, cuando usted lo pide expresamente. Después, todo se
-  ejecuta en el equipo.
+- los **modelos** (síntesis de voz, transcripción, recorte de fondo, ampliación
+  con IA) y el motor **yt-dlp** se descargan una sola vez, cuando usted lo pide
+  expresamente, y se verifican con una suma SHA-256. Después, los modelos se
+  ejecutan en el equipo.
 
-Las tres herramientas de **red** (ping, puertos, descubrimiento de la red local)
-abren conexiones reales, pero solo hacia los hosts que usted indica o hacia su
-subred local, y nunca sin un clic.
+Las cuatro herramientas de **red** (ping, puertos, descubrimiento de la red
+local, prueba de velocidad) abren conexiones reales, pero solo hacia los hosts
+que usted indica, su subred local o el servicio de medición, y nunca sin un
+clic.
 
 El detalle, función por función: **[docs/legal/PRIVACY.md](docs/legal/PRIVACY.md)**.
 

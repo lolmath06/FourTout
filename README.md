@@ -2,13 +2,15 @@
 
 **English** · [Français](README.fr.md) · [Español](README.es.md) · [Português (Brasil)](README.pt-BR.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
 
-<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — 196 tools. 12 categories. One local desktop app." width="100%">
+<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — one local-first desktop app for PDF, images, audio, video, files, ISO, Internet &amp; Web, developer tools and more." width="100%">
 
-### 196 tools. 12 categories. One local desktop app.
+### 211 tools. 13 categories. One local desktop app.
 
-A desktop toolbox that brings together PDF, images, audio, video, documents,
-files, developer tools and privacy — 196 tools in a single application, and
-your files never leave your machine.
+A local-first desktop toolbox that brings together PDF, images, audio, video,
+documents, files, ISO tools, Internet & Web utilities, developer tools,
+diagnostics and security — 211 tools in a single application. Processing stays
+on your machine; only the Internet & Web tools and the speed test contact the
+services they need, and they say so.
 
 [![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-and-11)
 [![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#other-linux-distributions)
@@ -81,7 +83,7 @@ passwords, metadata.
 </tr>
 </table>
 
-The full table of the twelve categories is [further down](#features); the
+The full table of the thirteen categories is [further down](#features); the
 tool-by-tool list is in **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.
 
 ## Languages
@@ -107,7 +109,7 @@ GitHub setting), made with dummy files. They show the French interface.
 <td width="50%">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/accueil-dark.webp">
-  <img src="docs/assets/screenshots/accueil-light.webp" alt="Home: favorites, recent tools and the twelve categories">
+  <img src="docs/assets/screenshots/accueil-light.webp" alt="Home: favorites, recent tools and the thirteen categories">
 </picture>
 <p align="center"><sub><b>Home</b> — favorites, recents, categories</sub></p>
 </td>
@@ -196,19 +198,20 @@ Three principles hold the product together:
 | Category | Tools | Examples |
 | --- | ---: | --- |
 | **PDF** | 26 | Merge, split, compress, redact, OCR, recover a forgotten password |
-| **Images** | 25 | Convert, compress, crop, watermark, OCR, **remove the background**, strip EXIF |
+| **Images** | 27 | Convert, compress, crop, watermark, OCR, **remove the background**, strip EXIF |
 | **Audio** | 18 | Convert, normalize, cut silences, text to speech, transcription |
 | **Video** | 20 | Convert, compress, crop, subtitle, burn in, video ↔ GIF |
 | **Text & Documents** | 20 | Clean up, compare, Markdown ↔ HTML, read and convert a DOCX |
-| **Files & Archives** | 29 | Archives, hashes, duplicates, batch renaming, backups, hex editor |
+| **Files & Archives** | 33 | Archives, hashes, duplicates, batch renaming, backups, hex editor |
 | **Converters** | 1 | Drop a file: FourTout suggests the possible conversions |
 | **Developer** | 21 | JSON, XML, YAML, TOML, SQL, Base32, **verified** JWT, **SQLite database**, regex, cron |
 | **Calculators** | 21 | Units, percentages, dates, **time zones**, **bandwidth**, **interest**, currencies |
-| **Network** | 3 | Ping, port test, local network discovery — bounded, and never beyond |
+| **Internet & Web** | 8 | Download a file or a public video, capture a web page to PDF or image, shorten a link |
+| **Network** | 4 | Ping, port test, local network discovery — bounded, and never beyond |
 | **Diagnostics & Recovery** | 5 | Corrupted file, unreadable archive, broken PDF, damaged image, disks and partitions |
 | **Security** | 7 | Passwords, file encryption, HMAC, metadata removal |
 
-Each tool is counted in the category that owns it: 196 in total. A tool can
+Each tool is counted in the category that owns it: 211 in total. A tool can
 also be offered in other categories, wherever people look for it — which is
 why the application shows higher counts per category.
 
@@ -216,22 +219,31 @@ The complete list, tool by tool: **[docs/guides/FEATURES.md](docs/guides/FEATURE
 
 ## Privacy
 
-All file processing is local: PDF, images, audio, video, text, archives,
-hashes, encryption, background removal. No file is ever uploaded. No account,
-no analytics, no telemetry, no automatic updates.
+Processing is local by default: PDF, images, audio, video, text, archives,
+hashes, encryption, background removal, AI upscaling, ISO images. The tools that
+process your files never upload them. No account, no analytics, no telemetry,
+no automatic updates.
 
-Two features are exceptions, and both say so in the interface:
+Some features do reach the network, and each one says so in its interface:
 
+- the **Internet & Web** tools (file downloader, media downloader, online video
+  excerpt and GIF, URL shortener, web page capture) connect to the address you
+  give them and nowhere else. The URL shortener sends that address to the
+  service you choose, which stores it. Web capture drives a Chromium browser
+  already installed on your machine, with a blank temporary profile;
+- the **speed test** exchanges generated test traffic with Cloudflare's
+  measurement service. None of your files is sent;
 - the **currency converter** queries the European Central Bank's daily
   reference feed. The amount being converted never leaves the machine;
   offline, the last known rates are reused **and dated**;
-- the **models** for text to speech, transcription and background removal
-  are downloaded once, at your explicit request. After that, everything runs
-  on the machine.
+- the **models** (text to speech, transcription, background removal, AI
+  upscaling) and the **yt-dlp** engine are downloaded once, at your explicit
+  request, and checked against a SHA-256 checksum. After that, models run on
+  the machine.
 
-The three **network** tools (ping, ports, local network discovery) open real
-connections, but only to the hosts you specify or to your local subnet, and
-never without a click.
+The four **network** tools (ping, ports, local network discovery, speed test)
+open real connections, but only to the hosts you specify, your local subnet or
+the measurement service, and never without a click.
 
 Feature by feature: **[docs/legal/PRIVACY.md](docs/legal/PRIVACY.md)**.
 

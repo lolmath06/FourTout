@@ -9,6 +9,7 @@ import { converterTools } from "./converters";
 import { developerTools } from "./developer";
 import { calculatorTools } from "./calculators";
 import { networkTools } from "./network";
+import { internetTools } from "./internet";
 import { diagnosticTools } from "./diagnostics";
 import { securityTools } from "./security";
 
@@ -29,6 +30,7 @@ export const ALL_TOOLS: ToolDefinition[] = [
   ...converterTools,
   ...developerTools,
   ...calculatorTools,
+  ...internetTools,
   ...networkTools,
   ...diagnosticTools,
   ...securityTools,

@@ -88,10 +88,53 @@ facultatif, jamais bloquant.
 
 ## Détection du format
 
-Le convertisseur s'appuie sur l'extension et le type MIME du fichier déposé.
-Pour aller plus loin — savoir ce qu'un fichier **est** réellement, par-delà son
-nom — l'outil « Informations sur un fichier » lit la signature des premiers
-octets et signale les incohérences (`photo.jpg` qui commence par `%PDF-`).
+Dans l'application installée, le convertisseur demande au moteur natif ce que
+le fichier **est vraiment** (`files_identify` / `files_identify_path`, adossés à
+`src-tauri/src/files/magic.rs`). La détection lit les 36 premiers Kio,
+indépendamment du nom du fichier, et reconnaît notamment :
+
+- WebP animé (bit d'animation VP8X) et APNG (`acTL` avant le premier `IDAT`), à
+  distinguer du WebP et du PNG fixes ;
+- WebM contre Matroska (le `DocType` EBML) ;
+- AVIF, HEIC, HEIF et séquences HEIF, MOV et M4A (marques ISOBMFF) ;
+- les images ISO 9660 (`CD001` au décalage 32769).
+
+Hors de l'application (dans un navigateur), seule l'extension est disponible, et
+le convertisseur le dit : l'identité repose alors sur l'extension, sans règles de
+contenu.
+
+## Planifier d'après les faits, pas d'après les extensions
+
+`src/core/convert/actions.ts` construit la liste des actions d'un fichier à
+partir de trois sources, dont aucune n'est une table écrite à la main :
+
+1. **le graphe du registre** décrit plus haut, pour les formats ordinaires ;
+2. **des règles de contenu**, là où l'extension ne suffit pas. Une image animée
+   va vers *Convertir une image animée*, jamais vers un outil d'image fixe qui
+   n'en garderait que la première image. Un ISO est orienté vers les outils ISO,
+   pas vers une conversion. Une vidéo sans piste son ne se voit pas proposer
+   l'extraction du son ; une sans piste vidéo ne se voit proposer que des
+   conversions audio ;
+3. **les capacités vérifiées** de la machine : FFmpeg présent, encodeur WebP
+   animé, AVIF décodable (prouvé en décodant un échantillon embarqué), HEIC
+   décodable (décodeur natif). Une conversion que cette machine ne saurait pas
+   exécuter n'est pas annoncée.
+
+Quand le nom et le contenu divergent (un `photo.jpg` qui est un PNG), le contenu
+l'emporte et une remarque le signale. Des remarques expliquent aussi les
+conversions absentes : pas de FFmpeg, pas de piste vidéo, AVIF ou HEIC
+indisponible, séquence HEIF.
+
+Les pistes viennent de `media_probe_path` (ffprobe), limité aux fichiers média.
+Quand un outil en a besoin, le moteur natif lit le fichier depuis son chemin :
+les gros fichiers ne sont pas chargés dans l'interface.
+
+## Nouveaux formats
+
+WebP (fixe et animé), WebM, AVIF, HEIC, HEIF et APNG sont des formats de plein
+droit du registre. HEIC est décodé par un décodeur en Rust pur, donc identique
+sur Fedora et Windows ; AVIF dépend du FFmpeg de la machine et n'est annoncé que
+si un vrai décodage réussit. Voir [Images](IMAGES.md) et [Vidéo](VIDEO.md).
 
 ## Limite assumée
 

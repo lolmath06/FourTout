@@ -10,7 +10,7 @@ import { formatDecimalSize, t } from "@/i18n";
  * défaire. Une fois installés, les moteurs fonctionnent entièrement hors ligne.
  */
 
-export type SpeechAssetKind = "engine" | "voice" | "stt-model" | "segmentation";
+export type SpeechAssetKind = "engine" | "voice" | "stt-model" | "segmentation" | "upscale";
 
 export interface SpeechAsset {
   id: string;

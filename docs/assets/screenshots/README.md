@@ -8,7 +8,7 @@ en thème sombre : le README choisit la variante selon le réglage du lecteur
 
 | Fichier (`-light` / `-dark`) | Écran | Source |
 | --- | --- | --- |
-| `accueil` | Accueil — favoris, récents, les douze catégories | Interface (Chromium) |
+| `accueil` | Accueil — favoris, récents, les treize catégories | Interface (Chromium) |
 | `recherche` | Recherche en langage courant : « réduire la taille d'une vidéo » | Interface (Chromium) |
 | `pdf` | Fusionner des PDF, trois documents fictifs | Interface (Chromium) |
 | `images` | Ajuster une image, aperçu en temps réel | Interface (Chromium) |

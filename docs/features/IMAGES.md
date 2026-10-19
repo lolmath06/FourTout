@@ -142,3 +142,33 @@ with installation guidance when models are absent.
 
 The UI states the model's limits: it expects a principal subject and can fail
 on ambiguous scenes, similar foreground/background colors, and fine detail.
+
+## HEIC, HEIF, AVIF, animated WebP and APNG
+
+- **HEIC / HEIF (still)** are decoded by a pure-Rust decoder (`zune-heic`) in
+  `src-tauri/src/imaging/`, verified against a real HEIC fixture. It behaves the
+  same on Fedora and Windows and needs no system codec. HEIF *sequences* (several
+  images) are refused with a message. Unsupported color spaces are reported
+  rather than guessed. **Patent note:** HEIC carries HEVC; FourTout only decodes
+  it, on your machine, from files you already hold, and ships no encoder.
+- **AVIF** is decoded by the machine's FFmpeg. Because builds differ, FourTout
+  does not trust the codec list: it decodes a 397-byte embedded sample and
+  advertises AVIF only if that succeeds. Animated AVIF sequences are refused
+  (stills only).
+- **Animated WebP and APNG** are decoded frame by frame (`image_anim_info`,
+  `image_anim_convert`) and rebuilt by FFmpeg with the per-frame durations
+  preserved, to GIF, APNG, animated WebP, MP4, WebM, or a series of PNG files.
+  The tool states what the target cannot hold: transparency (MP4, WebM), looping
+  (video), color depth (GIF). Limits on frame count and size keep a hostile file
+  from exhausting memory.
+- A still-image tool that receives an animation **warns** (only the first frame
+  would be kept) and offers a handoff to *Convert an animated image*.
+
+## AI upscaling (`image-upscale`)
+
+×2 and ×4 enlargement with Real-ESRGAN *general x4 v3*, run locally through ONNX
+Runtime after a one-time, checksum-verified model download. The model, its
+pinned source, tiling, transparency handling, and limits are documented in
+[Models](../technical/MODELS.md#ai-upscaling-model). The result is capped at 64
+megapixels. The network invents plausible detail; it cannot recover what was never
+in the image, and the tool says so.

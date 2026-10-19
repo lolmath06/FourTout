@@ -243,6 +243,46 @@ vérifier un SHA-256 attendu plutôt qu'un « ça a l'air correct ».
 | `rename-batch/` | `IMG_0001.JPG` à `IMG_0005.JPG` + `Photo de vacances (été) n°6.JPEG` | **Renommage par lot** : numérotation, casse d'extension, nettoyage des accents et des espaces |
 | `folder-tree/` | `package.json`, `README.md`, `.hidden-config`, `src/` sur 4 niveaux, `node_modules/`, `.git/` | **Arborescence** et **taille d'un dossier** : profondeur, dossiers ignorés, fichiers cachés |
 
+### Internet, ISO et formats (phase 13)
+
+Produites par `node scripts/generate-phase13-assets.mjs` (et, pour les ISO, par
+l'exemple Rust `phase13_fixtures`) ; tout est déterministe et local. Ce qui
+demande FFmpeg est sauté, avec un message, quand il est absent.
+
+| Fichier | Contenu | Utilité |
+| --- | --- | --- |
+| `animated.webp` / `animated.png` | 12 images 160 × 120, WebP animé et APNG | **Convertir une image animée**, avertissement des outils d'image fixe, détection du contenu |
+| `still.webp` | Le même visuel, WebP fixe | Vérifier qu'un WebP fixe n'est pas pris pour une animation |
+| `video.webm` / `audio-only.webm` | WebM complet, puis WebM sans image | Détection WebM contre Matroska ; le convertisseur ne propose pas d'action vidéo sans piste vidéo |
+| `sample.avif` / `sample.heic` | Images de référence 64 × 64 (octets figés) | Décodage AVIF (selon FFmpeg) et HEIC (natif) |
+| `photo-mislabeled.jpg` / `photo-no-extension` | Un PNG nommé `.jpg`, puis le même sans extension | **Détection par le contenu** : le convertisseur universel signale l'écart de nom |
+| `iso-source/` | Dossier à noms Unicode et arborescence profonde | **Créer une image ISO**, puis la relire |
+| `sample.iso` | ISO 9660 + Joliet + Rock Ridge, date fixe | **Inspecter** et **Extraire** une image ISO |
+| `sample-boot.iso` | Image avec catalogue El Torito (produite avec `genisoimage` ou `xorriso`) | Lecture du démarrage BIOS/UEFI |
+| `web-sample/` | Page locale et fichiers de 5 Mo | Capture web et téléchargeur |
+
+Pour essayer les outils Internet **sans Internet**, lancez le serveur de
+fixtures, qui n'écoute que sur `127.0.0.1:8765` :
+
+```bash
+pnpm fixtures:serve
+```
+
+| Route | Comportement | À essayer avec |
+| --- | --- | --- |
+| `/` | Page de test | Page web vers PDF, image, MHTML |
+| `/fichier.bin` | 5 Mo, ETag, reprise par plages | Télécharger un fichier, puis interrompre et reprendre |
+| `/sans-reprise.bin` | 5 Mo, ignore `Range` | Le téléchargement doit repartir de zéro et le dire |
+| `/lent.bin` | 5 Mo à ~1 Mo/s | Le bouton **Annuler** |
+| `/redirige` | 302 vers `/fichier.bin` | Suivi des redirections |
+| `/nom` | `Content-Disposition` accentué | Nom de fichier proposé |
+| `/absent` | 404 | Message « introuvable » |
+| `/__down?bytes=N`, `/__up` | Octets de test et réception d'un envoi | Mesure de débit |
+
+> Les tests automatisés n'utilisent jamais Internet : ils s'appuient sur un
+> serveur local intégré aux tests Rust et sur des faux exécutables (yt-dlp) et
+> un faux serveur DevTools.
+
 ## À compléter par les prochaines phases
 
 Au fur et à mesure que les outils arrivent :

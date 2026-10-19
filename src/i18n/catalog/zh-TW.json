@@ -138,6 +138,21 @@
         "密碼",
         "雜湊"
       ]
+    },
+    "internet": {
+      "name": "網際網路與網頁",
+      "description": "下載檔案或媒體、擷取網頁、縮短連結、測量您的連線。",
+      "keywords": [
+        "網際網路",
+        "網頁",
+        "下載",
+        "url",
+        "連結",
+        "網站",
+        "youtube",
+        "網頁",
+        "線上"
+      ]
     }
   },
   "tools": {
@@ -609,7 +624,12 @@
         "bmp",
         "tiff",
         "heic",
-        "avif"
+        "avif",
+        "heic 轉 jpg",
+        "heif 轉 png",
+        "avif 轉 jpg",
+        "heic 轉 webp",
+        "apng"
       ],
       "aliases": [
         "convert image",
@@ -1401,7 +1421,9 @@
         "mkv 轉 mp4",
         "avi 轉 mp4",
         "webm",
-        "mov"
+        "mov",
+        "webm 轉 mp4",
+        "mp4 轉 webm"
       ],
       "aliases": [
         "convert video",
@@ -2686,7 +2708,15 @@
         "改格式",
         "任意檔案",
         "什麼格式",
-        "轉換器"
+        "轉換器",
+        "webp",
+        "webm",
+        "avif",
+        "heic",
+        "heif",
+        "apng",
+        "iso",
+        "這是什麼檔案格式"
       ],
       "aliases": [
         "universal converter",
@@ -2906,7 +2936,11 @@
         "掃QR 碼",
         "識別 QR 碼",
         "解碼QR 碼",
-        "圖片中的QR 碼"
+        "圖片中的QR 碼",
+        "讀取 qr 碼",
+        "掃描 qr",
+        "從截圖解碼 qr",
+        "照片中的 qr"
       ],
       "aliases": [
         "qr code reader",
@@ -3745,6 +3779,334 @@
         "remove metadata",
         "anonymize file"
       ]
+    },
+    "url-download": {
+      "name": "從 URL 下載檔案",
+      "description": "透過 HTTP 或 HTTPS 儲存檔案，支援續傳、進度和檢查碼驗證。",
+      "keywords": [
+        "下載",
+        "下載檔案",
+        "下載連結",
+        "wget",
+        "curl",
+        "續傳下載",
+        "url 轉檔案",
+        "儲存連結"
+      ],
+      "aliases": [
+        "download file",
+        "download from url",
+        "file downloader",
+        "wget"
+      ],
+      "note": "FourTout 只連線到您提供的網址。檔案只有在完整下載後才會以最終名稱出現。"
+    },
+    "media-download": {
+      "name": "從網際網路下載媒體",
+      "description": "用 yt-dlp 將公開的影片或聲音取得為 MP4、WebM、MP3、M4A、Opus、WAV 或 FLAC。",
+      "keywords": [
+        "youtube",
+        "下載影片",
+        "youtube 轉 mp3",
+        "youtube 轉 mp4",
+        "下載音樂",
+        "從連結擷取聲音",
+        "線上影片",
+        "yt-dlp",
+        "下載片段",
+        "vimeo"
+      ],
+      "aliases": [
+        "download video",
+        "youtube downloader",
+        "youtube to mp3",
+        "youtube to mp4",
+        "yt-dlp"
+      ],
+      "note": "yt-dlp 會連線到媒體服務；它依需求安裝並以檢查碼驗證。僅限公開內容：無 DRM、無帳號、無 Cookie。"
+    },
+    "media-url-excerpt": {
+      "name": "下載線上影片片段",
+      "description": "只取得公開影片中您想要的部分，從某一時刻到另一時刻。",
+      "keywords": [
+        "youtube 片段",
+        "裁剪線上影片",
+        "影片的一部分",
+        "從影片擷取片段",
+        "下載節錄",
+        "剪下 youtube 影片",
+        "起點和終點"
+      ],
+      "aliases": [
+        "download video clip",
+        "youtube clip",
+        "cut online video",
+        "video excerpt"
+      ],
+      "note": "若服務允許，只下載該片段；否則會下載完整來源檔案並在此處裁剪 — 工具會告知發生了哪種情況。"
+    },
+    "media-url-gif": {
+      "name": "線上影片轉 GIF 或動畫 WebP",
+      "description": "用公開連結的幾秒內容產生大小合理的 GIF 或動畫 WebP。",
+      "keywords": [
+        "youtube 轉 gif",
+        "從連結建立 gif",
+        "從連結產生動畫 webp",
+        "迷因",
+        "循環",
+        "url 轉 gif",
+        "影片轉動畫"
+      ],
+      "aliases": [
+        "online video to gif",
+        "youtube to gif",
+        "url to gif",
+        "video url to webp"
+      ],
+      "note": "只使用要求的片段，最高 720p：動畫不需要更多。由於 GIF 成長極快，預設設定較為保守。"
+    },
+    "url-shorten": {
+      "name": "縮短 URL",
+      "description": "從公開服務（is.gd、v.gd 或 TinyURL）取得可一鍵複製的短連結。",
+      "keywords": [
+        "縮短連結",
+        "短連結",
+        "短網址",
+        "bitly",
+        "tinyurl",
+        "is.gd",
+        "縮短網址"
+      ],
+      "aliases": [
+        "url shortener",
+        "shorten link",
+        "short link",
+        "link shortener"
+      ],
+      "note": "原始網址會傳送給您選擇的服務，該服務會儲存它：請勿縮短機密內容。FourTout 不加入任何追蹤。"
+    },
+    "web-to-pdf": {
+      "name": "網頁轉 PDF",
+      "description": "用已安裝的 Chromium 瀏覽器將網頁列印為 PDF，可選擇紙張格式和邊界。",
+      "keywords": [
+        "網頁轉 pdf",
+        "網站轉 pdf",
+        "列印頁面",
+        "將頁面存為 pdf",
+        "文章轉 pdf",
+        "html 轉 pdf",
+        "url 轉 pdf"
+      ],
+      "aliases": [
+        "webpage to pdf",
+        "url to pdf",
+        "print page to pdf",
+        "website to pdf"
+      ],
+      "note": "頁面由隔離的瀏覽器載入（空白暫存設定檔：沒有您的 Cookie 和記錄）。必須已安裝 Chrome、Chromium 或 Edge。"
+    },
+    "web-to-image": {
+      "name": "網頁轉影像",
+      "description": "將網頁完整或依視窗大小擷取為 PNG、JPEG 或 WebP。",
+      "keywords": [
+        "網站截圖",
+        "網頁截圖",
+        "整個頁面轉影像",
+        "網站轉 png",
+        "整頁擷取",
+        "url 轉影像"
+      ],
+      "aliases": [
+        "webpage to image",
+        "website screenshot",
+        "full page screenshot",
+        "url to png"
+      ],
+      "note": "頁面由隔離的瀏覽器載入（空白暫存設定檔）。整頁擷取的高度限制為 20,000 像素。"
+    },
+    "web-save-offline": {
+      "name": "離線儲存網頁",
+      "description": "將頁面及其資源儲存到一個無需連線即可閱讀的 MHTML 檔案中。",
+      "keywords": [
+        "儲存頁面",
+        "離線頁面",
+        "mhtml",
+        "封存網站",
+        "儲存網頁",
+        "單檔頁面",
+        "稍後閱讀"
+      ],
+      "aliases": [
+        "save webpage offline",
+        "mhtml",
+        "web archive",
+        "save page as"
+      ],
+      "note": "頁面由隔離的瀏覽器載入（空白暫存設定檔）。MHTML 檔案可在 Chrome、Edge 和大多數以 Chromium 為基礎的瀏覽器中開啟。"
+    },
+    "speed-test": {
+      "name": "網速測試",
+      "description": "測量您連線的延遲、抖動、下載速度和上傳速度。",
+      "keywords": [
+        "速度測試",
+        "網速",
+        "speedtest",
+        "上傳速度",
+        "下載速度",
+        "我的網路很慢",
+        "延遲",
+        "ping",
+        "抖動",
+        "mbps",
+        "光纖",
+        "wifi 很慢"
+      ],
+      "aliases": [
+        "speed test",
+        "internet speed",
+        "bandwidth test",
+        "download speed",
+        "upload speed"
+      ],
+      "note": "FourTout 產生的測試流量會與 Cloudflare 測量服務（speed.cloudflare.com）交換；不會傳送您的任何檔案。結果會有波動：VPN、Wi-Fi、與伺服器的距離和並行流量都會影響它。"
+    },
+    "iso-create": {
+      "name": "建立 ISO 映像檔",
+      "description": "將資料夾封裝為支援長檔名（Joliet 和 Rock Ridge）的 ISO 9660 檔案。",
+      "keywords": [
+        "建立 iso",
+        "製作 iso",
+        "資料夾轉 iso",
+        "iso 映像檔",
+        "cd 映像檔",
+        "dvd 映像檔",
+        "iso9660",
+        "joliet",
+        "rock ridge",
+        "iso 封存"
+      ],
+      "aliases": [
+        "create iso",
+        "make iso",
+        "folder to iso",
+        "disc image",
+        "iso maker"
+      ],
+      "note": "產生一般的 .iso 檔案，絕不寫入磁碟或隨身碟。映像檔包含資料：不可開機。"
+    },
+    "iso-inspect": {
+      "name": "檢查 ISO 映像檔",
+      "description": "讀取 ISO 映像檔的磁碟區名稱、檔案系統、目錄樹和開機資訊。",
+      "keywords": [
+        "檢視 iso 內容",
+        "開啟 iso",
+        "iso 檔案清單",
+        "iso 磁碟區",
+        "el torito",
+        "可開機 iso",
+        "iso 映像檔",
+        "cd 映像檔內容"
+      ],
+      "aliases": [
+        "inspect iso",
+        "list iso",
+        "iso viewer",
+        "iso contents",
+        "boot catalog"
+      ],
+      "note": "只讀取描述元和目錄：映像檔不會被擷取或修改。純 UDF 映像檔（某些 Windows ISO）僅透過其 ISO 9660 部分讀取。"
+    },
+    "iso-extract": {
+      "name": "擷取 ISO 映像檔",
+      "description": "將 ISO 映像檔的全部內容或僅所選檔案複製到資料夾。",
+      "keywords": [
+        "擷取 iso",
+        "解壓縮 iso",
+        "開啟磁碟映像檔",
+        "複製 iso 內容",
+        "從 iso 取出檔案"
+      ],
+      "aliases": [
+        "extract iso",
+        "unpack iso",
+        "iso extractor",
+        "mount iso alternative"
+      ],
+      "note": "映像檔內的名稱被視為不可信：無法在所選資料夾之外寫入任何內容，未經您要求也不會覆寫任何內容。"
+    },
+    "compress-to-size": {
+      "name": "壓縮到最大大小",
+      "description": "讓影片、聲音、影像或 PDF 符合期望的大小，例如 25 MB。",
+      "keywords": [
+        "小於 25 mb",
+        "最大大小",
+        "符合限制",
+        "附件太大",
+        "郵件太大",
+        "discord 25 mb",
+        "壓縮到 500 kb",
+        "目標大小",
+        "傳送限制"
+      ],
+      "aliases": [
+        "compress to size",
+        "target file size",
+        "reduce to under",
+        "compress under 25mb",
+        "max file size"
+      ],
+      "note": "期望的大小不會承諾精確到位元組：工具會留出餘裕計算位元率，必要時以更低的值重試，絕不放大影像，並在目標不切實際時發出警告。"
+    },
+    "image-upscale": {
+      "name": "用 AI 放大影像",
+      "description": "用在您電腦上執行的超解析度網路，將影像解析度提高兩倍或四倍。",
+      "keywords": [
+        "放大影像",
+        "放大",
+        "提高解析度",
+        "模糊影像",
+        "超解析度",
+        "x2",
+        "x4",
+        "清晰",
+        "照片品質",
+        "esrgan",
+        "高畫質",
+        "影像增強"
+      ],
+      "aliases": [
+        "ai upscale",
+        "image upscaler",
+        "enhance image",
+        "super resolution",
+        "real-esrgan",
+        "upscale photo"
+      ],
+      "note": "模型（5 MB，BSD-3 授權）依需求下載一次；之後一切都在您的電腦上完成，影像不會被傳送到任何地方。透明度會保留，但使用一般內插法放大。"
+    },
+    "animated-image-convert": {
+      "name": "轉換動畫影像",
+      "description": "將動畫 WebP 或動畫 PNG（APNG）轉換為 GIF、APNG、動畫 WebP、MP4、WebM 或影像序列，且不遺失動畫。",
+      "keywords": [
+        "動畫 webp",
+        "apng",
+        "動畫 png",
+        "webp 轉 gif",
+        "webp 轉 mp4",
+        "動畫轉影片",
+        "擷取動畫影格",
+        "動圖",
+        "貼圖",
+        "影格"
+      ],
+      "aliases": [
+        "animated webp",
+        "apng converter",
+        "animated image to gif",
+        "webp to mp4",
+        "animated png"
+      ],
+      "note": "每個影格的長度都會保留。工具會告知目的格式無法保留的內容：透明度（MP4、WebM）、循環（視訊）、顏色（GIF）。"
     }
   }
 }

@@ -23,6 +23,7 @@ use super::compare;
 use super::compress;
 use super::hash::{self, Algorithm};
 use super::hex;
+use super::iso;
 use super::magic;
 use super::manifest;
 use super::search;
@@ -332,6 +333,8 @@ pub struct FileInfo {
     /// L'extension correspond-elle au contenu réel ?
     pub extension_matches: bool,
     pub looks_like_text: bool,
+    /// Le contenu porte plusieurs images (WebP/APNG animé, séquence HEIF).
+    pub animated: bool,
 }
 
 fn mime_of(extension: &str) -> &'static str {
@@ -410,7 +413,11 @@ pub fn files_info(path: String) -> Result<FileInfo, String> {
         modified: millis(meta.modified().ok()),
         created: millis(meta.created().ok()),
         accessed: millis(meta.accessed().ok()),
-        mime: mime_of(&extension).to_string(),
+        // Le contenu fait foi : l'extension ne sert qu'à défaut de signature.
+        mime: magic::mime_of_signature(&signature)
+            .unwrap_or_else(|| mime_of(&extension))
+            .to_string(),
+        animated: signature.animated,
         magic: signature.id.to_string(),
         magic_label: signature.label.to_string(),
         family: signature.family,
@@ -421,6 +428,58 @@ pub fn files_info(path: String) -> Result<FileInfo, String> {
     })
 }
 
+
+/* ------------------------------------------------------ identification */
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Identified {
+    pub id: String,
+    pub label: String,
+    pub family: magic::Family,
+    pub animated: bool,
+    pub mime: Option<String>,
+    pub extensions: Vec<String>,
+}
+
+/// Identifie un contenu d'après ses premiers octets (au plus 36 Kio utiles).
+///
+/// C'est la **même** table de signatures que l'inspecteur de fichiers : le
+/// convertisseur universel n'a pas la sienne. Les octets arrivent bruts.
+#[tauri::command]
+pub fn files_identify(request: tauri::ipc::Request<'_>) -> Result<Identified, String> {
+    let tauri::ipc::InvokeBody::Raw(bytes) = request.body() else {
+        return Err("Corps binaire attendu.".into());
+    };
+    let signature = magic::identify(&bytes[..bytes.len().min(magic::HEAD_BYTES)]);
+    Ok(Identified {
+        id: signature.id.to_string(),
+        label: signature.label.to_string(),
+        family: signature.family,
+        animated: signature.animated,
+        mime: magic::mime_of_signature(&signature).map(str::to_string),
+        extensions: signature.extensions.iter().map(|e| e.to_string()).collect(),
+    })
+}
+
+/// Identifie un fichier d'après ses premiers octets, lus ici : la WebView ne
+/// reçoit ni le fichier ni son début, seulement le verdict.
+#[tauri::command]
+pub fn files_identify_path(path: String) -> Result<Identified, String> {
+    let mut head = vec![0_u8; magic::HEAD_BYTES];
+    let read = fs::File::open(&path)
+        .and_then(|mut f| f.read(&mut head))
+        .map_err(|e| format!("Lecture impossible : {e}"))?;
+    let signature = magic::identify(&head[..read]);
+    Ok(Identified {
+        id: signature.id.to_string(),
+        label: signature.label.to_string(),
+        family: signature.family,
+        animated: signature.animated,
+        mime: magic::mime_of_signature(&signature).map(str::to_string),
+        extensions: signature.extensions.iter().map(|e| e.to_string()).collect(),
+    })
+}
 
 /* ------------------------------------------------------------- aperçu */
 
@@ -476,6 +535,70 @@ pub fn files_archive_create(
         let sources: Vec<PathBuf> = params.paths.iter().map(PathBuf::from).collect();
         let members = archive::collect_members(&sources, reporter)?;
         archive::create(&members, Path::new(&params.output), params.format, params.level, reporter)
+    })
+}
+
+/* ------------------------------------------------------------------ ISO */
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IsoCreateParams {
+    pub job_id: String,
+    pub source: String,
+    pub output: String,
+    pub label: String,
+    pub joliet: bool,
+    pub rock_ridge: bool,
+    pub overwrite: bool,
+}
+
+/// Crée une image ISO depuis un dossier. N'écrit jamais sur un périphérique :
+/// la destination est un fichier ordinaire.
+#[tauri::command(async)]
+pub fn files_iso_create(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    params: IsoCreateParams,
+) -> Result<iso::write::CreateSummary, String> {
+    with_reporter(app, &state, &params.job_id, |reporter| {
+        let options = iso::write::CreateOptions {
+            label: params.label.clone(),
+            joliet: params.joliet,
+            rock_ridge: params.rock_ridge,
+            overwrite: params.overwrite,
+            fixed_time: None,
+        };
+        iso::write::create(Path::new(&params.source), Path::new(&params.output), &options, reporter)
+    })
+}
+
+/// Lit les descripteurs et l'arborescence d'une image, sans rien extraire.
+#[tauri::command(async)]
+pub fn files_iso_inspect(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    path: String,
+    limit: usize,
+) -> Result<iso::read::IsoInfo, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        iso::read::inspect(Path::new(&path), limit.clamp(1, 100_000), reporter)
+    })
+}
+
+/// Extrait une image entière, ou une sélection de chemins.
+#[tauri::command(async)]
+pub fn files_iso_extract(
+    app: AppHandle,
+    state: tauri::State<'_, FilesState>,
+    job_id: String,
+    path: String,
+    destination: String,
+    selection: Vec<String>,
+    overwrite: bool,
+) -> Result<archive::ExtractSummary, String> {
+    with_reporter(app, &state, &job_id, |reporter| {
+        iso::read::extract(Path::new(&path), Path::new(&destination), &selection, overwrite, reporter)
     })
 }
 

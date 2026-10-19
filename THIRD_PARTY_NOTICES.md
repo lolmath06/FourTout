@@ -38,6 +38,7 @@ présence change quelque chose pour l'utilisateur ou pour un juriste.
 | [ONNX Runtime Web](https://onnxruntime.ai) | 1.29 | MIT | Exécution locale du modèle de détourage (WebAssembly) |
 | Données `tessdata` (fra, eng) | — | Apache-2.0 | Modèles OCR embarqués |
 | [image](https://crates.io/crates/image) (Rust) | 0.25 | MIT / Apache-2.0 | Décodage et encodage d'images côté natif |
+| [zune-heic](https://crates.io/crates/zune-heic) | 0.5 | MIT / Apache-2.0 / Zlib | Décodage HEIC/HEIF fixe, en Rust pur (exige Rust 1.89 ; voir la note HEVC ci-dessous) |
 | [qrcode](https://github.com/soldair/node-qrcode) | 1.5 | MIT | Génération de QR codes |
 | [jsQR](https://github.com/cozmo/jsQR) | 1.4 | Apache-2.0 | Lecture de QR codes |
 
@@ -100,10 +101,14 @@ installé casserait la promesse « tout est embarqué, rien à installer ».
 | [socket2](https://crates.io/crates/socket2) | 0.6 | MIT / Apache-2.0 | Sockets ICMP non privilégiés (ping) et délais de connexion |
 | [if-addrs](https://crates.io/crates/if-addrs) | 0.15 | MIT / BSD-3-Clause | Énumération des interfaces réseau locales |
 | [dns-lookup](https://crates.io/crates/dns-lookup) | 4.0 | MIT / Apache-2.0 | Résolution inverse d'adresse (`getnameinfo`) |
-| [windows-sys](https://crates.io/crates/windows-sys) | 0.61 | MIT / Apache-2.0 | API IP Helper de Windows : `IcmpSendEcho`, table de voisinage |
+| [windows-sys](https://crates.io/crates/windows-sys) | 0.61 | MIT / Apache-2.0 | API IP Helper de Windows : `IcmpSendEcho`, table de voisinage ; objets Job (`KILL_ON_JOB_CLOSE`) pour arrêter l'arbre de processus d'un navigateur ou de yt-dlp |
+| [url](https://crates.io/crates/url) | 2.5 | MIT / Apache-2.0 | Analyse et validation des adresses des outils Internet & Web |
+| [tungstenite](https://crates.io/crates/tungstenite) | 0.30 | MIT / Apache-2.0 | Client WebSocket, en Rust pur, pour piloter un navigateur Chromium par le protocole DevTools (sans TLS : connexion locale `127.0.0.1` uniquement) |
 
-Aucune de ces bibliothèques ne contacte Internet : elles donnent accès aux
-sockets et aux tables du système. La contrainte de choix était la même que pour
+Aucune de ces bibliothèques ne contacte Internet de sa propre initiative : elles
+donnent accès aux sockets, aux tables du système et à l'analyse d'adresses. Les
+requêtes Internet, elles, sont faites par `ureq` (voir plus haut) et décrites
+dans [la page Confidentialité](docs/fr/legal/PRIVACY.md). La contrainte de choix était la même que pour
 la phase 9 — des bibliothèques Rust pures, rien à installer sur la machine de
 l'utilisateur, et surtout **aucune dépendance à un binaire système** dont la
 sortie serait traduite et changerait de forme d'une version à l'autre.
@@ -140,6 +145,31 @@ Si vous produisez un paquet FourTout **contenant** un binaire FFmpeg, c'est
 vous qui le redistribuez : la licence de la compilation choisie s'applique
 alors, et les obligations LGPL ou GPL correspondantes vous incombent.
 
+### Navigateur Chromium (Chrome, Chromium, Edge, Brave)
+
+**Licence :** variable selon le navigateur (BSD-3-Clause pour Chromium, licences
+propriétaires pour Chrome et Edge).
+
+Les outils « Page web vers PDF / image / MHTML » pilotent un navigateur de la
+famille Chromium **déjà installé** par l'utilisateur, sans fenêtre et avec un
+profil temporaire vierge. FourTout **ne l'embarque pas, ne le télécharge pas et
+ne le redistribue pas** : il n'hérite d'aucune de ses obligations. Sans
+navigateur, l'outil l'explique ; aucune autre fonction n'en dépend.
+
+---
+
+## Service tiers contacté à l'usage
+
+Ces services ne sont pas des composants distribués : ce sont des serveurs
+distants que certains outils contactent **à la demande de l'utilisateur**, et
+que chaque outil nomme dans son interface.
+
+| Service | Outil | Condition |
+| --- | --- | --- |
+| [Cloudflare](https://www.cloudflare.com) (`speed.cloudflare.com`) | Test de débit | Données de test générées, aucun fichier de l'utilisateur ; Cloudflare voit l'adresse IP |
+| [is.gd](https://is.gd) / v.gd, [TinyURL](https://tinyurl.com) | Raccourcisseur d'URL | L'adresse saisie est envoyée au service choisi, qui la conserve |
+| Le site désigné par l'utilisateur | Téléchargeur, médias en ligne, capture web | Uniquement l'adresse saisie |
+
 ---
 
 ## Téléchargé à la demande de l'utilisateur
@@ -154,6 +184,7 @@ empreinte, et l'installe dans le dossier de données de l'application.
 | --- | --- | --- |
 | [Piper](https://github.com/rhasspy/piper) (synthèse vocale) | MIT | Publication GitHub `2023.11.14-2` |
 | [whisper.cpp](https://github.com/ggml-org/whisper.cpp) (transcription) | MIT | Publication GitHub `b4938` |
+| [yt-dlp](https://github.com/yt-dlp/yt-dlp) (téléchargement de médias publics) | Unlicense (domaine public) | Dernière publication GitHub, vérifiée par le `SHA2-256SUMS` officiel |
 
 ### Voix Piper
 
@@ -186,6 +217,34 @@ Les conversions ONNX utilisées sont celles publiées par
 | --- | --- | --- |
 | `u2netp.onnx` (Détourage — Rapide) | 4,6 Mo | Apache 2.0 |
 | `u2net.onnx` (Détourage — Précis) | 176 Mo | Apache 2.0 |
+
+### Modèle d'agrandissement d'image
+
+**Real-ESRGAN « general x4 v3 »** (SRVGGNetCompact), licence **BSD-3-Clause** —
+code *et* poids. Projet : [github.com/xinntao/Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN).
+La conversion ONNX utilisée est celle de
+[`TheGuy444/Real-ESRGAN-ONNX`](https://huggingface.co/TheGuy444/Real-ESRGAN-ONNX),
+**épinglée à la révision** `4c80f3da1a8a85f0757a9e7f79e08d0307220eb5` ; chaque
+fichier est vérifié par SHA-256.
+
+| Fichier | Taille | SHA-256 |
+| --- | --- | --- |
+| `model.onnx` | 42 443 octets | `2d1810f8b75c6a899487decf933697241eafbe6327d7b723674ba6df73a08fda` |
+| `model.data` | 4 836 096 octets | `512d0ec9940c2e9d85d27f2952f12a0b77b7841dc22df4ce9f3ea458bc98f37f` |
+
+Là encore, la licence a pesé dans le choix : les modèles de super-résolution
+réservés à un usage non commercial n'ont pas été retenus.
+
+### Note sur HEIC / HEVC
+
+HEIC repose sur le codec vidéo HEVC (H.265), objet de brevets détenus par des
+regroupements de licences. FourTout ne fait que **décoder**, sur la machine de
+l'utilisateur et à partir de fichiers qu'il possède déjà, avec un décodeur
+tiers en Rust pur (`zune-heic`) ; il n'embarque aucun encodeur HEVC. Si vous
+redistribuez FourTout dans une juridiction où le décodage HEVC exige une licence,
+c'est à vous d'en évaluer l'effet.
+
+### Pourquoi ces licences
 
 **Le choix du modèle est un choix de licence autant qu'un choix de qualité.**
 Les modèles de segmentation plus récents et souvent meilleurs — RMBG 1.4 et 2.0

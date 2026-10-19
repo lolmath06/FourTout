@@ -111,3 +111,19 @@ pipeline against fixtures, then inspects output with ffprobe. Additional suites
 cover operation builders, staging and cleanup, hardware encoders that are
 advertised but unusable, native probes, dimensions, presets, errors, job
 survival/cancellation, and catalog-to-implementation alignment.
+
+## WebM, animated WebP and excerpts
+
+- **WebM** (VP9 and Opus or Vorbis) is detected from the EBML `DocType`, so it is
+  not confused with Matroska, and is offered only when this FFmpeg has a working
+  VP9 encoder.
+- **Video to GIF** also produces **animated WebP** (`videoToWebp`), which keeps
+  full color and real transparency-capable output at a smaller size. The tool
+  warns that GIF keeps 256 colors and all-or-nothing transparency, and that a
+  video has no transparency and does not loop by itself.
+- **Trimming** re-encodes the ends of the excerpt unless you turn that option off.
+  Stream copy is faster but snaps to keyframes, so the result can start earlier
+  than requested; the option says so.
+- **Excerpts and GIFs from an online video** ([Internet & Web](INTERNET.md)) reuse
+  the same builders. When the site cannot serve only a section, the whole source
+  is downloaded and trimmed locally, and the result states it.

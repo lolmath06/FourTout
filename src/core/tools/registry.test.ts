@@ -69,14 +69,24 @@ describe("registre des outils", () => {
   it("déclare « local » partout sauf pour les outils réseau assumés", () => {
     // La liste est close et vérifiée : un outil ne devient « réseau » que
     // délibérément. Le convertisseur de devises va chercher les taux du jour ;
-    // les trois sondes ouvrent de vraies connexions sur le réseau local. Aucun
-    // autre outil de FourTout ne touche au réseau.
+    // les trois sondes ouvrent de vraies connexions sur le réseau local ; le
+    // test de débit et les huit outils Internet & Web contactent un serveur
+    // distant et le disent. Aucun autre outil de FourTout ne touche au réseau.
     const networked = ALL_TOOLS.filter((tool) => tool.capabilities.includes("network"));
     expect(networked.map((tool) => tool.id).sort()).toEqual([
       "calc-currency",
+      "media-download",
+      "media-url-excerpt",
+      "media-url-gif",
       "network-lan",
       "network-ping",
       "network-ports",
+      "speed-test",
+      "url-download",
+      "url-shorten",
+      "web-save-offline",
+      "web-to-image",
+      "web-to-pdf",
     ]);
     for (const tool of ALL_TOOLS) {
       if (tool.capabilities.includes("network")) continue;
@@ -84,9 +94,10 @@ describe("registre des outils", () => {
     }
   });
 
-  it("range les sondes réseau dans la catégorie Réseau, et elles seules", () => {
+  it("range les sondes et la mesure de débit dans la catégorie Réseau, et elles seules", () => {
     const category = toolRegistry.byCategoryId("network").map((tool) => tool.id).sort();
-    expect(category).toEqual(["network-lan", "network-ping", "network-ports"]);
+    // Trois sondes locales, plus la mesure de la connexion Internet.
+    expect(category).toEqual(["network-lan", "network-ping", "network-ports", "speed-test"]);
     // Et aucune d'elles ne prétend être « locale ».
     for (const tool of toolRegistry.byCategoryId("network")) {
       expect(tool.capabilities).not.toContain("local");

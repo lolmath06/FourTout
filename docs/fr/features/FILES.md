@@ -592,3 +592,36 @@ l'écran le dit. Un dossier créé n'est pas un fichier copié.
 
 Les tests d'intégration s'ignorent proprement — en le disant — si les fixtures
 n'ont pas été générées (`pnpm test:assets`).
+
+## Images ISO
+
+`iso-create`, `iso-inspect` et `iso-extract` sont documentés dans
+[Images ISO](ISO.md) : un moteur ISO 9660 en Rust pur avec Joliet et Rock Ridge,
+lecture d'El Torito, protection contre les noms hostiles et annulation en cas
+d'erreur.
+
+## Compresser à une taille maximale (`compress-to-size`)
+
+Un seul outil pour la vidéo, l'audio, les images et les PDF, bâti sur un
+planificateur de budget partagé (`src-tauri/src/media/budget.rs`).
+
+- **Vidéo et audio :** la taille cible moins une marge de sécurité de 6 % et le
+  flux audio donnent un budget de débit, tenu dans des bornes raisonnables. Si le
+  premier encodage dépasse la cible, l'outil recommence avec un débit plus bas.
+  Quand le débit serait trop faible pour la résolution, il propose d'abord une
+  résolution plus basse et le dit. Une source qui tient déjà n'est pas
+  réencodée. Les vrais encodeurs sont choisis en sondant ceux qui fonctionnent
+  dans ce FFmpeg.
+- **Des avertissements plutôt que des promesses :** une cible impossible pour la
+  durée, un débit très bas ou un format audio sans perte qui ne peut pas viser
+  une taille sont signalés clairement. La taille n'est jamais promise à l'octet
+  près, et 1 Mo vaut 1 000 000 d'octets.
+- **Images :** d'abord la qualité par paliers, puis la réduction ; jamais
+  d'agrandissement. Le PNG et les autres formats qui ne troquent pas qualité
+  contre taille le disent et suggèrent JPEG ou une cible plus grande.
+- **PDF :** les images intégrées sont réduites par niveaux (léger, équilibré,
+  fort) jusqu'à ce que le fichier tienne. Le texte reste du texte : les pages ne
+  sont jamais transformées en images pour gagner de la place. Quand même le
+  niveau le plus fort ne suffit pas, l'outil le dit.
+- La vidéo et l'audio exigent l'application installée (FFmpeg) ; l'outil signale
+  l'absence de FFmpeg au lieu d'échouer tard.

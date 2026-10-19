@@ -141,6 +141,21 @@
         "비밀번호",
         "해시"
       ]
+    },
+    "internet": {
+      "name": "인터넷 및 웹",
+      "description": "파일이나 미디어 다운로드, 웹 페이지 캡처, 링크 줄이기, 연결 측정.",
+      "keywords": [
+        "인터넷",
+        "웹",
+        "다운로드",
+        "url",
+        "링크",
+        "사이트",
+        "유튜브",
+        "웹 페이지",
+        "온라인"
+      ]
     }
   },
   "tools": {
@@ -612,7 +627,12 @@
         "bmp",
         "tiff",
         "heic",
-        "avif"
+        "avif",
+        "heic를 jpg로",
+        "heif를 png로",
+        "avif를 jpg로",
+        "heic를 webp로",
+        "apng"
       ],
       "aliases": [
         "convert image",
@@ -1400,7 +1420,9 @@
         "mkv를 mp4로",
         "avi를 mp4로",
         "webm",
-        "mov"
+        "mov",
+        "webm을 mp4로",
+        "mp4를 webm으로"
       ],
       "aliases": [
         "convert video",
@@ -2684,7 +2706,15 @@
         "형식 변경",
         "어떤 파일이든",
         "무슨 형식",
-        "컨버터"
+        "컨버터",
+        "webp",
+        "webm",
+        "avif",
+        "heic",
+        "heif",
+        "apng",
+        "iso",
+        "이건 무슨 파일 형식인가요"
       ],
       "aliases": [
         "universal converter",
@@ -2903,7 +2933,11 @@
         "qr 읽기",
         "스캔",
         "qr 코드 해독",
-        "이미지에서 qr"
+        "이미지에서 qr",
+        "qr 코드 읽기",
+        "qr 스캔",
+        "스크린샷에서 qr 해독",
+        "사진에서 qr"
       ],
       "aliases": [
         "qr code reader",
@@ -3744,6 +3778,334 @@
         "remove metadata",
         "anonymize file"
       ]
+    },
+    "url-download": {
+      "name": "URL에서 파일 다운로드",
+      "description": "HTTP 또는 HTTPS 파일을 이어받기, 진행률, 체크섬 검증과 함께 저장합니다.",
+      "keywords": [
+        "다운로드",
+        "파일 다운로드",
+        "다운로드 링크",
+        "wget",
+        "curl",
+        "다운로드 이어받기",
+        "url에서 파일로",
+        "링크 저장"
+      ],
+      "aliases": [
+        "download file",
+        "download from url",
+        "file downloader",
+        "wget"
+      ],
+      "note": "FourTout은 사용자가 지정한 주소에만 연결합니다. 파일은 완전히 다운로드된 후에야 최종 이름으로 나타납니다."
+    },
+    "media-download": {
+      "name": "인터넷에서 미디어 다운로드",
+      "description": "공개된 동영상이나 소리를 yt-dlp로 MP4, WebM, MP3, M4A, Opus, WAV 또는 FLAC으로 받습니다.",
+      "keywords": [
+        "유튜브",
+        "동영상 다운로드",
+        "유튜브 mp3",
+        "유튜브 mp4",
+        "음악 다운로드",
+        "링크에서 소리 추출",
+        "온라인 동영상",
+        "yt-dlp",
+        "클립 다운로드",
+        "vimeo"
+      ],
+      "aliases": [
+        "download video",
+        "youtube downloader",
+        "youtube to mp3",
+        "youtube to mp4",
+        "yt-dlp"
+      ],
+      "note": "yt-dlp가 미디어 서비스에 연결합니다. 요청 시 설치되며 체크섬으로 검증됩니다. 공개 콘텐츠만: DRM 없음, 계정 없음, 쿠키 없음."
+    },
+    "media-url-excerpt": {
+      "name": "온라인 동영상 일부 다운로드",
+      "description": "공개 동영상에서 원하는 부분만, 한 시점부터 다른 시점까지 받습니다.",
+      "keywords": [
+        "유튜브 일부",
+        "온라인 동영상 자르기",
+        "동영상 일부",
+        "동영상에서 클립",
+        "발췌 다운로드",
+        "유튜브 영상 자르기",
+        "시작과 끝"
+      ],
+      "aliases": [
+        "download video clip",
+        "youtube clip",
+        "cut online video",
+        "video excerpt"
+      ],
+      "note": "서비스가 허용하면 해당 구간만 다운로드합니다. 아니면 원본 전체를 다운로드해 여기서 자르며, 어느 쪽이었는지 도구가 알려 줍니다."
+    },
+    "media-url-gif": {
+      "name": "온라인 동영상을 GIF 또는 애니메이션 WebP로",
+      "description": "공개 링크의 몇 초로 적당한 크기의 GIF 또는 애니메이션 WebP를 만듭니다.",
+      "keywords": [
+        "유튜브 gif",
+        "링크로 gif 만들기",
+        "링크로 애니메이션 webp",
+        "밈",
+        "반복",
+        "url에서 gif",
+        "동영상에서 애니메이션"
+      ],
+      "aliases": [
+        "online video to gif",
+        "youtube to gif",
+        "url to gif",
+        "video url to webp"
+      ],
+      "note": "요청한 구간만 사용하며 최대 720p입니다. 애니메이션에는 그 이상이 필요 없습니다. GIF는 매우 빨리 커지므로 기본 설정은 보수적입니다."
+    },
+    "url-shorten": {
+      "name": "URL 줄이기",
+      "description": "공개 서비스(is.gd, v.gd 또는 TinyURL)에서 한 번의 클릭으로 복사할 수 있는 짧은 링크를 받습니다.",
+      "keywords": [
+        "링크 줄이기",
+        "짧은 링크",
+        "단축 url",
+        "bitly",
+        "tinyurl",
+        "is.gd",
+        "주소 줄이기"
+      ],
+      "aliases": [
+        "url shortener",
+        "shorten link",
+        "short link",
+        "link shortener"
+      ],
+      "note": "원래 주소는 선택한 서비스로 전송되어 저장됩니다. 민감한 것은 줄이지 마세요. FourTout은 어떤 추적도 추가하지 않습니다."
+    },
+    "web-to-pdf": {
+      "name": "웹 페이지를 PDF로",
+      "description": "설치된 Chromium 브라우저로 웹 페이지를 선택한 용지 크기와 여백의 PDF로 인쇄합니다.",
+      "keywords": [
+        "웹 페이지를 pdf로",
+        "사이트를 pdf로",
+        "페이지 인쇄",
+        "페이지를 pdf로 저장",
+        "기사를 pdf로",
+        "html을 pdf로",
+        "url을 pdf로"
+      ],
+      "aliases": [
+        "webpage to pdf",
+        "url to pdf",
+        "print page to pdf",
+        "website to pdf"
+      ],
+      "note": "페이지는 격리된 브라우저(빈 임시 프로필: 사용자의 쿠키와 기록 없음)에서 로드됩니다. Chrome, Chromium 또는 Edge가 설치되어 있어야 합니다."
+    },
+    "web-to-image": {
+      "name": "웹 페이지를 이미지로",
+      "description": "웹 페이지를 전체 또는 창 크기로 PNG, JPEG, WebP로 캡처합니다.",
+      "keywords": [
+        "사이트 스크린샷",
+        "웹 페이지 스크린샷",
+        "전체 페이지를 이미지로",
+        "사이트를 png로",
+        "전체 페이지 캡처",
+        "url을 이미지로"
+      ],
+      "aliases": [
+        "webpage to image",
+        "website screenshot",
+        "full page screenshot",
+        "url to png"
+      ],
+      "note": "페이지는 격리된 브라우저(빈 임시 프로필)에서 로드됩니다. 전체 페이지 캡처는 높이 20,000픽셀로 제한됩니다."
+    },
+    "web-save-offline": {
+      "name": "웹 페이지 오프라인 저장",
+      "description": "페이지와 리소스를 연결 없이 읽을 수 있는 하나의 MHTML 파일로 저장합니다.",
+      "keywords": [
+        "페이지 저장",
+        "오프라인 페이지",
+        "mhtml",
+        "사이트 보관",
+        "웹 페이지 저장",
+        "한 파일의 페이지",
+        "나중에 읽기"
+      ],
+      "aliases": [
+        "save webpage offline",
+        "mhtml",
+        "web archive",
+        "save page as"
+      ],
+      "note": "페이지는 격리된 브라우저(빈 임시 프로필)에서 로드됩니다. MHTML 파일은 Chrome, Edge 및 대부분의 Chromium 기반 브라우저에서 열립니다."
+    },
+    "speed-test": {
+      "name": "인터넷 속도 테스트",
+      "description": "연결의 지연 시간, 지터, 다운로드 속도, 업로드 속도를 측정합니다.",
+      "keywords": [
+        "속도 테스트",
+        "인터넷 속도",
+        "speedtest",
+        "업로드 속도",
+        "다운로드 속도",
+        "내 연결이 느려요",
+        "지연 시간",
+        "핑",
+        "지터",
+        "mbps",
+        "광랜",
+        "느린 와이파이"
+      ],
+      "aliases": [
+        "speed test",
+        "internet speed",
+        "bandwidth test",
+        "download speed",
+        "upload speed"
+      ],
+      "note": "FourTout이 생성한 테스트 트래픽은 Cloudflare 측정 서비스(speed.cloudflare.com)와 주고받으며, 사용자의 파일은 전송되지 않습니다. 결과는 달라질 수 있습니다. VPN, Wi-Fi, 서버까지의 거리, 동시 트래픽이 영향을 줍니다."
+    },
+    "iso-create": {
+      "name": "ISO 이미지 만들기",
+      "description": "폴더를 긴 이름(Joliet 및 Rock Ridge)을 지원하는 ISO 9660 파일로 묶습니다.",
+      "keywords": [
+        "iso 만들기",
+        "iso 생성",
+        "폴더에서 iso",
+        "iso 이미지",
+        "cd 이미지",
+        "dvd 이미지",
+        "iso9660",
+        "joliet",
+        "rock ridge",
+        "iso 아카이브"
+      ],
+      "aliases": [
+        "create iso",
+        "make iso",
+        "folder to iso",
+        "disc image",
+        "iso maker"
+      ],
+      "note": "일반 .iso 파일을 만들며 디스크나 USB 드라이브에는 절대 쓰지 않습니다. 이미지는 데이터용이며 부팅할 수 없습니다."
+    },
+    "iso-inspect": {
+      "name": "ISO 이미지 검사",
+      "description": "ISO 이미지의 볼륨 이름, 파일 시스템, 트리, 부팅 정보를 읽습니다.",
+      "keywords": [
+        "iso 내용 보기",
+        "iso 열기",
+        "iso 파일 목록",
+        "iso 볼륨",
+        "el torito",
+        "부팅 가능한 iso",
+        "iso 이미지",
+        "cd 이미지 내용"
+      ],
+      "aliases": [
+        "inspect iso",
+        "list iso",
+        "iso viewer",
+        "iso contents",
+        "boot catalog"
+      ],
+      "note": "디스크립터와 디렉터리만 읽습니다. 이미지는 추출되거나 변경되지 않습니다. 순수 UDF 이미지(일부 Windows ISO)는 ISO 9660 부분으로만 읽습니다."
+    },
+    "iso-extract": {
+      "name": "ISO 이미지 추출",
+      "description": "ISO 이미지의 전체 내용 또는 선택한 파일만 폴더로 복사합니다.",
+      "keywords": [
+        "iso 추출",
+        "iso 풀기",
+        "디스크 이미지 열기",
+        "iso 내용 복사",
+        "iso에서 파일 꺼내기"
+      ],
+      "aliases": [
+        "extract iso",
+        "unpack iso",
+        "iso extractor",
+        "mount iso alternative"
+      ],
+      "note": "이미지 안의 이름은 적대적인 것으로 취급됩니다. 선택한 폴더 밖에는 아무것도 쓸 수 없고, 요청하지 않으면 아무것도 덮어쓰지 않습니다."
+    },
+    "compress-to-size": {
+      "name": "최대 크기로 압축",
+      "description": "동영상, 소리, 이미지 또는 PDF를 25 MB와 같은 원하는 크기에 맞춥니다.",
+      "keywords": [
+        "25 mb 이하",
+        "최대 크기",
+        "한도에 맞추기",
+        "첨부 파일이 너무 큼",
+        "이메일이 너무 큼",
+        "discord 25 mb",
+        "500 kb로 압축",
+        "목표 용량",
+        "전송 한도"
+      ],
+      "aliases": [
+        "compress to size",
+        "target file size",
+        "reduce to under",
+        "compress under 25mb",
+        "max file size"
+      ],
+      "note": "원하는 크기를 바이트 단위로 약속하지는 않습니다. 도구는 여유를 두고 비트레이트를 계산하고, 필요하면 더 낮게 재시도하며, 이미지를 확대하지 않고, 목표가 비현실적이면 경고합니다."
+    },
+    "image-upscale": {
+      "name": "AI로 이미지 확대",
+      "description": "사용자의 컴퓨터에서 실행되는 초해상도 네트워크로 이미지 해상도를 2배 또는 4배로 높입니다.",
+      "keywords": [
+        "이미지 확대",
+        "업스케일",
+        "해상도 높이기",
+        "흐릿한 이미지",
+        "초해상도",
+        "x2",
+        "x4",
+        "선명",
+        "사진 화질",
+        "esrgan",
+        "고화질",
+        "이미지 개선"
+      ],
+      "aliases": [
+        "ai upscale",
+        "image upscaler",
+        "enhance image",
+        "super resolution",
+        "real-esrgan",
+        "upscale photo"
+      ],
+      "note": "모델(5 MB, BSD-3 라이선스)은 요청 시 한 번 다운로드되며, 이후에는 모든 처리가 사용자의 컴퓨터에서 이루어지고 이미지는 어디로도 전송되지 않습니다. 투명도는 유지되지만 일반 보간으로 확대됩니다."
+    },
+    "animated-image-convert": {
+      "name": "애니메이션 이미지 변환",
+      "description": "애니메이션 WebP 또는 애니메이션 PNG(APNG)를 애니메이션을 잃지 않고 GIF, APNG, 애니메이션 WebP, MP4, WebM 또는 이미지 시리즈로 변환합니다.",
+      "keywords": [
+        "애니메이션 webp",
+        "apng",
+        "애니메이션 png",
+        "webp를 gif로",
+        "webp를 mp4로",
+        "애니메이션을 동영상으로",
+        "애니메이션 프레임 추출",
+        "움직이는 gif",
+        "스티커",
+        "프레임"
+      ],
+      "aliases": [
+        "animated webp",
+        "apng converter",
+        "animated image to gif",
+        "webp to mp4",
+        "animated png"
+      ],
+      "note": "각 프레임의 길이가 유지됩니다. 대상 형식이 보존하지 못하는 것은 도구가 알려 줍니다: 투명도(MP4, WebM), 반복(비디오), 색상(GIF)."
     }
   }
 }

@@ -15,7 +15,10 @@
 //!   l'annulation ; les fichiers temporaires sont nettoyés dans tous les cas
 //!   (succès, erreur, annulation).
 
+pub mod budget;
 pub mod command;
+pub mod encode;
+pub mod sizecmd;
 
 use std::path::{Path, PathBuf};
 use std::process::Command;

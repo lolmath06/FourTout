@@ -22,16 +22,21 @@ function rustFiles(dir) {
   for (const entry of readdirSync(dir)) {
     const path = join(dir, entry);
     if (statSync(path).isDirectory()) out.push(...rustFiles(path));
-    else if (entry.endsWith(".rs")) out.push(path);
+    else if (entry.endsWith(".rs") && !TEST_ONLY_FILES.has(entry)) out.push(path);
   }
   return out;
 }
 
 /** Retire les modules de test : leurs chaînes ne sont jamais affichées. */
 function withoutTests(source) {
-  const marker = source.search(/#\[cfg\(test\)\]\s*mod\s+\w+\s*\{/);
+  // `#[cfg(test)]`, mais aussi `#[cfg(all(test, unix))]` : un module de test
+  // propre à une plateforme n'est pas moins un module de test.
+  const marker = source.search(/#\[cfg\((?:all\(test[^)]*\)|test)\)\]\s*(?:pub\s+)?mod\s+\w+/);
   return marker < 0 ? source : source.slice(0, marker);
 }
+
+/** Fichiers entièrement consacrés aux tests (inclus en `#[cfg(test)] mod …;`). */
+const TEST_ONLY_FILES = new Set(["roundtrip.rs", "testserver.rs"]);
 
 /**
  * Littéraux de chaîne Rust ordinaires, lus par un petit analyseur lexical :

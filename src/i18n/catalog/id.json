@@ -137,6 +137,22 @@
         "password",
         "hash"
       ]
+    },
+    "internet": {
+      "name": "Internet & Web",
+      "description": "Unduh berkas atau media, tangkap halaman web, persingkat tautan, ukur koneksi Anda.",
+      "keywords": [
+        "internet",
+        "web",
+        "unduh",
+        "download",
+        "url",
+        "tautan",
+        "situs",
+        "youtube",
+        "halaman web",
+        "online"
+      ]
     }
   },
   "tools": {
@@ -609,7 +625,12 @@
         "bmp",
         "tiff",
         "heic",
-        "avif"
+        "avif",
+        "heic ke jpg",
+        "heif ke png",
+        "avif ke jpg",
+        "heic ke webp",
+        "apng"
       ],
       "aliases": [
         "convert image",
@@ -1391,7 +1412,9 @@
         "mkv ke mp4",
         "avi ke mp4",
         "webm",
-        "mov"
+        "mov",
+        "webm ke mp4",
+        "mp4 ke webm"
       ],
       "aliases": [
         "convert video",
@@ -2670,7 +2693,15 @@
         "ubah",
         "berkas apa saja",
         "format apa",
-        "konverter"
+        "konverter",
+        "webp",
+        "webm",
+        "avif",
+        "heic",
+        "heif",
+        "apng",
+        "iso",
+        "ini format berkas apa"
       ],
       "aliases": [
         "universal converter",
@@ -2887,7 +2918,11 @@
         "baca qr",
         "pindai",
         "dekode kode qr",
-        "qr dari gambar"
+        "qr dari gambar",
+        "baca kode qr",
+        "pindai qr",
+        "dekode qr dari tangkapan layar",
+        "qr dari foto"
       ],
       "aliases": [
         "qr code reader",
@@ -3721,6 +3756,334 @@
         "remove metadata",
         "anonymize file"
       ]
+    },
+    "url-download": {
+      "name": "Unduh berkas dari URL",
+      "description": "Simpan berkas lewat HTTP atau HTTPS dengan fitur lanjutkan, kemajuan, dan verifikasi checksum.",
+      "keywords": [
+        "unduh",
+        "unduh berkas",
+        "tautan unduhan",
+        "wget",
+        "curl",
+        "lanjutkan unduhan",
+        "url ke berkas",
+        "simpan tautan"
+      ],
+      "aliases": [
+        "download file",
+        "download from url",
+        "file downloader",
+        "wget"
+      ],
+      "note": "FourTout hanya menghubungi alamat yang Anda berikan. Berkas baru muncul dengan nama akhirnya setelah selesai diunduh sepenuhnya."
+    },
+    "media-download": {
+      "name": "Unduh media dari Internet",
+      "description": "Dapatkan video atau suara publik sebagai MP4, WebM, MP3, M4A, Opus, WAV, atau FLAC dengan yt-dlp.",
+      "keywords": [
+        "youtube",
+        "unduh video",
+        "youtube ke mp3",
+        "youtube ke mp4",
+        "unduh musik",
+        "ekstrak suara dari tautan",
+        "video online",
+        "yt-dlp",
+        "unduh klip",
+        "vimeo"
+      ],
+      "aliases": [
+        "download video",
+        "youtube downloader",
+        "youtube to mp3",
+        "youtube to mp4",
+        "yt-dlp"
+      ],
+      "note": "yt-dlp menghubungi layanan media; ia dipasang atas permintaan dan diverifikasi dengan checksum. Hanya konten publik: tanpa DRM, tanpa akun, tanpa cookie."
+    },
+    "media-url-excerpt": {
+      "name": "Unduh potongan video online",
+      "description": "Ambil hanya bagian yang Anda inginkan dari video publik, dari satu momen ke momen lain.",
+      "keywords": [
+        "potongan youtube",
+        "potong video online",
+        "bagian video",
+        "klip dari video",
+        "unduh kutipan",
+        "potong video youtube",
+        "awal dan akhir"
+      ],
+      "aliases": [
+        "download video clip",
+        "youtube clip",
+        "cut online video",
+        "video excerpt"
+      ],
+      "note": "Jika layanan mengizinkan, hanya bagiannya yang diunduh; jika tidak, seluruh sumber diunduh lalu dipotong di sini — alat memberi tahu mana yang terjadi."
+    },
+    "media-url-gif": {
+      "name": "Video online ke GIF atau WebP animasi",
+      "description": "Buat GIF atau WebP animasi berukuran wajar dari beberapa detik sebuah tautan publik.",
+      "keywords": [
+        "gif dari youtube",
+        "buat gif dari tautan",
+        "webp animasi dari tautan",
+        "meme",
+        "berulang",
+        "gif dari url",
+        "animasi dari video"
+      ],
+      "aliases": [
+        "online video to gif",
+        "youtube to gif",
+        "url to gif",
+        "video url to webp"
+      ],
+      "note": "Hanya bagian yang diminta yang dipakai, maksimum 720p: animasi tidak membutuhkan lebih. Pengaturan bawaan dibuat sederhana karena GIF membengkak sangat cepat."
+    },
+    "url-shorten": {
+      "name": "Persingkat URL",
+      "description": "Dapatkan tautan pendek dari layanan publik (is.gd, v.gd, atau TinyURL) yang dapat disalin dengan satu klik.",
+      "keywords": [
+        "persingkat tautan",
+        "tautan pendek",
+        "url pendek",
+        "bitly",
+        "tinyurl",
+        "is.gd",
+        "perpendek alamat"
+      ],
+      "aliases": [
+        "url shortener",
+        "shorten link",
+        "short link",
+        "link shortener"
+      ],
+      "note": "Alamat asli dikirim ke layanan pilihan Anda, yang menyimpannya: jangan mempersingkat hal yang rahasia. FourTout tidak menambahkan pelacakan apa pun."
+    },
+    "web-to-pdf": {
+      "name": "Halaman web ke PDF",
+      "description": "Cetak halaman web ke PDF dengan peramban Chromium yang sudah terpasang, dengan format kertas dan margin pilihan Anda.",
+      "keywords": [
+        "halaman web ke pdf",
+        "situs ke pdf",
+        "cetak halaman",
+        "simpan halaman sebagai pdf",
+        "artikel ke pdf",
+        "html ke pdf",
+        "url ke pdf"
+      ],
+      "aliases": [
+        "webpage to pdf",
+        "url to pdf",
+        "print page to pdf",
+        "website to pdf"
+      ],
+      "note": "Halaman dimuat oleh peramban terisolasi (profil sementara kosong: tanpa cookie dan riwayat Anda). Chrome, Chromium, atau Edge harus terpasang."
+    },
+    "web-to-image": {
+      "name": "Halaman web ke gambar",
+      "description": "Tangkap halaman web secara penuh atau seukuran jendela sebagai PNG, JPEG, atau WebP.",
+      "keywords": [
+        "tangkapan layar situs",
+        "screenshot halaman web",
+        "seluruh halaman sebagai gambar",
+        "situs ke png",
+        "tangkapan halaman penuh",
+        "url ke gambar"
+      ],
+      "aliases": [
+        "webpage to image",
+        "website screenshot",
+        "full page screenshot",
+        "url to png"
+      ],
+      "note": "Halaman dimuat oleh peramban terisolasi (profil sementara kosong). Penangkapan halaman penuh dibatasi tinggi 20.000 piksel."
+    },
+    "web-save-offline": {
+      "name": "Simpan halaman web untuk luring",
+      "description": "Simpan halaman dan sumber dayanya dalam satu berkas MHTML yang dapat dibaca tanpa koneksi.",
+      "keywords": [
+        "simpan halaman",
+        "halaman luring",
+        "mhtml",
+        "arsipkan situs",
+        "simpan halaman web",
+        "halaman dalam satu berkas",
+        "baca nanti"
+      ],
+      "aliases": [
+        "save webpage offline",
+        "mhtml",
+        "web archive",
+        "save page as"
+      ],
+      "note": "Halaman dimuat oleh peramban terisolasi (profil sementara kosong). Berkas MHTML terbuka di Chrome, Edge, dan sebagian besar peramban berbasis Chromium."
+    },
+    "speed-test": {
+      "name": "Tes kecepatan Internet",
+      "description": "Ukur latensi, jitter, kecepatan unduh, dan kecepatan unggah koneksi Anda.",
+      "keywords": [
+        "tes kecepatan",
+        "kecepatan internet",
+        "speedtest",
+        "kecepatan unggah",
+        "kecepatan unduh",
+        "koneksi saya lambat",
+        "latensi",
+        "ping",
+        "jitter",
+        "mbps",
+        "fiber",
+        "wifi lambat"
+      ],
+      "aliases": [
+        "speed test",
+        "internet speed",
+        "bandwidth test",
+        "download speed",
+        "upload speed"
+      ],
+      "note": "Lalu lintas uji yang dihasilkan FourTout dipertukarkan dengan layanan pengukuran Cloudflare (speed.cloudflare.com); tidak ada berkas Anda yang dikirim. Hasil bervariasi: VPN, Wi-Fi, jarak ke server, dan lalu lintas bersamaan memengaruhinya."
+    },
+    "iso-create": {
+      "name": "Buat citra ISO",
+      "description": "Kemas folder menjadi berkas ISO 9660 dengan nama panjang (Joliet dan Rock Ridge).",
+      "keywords": [
+        "buat iso",
+        "bikin iso",
+        "folder ke iso",
+        "citra iso",
+        "citra cd",
+        "citra dvd",
+        "iso9660",
+        "joliet",
+        "rock ridge",
+        "arsip iso"
+      ],
+      "aliases": [
+        "create iso",
+        "make iso",
+        "folder to iso",
+        "disc image",
+        "iso maker"
+      ],
+      "note": "Menghasilkan berkas .iso biasa, tidak pernah menulis ke disk atau flash disk. Citra berisi data: tidak dapat di-boot."
+    },
+    "iso-inspect": {
+      "name": "Periksa citra ISO",
+      "description": "Baca nama volume, sistem berkas, pohon, dan informasi boot sebuah citra ISO.",
+      "keywords": [
+        "lihat isi iso",
+        "buka iso",
+        "daftar berkas iso",
+        "volume iso",
+        "el torito",
+        "iso bootable",
+        "citra iso",
+        "isi citra cd"
+      ],
+      "aliases": [
+        "inspect iso",
+        "list iso",
+        "iso viewer",
+        "iso contents",
+        "boot catalog"
+      ],
+      "note": "Hanya deskriptor dan direktori yang dibaca: citra tidak diekstrak maupun diubah. Citra UDF murni (beberapa ISO Windows) hanya dibaca lewat bagian ISO 9660."
+    },
+    "iso-extract": {
+      "name": "Ekstrak citra ISO",
+      "description": "Salin seluruh isi citra ISO, atau hanya berkas pilihan Anda, ke sebuah folder.",
+      "keywords": [
+        "ekstrak iso",
+        "buka iso",
+        "buka citra disk",
+        "salin isi iso",
+        "ambil berkas dari iso"
+      ],
+      "aliases": [
+        "extract iso",
+        "unpack iso",
+        "iso extractor",
+        "mount iso alternative"
+      ],
+      "note": "Nama di dalam citra dianggap berbahaya: tidak ada yang dapat ditulis di luar folder pilihan, dan tidak ada yang ditimpa tanpa permintaan Anda."
+    },
+    "compress-to-size": {
+      "name": "Kompres ke ukuran maksimum",
+      "description": "Muat video, suara, gambar, atau PDF ke dalam ukuran yang diinginkan, misalnya 25 MB.",
+      "keywords": [
+        "di bawah 25 mb",
+        "ukuran maksimum",
+        "muat dalam batas",
+        "lampiran terlalu berat",
+        "email terlalu besar",
+        "discord 25 mb",
+        "kompres ke 500 kb",
+        "bobot target",
+        "batas kirim"
+      ],
+      "aliases": [
+        "compress to size",
+        "target file size",
+        "reduce to under",
+        "compress under 25mb",
+        "max file size"
+      ],
+      "note": "Ukuran yang diinginkan tidak pernah dijanjikan sampai ke bita: alat menghitung bitrate dengan margin, mencoba lagi lebih rendah bila perlu, tidak pernah memperbesar gambar, dan memperingatkan saat target tidak realistis."
+    },
+    "image-upscale": {
+      "name": "Perbesar gambar dengan AI",
+      "description": "Gandakan atau kalikan empat resolusi gambar dengan jaringan super-resolusi yang berjalan di komputer Anda.",
+      "keywords": [
+        "perbesar gambar",
+        "upscale",
+        "tingkatkan resolusi",
+        "gambar buram",
+        "super resolusi",
+        "x2",
+        "x4",
+        "tajam",
+        "kualitas foto",
+        "esrgan",
+        "definisi tinggi",
+        "peningkatan gambar"
+      ],
+      "aliases": [
+        "ai upscale",
+        "image upscaler",
+        "enhance image",
+        "super resolution",
+        "real-esrgan",
+        "upscale photo"
+      ],
+      "note": "Model (5 MB, lisensi BSD-3) diunduh sekali atas permintaan; setelah itu semuanya terjadi di komputer Anda dan gambar tidak dikirim ke mana pun. Transparansi dipertahankan tetapi diperbesar dengan interpolasi biasa."
+    },
+    "animated-image-convert": {
+      "name": "Konversi gambar animasi",
+      "description": "Ubah WebP animasi atau PNG animasi (APNG) menjadi GIF, APNG, WebP animasi, MP4, WebM, atau serangkaian gambar tanpa kehilangan animasi.",
+      "keywords": [
+        "webp animasi",
+        "apng",
+        "png animasi",
+        "webp ke gif",
+        "webp ke mp4",
+        "animasi ke video",
+        "ekstrak bingkai animasi",
+        "gif animasi",
+        "stiker",
+        "bingkai"
+      ],
+      "aliases": [
+        "animated webp",
+        "apng converter",
+        "animated image to gif",
+        "webp to mp4",
+        "animated png"
+      ],
+      "note": "Durasi tiap bingkai dipertahankan. Alat memberi tahu apa yang tidak dapat disimpan format tujuan: transparansi (MP4, WebM), pengulangan (video), warna (GIF)."
     }
   }
 }

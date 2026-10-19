@@ -138,6 +138,21 @@
         "contraseña",
         "hash"
       ]
+    },
+    "internet": {
+      "name": "Internet y web",
+      "description": "Descargar un archivo o un vídeo, capturar una página web, acortar un enlace, medir tu conexión.",
+      "keywords": [
+        "internet",
+        "web",
+        "descargar",
+        "url",
+        "enlace",
+        "sitio",
+        "youtube",
+        "página web",
+        "en línea"
+      ]
     }
   },
   "tools": {
@@ -624,7 +639,12 @@
         "tiff",
         "transformar una imagen",
         "heic",
-        "avif"
+        "avif",
+        "heic a jpg",
+        "heif a png",
+        "avif a jpg",
+        "heic a webp",
+        "apng"
       ],
       "aliases": [
         "convert image",
@@ -1414,7 +1434,9 @@
         "mkv a mp4",
         "avi a mp4",
         "webm",
-        "mov"
+        "mov",
+        "webm a mp4",
+        "mp4 a webm"
       ],
       "aliases": [
         "convert video",
@@ -2696,7 +2718,15 @@
         "transformar",
         "cualquier archivo",
         "qué formato",
-        "conversor"
+        "conversor",
+        "webp",
+        "webm",
+        "avif",
+        "heic",
+        "heif",
+        "apng",
+        "iso",
+        "qué formato es este archivo"
       ],
       "aliases": [
         "universal converter",
@@ -2913,7 +2943,11 @@
         "leer un qr",
         "escanear",
         "decodificar un código qr",
-        "qr desde una imagen"
+        "qr desde una imagen",
+        "leer un código qr",
+        "escanear un qr",
+        "decodificar un qr desde una captura",
+        "qr desde una foto"
       ],
       "aliases": [
         "qr code reader",
@@ -3745,6 +3779,333 @@
         "remove metadata",
         "anonymize file"
       ]
+    },
+    "url-download": {
+      "name": "Descargar un archivo desde una URL",
+      "description": "Guardar un archivo HTTP o HTTPS, con reanudación, progreso y verificación de huella.",
+      "keywords": [
+        "descargar",
+        "descargar un archivo",
+        "enlace de descarga",
+        "wget",
+        "curl",
+        "reanudar una descarga",
+        "url a archivo",
+        "guardar un enlace"
+      ],
+      "aliases": [
+        "download file",
+        "download from url",
+        "file downloader",
+        "wget"
+      ],
+      "note": "FourTout contacta con la dirección que indicas, y solo con ella. El archivo solo aparece con su nombre definitivo cuando está completo."
+    },
+    "media-download": {
+      "name": "Descargar contenido multimedia de Internet",
+      "description": "Obtener un vídeo o un sonido público en MP4, WebM, MP3, M4A, Opus, WAV o FLAC, con yt-dlp.",
+      "keywords": [
+        "youtube",
+        "descargar un vídeo",
+        "youtube a mp3",
+        "youtube a mp4",
+        "descargar música",
+        "extraer el sonido de un enlace",
+        "vídeo en línea",
+        "yt-dlp",
+        "descargar un clip",
+        "vimeo"
+      ],
+      "aliases": [
+        "download video",
+        "youtube downloader",
+        "youtube to mp3",
+        "youtube to mp4",
+        "yt-dlp"
+      ],
+      "note": "yt-dlp contacta con el servicio de contenidos; se instala a petición y se verifica por huella. Solo se admiten contenidos públicos: sin DRM, sin cuenta, sin cookies."
+    },
+    "media-url-excerpt": {
+      "name": "Descargar un fragmento de un vídeo en línea",
+      "description": "Obtener solo la parte que quieres de un vídeo público, de un instante a otro.",
+      "keywords": [
+        "fragmento de youtube",
+        "cortar un vídeo en línea",
+        "parte de un vídeo",
+        "clip de un vídeo",
+        "descargar un pasaje",
+        "cortar un vídeo de youtube",
+        "inicio y fin"
+      ],
+      "aliases": [
+        "download video clip",
+        "youtube clip",
+        "cut online video",
+        "video excerpt"
+      ],
+      "note": "Si el servicio lo permite, solo se descarga el fragmento; si no, se descarga toda la fuente y se recorta aquí: la herramienta te dice cuál de las dos cosas ocurrió."
+    },
+    "media-url-gif": {
+      "name": "Vídeo en línea a GIF o WebP animado",
+      "description": "Crear un GIF o un WebP animado de tamaño razonable a partir de unos segundos de un enlace público.",
+      "keywords": [
+        "gif de youtube",
+        "crear un gif desde un enlace",
+        "webp animado desde un enlace",
+        "meme",
+        "bucle",
+        "gif desde una url",
+        "animación desde un vídeo"
+      ],
+      "aliases": [
+        "online video to gif",
+        "youtube to gif",
+        "url to gif",
+        "video url to webp"
+      ],
+      "note": "Solo se usa el fragmento pedido, en 720p como máximo: una animación no necesita más. Se proponen ajustes modestos por defecto, porque un GIF crece muy deprisa."
+    },
+    "url-shorten": {
+      "name": "Acortar una URL",
+      "description": "Obtener un enlace corto de un servicio público (is.gd, v.gd o TinyURL), listo para copiar con un clic.",
+      "keywords": [
+        "acortar un enlace",
+        "enlace corto",
+        "url corta",
+        "bitly",
+        "tinyurl",
+        "is.gd",
+        "reducir una dirección"
+      ],
+      "aliases": [
+        "url shortener",
+        "shorten link",
+        "short link",
+        "link shortener"
+      ],
+      "note": "La dirección original se envía al servicio que elijas, que la conserva: no acortes nada confidencial. FourTout no añade ningún seguimiento."
+    },
+    "web-to-pdf": {
+      "name": "Página web a PDF",
+      "description": "Imprimir una página web en PDF con un navegador Chromium ya instalado, con el papel y los márgenes que elijas.",
+      "keywords": [
+        "página web a pdf",
+        "sitio a pdf",
+        "imprimir una página",
+        "guardar una página como pdf",
+        "artículo a pdf",
+        "html a pdf",
+        "url a pdf"
+      ],
+      "aliases": [
+        "webpage to pdf",
+        "url to pdf",
+        "print page to pdf",
+        "website to pdf"
+      ],
+      "note": "La página la carga un navegador aislado (perfil temporal vacío: ni tus cookies ni tu historial). Debe haber instalado Chrome, Chromium o Edge."
+    },
+    "web-to-image": {
+      "name": "Página web a imagen",
+      "description": "Capturar una página web, entera o del tamaño de la ventana, en PNG, JPEG o WebP.",
+      "keywords": [
+        "captura de pantalla de un sitio",
+        "captura de una página web",
+        "página entera como imagen",
+        "sitio a png",
+        "captura de página completa",
+        "url a imagen"
+      ],
+      "aliases": [
+        "webpage to image",
+        "website screenshot",
+        "full page screenshot",
+        "url to png"
+      ],
+      "note": "La página la carga un navegador aislado (perfil temporal vacío). Una captura de página completa se limita a 20 000 píxeles de alto."
+    },
+    "web-save-offline": {
+      "name": "Guardar una página web sin conexión",
+      "description": "Guardar una página y sus recursos en un único archivo MHTML, legible sin conexión.",
+      "keywords": [
+        "guardar una página",
+        "página sin conexión",
+        "mhtml",
+        "archivar un sitio",
+        "guardar una página web",
+        "página en un solo archivo",
+        "leer más tarde"
+      ],
+      "aliases": [
+        "save webpage offline",
+        "mhtml",
+        "web archive",
+        "save page as"
+      ],
+      "note": "La página la carga un navegador aislado (perfil temporal vacío). El archivo MHTML se abre en Chrome, Edge y la mayoría de los navegadores Chromium."
+    },
+    "speed-test": {
+      "name": "Test de velocidad de Internet",
+      "description": "Medir la latencia, la fluctuación, la velocidad de descarga y la de subida de tu conexión.",
+      "keywords": [
+        "test de velocidad",
+        "velocidad de internet",
+        "speedtest",
+        "velocidad de subida",
+        "velocidad de descarga",
+        "mi conexión va lenta",
+        "latencia",
+        "fluctuación",
+        "mbps",
+        "fibra",
+        "wifi lento"
+      ],
+      "aliases": [
+        "speed test",
+        "internet speed",
+        "bandwidth test",
+        "download speed",
+        "upload speed"
+      ],
+      "note": "FourTout intercambia tráfico de prueba, generado por él, con el servicio de medición de Cloudflare (speed.cloudflare.com); no se envía ninguno de tus archivos. Los resultados varían: VPN, Wi-Fi, distancia al servidor y tráfico concurrente los modifican."
+    },
+    "iso-create": {
+      "name": "Crear una imagen ISO",
+      "description": "Reunir una carpeta en un archivo ISO 9660 con nombres largos (Joliet y Rock Ridge).",
+      "keywords": [
+        "crear un iso",
+        "hacer un iso",
+        "carpeta a iso",
+        "imagen iso",
+        "imagen de cd",
+        "imagen de dvd",
+        "iso9660",
+        "joliet",
+        "rock ridge",
+        "archivo iso"
+      ],
+      "aliases": [
+        "create iso",
+        "make iso",
+        "folder to iso",
+        "disc image",
+        "iso maker"
+      ],
+      "note": "Produce un archivo .iso normal, nunca una escritura en un disco o una memoria USB. La imagen contiene datos: no es de arranque."
+    },
+    "iso-inspect": {
+      "name": "Inspeccionar una imagen ISO",
+      "description": "Leer el nombre de volumen, los sistemas de archivos, el árbol y los datos de arranque de una ISO.",
+      "keywords": [
+        "ver el contenido de un iso",
+        "abrir un iso",
+        "listar un iso",
+        "volumen iso",
+        "el torito",
+        "iso de arranque",
+        "imagen iso",
+        "contenido de una imagen de cd"
+      ],
+      "aliases": [
+        "inspect iso",
+        "list iso",
+        "iso viewer",
+        "iso contents",
+        "boot catalog"
+      ],
+      "note": "Solo se leen los descriptores y los directorios: la imagen no se extrae ni se modifica. Una imagen UDF pura (algunas ISO de Windows) solo se lee por su parte ISO 9660."
+    },
+    "iso-extract": {
+      "name": "Extraer una imagen ISO",
+      "description": "Copiar todo el contenido de una ISO, o solo los archivos que elijas, en una carpeta.",
+      "keywords": [
+        "extraer un iso",
+        "descomprimir un iso",
+        "abrir una imagen de disco",
+        "copiar el contenido de un iso",
+        "recuperar archivos de un iso"
+      ],
+      "aliases": [
+        "extract iso",
+        "unpack iso",
+        "iso extractor",
+        "mount iso alternative"
+      ],
+      "note": "Los nombres contenidos en la imagen se tratan como hostiles: nada puede escribirse fuera de la carpeta elegida y nada se sobrescribe si no lo pides."
+    },
+    "compress-to-size": {
+      "name": "Comprimir hasta un tamaño máximo",
+      "description": "Quedar por debajo de un tamaño buscado, por ejemplo 25 MB, para un vídeo, un sonido, una imagen o un PDF.",
+      "keywords": [
+        "menos de 25 mb",
+        "tamaño máximo",
+        "pasar por debajo de un límite",
+        "adjunto demasiado pesado",
+        "correo demasiado grande",
+        "discord 25 mb",
+        "comprimir a 500 kb",
+        "peso objetivo",
+        "límite de envío"
+      ],
+      "aliases": [
+        "compress to size",
+        "target file size",
+        "reduce to under",
+        "compress under 25mb",
+        "max file size"
+      ],
+      "note": "El tamaño buscado nunca se promete al byte: la herramienta calcula una tasa de bits con margen de seguridad, reintenta más abajo si hace falta, nunca amplía la imagen y avisa cuando el objetivo no es realista."
+    },
+    "image-upscale": {
+      "name": "Ampliar una imagen con IA",
+      "description": "Duplicar o cuadruplicar la definición de una imagen con una red de superresolución que funciona en tu equipo.",
+      "keywords": [
+        "ampliar una imagen",
+        "upscale",
+        "mejorar la resolución",
+        "imagen borrosa",
+        "superresolución",
+        "x2",
+        "x4",
+        "nítido",
+        "calidad de foto",
+        "esrgan",
+        "alta definición",
+        "mejora de imagen"
+      ],
+      "aliases": [
+        "ai upscale",
+        "image upscaler",
+        "enhance image",
+        "super resolution",
+        "real-esrgan",
+        "upscale photo"
+      ],
+      "note": "El modelo (5 MB, licencia BSD-3) se descarga una sola vez, a petición; después todo ocurre en tu equipo y la imagen no se envía a ninguna parte. La transparencia se conserva, pero se amplía por interpolación ordinaria."
+    },
+    "animated-image-convert": {
+      "name": "Convertir una imagen animada",
+      "description": "Pasar un WebP animado o un PNG animado (APNG) a GIF, APNG, WebP animado, MP4, WebM o una serie de imágenes, sin perder la animación.",
+      "keywords": [
+        "webp animado",
+        "apng",
+        "png animado",
+        "webp a gif",
+        "webp a mp4",
+        "animación a vídeo",
+        "extraer los fotogramas de una animación",
+        "gif animado",
+        "sticker",
+        "fotogramas"
+      ],
+      "aliases": [
+        "animated webp",
+        "apng converter",
+        "animated image to gif",
+        "webp to mp4",
+        "animated png"
+      ],
+      "note": "Se conserva la duración de cada imagen. La herramienta te dice lo que el destino no puede conservar: transparencia (MP4, WebM), bucle (vídeo), colores (GIF)."
     }
   }
 }

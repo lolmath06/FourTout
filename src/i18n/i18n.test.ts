@@ -35,7 +35,7 @@ import {
  *   repli anglais en fonctionnement normal ;
  * - une traduction garde les variables, les balises et les formes plurielles
  *   que sa langue demande ;
- * - les 196 outils et 12 catégories ont leurs textes dans chaque langue, sans
+ * - les 211 outils et 13 catégories ont leurs textes dans chaque langue, sans
  *   que leurs identifiants ni leurs routes ne bougent ;
  * - repli, persistance, changement instantané et recherche multilingue.
  */
@@ -74,8 +74,8 @@ const EXPECTED_LOCALES: LocaleCode[] = [
   "zh-TW",
 ];
 /** Comptes de référence du produit (voir `core/tools/catalogIntegrity.test.ts`). */
-const TOOL_COUNT = 196;
-const CATEGORY_COUNT = 12;
+const TOOL_COUNT = 211;
+const CATEGORY_COUNT = 13;
 
 const TRANSLATED_LOCALES = EXPECTED_LOCALES.filter((code) => code !== SOURCE_LOCALE);
 

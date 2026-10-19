@@ -89,10 +89,51 @@ optional and never blocks a tool.
 
 ## Format detection
 
-The converter uses the dropped file's extension and MIME type. To go further
-and determine what a file **actually is**, independently of its name, the
-*File information* tool reads the signature in its first bytes and reports
-inconsistencies, such as a `photo.jpg` beginning with `%PDF-`.
+In the installed application, the converter asks the native engine what the
+file **actually is** (`files_identify` / `files_identify_path`, backed by
+`src-tauri/src/files/magic.rs`). Detection reads the first 36 KiB, independently
+of the file name, and recognizes among others:
+
+- animated WebP (VP8X animation bit) and APNG (`acTL` before the first `IDAT`),
+  as distinct from still WebP and PNG;
+- WebM versus Matroska (the EBML `DocType`);
+- AVIF, HEIC, HEIF and HEIF sequences, MOV and M4A (ISOBMFF brands);
+- ISO 9660 images (`CD001` at offset 32769).
+
+Outside the application (a browser), only the extension is available, and the
+converter says so: identity is then extension-based, with no content rules.
+
+## Planning from facts, not from extensions
+
+`src/core/convert/actions.ts` builds the list of actions for a file from three
+sources, none of them a hand-written table:
+
+1. **the registry graph** described above, for ordinary formats;
+2. **content rules**, where an extension is not enough. An animated image goes
+   to *Convert an animated image*, never to a still-image tool that would keep
+   only the first frame. An ISO is offered to the ISO tools, not to a
+   conversion. A video without an audio stream is not offered sound extraction;
+   one without a video stream is offered only audio conversions;
+3. **probed capabilities** of the machine: FFmpeg present, an animated-WebP
+   encoder, AVIF decodable (proved by decoding an embedded sample), HEIC
+   decodable (native decoder). A conversion that this machine could not run is
+   not announced.
+
+When the name and the content disagree (a `photo.jpg` that is a PNG), the
+content wins and a note says so. Notes also explain absent conversions: no
+FFmpeg, no video stream, AVIF or HEIC unavailable, a HEIF sequence.
+
+Streams come from `media_probe_path` (ffprobe), restricted to media files. Files
+are read from their path by the native engine when a tool needs it, so large
+files are not loaded into the interface.
+
+## New formats
+
+WebP (still and animated), WebM, AVIF, HEIC, HEIF and APNG are first-class
+formats of the registry. HEIC is decoded by a pure-Rust decoder, so it works the
+same on Fedora and Windows; AVIF depends on the FFmpeg of the machine and is
+advertised only when a real decode succeeds. See [Images](IMAGES.md) and
+[Video](VIDEO.md).
 
 ## Deliberate limitation
 

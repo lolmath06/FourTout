@@ -11,6 +11,7 @@ import {
   type ImageFormat,
   type Rgb,
 } from "./types";
+import { decodeNativeIfNeeded, sniffNativeImage } from "./native";
 import { t } from "@/i18n";
 
 /**
@@ -62,7 +63,17 @@ function looksLikeSvg(bytes: Uint8Array): boolean {
 /** Décode des octets d'image en canvas, sans appliquer l'orientation EXIF. */
 export async function decodeImage(bytes: Uint8Array, extension?: string): Promise<RasterCanvas> {
   const backend = backendOrThrow();
-  const mime = guessMime(bytes, extension);
+
+  // HEIC/HEIF : aucune WebView ne le décode partout. Le décodeur natif rend un
+  // PNG, que le reste du traitement lit comme n'importe quelle image.
+  const native = sniffNativeImage(bytes);
+  if (native === "heic") {
+    const png = await decodeNativeIfNeeded(bytes, native);
+    if (!png) throw new ImageError("decode-failed", t("Le HEIC/HEIF nécessite l'application FourTout installée."));
+    return decodeImage(png, "png");
+  }
+
+  const mime = native === "avif" ? "image/avif" : guessMime(bytes, extension);
 
   if (mime === "image/svg+xml") {
     return decodeSvg(bytes);
@@ -72,6 +83,12 @@ export async function decodeImage(bytes: Uint8Array, extension?: string): Promis
   try {
     canvas = await backend.decode(bytes, mime);
   } catch (error) {
+    // AVIF : la WebView ne le lit pas toujours ; FFmpeg, si cette machine sait
+    // le décoder, prend le relais.
+    if (native === "avif") {
+      const png = await decodeNativeIfNeeded(bytes, native).catch(() => null);
+      if (png) return decodeImage(png, "png");
+    }
     throw new ImageError("decode-failed", undefined, { cause: error });
   }
   if (canvas.width * canvas.height > MAX_DECODE_PIXELS) {

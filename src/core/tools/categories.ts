@@ -90,6 +90,15 @@ export const CATEGORIES: CategoryDefinition[] = [
     keywords: ["calcul", "unité", "conversion", "mesure", "math"],
   },
   {
+    id: "internet",
+    name: "Internet & Web",
+    description: "Télécharger un fichier ou un média, capturer une page web, raccourcir un lien, mesurer sa connexion.",
+    icon: "Globe",
+    order: 93,
+    accent: "indigo",
+    keywords: ["internet", "web", "télécharger", "download", "url", "lien", "site", "youtube", "page web"],
+  },
+  {
     id: "network",
     name: "Réseau",
     description: "Diagnostiquer une connexion, tester des ports, voir ce qui est branché chez soi.",

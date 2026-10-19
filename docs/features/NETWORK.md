@@ -6,9 +6,12 @@
 
 Three tools—`network-ping`, `network-ports`, and `network-lan`—use native code
 under `src-tauri/src/network/`, the client in `src/core/network/native.ts`, and
-interfaces under `src/tools/impl/network/`. Along with currency conversion,
-they are the only non-`local` tools. They open real connections only after an
-explicit action and never send data to a remote service.
+interfaces under `src/tools/impl/network/`. They open real
+connections only after an explicit action and never send data to a remote
+service. The category also lists the **speed test** (`speed-test`), which
+exchanges generated test traffic with Cloudflare; it belongs to
+[Internet & Web](INTERNET.md) and follows that page's rules, not the local-only
+limits below.
 
 ## Deliberately narrow scope
 

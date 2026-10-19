@@ -60,7 +60,7 @@ export function segmentationModel(id: SegmentationModelId) {
   return entry;
 }
 
-interface Runtime {
+export interface Runtime {
   Tensor: new (type: "float32", data: Float32Array, dims: number[]) => SegmentationTensor;
   InferenceSession: {
     create(model: Uint8Array, options?: unknown): Promise<SegmentationSession>;
@@ -126,7 +126,7 @@ async function assertRuntimeServed(): Promise<void> {
 
 let runtime: Promise<Runtime> | undefined;
 
-async function loadRuntime(): Promise<Runtime> {
+export async function loadRuntime(): Promise<Runtime> {
   if (!runtime) {
     runtime = (async () => {
       await assertRuntimeServed();

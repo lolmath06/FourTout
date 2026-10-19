@@ -13,8 +13,9 @@ import { defineTools, IN, OUT } from "./shared";
  * aucun ne parle à Internet de sa propre initiative, et aucun n'envoie quoi que
  * ce soit à un service distant.
  *
- * Aucun ne porte donc la capacité « internet », réservée au convertisseur de
- * devises : pinguer `127.0.0.1` ou chercher une imprimante sur son propre
+ * Aucun de ces trois ne porte donc la capacité « internet » (le convertisseur de
+ * devises, le test de débit et les outils de la catégorie Internet & Web, eux,
+ * la portent) : pinguer `127.0.0.1` ou chercher une imprimante sur son propre
  * réseau ne demande aucune connexion sortante. La découverte porte en plus
  * « local-network », qui dit qu'elle ne franchit même pas le sous-réseau.
  */
@@ -88,5 +89,22 @@ export const networkTools = defineTools([
     acceptedInputs: [IN.none()],
     outputs: [OUT.none()],
     note: "Limité au sous-réseau directement connecté et à 256 adresses. La plage exacte est annoncée avant tout envoi, et rien ne part sans confirmation.",
+  },
+  {
+    id: "speed-test",
+    name: "Test de débit Internet",
+    description: "Mesurer latence, gigue, débit descendant et débit montant de votre connexion.",
+    category: "network",
+    alsoIn: ["internet"],
+    icon: "Gauge",
+    keywords: [
+      "test de débit", "vitesse internet", "speedtest", "débit montant", "débit descendant", "ma connexion est lente",
+      "latence", "gigue", "mbps", "fibre", "wifi lent",
+    ],
+    aliases: ["speed test", "internet speed", "bandwidth test", "download speed", "upload speed"],
+    capabilities: ["network", "internet", "long-running"],
+    acceptedInputs: [IN.none()],
+    outputs: [OUT.none()],
+    note: "Du trafic de test généré par FourTout est échangé avec le service de mesure de Cloudflare (speed.cloudflare.com) ; aucun fichier à vous n'est envoyé. Les résultats varient : VPN, Wi-Fi, distance du serveur et trafic concurrent les modifient.",
   },
 ]);

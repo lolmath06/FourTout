@@ -31,6 +31,51 @@ export const TOOL_IMPLEMENTATIONS: Record<string, ToolComponent> = {
   ),
   base64: lazy(() => import("./impl/Base64Tool").then((m) => ({ default: m.Base64Tool }))),
 
+  // Internet & Web — chaque outil contacte un serveur distant et le dit
+  "url-download": lazy(() =>
+    import("./impl/internet/UrlDownloadTool").then((m) => ({ default: m.UrlDownloadTool })),
+  ),
+  "media-download": lazy(() =>
+    import("./impl/internet/MediaTools").then((m) => ({ default: m.MediaDownloadTool })),
+  ),
+  "media-url-excerpt": lazy(() =>
+    import("./impl/internet/MediaTools").then((m) => ({ default: m.MediaUrlExcerptTool })),
+  ),
+  "media-url-gif": lazy(() =>
+    import("./impl/internet/MediaTools").then((m) => ({ default: m.MediaUrlGifTool })),
+  ),
+  "speed-test": lazy(() =>
+    import("./impl/internet/SpeedTestTool").then((m) => ({ default: m.SpeedTestTool })),
+  ),
+  "url-shorten": lazy(() =>
+    import("./impl/internet/UrlShortenTool").then((m) => ({ default: m.UrlShortenTool })),
+  ),
+  "web-to-pdf": lazy(() =>
+    import("./impl/internet/WebCaptureTool").then((m) => ({ default: m.WebToPdfTool })),
+  ),
+  "web-to-image": lazy(() =>
+    import("./impl/internet/WebCaptureTool").then((m) => ({ default: m.WebToImageTool })),
+  ),
+  "web-save-offline": lazy(() =>
+    import("./impl/internet/WebCaptureTool").then((m) => ({ default: m.WebSaveOfflineTool })),
+  ),
+
+  // Images disque ISO
+  "iso-create": lazy(() => import("./impl/iso/IsoCreateTool").then((m) => ({ default: m.IsoCreateTool }))),
+  "iso-inspect": lazy(() => import("./impl/iso/IsoInspectTool").then((m) => ({ default: m.IsoInspectTool }))),
+  "iso-extract": lazy(() => import("./impl/iso/IsoExtractTool").then((m) => ({ default: m.IsoExtractTool }))),
+
+  // Taille maximale, agrandissement par IA, images animées
+  "compress-to-size": lazy(() =>
+    import("./impl/files/CompressToSizeTool").then((m) => ({ default: m.CompressToSizeTool })),
+  ),
+  "image-upscale": lazy(() =>
+    import("./impl/image/ImageUpscaleTool").then((m) => ({ default: m.ImageUpscaleTool })),
+  ),
+  "animated-image-convert": lazy(() =>
+    import("./impl/image/AnimatedImageConvertTool").then((m) => ({ default: m.AnimatedImageConvertTool })),
+  ),
+
   // Parole locale : synthèse (Piper) et transcription (whisper.cpp) — phase 4C
   "text-to-speech": lazy(() =>
     import("./impl/speech/TextToSpeechTool").then((m) => ({ default: m.TextToSpeechTool })),

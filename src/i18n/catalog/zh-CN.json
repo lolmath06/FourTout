@@ -138,6 +138,21 @@
         "密码",
         "哈希"
       ]
+    },
+    "internet": {
+      "name": "互联网与网页",
+      "description": "下载文件或媒体、捕获网页、缩短链接、测量您的连接。",
+      "keywords": [
+        "互联网",
+        "网页",
+        "下载",
+        "url",
+        "链接",
+        "网站",
+        "youtube",
+        "网页",
+        "在线"
+      ]
     }
   },
   "tools": {
@@ -609,7 +624,12 @@
         "bmp",
         "tiff",
         "heic",
-        "avif"
+        "avif",
+        "heic 转 jpg",
+        "heif 转 png",
+        "avif 转 jpg",
+        "heic 转 webp",
+        "apng"
       ],
       "aliases": [
         "convert image",
@@ -1401,7 +1421,9 @@
         "mkv 转 mp4",
         "avi 转 mp4",
         "webm",
-        "mov"
+        "mov",
+        "webm 转 mp4",
+        "mp4 转 webm"
       ],
       "aliases": [
         "convert video",
@@ -2686,7 +2708,15 @@
         "改格式",
         "任意文件",
         "什么格式",
-        "转换器"
+        "转换器",
+        "webp",
+        "webm",
+        "avif",
+        "heic",
+        "heif",
+        "apng",
+        "iso",
+        "这是什么文件格式"
       ],
       "aliases": [
         "universal converter",
@@ -2906,7 +2936,11 @@
         "扫二维码",
         "识别二维码",
         "解码二维码",
-        "图片中的二维码"
+        "图片中的二维码",
+        "读取二维码",
+        "扫描二维码",
+        "从截图解码二维码",
+        "照片中的二维码"
       ],
       "aliases": [
         "qr code reader",
@@ -3746,6 +3780,334 @@
         "remove metadata",
         "anonymize file"
       ]
+    },
+    "url-download": {
+      "name": "从 URL 下载文件",
+      "description": "通过 HTTP 或 HTTPS 保存文件，支持续传、进度和校验和验证。",
+      "keywords": [
+        "下载",
+        "下载文件",
+        "下载链接",
+        "wget",
+        "curl",
+        "续传下载",
+        "url 转文件",
+        "保存链接"
+      ],
+      "aliases": [
+        "download file",
+        "download from url",
+        "file downloader",
+        "wget"
+      ],
+      "note": "FourTout 只连接您提供的地址。文件只有在完整下载后才会以最终名称出现。"
+    },
+    "media-download": {
+      "name": "从互联网下载媒体",
+      "description": "用 yt-dlp 将公开的视频或声音获取为 MP4、WebM、MP3、M4A、Opus、WAV 或 FLAC。",
+      "keywords": [
+        "youtube",
+        "下载视频",
+        "youtube 转 mp3",
+        "youtube 转 mp4",
+        "下载音乐",
+        "从链接提取声音",
+        "在线视频",
+        "yt-dlp",
+        "下载片段",
+        "vimeo"
+      ],
+      "aliases": [
+        "download video",
+        "youtube downloader",
+        "youtube to mp3",
+        "youtube to mp4",
+        "yt-dlp"
+      ],
+      "note": "yt-dlp 会连接到媒体服务；它按需安装并用校验和验证。仅限公开内容：无 DRM、无账户、无 Cookie。"
+    },
+    "media-url-excerpt": {
+      "name": "下载在线视频片段",
+      "description": "只获取公开视频中您想要的部分，从某一时刻到另一时刻。",
+      "keywords": [
+        "youtube 片段",
+        "裁剪在线视频",
+        "视频的一部分",
+        "从视频截取片段",
+        "下载节选",
+        "截取 youtube 视频",
+        "起点和终点"
+      ],
+      "aliases": [
+        "download video clip",
+        "youtube clip",
+        "cut online video",
+        "video excerpt"
+      ],
+      "note": "如果服务允许，只下载该片段；否则会下载完整源文件并在此处裁剪 — 工具会告知发生了哪种情况。"
+    },
+    "media-url-gif": {
+      "name": "在线视频转 GIF 或动画 WebP",
+      "description": "用公开链接的几秒钟内容生成大小合理的 GIF 或动画 WebP。",
+      "keywords": [
+        "youtube 转 gif",
+        "从链接创建 gif",
+        "从链接生成动画 webp",
+        "表情包",
+        "循环",
+        "url 转 gif",
+        "视频转动画"
+      ],
+      "aliases": [
+        "online video to gif",
+        "youtube to gif",
+        "url to gif",
+        "video url to webp"
+      ],
+      "note": "只使用请求的片段，最高 720p：动画不需要更多。由于 GIF 增长极快，默认设置较为保守。"
+    },
+    "url-shorten": {
+      "name": "缩短 URL",
+      "description": "从公共服务（is.gd、v.gd 或 TinyURL）获取可一键复制的短链接。",
+      "keywords": [
+        "缩短链接",
+        "短链接",
+        "短网址",
+        "bitly",
+        "tinyurl",
+        "is.gd",
+        "缩短地址"
+      ],
+      "aliases": [
+        "url shortener",
+        "shorten link",
+        "short link",
+        "link shortener"
+      ],
+      "note": "原始地址会发送给您选择的服务，该服务会保存它：请勿缩短机密内容。FourTout 不添加任何跟踪。"
+    },
+    "web-to-pdf": {
+      "name": "网页转 PDF",
+      "description": "用已安装的 Chromium 浏览器将网页打印为 PDF，可选择纸张格式和页边距。",
+      "keywords": [
+        "网页转 pdf",
+        "网站转 pdf",
+        "打印页面",
+        "将页面存为 pdf",
+        "文章转 pdf",
+        "html 转 pdf",
+        "url 转 pdf"
+      ],
+      "aliases": [
+        "webpage to pdf",
+        "url to pdf",
+        "print page to pdf",
+        "website to pdf"
+      ],
+      "note": "页面由隔离的浏览器加载（空白临时配置文件：没有您的 Cookie 和历史记录）。必须已安装 Chrome、Chromium 或 Edge。"
+    },
+    "web-to-image": {
+      "name": "网页转图像",
+      "description": "将网页完整或按窗口大小捕获为 PNG、JPEG 或 WebP。",
+      "keywords": [
+        "网站截图",
+        "网页截图",
+        "整个页面转图像",
+        "网站转 png",
+        "整页捕获",
+        "url 转图像"
+      ],
+      "aliases": [
+        "webpage to image",
+        "website screenshot",
+        "full page screenshot",
+        "url to png"
+      ],
+      "note": "页面由隔离的浏览器加载（空白临时配置文件）。整页捕获的高度限制为 20,000 像素。"
+    },
+    "web-save-offline": {
+      "name": "离线保存网页",
+      "description": "将页面及其资源保存到一个无需连接即可阅读的 MHTML 文件中。",
+      "keywords": [
+        "保存页面",
+        "离线页面",
+        "mhtml",
+        "归档网站",
+        "保存网页",
+        "单文件页面",
+        "稍后阅读"
+      ],
+      "aliases": [
+        "save webpage offline",
+        "mhtml",
+        "web archive",
+        "save page as"
+      ],
+      "note": "页面由隔离的浏览器加载（空白临时配置文件）。MHTML 文件可在 Chrome、Edge 和大多数基于 Chromium 的浏览器中打开。"
+    },
+    "speed-test": {
+      "name": "网速测试",
+      "description": "测量您连接的延迟、抖动、下载速度和上传速度。",
+      "keywords": [
+        "速度测试",
+        "网速",
+        "speedtest",
+        "上传速度",
+        "下载速度",
+        "我的网络很慢",
+        "延迟",
+        "ping",
+        "抖动",
+        "mbps",
+        "光纤",
+        "wifi 很慢"
+      ],
+      "aliases": [
+        "speed test",
+        "internet speed",
+        "bandwidth test",
+        "download speed",
+        "upload speed"
+      ],
+      "note": "FourTout 生成的测试流量与 Cloudflare 测量服务（speed.cloudflare.com）交换；不会发送您的任何文件。结果会有波动：VPN、Wi-Fi、与服务器的距离和并发流量都会影响它。"
+    },
+    "iso-create": {
+      "name": "创建 ISO 镜像",
+      "description": "将文件夹打包为支持长文件名（Joliet 和 Rock Ridge）的 ISO 9660 文件。",
+      "keywords": [
+        "创建 iso",
+        "制作 iso",
+        "文件夹转 iso",
+        "iso 镜像",
+        "cd 镜像",
+        "dvd 镜像",
+        "iso9660",
+        "joliet",
+        "rock ridge",
+        "iso 归档"
+      ],
+      "aliases": [
+        "create iso",
+        "make iso",
+        "folder to iso",
+        "disc image",
+        "iso maker"
+      ],
+      "note": "生成普通的 .iso 文件，绝不写入磁盘或 U 盘。镜像包含数据：不可启动。"
+    },
+    "iso-inspect": {
+      "name": "检查 ISO 镜像",
+      "description": "读取 ISO 镜像的卷名、文件系统、目录树和启动信息。",
+      "keywords": [
+        "查看 iso 内容",
+        "打开 iso",
+        "iso 文件列表",
+        "iso 卷",
+        "el torito",
+        "可启动 iso",
+        "iso 镜像",
+        "cd 镜像内容"
+      ],
+      "aliases": [
+        "inspect iso",
+        "list iso",
+        "iso viewer",
+        "iso contents",
+        "boot catalog"
+      ],
+      "note": "只读取描述符和目录：镜像不会被提取或修改。纯 UDF 镜像（某些 Windows ISO）仅通过其 ISO 9660 部分读取。"
+    },
+    "iso-extract": {
+      "name": "提取 ISO 镜像",
+      "description": "将 ISO 镜像的全部内容或仅所选文件复制到文件夹。",
+      "keywords": [
+        "提取 iso",
+        "解压 iso",
+        "打开磁盘镜像",
+        "复制 iso 内容",
+        "从 iso 取出文件"
+      ],
+      "aliases": [
+        "extract iso",
+        "unpack iso",
+        "iso extractor",
+        "mount iso alternative"
+      ],
+      "note": "镜像内的名称被视为不可信：无法在所选文件夹之外写入任何内容，未经您要求也不会覆盖任何内容。"
+    },
+    "compress-to-size": {
+      "name": "压缩到最大大小",
+      "description": "让视频、声音、图像或 PDF 符合期望的大小，例如 25 MB。",
+      "keywords": [
+        "小于 25 mb",
+        "最大大小",
+        "符合限制",
+        "附件太大",
+        "邮件太大",
+        "discord 25 mb",
+        "压缩到 500 kb",
+        "目标大小",
+        "发送限制"
+      ],
+      "aliases": [
+        "compress to size",
+        "target file size",
+        "reduce to under",
+        "compress under 25mb",
+        "max file size"
+      ],
+      "note": "期望的大小不会承诺精确到字节：工具会留出余量计算比特率，必要时用更低的值重试，绝不放大图像，并在目标不现实时发出警告。"
+    },
+    "image-upscale": {
+      "name": "用 AI 放大图像",
+      "description": "用在您电脑上运行的超分辨率网络，将图像分辨率提高两倍或四倍。",
+      "keywords": [
+        "放大图像",
+        "放大",
+        "提高分辨率",
+        "模糊图像",
+        "超分辨率",
+        "x2",
+        "x4",
+        "清晰",
+        "照片质量",
+        "esrgan",
+        "高清",
+        "图像增强"
+      ],
+      "aliases": [
+        "ai upscale",
+        "image upscaler",
+        "enhance image",
+        "super resolution",
+        "real-esrgan",
+        "upscale photo"
+      ],
+      "note": "模型（5 MB，BSD-3 许可）按需下载一次；之后一切都在您的电脑上完成，图像不会被发送到任何地方。透明度会保留，但使用普通插值放大。"
+    },
+    "animated-image-convert": {
+      "name": "转换动画图像",
+      "description": "将动画 WebP 或动画 PNG（APNG）转换为 GIF、APNG、动画 WebP、MP4、WebM 或图像序列，且不丢失动画。",
+      "keywords": [
+        "动画 webp",
+        "apng",
+        "动画 png",
+        "webp 转 gif",
+        "webp 转 mp4",
+        "动画转视频",
+        "提取动画帧",
+        "动图",
+        "贴纸",
+        "帧"
+      ],
+      "aliases": [
+        "animated webp",
+        "apng converter",
+        "animated image to gif",
+        "webp to mp4",
+        "animated png"
+      ],
+      "note": "每一帧的时长都会保留。工具会告知目标格式无法保留的内容：透明度（MP4、WebM）、循环（视频）、颜色（GIF）。"
     }
   }
 }

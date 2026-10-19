@@ -2,12 +2,13 @@
 
 [English](README.md) · [Français](README.fr.md) · [Español](README.es.md) · [Português (Brasil)](README.pt-BR.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · **简体中文** · [日本語](README.ja.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
 
-<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — 196 tools. 12 categories. One local desktop app." width="100%">
+<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — one local-first desktop app for PDF, images, audio, video, files, ISO, Internet &amp; Web, developer tools and more." width="100%">
 
-### 196 个工具。12 个分类。一个本地桌面应用。
+### 211 个工具。13 个分类。一个本地桌面应用。
 
-一个桌面工具箱，把 PDF、图片、音频、视频、文档、文件、开发者工具和隐私工具汇集在一起——
-196 个工具、一个应用，而且您的文件始终不会离开您的电脑。
+一个本地优先的桌面工具箱，把 PDF、图片、音频、视频、文档、文件、ISO 工具、互联网与网页实用工具、
+开发者工具、诊断和安全工具汇集在一起——211 个工具、一个应用。处理在您的电脑上完成；
+只有互联网与网页工具以及网速测试会连接所需的服务，并会明确提示。
 
 [![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-and-11)
 [![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#other-linux-distributions)
@@ -74,7 +75,7 @@ JSON、YAML、TOML、XML、SQL、可验证的 JWT、正则表达式、cron、二
 </tr>
 </table>
 
-十二个分类的完整表格见[下文](#功能)；逐个工具的列表见
+十三个分类的完整表格见[下文](#功能)；逐个工具的列表见
 **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**。
 
 ## 语言
@@ -97,7 +98,7 @@ Bahasa Indonesia、हिन्दी、日本語、한국어、简体中文和�
 <td width="50%">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/accueil-dark.webp">
-  <img src="docs/assets/screenshots/accueil-light.webp" alt="首页：收藏、最近使用的工具和十二个分类">
+  <img src="docs/assets/screenshots/accueil-light.webp" alt="首页：收藏、最近使用的工具和十三个分类">
 </picture>
 <p align="center"><sub><b>首页</b> — 收藏、最近使用、分类</sub></p>
 </td>
@@ -178,35 +179,39 @@ FourTout 的出发点正好相反：**能在您电脑上完成的操作，就在
 | 分类 | 工具数 | 示例 |
 | --- | ---: | --- |
 | **PDF** | 26 | 合并、拆分、压缩、涂黑、OCR、找回忘记的密码 |
-| **图片** | 25 | 转换、压缩、裁剪、水印、OCR、**去除背景**、清除 EXIF |
+| **图片** | 27 | 转换、压缩、裁剪、水印、OCR、**去除背景**、清除 EXIF |
 | **音频** | 18 | 转换、标准化、剪掉静音、文字转语音、转写 |
 | **视频** | 20 | 转换、压缩、裁剪、加字幕、压制字幕、视频 ↔ GIF |
 | **文本与文档** | 20 | 清理、比较、Markdown ↔ HTML、读取和转换 DOCX |
-| **文件与压缩包** | 29 | 压缩包、哈希、重复文件、批量重命名、备份、十六进制编辑器 |
+| **文件与压缩包** | 33 | 压缩包、哈希、重复文件、批量重命名、备份、十六进制编辑器 |
 | **转换器** | 1 | 拖入一个文件：FourTout 会列出可行的转换 |
 | **开发者** | 21 | JSON、XML、YAML、TOML、SQL、Base32、**可验证的** JWT、**SQLite 数据库**、正则、cron |
 | **计算器** | 21 | 单位、百分比、日期、**时区**、**带宽**、**利息**、货币 |
-| **网络** | 3 | Ping、端口测试、局域网发现——有边界，绝不越界 |
+| **互联网与网页** | 8 | 下载文件或公开视频、将网页捕获为 PDF 或图片、缩短链接 |
+| **网络** | 4 | Ping、端口测试、局域网发现——有边界，绝不越界 |
 | **诊断与恢复** | 5 | 损坏的文件、无法读取的压缩包、损坏的 PDF、损坏的图片、磁盘与分区 |
 | **安全** | 7 | 密码、文件加密、HMAC、删除元数据 |
 
-每个工具只计入它所属的分类：共 196 个。一个工具也可能出现在其他分类中，方便人们在常找的地方找到它——
+每个工具只计入它所属的分类：共 211 个。一个工具也可能出现在其他分类中，方便人们在常找的地方找到它——
 因此应用中各分类显示的数字会更大。
 
 完整列表，逐个工具：**[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**。
 
 ## 隐私
 
-所有文件处理都在本地完成：PDF、图片、音频、视频、文本、压缩包、哈希、加密、抠图。不会上传任何文件。
+默认情况下所有处理都在本地完成：PDF、图片、音频、视频、文本、压缩包、哈希、加密、抠图、AI 放大、ISO 镜像。处理您文件的工具绝不会上传它们。
 没有账户、没有数据分析、没有遥测、没有自动更新。
 
-只有两项功能例外，而且都会在界面中明确说明：
+部分功能确实会访问网络，而且每一项都会在界面中明确说明：
 
+- **互联网与网页** 工具（文件下载、媒体下载、在线视频片段与 GIF、网址缩短、网页捕获）只连接您指定的地址，不会连接其他地方。
+  网址缩短会把该地址发送给您选择的服务，该服务会保存它。网页捕获驱动您电脑上已安装的 Chromium 浏览器，使用空白的临时配置文件；
+- **网速测试** 会与 Cloudflare 的测量服务交换由 FourTout 生成的测试流量。不会发送您的任何文件；
 - **货币换算器** 会查询欧洲中央银行每日发布的参考汇率。要换算的金额绝不会离开电脑；
   离线时会沿用最近一次获取的汇率，**并注明日期**；
-- 语音合成、转写和抠图的 **模型** 只会在您明确要求时下载一次。之后一切都在本机运行。
+- **模型**（语音合成、转写、抠图、AI 放大）和 **yt-dlp** 引擎只会在您明确要求时下载一次，并用 SHA-256 校验和验证。之后模型在本机运行。
 
-三个 **网络** 工具（ping、端口、局域网发现）会建立真实的连接，但只连接您指定的主机或您的本地子网，
+四个 **网络** 工具（ping、端口、局域网发现、网速测试）会建立真实的连接，但只连接您指定的主机、您的本地子网或测量服务，
 而且必须经过您的点击确认。
 
 逐项说明：**[docs/legal/PRIVACY.md](docs/legal/PRIVACY.md)**。

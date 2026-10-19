@@ -135,6 +135,22 @@
         "wachtwoord",
         "hash"
       ]
+    },
+    "internet": {
+      "name": "Internet & web",
+      "description": "Een bestand of media downloaden, een webpagina vastleggen, een link verkorten, je verbinding meten.",
+      "keywords": [
+        "internet",
+        "web",
+        "downloaden",
+        "download",
+        "url",
+        "link",
+        "site",
+        "youtube",
+        "webpagina",
+        "online"
+      ]
     }
   },
   "tools": {
@@ -606,7 +622,12 @@
         "bmp",
         "tiff",
         "heic",
-        "avif"
+        "avif",
+        "heic naar jpg",
+        "heif naar png",
+        "avif naar jpg",
+        "heic naar webp",
+        "apng"
       ],
       "aliases": [
         "convert image",
@@ -1388,7 +1409,9 @@
         "mkv naar mp4",
         "avi naar mp4",
         "webm",
-        "mov"
+        "mov",
+        "webm naar mp4",
+        "mp4 naar webm"
       ],
       "aliases": [
         "convert video",
@@ -2664,7 +2687,15 @@
         "formaat wijzigen",
         "elk bestand",
         "welk formaat",
-        "converter"
+        "converter",
+        "webp",
+        "webm",
+        "avif",
+        "heic",
+        "heif",
+        "apng",
+        "iso",
+        "welk formaat is dit bestand"
       ],
       "aliases": [
         "universal converter",
@@ -2880,7 +2911,11 @@
         "qr lezen",
         "scannen",
         "qr-code decoderen",
-        "qr uit afbeelding"
+        "qr uit afbeelding",
+        "een qr-code lezen",
+        "een qr scannen",
+        "een qr uit een screenshot decoderen",
+        "qr uit een foto"
       ],
       "aliases": [
         "qr code reader",
@@ -3713,6 +3748,333 @@
         "remove metadata",
         "anonymize file"
       ]
+    },
+    "url-download": {
+      "name": "Bestand downloaden via een URL",
+      "description": "Een HTTP- of HTTPS-bestand opslaan, met hervatten, voortgang en hashcontrole.",
+      "keywords": [
+        "downloaden",
+        "een bestand downloaden",
+        "downloadlink",
+        "wget",
+        "curl",
+        "download hervatten",
+        "url naar bestand",
+        "een link opslaan"
+      ],
+      "aliases": [
+        "download file",
+        "download from url",
+        "file downloader",
+        "wget"
+      ],
+      "note": "FourTout neemt contact op met het adres dat je opgeeft, en alleen met dat adres. Het bestand verschijnt pas onder zijn definitieve naam als het compleet is."
+    },
+    "media-download": {
+      "name": "Media downloaden van internet",
+      "description": "Een openbare video of geluid ophalen als MP4, WebM, MP3, M4A, Opus, WAV of FLAC, met yt-dlp.",
+      "keywords": [
+        "youtube",
+        "een video downloaden",
+        "youtube naar mp3",
+        "youtube naar mp4",
+        "muziek downloaden",
+        "geluid uit een link halen",
+        "online video",
+        "yt-dlp",
+        "een clip downloaden",
+        "vimeo"
+      ],
+      "aliases": [
+        "download video",
+        "youtube downloader",
+        "youtube to mp3",
+        "youtube to mp4",
+        "yt-dlp"
+      ],
+      "note": "yt-dlp neemt contact op met de mediadienst; het wordt op verzoek geïnstalleerd en met een hash gecontroleerd. Alleen openbare inhoud wordt ondersteund: geen DRM, geen account, geen cookies."
+    },
+    "media-url-excerpt": {
+      "name": "Fragment van een online video downloaden",
+      "description": "Alleen het gewenste deel van een openbare video ophalen, van het ene moment tot het andere.",
+      "keywords": [
+        "youtube-fragment",
+        "een online video knippen",
+        "deel van een video",
+        "clip uit een video",
+        "een passage downloaden",
+        "een youtube-video knippen",
+        "begin en einde"
+      ],
+      "aliases": [
+        "download video clip",
+        "youtube clip",
+        "cut online video",
+        "video excerpt"
+      ],
+      "note": "Als de dienst het toestaat, wordt alleen het fragment gedownload; anders wordt de hele bron gedownload en hier bijgesneden — het hulpmiddel zegt je welk van de twee gebeurde."
+    },
+    "media-url-gif": {
+      "name": "Online video naar GIF of geanimeerde WebP",
+      "description": "Een GIF of geanimeerde WebP van redelijke grootte maken van enkele seconden van een openbare link.",
+      "keywords": [
+        "youtube-gif",
+        "een gif maken van een link",
+        "geanimeerde webp van een link",
+        "meme",
+        "lus",
+        "gif van een url",
+        "animatie van een video"
+      ],
+      "aliases": [
+        "online video to gif",
+        "youtube to gif",
+        "url to gif",
+        "video url to webp"
+      ],
+      "note": "Alleen het gevraagde fragment wordt gebruikt, in hoogstens 720p: een animatie heeft niet meer nodig. Standaard worden bescheiden instellingen voorgesteld, want een GIF groeit razendsnel."
+    },
+    "url-shorten": {
+      "name": "Een URL verkorten",
+      "description": "Een korte link krijgen van een openbare dienst (is.gd, v.gd of TinyURL), met één klik te kopiëren.",
+      "keywords": [
+        "een link verkorten",
+        "korte link",
+        "korte url",
+        "bitly",
+        "tinyurl",
+        "is.gd",
+        "een adres inkorten"
+      ],
+      "aliases": [
+        "url shortener",
+        "shorten link",
+        "short link",
+        "link shortener"
+      ],
+      "note": "Het oorspronkelijke adres wordt naar de dienst van je keuze gestuurd, die het bewaart: verkort niets vertrouwelijks. FourTout voegt geen tracking toe."
+    },
+    "web-to-pdf": {
+      "name": "Webpagina naar pdf",
+      "description": "Een webpagina als pdf afdrukken met een al geïnstalleerde Chromium-browser, met papierformaat en marges naar keuze.",
+      "keywords": [
+        "webpagina naar pdf",
+        "site naar pdf",
+        "een pagina afdrukken",
+        "een pagina als pdf opslaan",
+        "artikel naar pdf",
+        "html naar pdf",
+        "url naar pdf"
+      ],
+      "aliases": [
+        "webpage to pdf",
+        "url to pdf",
+        "print page to pdf",
+        "website to pdf"
+      ],
+      "note": "De pagina wordt geladen door een geïsoleerde browser (leeg tijdelijk profiel: geen van je cookies of geschiedenis). Chrome, Chromium of Edge moet geïnstalleerd zijn."
+    },
+    "web-to-image": {
+      "name": "Webpagina naar afbeelding",
+      "description": "Een webpagina vastleggen, geheel of op venstergrootte, als PNG, JPEG of WebP.",
+      "keywords": [
+        "screenshot van een site",
+        "screenshot van een webpagina",
+        "hele pagina als afbeelding",
+        "site naar png",
+        "opname van de hele pagina",
+        "url naar afbeelding"
+      ],
+      "aliases": [
+        "webpage to image",
+        "website screenshot",
+        "full page screenshot",
+        "url to png"
+      ],
+      "note": "De pagina wordt geladen door een geïsoleerde browser (leeg tijdelijk profiel). Een opname van de hele pagina is beperkt tot 20.000 pixels hoog."
+    },
+    "web-save-offline": {
+      "name": "Webpagina offline opslaan",
+      "description": "Een pagina met haar bronnen opslaan in één MHTML-bestand, leesbaar zonder verbinding.",
+      "keywords": [
+        "een pagina opslaan",
+        "offline pagina",
+        "mhtml",
+        "een site archiveren",
+        "een webpagina opslaan",
+        "pagina in één bestand",
+        "later lezen"
+      ],
+      "aliases": [
+        "save webpage offline",
+        "mhtml",
+        "web archive",
+        "save page as"
+      ],
+      "note": "De pagina wordt geladen door een geïsoleerde browser (leeg tijdelijk profiel). Het MHTML-bestand opent in Chrome, Edge en de meeste Chromium-browsers."
+    },
+    "speed-test": {
+      "name": "Internetsnelheidstest",
+      "description": "De latentie, jitter, downloadsnelheid en uploadsnelheid van je verbinding meten.",
+      "keywords": [
+        "snelheidstest",
+        "internetsnelheid",
+        "speedtest",
+        "uploadsnelheid",
+        "downloadsnelheid",
+        "mijn verbinding is traag",
+        "latentie",
+        "jitter",
+        "mbps",
+        "glasvezel",
+        "trage wifi"
+      ],
+      "aliases": [
+        "speed test",
+        "internet speed",
+        "bandwidth test",
+        "download speed",
+        "upload speed"
+      ],
+      "note": "Door FourTout gegenereerd testverkeer wordt uitgewisseld met de meetdienst van Cloudflare (speed.cloudflare.com); geen van je bestanden wordt verzonden. Resultaten variëren: vpn, wifi, afstand tot de server en concurrerend verkeer beïnvloeden ze."
+    },
+    "iso-create": {
+      "name": "ISO-image maken",
+      "description": "Een map samenbrengen in een ISO 9660-bestand met lange namen (Joliet en Rock Ridge).",
+      "keywords": [
+        "een iso maken",
+        "iso aanmaken",
+        "map naar iso",
+        "iso-image",
+        "cd-image",
+        "dvd-image",
+        "iso9660",
+        "joliet",
+        "rock ridge",
+        "iso-archief"
+      ],
+      "aliases": [
+        "create iso",
+        "make iso",
+        "folder to iso",
+        "disc image",
+        "iso maker"
+      ],
+      "note": "Maakt een gewoon .iso-bestand, nooit een schrijfactie naar een schijf of usb-stick. Het image bevat gegevens: het is niet opstartbaar."
+    },
+    "iso-inspect": {
+      "name": "ISO-image inspecteren",
+      "description": "De volumenaam, bestandssystemen, boomstructuur en opstartgegevens van een ISO lezen.",
+      "keywords": [
+        "de inhoud van een iso bekijken",
+        "een iso openen",
+        "een iso weergeven",
+        "iso-volume",
+        "el torito",
+        "opstartbare iso",
+        "iso-image",
+        "inhoud van een cd-image"
+      ],
+      "aliases": [
+        "inspect iso",
+        "list iso",
+        "iso viewer",
+        "iso contents",
+        "boot catalog"
+      ],
+      "note": "Alleen descriptors en mappen worden gelezen: het image wordt niet uitgepakt of gewijzigd. Een zuiver UDF-image (sommige Windows-ISO's) wordt alleen via zijn ISO 9660-deel gelezen."
+    },
+    "iso-extract": {
+      "name": "ISO-image uitpakken",
+      "description": "De hele inhoud van een ISO, of alleen de gekozen bestanden, naar een map kopiëren.",
+      "keywords": [
+        "een iso uitpakken",
+        "een iso uitpakken naar map",
+        "een schijfimage openen",
+        "de inhoud van een iso kopiëren",
+        "bestanden uit een iso halen"
+      ],
+      "aliases": [
+        "extract iso",
+        "unpack iso",
+        "iso extractor",
+        "mount iso alternative"
+      ],
+      "note": "Namen in het image worden als vijandig behandeld: er kan niets buiten de gekozen map worden geschreven en niets wordt overschreven tenzij je erom vraagt."
+    },
+    "compress-to-size": {
+      "name": "Comprimeren tot een maximale grootte",
+      "description": "Onder een gewenste grootte komen, bijvoorbeeld 25 MB, voor een video, geluid, afbeelding of pdf.",
+      "keywords": [
+        "minder dan 25 mb",
+        "maximale grootte",
+        "onder een limiet komen",
+        "bijlage te zwaar",
+        "mail te groot",
+        "discord 25 mb",
+        "comprimeren tot 500 kb",
+        "streefgewicht",
+        "uploadlimiet"
+      ],
+      "aliases": [
+        "compress to size",
+        "target file size",
+        "reduce to under",
+        "compress under 25mb",
+        "max file size"
+      ],
+      "note": "De gewenste grootte wordt nooit tot op de byte beloofd: het hulpmiddel berekent een bitrate met veiligheidsmarge, probeert zo nodig lager opnieuw, vergroot de afbeelding nooit en waarschuwt als het doel onrealistisch is."
+    },
+    "image-upscale": {
+      "name": "Afbeelding vergroten met AI",
+      "description": "De resolutie van een afbeelding verdubbelen of verviervoudigen met een superresolutienetwerk dat op je machine draait.",
+      "keywords": [
+        "een afbeelding vergroten",
+        "upscale",
+        "resolutie verbeteren",
+        "onscherpe afbeelding",
+        "superresolutie",
+        "x2",
+        "x4",
+        "scherp",
+        "fotokwaliteit",
+        "esrgan",
+        "hoge definitie",
+        "beeldverbetering"
+      ],
+      "aliases": [
+        "ai upscale",
+        "image upscaler",
+        "enhance image",
+        "super resolution",
+        "real-esrgan",
+        "upscale photo"
+      ],
+      "note": "Het model (5 MB, BSD-3-licentie) wordt eenmalig op verzoek gedownload; daarna gebeurt alles op je machine en wordt de afbeelding nergens naartoe gestuurd. Transparantie blijft behouden, maar wordt met gewone interpolatie vergroot."
+    },
+    "animated-image-convert": {
+      "name": "Geanimeerde afbeelding converteren",
+      "description": "Een geanimeerde WebP of geanimeerde PNG (APNG) omzetten naar GIF, APNG, geanimeerde WebP, MP4, WebM of een reeks afbeeldingen, zonder de animatie te verliezen.",
+      "keywords": [
+        "geanimeerde webp",
+        "apng",
+        "geanimeerde png",
+        "webp naar gif",
+        "webp naar mp4",
+        "animatie naar video",
+        "de frames van een animatie extraheren",
+        "geanimeerde gif",
+        "sticker",
+        "frames"
+      ],
+      "aliases": [
+        "animated webp",
+        "apng converter",
+        "animated image to gif",
+        "webp to mp4",
+        "animated png"
+      ],
+      "note": "De duur van elk frame blijft behouden. Het hulpmiddel zegt je wat de bestemming niet kan bewaren: transparantie (MP4, WebM), herhaling (video), kleuren (GIF)."
     }
   }
 }

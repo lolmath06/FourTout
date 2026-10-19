@@ -22,10 +22,12 @@ Trois outils : `network-ping`, `network-ports`, `network-lan`. Code natif dans
 `src-tauri/src/network/`, client dans `src/core/network/native.ts`, interfaces
 dans `src/tools/impl/network/`.
 
-Ce sont, avec le convertisseur de devises, les seuls outils de FourTout à ne
-pas porter la capacité `local` : ils ouvrent de vraies connexions. Aucun ne
-parle à Internet de sa propre initiative, et aucun n'envoie quoi que ce soit à
-un service distant.
+Ils ouvrent de vraies connexions, mais aucun ne parle à Internet de sa propre
+initiative, et aucun n'envoie quoi que ce soit à un service distant. La
+catégorie liste aussi le **test de débit** (`speed-test`), qui échange du
+trafic de test généré avec Cloudflare ; il relève d'[Internet & Web](INTERNET.md)
+et suit les règles de cette page-là, pas les bornes réservées au réseau local
+ci-dessous.
 
 ---
 

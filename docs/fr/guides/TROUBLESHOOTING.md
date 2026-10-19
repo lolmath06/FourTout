@@ -205,6 +205,40 @@ propre zoom par-dessus. `Ctrl` `0` remet tout à plat.
 
 ---
 
+## Outils Internet & Web
+
+### Un média en ligne ne se télécharge pas
+
+yt-dlp ne traite que les contenus publics. Les contenus protégés par DRM, privés,
+réservés aux abonnés, soumis à une connexion, les directs et ceux bloqués
+géographiquement sont refusés, et FourTout ne contourne rien. Si yt-dlp n'est
+pas installé, l'outil propose de l'installer (somme vérifiée). Si un site a changé
+et qu'un ancien yt-dlp échoue, utilisez *Rechercher une mise à jour*. Certains
+formats récents de YouTube exigent un moteur JavaScript (Deno ou Node.js) sur le
+système. La fusion, la conversion MP3 et la découpe exigent FFmpeg.
+
+### La capture web dit qu'aucun navigateur n'a été trouvé
+
+Les outils exigent Chrome, Chromium, Edge ou Brave déjà installé ; FourTout n'en
+embarque pas. Installez-en un, ou renseignez `FOURTOUT_BROWSER` avec l'exécutable.
+
+### Un téléchargement repart de zéro
+
+La reprise exige que le serveur accepte les plages et confirme que le fichier n'a
+pas changé. Sinon FourTout recommence et le dit.
+
+### Le test de débit semble bas ou instable
+
+VPN, Wi-Fi, distance au serveur et autre trafic changent le résultat. Répétez le
+test, de préférence en filaire, avec les autres téléchargements en pause.
+
+## HEIC, AVIF ou images animées non proposés
+
+HEIC est décodé par FourTout lui-même et exige l'application installée. AVIF
+n'est proposé que si le FFmpeg de la machine sait vraiment le décoder ; le
+convertisseur le dit quand ce n'est pas le cas. WebP animé et APNG exigent FFmpeg
+pour les conversions vers la vidéo.
+
 ## Repartir de zéro
 
 **Paramètres → Données locales → Tout effacer** remet FourTout à son état

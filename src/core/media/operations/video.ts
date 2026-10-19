@@ -59,6 +59,40 @@ export function videoToGif(options: {
   };
 }
 
+/**
+ * Vidéo → WebP animé. L'encodeur (`libwebp_anim` ou `libwebp`) est celui que le
+ * FFmpeg en place possède réellement ; la largeur ne dépasse jamais celle de la
+ * source.
+ */
+export function videoToWebp(options: {
+  startMs?: number;
+  durationMs?: number;
+  fps?: number;
+  width?: number;
+  quality?: number;
+  encoder: "libwebp_anim" | "libwebp";
+}): VideoOp {
+  const fps = options.fps ?? 12;
+  const width = options.width ?? 480;
+  const quality = Math.min(100, Math.max(1, options.quality ?? 70));
+  return {
+    outputExt: "webp",
+    mimeType: "image/webp",
+    buildArgs: (inputs, output) => {
+      const args: string[] = [];
+      if (options.startMs) args.push("-ss", secs(options.startMs));
+      args.push("-i", inputs[0]);
+      if (options.durationMs) args.push("-t", secs(options.durationMs));
+      args.push(
+        "-vf", `fps=${fps},scale='min(${width},iw)':-2:flags=lanczos`,
+        "-an", "-c:v", options.encoder, "-lossless", "0", "-q:v", String(quality),
+        "-compression_level", "4", "-loop", "0", output,
+      );
+      return args;
+    },
+  };
+}
+
 export type VideoContainer = "mp4" | "webm";
 
 /** Encodeur H.264 logiciel : `libx264` (builds complets) ou `libopenh264`

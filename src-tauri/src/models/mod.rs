@@ -50,6 +50,8 @@ pub enum AssetKind {
     SttModel,
     /// Modèle de segmentation d'image (suppression d'arrière-plan).
     Segmentation,
+    /// Modèle de super-résolution (agrandissement d'image).
+    Upscale,
 }
 
 /// Un élément installable, tel que présenté à l'utilisateur.
@@ -305,6 +307,44 @@ pub const CATALOG: &[Asset] = &[
         check: &["segmentation/u2net.onnx"],
         license: "Apache 2.0",
         source: "https://github.com/xuebinqin/U-2-Net",
+    },
+    Asset {
+        id: "upscale-realesr-x4v3",
+        kind: AssetKind::Upscale,
+        label: "Agrandissement IA — Real-ESRGAN général",
+        detail: "Super-résolution ×4 compacte : textures et contours reconstruits, fonctionne hors ligne.",
+        language: None,
+        files: UPSCALE_FILES,
+        check: &["upscale/realesr-general-x4v3/model.onnx", "upscale/realesr-general-x4v3/model.data"],
+        license: "BSD-3-Clause",
+        source: "https://github.com/xinntao/Real-ESRGAN",
+    },
+];
+
+// --- Super-résolution (agrandissement d'image) ------------------------------
+//
+// Real-ESRGAN « general x4 v3 » (SRVGGNetCompact) : réseau compact de 4,9 Mo,
+// publié sous licence BSD-3-Clause (code et poids de xinntao/Real-ESRGAN). La
+// conversion ONNX est celle du dépôt Hugging Face `TheGuy444/Real-ESRGAN-ONNX`,
+// épinglée à une révision précise : l'URL ne change jamais de contenu.
+//
+// Le graphe (42 Ko) et les poids (4,8 Mo) sont deux fichiers, le second étant
+// la « donnée externe » du premier. Entrée fixe : 128×128, RGB 0-1, sortie 4×.
+
+const UPSCALE_FILES: &[AssetFile] = &[
+    AssetFile {
+        url: "https://huggingface.co/TheGuy444/Real-ESRGAN-ONNX/resolve/4c80f3da1a8a85f0757a9e7f79e08d0307220eb5/onnx/model.onnx",
+        sha256: "2d1810f8b75c6a899487decf933697241eafbe6327d7b723674ba6df73a08fda",
+        size: 42_443,
+        target: "upscale/realesr-general-x4v3/model.onnx",
+        archive: None,
+    },
+    AssetFile {
+        url: "https://huggingface.co/TheGuy444/Real-ESRGAN-ONNX/resolve/4c80f3da1a8a85f0757a9e7f79e08d0307220eb5/onnx/model.data",
+        sha256: "512d0ec9940c2e9d85d27f2952f12a0b77b7841dc22df4ce9f3ea458bc98f37f",
+        size: 4_836_096,
+        target: "upscale/realesr-general-x4v3/model.data",
+        archive: None,
     },
 ];
 

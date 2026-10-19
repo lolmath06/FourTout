@@ -23,6 +23,13 @@ const TOOLS = ALL_TOOLS.length;
 const CATEGORY_COUNT = CATEGORIES.length;
 
 /** Nombres écrits en lettres, tels que la documentation les emploie. */
+const SPELLED_EN: Record<number, string> = {
+  10: "ten",
+  11: "eleven",
+  12: "twelve",
+  13: "thirteen",
+};
+
 const SPELLED: Record<number, string> = {
   10: "dix",
   11: "onze",
@@ -87,14 +94,14 @@ describe("les chiffres de la documentation suivent le registre", () => {
     expect(read("docs/fr/guides/USER_GUIDE.md")).toContain(
       `les ${SPELLED[CATEGORY_COUNT]} catégories`,
     );
-    expect(read("docs/guides/USER_GUIDE.md")).toContain("the twelve categories");
+    expect(read("docs/guides/USER_GUIDE.md")).toContain(`the ${SPELLED_EN[CATEGORY_COUNT]} categories`);
   });
 
   it("ne laisse traîner aucun ancien total dans les pages d'état actuel", () => {
     // Les totaux des étapes précédentes n'ont rien à faire dans une page qui
     // décrit le produit d'aujourd'hui. Le journal des versions, lui, a le droit
     // de raconter l'histoire — il n'est donc pas vérifié ici.
-    const stale = [152, 160, 174, 181, 191].filter((count) => count !== TOOLS);
+    const stale = [152, 160, 174, 181, 191, 196].filter((count) => count !== TOOLS);
     for (const page of ["README.md", "README.fr.md", "docs/README.md", "docs/fr/README.md", "ROADMAP.md", "ROADMAP.fr.md", "docs/guides/FEATURES.md", "docs/fr/guides/FEATURES.md"]) {
       const text = read(page);
       for (const count of stale) {

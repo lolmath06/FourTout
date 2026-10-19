@@ -2,7 +2,7 @@
 
 [English](ROADMAP.md) | [Français](ROADMAP.fr.md)
 
-FourTout is complete for its intended scope: all 196 tools are usable. This
+FourTout is complete for its intended scope: all 211 tools are usable. This
 page lists ideas that may come next. Nothing here is promised, and **none of
 these items appears in the application**: the catalog contains working tools
 only.

@@ -21,6 +21,7 @@ pub mod crypto;
 pub mod docx;
 pub mod hash;
 pub mod hex;
+pub mod iso;
 pub mod magic;
 pub mod manifest;
 pub mod rename;

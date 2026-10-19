@@ -137,6 +137,22 @@
         "şifre",
         "hash"
       ]
+    },
+    "internet": {
+      "name": "İnternet ve Web",
+      "description": "Bir dosyayı veya medyayı indirin, bir web sayfasını yakalayın, bağlantı kısaltın, bağlantınızı ölçün.",
+      "keywords": [
+        "internet",
+        "web",
+        "indir",
+        "indirme",
+        "url",
+        "bağlantı",
+        "site",
+        "youtube",
+        "web sayfası",
+        "çevrim içi"
+      ]
     }
   },
   "tools": {
@@ -610,7 +626,13 @@
         "bmp",
         "tiff",
         "heic",
-        "avif"
+        "avif",
+        "heic jpg",
+        "heif png",
+        "avif jpg",
+        "heic webp",
+        "apng",
+        "webp png"
       ],
       "aliases": [
         "convert image",
@@ -1392,7 +1414,9 @@
         "mkv'den mp4",
         "avi'den mp4",
         "webm",
-        "mov"
+        "mov",
+        "webm mp4",
+        "mp4 webm"
       ],
       "aliases": [
         "convert video",
@@ -2679,7 +2703,15 @@
         "biçim değiştir",
         "herhangi bir dosya",
         "hangi biçim",
-        "dönüştürücü"
+        "dönüştürücü",
+        "webp",
+        "webm",
+        "avif",
+        "heic",
+        "heif",
+        "apng",
+        "iso",
+        "bu hangi dosya biçimi"
       ],
       "aliases": [
         "universal converter",
@@ -2898,7 +2930,11 @@
         "qr oku",
         "tara",
         "qr kodu çöz",
-        "görselden qr"
+        "görselden qr",
+        "qr kod oku",
+        "qr tara",
+        "ekran görüntüsünden qr çöz",
+        "fotoğraftan qr"
       ],
       "aliases": [
         "qr code reader",
@@ -3736,6 +3772,334 @@
         "remove metadata",
         "anonymize file"
       ]
+    },
+    "url-download": {
+      "name": "URL'den dosya indir",
+      "description": "HTTP veya HTTPS üzerinden bir dosyayı sürdürme, ilerleme ve sağlama toplamı denetimiyle kaydedin.",
+      "keywords": [
+        "indir",
+        "dosya indir",
+        "indirme bağlantısı",
+        "wget",
+        "curl",
+        "indirmeyi sürdür",
+        "url'den dosyaya",
+        "bağlantıyı kaydet"
+      ],
+      "aliases": [
+        "download file",
+        "download from url",
+        "file downloader",
+        "wget"
+      ],
+      "note": "FourTout yalnızca sizin verdiğiniz adrese bağlanır. Dosya, tamamen inene kadar son adıyla görünmez."
+    },
+    "media-download": {
+      "name": "İnternetten medya indir",
+      "description": "Herkese açık bir videoyu veya sesi yt-dlp ile MP4, WebM, MP3, M4A, Opus, WAV veya FLAC olarak alın.",
+      "keywords": [
+        "youtube",
+        "video indir",
+        "youtube mp3",
+        "youtube mp4",
+        "müzik indir",
+        "bağlantıdan ses çıkar",
+        "çevrim içi video",
+        "yt-dlp",
+        "klip indir",
+        "vimeo"
+      ],
+      "aliases": [
+        "download video",
+        "youtube downloader",
+        "youtube to mp3",
+        "youtube to mp4",
+        "yt-dlp"
+      ],
+      "note": "yt-dlp medya hizmetine bağlanır; istek üzerine kurulur ve sağlama toplamıyla doğrulanır. Yalnızca herkese açık içerik: DRM yok, hesap yok, çerez yok."
+    },
+    "media-url-excerpt": {
+      "name": "Çevrim içi videodan parça indir",
+      "description": "Herkese açık bir videonun yalnızca istediğiniz bölümünü, bir andan diğerine kadar alın.",
+      "keywords": [
+        "youtube parçası",
+        "çevrim içi video kes",
+        "videonun bir bölümü",
+        "videodan klip",
+        "alıntı indir",
+        "youtube videosu kes",
+        "başlangıç ve bitiş"
+      ],
+      "aliases": [
+        "download video clip",
+        "youtube clip",
+        "cut online video",
+        "video excerpt"
+      ],
+      "note": "Hizmet izin verirse yalnızca parça indirilir; yoksa kaynağın tamamı indirilip burada kırpılır — araç hangisinin olduğunu bildirir."
+    },
+    "media-url-gif": {
+      "name": "Çevrim içi videodan GIF veya animasyonlu WebP",
+      "description": "Herkese açık bir bağlantının birkaç saniyesinden makul boyutta bir GIF veya animasyonlu WebP üretin.",
+      "keywords": [
+        "youtube gif",
+        "bağlantıdan gif yap",
+        "bağlantıdan animasyonlu webp",
+        "meme",
+        "döngü",
+        "url'den gif",
+        "videodan animasyon"
+      ],
+      "aliases": [
+        "online video to gif",
+        "youtube to gif",
+        "url to gif",
+        "video url to webp"
+      ],
+      "note": "Yalnızca istenen parça kullanılır, en çok 720p: bir animasyon için fazlası gerekmez. GIF çok hızlı büyüdüğünden varsayılan ayarlar ölçülüdür."
+    },
+    "url-shorten": {
+      "name": "URL kısalt",
+      "description": "Herkese açık bir hizmetten (is.gd, v.gd veya TinyURL) tek tıkla kopyalanabilen kısa bir bağlantı alın.",
+      "keywords": [
+        "bağlantı kısalt",
+        "kısa bağlantı",
+        "kısa url",
+        "bitly",
+        "tinyurl",
+        "is.gd",
+        "adresi kısalt"
+      ],
+      "aliases": [
+        "url shortener",
+        "shorten link",
+        "short link",
+        "link shortener"
+      ],
+      "note": "Özgün adres, onu saklayan seçtiğiniz hizmete gönderilir: gizli hiçbir şeyi kısaltmayın. FourTout hiçbir izleme eklemez."
+    },
+    "web-to-pdf": {
+      "name": "Web sayfasından PDF",
+      "description": "Bir web sayfasını, seçtiğiniz kâğıt biçimi ve kenar boşluklarıyla, kurulu Chromium tarayıcınızla PDF olarak yazdırın.",
+      "keywords": [
+        "web sayfasından pdf",
+        "siteden pdf",
+        "sayfayı yazdır",
+        "sayfayı pdf olarak kaydet",
+        "makaleden pdf",
+        "html'den pdf",
+        "url'den pdf"
+      ],
+      "aliases": [
+        "webpage to pdf",
+        "url to pdf",
+        "print page to pdf",
+        "website to pdf"
+      ],
+      "note": "Sayfa yalıtılmış bir tarayıcıyla yüklenir (boş geçici profil: çerezleriniz ve geçmişiniz yok). Chrome, Chromium veya Edge kurulu olmalı."
+    },
+    "web-to-image": {
+      "name": "Web sayfasından görüntü",
+      "description": "Bir web sayfasını tamamen veya pencere boyutunda PNG, JPEG ya da WebP olarak yakalayın.",
+      "keywords": [
+        "site ekran görüntüsü",
+        "web sayfası ekran görüntüsü",
+        "tüm sayfa görüntü",
+        "siteden png",
+        "tam sayfa yakalama",
+        "url'den görüntü"
+      ],
+      "aliases": [
+        "webpage to image",
+        "website screenshot",
+        "full page screenshot",
+        "url to png"
+      ],
+      "note": "Sayfa yalıtılmış bir tarayıcıyla yüklenir (boş geçici profil). Tam sayfa yakalama 20.000 piksel yükseklikle sınırlıdır."
+    },
+    "web-save-offline": {
+      "name": "Web sayfasını çevrim dışı kaydet",
+      "description": "Bir sayfayı ve kaynaklarını, bağlantısız okunabilen tek bir MHTML dosyasında saklayın.",
+      "keywords": [
+        "sayfayı kaydet",
+        "çevrim dışı sayfa",
+        "mhtml",
+        "siteyi arşivle",
+        "web sayfasını kaydet",
+        "tek dosyada sayfa",
+        "sonra oku"
+      ],
+      "aliases": [
+        "save webpage offline",
+        "mhtml",
+        "web archive",
+        "save page as"
+      ],
+      "note": "Sayfa yalıtılmış bir tarayıcıyla yüklenir (boş geçici profil). MHTML dosyası Chrome, Edge ve çoğu Chromium tabanlı tarayıcıda açılır."
+    },
+    "speed-test": {
+      "name": "İnternet hız testi",
+      "description": "Bağlantınızın gecikmesini, titreşimini, indirme ve yükleme hızını ölçün.",
+      "keywords": [
+        "hız testi",
+        "internet hızı",
+        "speedtest",
+        "yükleme hızı",
+        "indirme hızı",
+        "bağlantım yavaş",
+        "gecikme",
+        "ping",
+        "titreşim",
+        "mb/sn",
+        "fiber",
+        "yavaş wifi"
+      ],
+      "aliases": [
+        "speed test",
+        "internet speed",
+        "bandwidth test",
+        "download speed",
+        "upload speed"
+      ],
+      "note": "FourTout'un ürettiği sınama trafiği Cloudflare ölçüm hizmetiyle (speed.cloudflare.com) değiş tokuş edilir; dosyalarınızın hiçbiri gönderilmez. Sonuçlar değişir: VPN, Wi-Fi, sunucuya uzaklık ve eşzamanlı trafik etkiler."
+    },
+    "iso-create": {
+      "name": "ISO görüntüsü oluştur",
+      "description": "Bir klasörü uzun adlarla (Joliet ve Rock Ridge) ISO 9660 dosyasına dönüştürün.",
+      "keywords": [
+        "iso oluştur",
+        "iso yap",
+        "klasörden iso",
+        "iso görüntüsü",
+        "cd görüntüsü",
+        "dvd görüntüsü",
+        "iso9660",
+        "joliet",
+        "rock ridge",
+        "iso arşivi"
+      ],
+      "aliases": [
+        "create iso",
+        "make iso",
+        "folder to iso",
+        "disc image",
+        "iso maker"
+      ],
+      "note": "Sıradan bir .iso dosyası üretir, hiçbir zaman bir diske veya USB belleğe yazmaz. Görüntü veri içerir: önyüklenebilir değildir."
+    },
+    "iso-inspect": {
+      "name": "ISO görüntüsünü incele",
+      "description": "Bir ISO görüntüsünün birim adını, dosya sistemlerini, ağacını ve önyükleme bilgilerini okuyun.",
+      "keywords": [
+        "iso içeriğini gör",
+        "iso aç",
+        "iso dosya listesi",
+        "iso birimi",
+        "el torito",
+        "önyüklenebilir iso",
+        "iso görüntüsü",
+        "cd görüntüsü içeriği"
+      ],
+      "aliases": [
+        "inspect iso",
+        "list iso",
+        "iso viewer",
+        "iso contents",
+        "boot catalog"
+      ],
+      "note": "Yalnızca tanımlayıcılar ve dizinler okunur: görüntü ne çıkarılır ne de değiştirilir. Saf bir UDF görüntüsü (bazı Windows ISO'ları) yalnızca ISO 9660 bölümü üzerinden okunur."
+    },
+    "iso-extract": {
+      "name": "ISO görüntüsünü çıkar",
+      "description": "Bir ISO görüntüsünün tüm içeriğini veya yalnızca seçtiğiniz dosyaları bir klasöre kopyalayın.",
+      "keywords": [
+        "iso çıkar",
+        "iso aç",
+        "disk görüntüsünü aç",
+        "iso içeriğini kopyala",
+        "iso'dan dosya al"
+      ],
+      "aliases": [
+        "extract iso",
+        "unpack iso",
+        "iso extractor",
+        "mount iso alternative"
+      ],
+      "note": "Görüntü içindeki adlara düşmanca davranılır: seçilen klasörün dışına hiçbir şey yazılamaz ve siz istemeden hiçbir şey üzerine yazılmaz."
+    },
+    "compress-to-size": {
+      "name": "Azami boyuta sıkıştır",
+      "description": "Bir videoyu, sesi, görüntüyü veya PDF'yi 25 MB gibi istenen boyuta sığdırın.",
+      "keywords": [
+        "25 mb altı",
+        "azami boyut",
+        "sınıra sığdır",
+        "ek çok ağır",
+        "e-posta çok büyük",
+        "discord 25 mb",
+        "500 kb'a sıkıştır",
+        "hedef boyut",
+        "gönderim sınırı"
+      ],
+      "aliases": [
+        "compress to size",
+        "target file size",
+        "reduce to under",
+        "compress under 25mb",
+        "max file size"
+      ],
+      "note": "İstenen boyut bayt düzeyinde asla vaat edilmez: araç payla bir bit hızı hesaplar, gerekirse daha düşüğüyle yeniden dener, görüntüyü asla büyütmez ve hedef gerçekçi olmadığında uyarır."
+    },
+    "image-upscale": {
+      "name": "Yapay zekâ ile görüntü büyüt",
+      "description": "Bir görüntünün çözünürlüğünü, bilgisayarınızda çalışan bir süper çözünürlük ağıyla iki veya dört katına çıkarın.",
+      "keywords": [
+        "görüntü büyüt",
+        "upscale",
+        "çözünürlüğü artır",
+        "bulanık görüntü",
+        "süper çözünürlük",
+        "x2",
+        "x4",
+        "keskin",
+        "fotoğraf kalitesi",
+        "esrgan",
+        "yüksek netlik",
+        "görüntü iyileştirme"
+      ],
+      "aliases": [
+        "ai upscale",
+        "image upscaler",
+        "enhance image",
+        "super resolution",
+        "real-esrgan",
+        "upscale photo"
+      ],
+      "note": "Model (5 MB, BSD-3 lisansı) istek üzerine bir kez indirilir; sonra her şey bilgisayarınızda olur ve görüntü hiçbir yere gönderilmez. Saydamlık korunur ama sıradan aradeğerlemeyle büyütülür."
+    },
+    "animated-image-convert": {
+      "name": "Animasyonlu görüntü dönüştür",
+      "description": "Animasyonlu bir WebP veya animasyonlu PNG'yi (APNG), animasyonu kaybetmeden GIF, APNG, animasyonlu WebP, MP4, WebM veya görüntü serisine dönüştürün.",
+      "keywords": [
+        "animasyonlu webp",
+        "apng",
+        "animasyonlu png",
+        "webp gif",
+        "webp mp4",
+        "animasyondan video",
+        "animasyon karelerini çıkar",
+        "animasyonlu gif",
+        "çıkartma",
+        "kareler"
+      ],
+      "aliases": [
+        "animated webp",
+        "apng converter",
+        "animated image to gif",
+        "webp to mp4",
+        "animated png"
+      ],
+      "note": "Her karenin süresi korunur. Araç, hedef biçimin neyi saklayamadığını bildirir: saydamlık (MP4, WebM), döngü (video), renkler (GIF)."
     }
   }
 }

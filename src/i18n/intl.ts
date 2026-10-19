@@ -173,7 +173,10 @@ export function formatBinarySize(
 }
 
 /** Taille en multiples décimaux (1000) : tailles de téléchargement, débits. */
-export function formatDecimalSize(bytes: number, decimals: (value: number) => number): string {
+export function formatDecimalSize(
+  bytes: number,
+  decimals: (value: number) => number = (value) => (value < 10 ? 1 : 0),
+): string {
   if (!Number.isFinite(bytes) || bytes < 0) return "—";
   const symbols = byteSymbols();
   if (bytes < 1000) return `${bytes} ${symbols.byte}`;

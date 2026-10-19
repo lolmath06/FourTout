@@ -33,7 +33,7 @@ quelques minutes.
   horaires* pour remplir les récents.
 - **Clics** : revenir à l'Accueil, cliquer hors du champ de recherche.
 - **Capture** : la fenêtre avec sa barre de titre Windows (`Alt + Impr. écran`).
-- **Attendu** : favoris, récents et les douze catégories, barre de titre
+- **Attendu** : favoris, récents et les treize catégories, barre de titre
   « FourTout ».
 
 ## 2. Vidéo — compression en cours (`video-progression`)

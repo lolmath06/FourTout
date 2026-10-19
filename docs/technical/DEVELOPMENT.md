@@ -21,7 +21,7 @@
 | --- | --- | --- |
 | **Node.js** | 22.22 | [nodejs.org](https://nodejs.org) or `nvm install 22` |
 | **pnpm** | 11.22 | `corepack enable` |
-| **Rust** | 1.98 (minimum 1.77.2) | [rustup.rs](https://rustup.rs) |
+| **Rust** | 1.98 (minimum 1.89) | [rustup.rs](https://rustup.rs) |
 
 ### Linux system libraries
 

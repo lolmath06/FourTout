@@ -2,13 +2,15 @@
 
 [English](README.md) · **Français** · [Español](README.es.md) · [Português (Brasil)](README.pt-BR.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
 
-<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — 196 tools. 12 categories. One local desktop app." width="100%">
+<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — one local-first desktop app for PDF, images, audio, video, files, ISO, Internet &amp; Web, developer tools and more." width="100%">
 
-### 196 tools. 12 categories. One local desktop app.
+### 211 tools. 13 categories. One local desktop app.
 
-Une boîte à outils desktop qui regroupe PDF, images, audio, vidéo, documents,
-fichiers, outils développeur et confidentialité — 196 outils, une seule
-application, et vos fichiers ne quittent pas votre machine.
+Une boîte à outils desktop « local d'abord » qui regroupe PDF, images, audio,
+vidéo, documents, fichiers, outils ISO, utilitaires Internet et Web, outils
+développeur, diagnostic et sécurité — 211 outils, une seule application. Les
+traitements restent sur votre machine ; seuls les outils Internet et Web et le
+test de débit contactent les services dont ils ont besoin, et ils l'indiquent.
 
 [![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/fr/guides/INSTALLATION.md#windows-10-et-11)
 [![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/fr/guides/INSTALLATION.md#autres-distributions-linux)
@@ -81,7 +83,7 @@ mots de passe, métadonnées.
 </tr>
 </table>
 
-Le tableau complet des douze catégories est [plus bas](#fonctionnalités) ;
+Le tableau complet des treize catégories est [plus bas](#fonctionnalités) ;
 la liste outil par outil est dans **[docs/fr/guides/FEATURES.md](docs/fr/guides/FEATURES.md)**.
 
 ## Langues
@@ -107,7 +109,7 @@ GitHub), réalisées avec des fichiers fictifs.
 <td width="50%">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/accueil-dark.webp">
-  <img src="docs/assets/screenshots/accueil-light.webp" alt="Accueil : favoris, outils récents et les douze catégories">
+  <img src="docs/assets/screenshots/accueil-light.webp" alt="Accueil : favoris, outils récents et les treize catégories">
 </picture>
 <p align="center"><sub><b>Accueil</b> — favoris, récents, catégories</sub></p>
 </td>
@@ -196,19 +198,20 @@ Trois principes tiennent le produit :
 | Catégorie | Outils | Exemples |
 | --- | ---: | --- |
 | **PDF** | 26 | Fusionner, séparer, compresser, caviarder, OCR, retrouver un mot de passe oublié |
-| **Images** | 25 | Convertir, compresser, rogner, filigrane, OCR, **retirer l'arrière-plan**, effacer l'EXIF |
+| **Images** | 27 | Convertir, compresser, rogner, filigrane, OCR, **retirer l'arrière-plan**, effacer l'EXIF |
 | **Audio** | 18 | Convertir, normaliser, couper les silences, synthèse vocale, transcription |
 | **Vidéo** | 20 | Convertir, compresser, rogner, sous-titrer, incruster, vidéo ↔ GIF |
 | **Texte & Documents** | 20 | Nettoyer, comparer, Markdown ↔ HTML, lire et convertir un DOCX |
-| **Fichiers & Archives** | 29 | Archives, empreintes, doublons, renommage par lot, sauvegarde, éditeur hexadécimal |
+| **Fichiers & Archives** | 33 | Archives, empreintes, doublons, renommage par lot, sauvegarde, éditeur hexadécimal |
 | **Convertisseurs** | 1 | Déposez un fichier : FourTout propose les conversions possibles |
 | **Développeur** | 21 | JSON, XML, YAML, TOML, SQL, Base32, JWT **vérifié**, **base SQLite**, regex, cron |
 | **Calculateurs** | 21 | Unités, pourcentages, dates, **fuseaux horaires**, **débits**, **intérêts**, devises |
-| **Réseau** | 3 | Ping, test de ports, découverte du réseau local — bornés, et jamais au-delà |
+| **Internet & Web** | 8 | Télécharger un fichier ou une vidéo publique, capturer une page web en PDF ou en image, raccourcir un lien |
+| **Réseau** | 4 | Ping, test de ports, découverte du réseau local — bornés, et jamais au-delà |
 | **Diagnostic & récupération** | 5 | Fichier corrompu, archive illisible, PDF cassé, image abîmée, disques et partitions |
 | **Sécurité** | 7 | Mots de passe, chiffrement de fichiers, HMAC, suppression des métadonnées |
 
-Chaque outil est compté dans sa catégorie propriétaire : 196 au total. Un
+Chaque outil est compté dans sa catégorie propriétaire : 211 au total. Un
 outil peut aussi être proposé dans d'autres catégories, là où on le cherche —
 c'est pourquoi l'application affiche des nombres plus élevés par catégorie.
 
@@ -216,22 +219,34 @@ La liste complète, outil par outil : **[docs/fr/guides/FEATURES.md](docs/fr/gui
 
 ## Confidentialité
 
-Tout le traitement de fichiers est local : PDF, images, audio, vidéo, texte,
-archives, empreintes, chiffrement, détourage. Aucun fichier n'est téléversé.
-Ni compte, ni analytique, ni télémétrie, ni mise à jour automatique.
+Le traitement est local par défaut : PDF, images, audio, vidéo, texte,
+archives, empreintes, chiffrement, détourage, agrandissement par IA, images
+ISO. Les outils qui traitent vos fichiers ne les téléversent jamais. Ni compte,
+ni analytique, ni télémétrie, ni mise à jour automatique.
 
-Deux fonctions font exception, et les deux le disent dans l'interface :
+Certaines fonctions accèdent bel et bien au réseau, et chacune le dit dans son
+interface :
 
+- les outils **Internet & Web** (téléchargeur de fichiers, téléchargeur de
+  médias, extrait et GIF de vidéo en ligne, raccourcisseur d'URL, capture de
+  page web) se connectent à l'adresse que vous indiquez, et nulle part
+  ailleurs. Le raccourcisseur envoie cette adresse au service que vous
+  choisissez, qui la conserve. La capture web pilote un navigateur Chromium
+  déjà installé, avec un profil temporaire vierge ;
+- le **test de débit** échange du trafic de test généré par FourTout avec le
+  service de mesure de Cloudflare. Aucun de vos fichiers n'est envoyé ;
 - le **convertisseur de devises** interroge le flux de référence quotidien de
   la Banque centrale européenne. Le montant à convertir ne quitte jamais la
   machine ; hors ligne, le dernier relevé connu est réutilisé **et daté** ;
-- les **modèles** de synthèse vocale, de transcription et de détourage sont
-  téléchargés une seule fois, à votre demande explicite. Ensuite, tout
-  s'exécute sur la machine.
+- les **modèles** (synthèse vocale, transcription, détourage, agrandissement
+  par IA) et le moteur **yt-dlp** sont téléchargés une seule fois, à votre
+  demande explicite, et vérifiés par somme SHA-256. Ensuite, les modèles
+  s'exécutent sur la machine.
 
-Les trois outils **réseau** (ping, ports, découverte du réseau local) ouvrent
-de vraies connexions, mais uniquement vers les hôtes que vous indiquez ou
-votre sous-réseau local, et jamais sans un clic.
+Les quatre outils **réseau** (ping, ports, découverte du réseau local, test de
+débit) ouvrent de vraies connexions, mais uniquement vers les hôtes que vous
+indiquez, votre sous-réseau local ou le service de mesure, et jamais sans un
+clic.
 
 Le détail, fonction par fonction : **[docs/fr/legal/PRIVACY.md](docs/fr/legal/PRIVACY.md)**.
 

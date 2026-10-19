@@ -12,7 +12,7 @@
 | --- | --- |
 | [Installation](guides/INSTALLATION.md) | Windows, Fedora, and other Linux distributions. FFmpeg, models, and download verification. |
 | [User guide](guides/USER_GUIDE.md) | Finding a tool, dropping files, long-running operations, zoom, and settings. |
-| [All tools](guides/FEATURES.md) | All 196 tools, category by category. |
+| [All tools](guides/FEATURES.md) | All 211 tools, category by category. |
 | [Troubleshooting](guides/TROUBLESHOOTING.md) | What can go wrong, and why. |
 
 ## Privacy and security
@@ -54,6 +54,8 @@
 | [Files](features/FILES.md) | Native foundation, archive safety, and portability. |
 | [Developer tools](features/DEVELOPER.md) | Untrusted input handling, JWT verification, and the SQLite explorer. |
 | [Calculators](features/CALCULATORS.md) | Unit engine, calculator, dates, currencies, time zones, rates, and interest. |
+| [Internet & Web](features/INTERNET.md) | Downloads, yt-dlp, speed test, shortener, and web capture: what each contacts. |
+| [ISO images](features/ISO.md) | Creating, inspecting, and extracting ISO 9660 images. |
 | [Network](features/NETWORK.md) | Bounded probes: ICMP ping, TCP ports, and local network discovery. |
 | [Diagnostics and recovery](features/DIAGNOSTICS.md) | Damaged ZIP, PDF, and image files: what can and cannot be proved. |
 | [Storage and health](features/STORAGE.md) | Read-only inventory, opportunistic SMART data, and what remains out of scope. |

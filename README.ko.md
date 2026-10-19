@@ -2,12 +2,13 @@
 
 [English](README.md) · [Français](README.fr.md) · [Español](README.es.md) · [Português (Brasil)](README.pt-BR.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · **한국어** · [Русский](README.ru.md)
 
-<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — 196 tools. 12 categories. One local desktop app." width="100%">
+<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — one local-first desktop app for PDF, images, audio, video, files, ISO, Internet &amp; Web, developer tools and more." width="100%">
 
-### 196개 도구. 12개 카테고리. 하나의 로컬 데스크톱 앱.
+### 211개 도구. 13개 카테고리. 하나의 로컬 데스크톱 앱.
 
-PDF, 이미지, 오디오, 동영상, 문서, 파일, 개발자 도구, 개인정보 보호를 한데 모은 데스크톱
-도구 상자입니다. 196개 도구가 하나의 앱에 들어 있고, 파일은 컴퓨터 밖으로 나가지 않습니다.
+PDF, 이미지, 오디오, 동영상, 문서, 파일, ISO 도구, 인터넷·웹 유틸리티, 개발자 도구, 진단,
+보안을 한데 모은 로컬 우선 데스크톱 도구 상자입니다. 211개 도구가 하나의 앱에 들어 있습니다.
+처리는 컴퓨터 안에서 이루어지며, 인터넷·웹 도구와 속도 측정만 필요한 서비스에 접속하고 이를 알려 줍니다.
 
 [![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-and-11)
 [![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#other-linux-distributions)
@@ -74,7 +75,7 @@ JSON, YAML, TOML, XML, SQL, 검증되는 JWT, 정규식, cron, QR 코드, 읽기
 </tr>
 </table>
 
-12개 카테고리 전체 표는 [아래](#기능)에 있습니다. 도구별 목록은
+13개 카테고리 전체 표는 [아래](#기능)에 있습니다. 도구별 목록은
 **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**에서 볼 수 있습니다.
 
 ## 언어
@@ -98,7 +99,7 @@ Bahasa Indonesia, हिन्दी, 日本語, 한국어, 简体中文, 繁體
 <td width="50%">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/accueil-dark.webp">
-  <img src="docs/assets/screenshots/accueil-light.webp" alt="홈: 즐겨찾기, 최근 사용한 도구, 12개 카테고리">
+  <img src="docs/assets/screenshots/accueil-light.webp" alt="홈: 즐겨찾기, 최근 사용한 도구, 13개 카테고리">
 </picture>
 <p align="center"><sub><b>홈</b> — 즐겨찾기, 최근 항목, 카테고리</sub></p>
 </td>
@@ -183,37 +184,42 @@ FourTout는 반대에서 출발합니다. **컴퓨터에서 할 수 있는 작�
 | 카테고리 | 도구 수 | 예시 |
 | --- | ---: | --- |
 | **PDF** | 26 | 병합, 분할, 압축, 가리기, OCR, 잊어버린 비밀번호 복구 |
-| **이미지** | 25 | 변환, 압축, 자르기, 워터마크, OCR, **배경 제거**, EXIF 삭제 |
+| **이미지** | 27 | 변환, 압축, 자르기, 워터마크, OCR, **배경 제거**, EXIF 삭제 |
 | **오디오** | 18 | 변환, 정규화, 무음 자르기, 음성 합성, 받아쓰기 |
 | **동영상** | 20 | 변환, 압축, 자르기, 자막 넣기, 자막 입히기, 동영상 ↔ GIF |
 | **텍스트 및 문서** | 20 | 정리, 비교, Markdown ↔ HTML, DOCX 읽기와 변환 |
-| **파일 및 압축 파일** | 29 | 압축 파일, 해시, 중복, 일괄 이름 바꾸기, 백업, 16진수 편집기 |
+| **파일 및 압축 파일** | 33 | 압축 파일, 해시, 중복, 일괄 이름 바꾸기, 백업, 16진수 편집기 |
 | **변환기** | 1 | 파일을 놓으면 FourTout가 가능한 변환을 제안 |
 | **개발자** | 21 | JSON, XML, YAML, TOML, SQL, Base32, **검증되는** JWT, **SQLite 데이터베이스**, 정규식, cron |
 | **계산기** | 21 | 단위, 퍼센트, 날짜, **시간대**, **대역폭**, **이자**, 환율 |
-| **네트워크** | 3 | 핑, 포트 테스트, 로컬 네트워크 검색 — 범위를 정해 두고 절대 넘지 않음 |
+| **인터넷 및 웹** | 8 | 파일이나 공개 동영상 다운로드, 웹 페이지를 PDF·이미지로 캡처, 링크 줄이기 |
+| **네트워크** | 4 | 핑, 포트 테스트, 로컬 네트워크 검색 — 범위를 정해 두고 절대 넘지 않음 |
 | **진단 및 복구** | 5 | 손상된 파일, 읽을 수 없는 압축 파일, 깨진 PDF, 손상된 이미지, 디스크와 파티션 |
 | **보안** | 7 | 비밀번호, 파일 암호화, HMAC, 메타데이터 제거 |
 
-각 도구는 소속 카테고리에서만 셉니다: 모두 196개입니다. 도구는 사람들이 찾을 만한 다른 카테고리에도
+각 도구는 소속 카테고리에서만 셉니다: 모두 211개입니다. 도구는 사람들이 찾을 만한 다른 카테고리에도
 나올 수 있어서, 앱에서는 카테고리별 숫자가 더 크게 표시됩니다.
 
 도구별 전체 목록: **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.
 
 ## 개인정보
 
-모든 파일 처리는 로컬에서 이루어집니다: PDF, 이미지, 오디오, 동영상, 텍스트, 압축 파일, 해시, 암호화,
-배경 제거. 어떤 파일도 업로드하지 않습니다. 계정도, 분석도, 원격 측정도, 자동 업데이트도 없습니다.
+처리는 기본적으로 로컬에서 이루어집니다: PDF, 이미지, 오디오, 동영상, 텍스트, 압축 파일, 해시, 암호화,
+배경 제거, AI 확대, ISO 이미지. 파일을 처리하는 도구는 그 파일을 업로드하지 않습니다. 계정도, 분석도, 원격 측정도, 자동 업데이트도 없습니다.
 
-예외는 두 가지 기능뿐이며, 둘 다 인터페이스에 그 사실을 표시합니다.
+일부 기능은 실제로 네트워크에 접속하며, 모두 인터페이스에 그 사실을 표시합니다.
 
+- **인터넷 및 웹** 도구(파일 다운로드, 미디어 다운로드, 온라인 동영상 일부와 GIF, URL 줄이기, 웹 페이지 캡처)는
+  지정한 주소에만 연결합니다. URL 줄이기는 그 주소를 선택한 서비스로 보내며, 서비스는 이를 저장합니다.
+  웹 캡처는 컴퓨터에 이미 설치된 Chromium 브라우저를 빈 임시 프로필로 구동합니다.
+- **속도 테스트**는 FourTout이 만든 테스트 트래픽을 Cloudflare의 측정 서비스와 주고받습니다. 파일은 전혀 전송되지 않습니다.
 - **환율 변환기**는 유럽중앙은행이 매일 발표하는 기준 환율을 조회합니다. 변환할 금액은 컴퓨터 밖으로
   나가지 않으며, 오프라인일 때는 마지막으로 받은 환율을 **날짜와 함께** 다시 사용합니다.
-- 음성 합성, 받아쓰기, 배경 제거 **모델**은 명시적으로 요청할 때 한 번만 다운로드합니다. 그 뒤로는 모두
-  컴퓨터에서 실행됩니다.
+- **모델**(음성 합성, 받아쓰기, 배경 제거, AI 확대)과 **yt-dlp** 엔진은 명시적으로 요청할 때 한 번만 다운로드하며
+  SHA-256 체크섬으로 검증합니다. 그 뒤로 모델은 컴퓨터에서 실행됩니다.
 
-세 가지 **네트워크** 도구(핑, 포트, 로컬 네트워크 검색)는 실제로 연결을 열지만, 지정한 호스트나 로컬
-서브넷에만 연결하며 클릭 없이는 동작하지 않습니다.
+네 가지 **네트워크** 도구(핑, 포트, 로컬 네트워크 검색, 속도 테스트)는 실제로 연결을 열지만, 지정한 호스트, 로컬
+서브넷 또는 측정 서비스에만 연결하며 클릭 없이는 동작하지 않습니다.
 
 기능별 자세한 내용: **[docs/legal/PRIVACY.md](docs/legal/PRIVACY.md)**.
 

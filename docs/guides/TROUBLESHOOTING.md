@@ -158,6 +158,38 @@ is persisted.
 If the interface looks enlarged twice, the WebView may be applying its own
 zoom on top. `Ctrl` `0` resets it.
 
+## Internet & Web tools
+
+### Online media cannot be downloaded
+
+yt-dlp handles public content only. DRM-protected, private, subscriber-only,
+age-gated-with-login, live, and geo-blocked items are refused, and FourTout does
+not work around it. If yt-dlp is not installed, the tool offers to install it
+(checksum-verified). If a site changed and an old yt-dlp fails, use *Check for
+update*. Some recent YouTube formats need a JavaScript runtime (Deno or Node.js)
+on the system. Merging, MP3 conversion, and trimming need FFmpeg.
+
+### Web capture says no browser was found
+
+The tools need Chrome, Chromium, Edge, or Brave already installed; FourTout does
+not bundle one. Install one, or set `FOURTOUT_BROWSER` to the executable.
+
+### A download restarts from zero
+
+Resuming needs the server to accept ranges and to confirm the file did not
+change. Otherwise FourTout restarts and says so.
+
+### The speed test looks low or unstable
+
+VPNs, Wi-Fi, distance to the server, and other traffic all change the result.
+Repeat the test, preferably on a wired connection, with other downloads paused.
+
+## HEIC, AVIF or animated images are not offered
+
+HEIC is decoded by FourTout itself and needs the installed application. AVIF is
+offered only if this machine's FFmpeg can really decode it; the converter says
+when it cannot. Animated WebP and APNG need FFmpeg for conversions to video.
+
 ## Starting from scratch
 
 **Settings → Local data → Erase everything** resets preferences, favorites,

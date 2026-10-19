@@ -5,7 +5,7 @@ description = "FourTout — boîte à outils desktop locale"
 authors = ["Matheo Dolmen"]
 license = "LicenseRef-Proprietary"
 edition = "2021"
-rust-version = "1.85"
+rust-version = "1.89"
 
 [lib]
 # Le suffixe `_lib` évite un conflit de noms avec le binaire sous Windows.
@@ -35,6 +35,7 @@ num_cpus = "1.17.0"
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
 # Installation des moteurs de parole : téléchargement vérifié puis extraction.
 ureq = "2.12"
+url = "2"
 tar = "0.4"
 zip = { version = "2", default-features = false, features = ["aes-crypto", "deflate"] }
 argon2 = "0.5.3"
@@ -56,6 +57,8 @@ if-addrs = "0.15"
 # Résolution inverse d'adresse (getnameinfo), pour nommer les appareils du
 # réseau local quand le système sait le faire.
 dns-lookup = "4"
+tungstenite = { version = "0.30.0", default-features = false, features = ["handshake"] }
+zune-heic = "0.5"
 
 # Espace disque des volumes montés : `statvfs`, seule interface portable pour
 # cette information, absente de la bibliothèque standard.
@@ -65,7 +68,7 @@ libc = "0.2"
 # Ping sous Windows : l'API IcmpSendEcho de l'IP Helper, qui ne demande aucun
 # privilège administrateur, là où un socket ICMP brut en exigerait.
 [target.'cfg(windows)'.dependencies]
-windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_NetworkManagement_IpHelper", "Win32_Networking_WinSock", "Win32_System_IO"] }
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_NetworkManagement_IpHelper", "Win32_Networking_WinSock", "Win32_Security", "Win32_System_IO", "Win32_System_JobObjects", "Win32_System_Threading"] }
 
 # Arbitrage des permissions de la WebView (microphone). La version est figée sur
 # celle de wry : c'est la même WebView qui est manipulée.

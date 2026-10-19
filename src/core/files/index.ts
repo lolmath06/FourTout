@@ -15,10 +15,10 @@ const register = (kind: DataKind, extensions: string[]) => {
 };
 
 register("pdf", ["pdf"]);
-register("image", ["png", "jpg", "jpeg", "webp", "bmp", "gif", "tiff", "tif", "avif", "ico", "svg", "heic"]);
+register("image", ["png", "jpg", "jpeg", "webp", "bmp", "gif", "tiff", "tif", "avif", "ico", "svg", "heic", "heif", "apng"]);
 register("audio", ["mp3", "wav", "flac", "ogg", "m4a", "aac", "opus", "wma"]);
 register("video", ["mp4", "mkv", "webm", "mov", "avi", "wmv", "flv", "m4v"]);
-register("archive", ["zip", "7z", "tar", "gz", "tgz", "bz2", "xz", "rar"]);
+register("archive", ["zip", "7z", "tar", "gz", "tgz", "bz2", "xz", "rar", "iso"]);
 register("text", ["txt", "md", "srt", "vtt", "ass", "log", "rtf"]);
 register("document", ["doc", "docx", "odt", "epub", "pptx", "xlsx", "ods"]);
 register("data", ["json", "csv", "xml", "yaml", "yml", "html", "sql", "tsv"]);

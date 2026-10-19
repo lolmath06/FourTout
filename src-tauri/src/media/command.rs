@@ -137,6 +137,26 @@ pub fn media_probe(app: AppHandle, path: String) -> Result<String, String> {
     probe_with(&resolve_binary(&app, "ffprobe"), &path)
 }
 
+/// Inspecte par ffprobe un fichier que l'utilisateur vient de choisir.
+///
+/// Réservé aux **médias** : le contenu est d'abord identifié par ses octets
+/// (même table de signatures que l'inspecteur de fichiers), et tout ce qui
+/// n'est pas audio ou vidéo est refusé. La commande ne sert donc pas à
+/// interroger un fichier quelconque du disque.
+#[tauri::command]
+pub fn media_probe_path(app: AppHandle, path: String) -> Result<String, String> {
+    use std::io::Read;
+    let mut head = vec![0_u8; crate::files::magic::HEAD_BYTES];
+    let read = std::fs::File::open(&path)
+        .and_then(|mut f| f.read(&mut head))
+        .map_err(|e| format!("Lecture impossible : {e}"))?;
+    let signature = crate::files::magic::identify(&head[..read]);
+    if !matches!(signature.family, crate::files::magic::Family::Video | crate::files::magic::Family::Audio) {
+        return Err("Ce fichier n'est pas un média audio ou vidéo.".into());
+    }
+    probe_with(&resolve_binary(&app, "ffprobe"), Path::new(&path))
+}
+
 /// Relit un fichier temporaire produit par FFmpeg.
 #[tauri::command]
 pub fn media_read(path: String) -> Result<Response, String> {

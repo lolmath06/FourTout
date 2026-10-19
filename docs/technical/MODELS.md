@@ -14,6 +14,8 @@
 - [Windows and Fedora packaging](#windows-and-fedora-packaging)
 - [Known limitations](#known-limitations)
 - [Background-removal models](#background-removal-models)
+- [AI upscaling model](#ai-upscaling-model)
+- [The yt-dlp engine](#the-yt-dlp-engine)
 
 FourTout speaks and transcribes **locally**. Nothing is sent over the network
 during use. The only network access is the initial, user-initiated download of
@@ -89,7 +91,7 @@ book takes about 15 minutes. Each process uses about 194 MB of RAM.
 | Windows | `%APPDATA%\app.fourtout.desktop\models` |
 
 `FOURTOUT_MODELS_DIR` overrides the location for tests or shared installations.
-The directory contains `engines/piper/`, `engines/whisper/`, `voices/`, `stt/`,
+The directory contains `engines/piper/`, `engines/whisper/`, `engines/yt-dlp`, `voices/`, `stt/`, `segmentation/`, `upscale/`,
 and a working `.partial/` directory cleared after every installation.
 
 ## Installation
@@ -155,3 +157,49 @@ catalog item identifier and a file declared by that item, never an arbitrary
 path, so it can read only files installed by FourTout. U²-Net was selected for
 licensing as well as quality; see
 [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md).
+
+## AI upscaling model
+
+The **Enlarge an image with AI** tool (`image-upscale`) runs Real-ESRGAN
+*general x4 v3* (SRVGGNetCompact) through ONNX Runtime in the WebView.
+
+| Item | Files | Size | License |
+| --- | --- | --- | --- |
+| `upscale-realesr-x4v3` | `upscale/realesr-general-x4v3/model.onnx` and `model.data` | 42 KB + 4.8 MB (about 4.9 MB) | BSD-3-Clause |
+
+- **Origin:** the ONNX conversion published as `TheGuy444/Real-ESRGAN-ONNX` on
+  Hugging Face, pinned to commit `4c80f3da1a8a85f0757a9e7f79e08d0307220eb5` so a
+  URL never changes content. The weights are those of
+  [xinntao/Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN).
+- **Integrity:** the graph (`2d1810f8…08fda`) and the external weights
+  (`512d0ec9…f37f`) are each checked with SHA-256 before being put in place.
+- **Interface:** fixed 128 × 128 input, RGB in 0–1, output ×4 (named `image` and
+  `upscaled_image`). `model.data` is the graph's external data and is passed to
+  ONNX Runtime as such.
+- **Tiling:** the image is cut into 128-pixel tiles with an 8-pixel margin (a
+  112-pixel core), so memory use does not depend on the image size. Roughly one
+  second per tile; a large photo at ×4 can take minutes, and the tool says so.
+- **×2 and ×4:** ×4 is the model's native output. ×2 is computed from the ×4
+  result by averaging 2 × 2 blocks, which is sharper than a plain ×2 resize.
+- **Transparency:** the alpha channel is enlarged by bilinear interpolation: the
+  network only processes colors. This is stated in the interface.
+- **Limit:** the output is capped at 64 megapixels; above that, the tool refuses
+  and suggests ×2 or a smaller source.
+- **Privacy:** the download happens once, at your request. Afterwards the image
+  is processed in the application and never sent anywhere.
+
+## The yt-dlp engine
+
+yt-dlp is not a model and not bundled, but it follows the same rules as the
+speech engines: installed on request, checked before use, removable.
+
+- **Location:** `engines/yt-dlp` (`yt-dlp.exe` on Windows) in the data
+  directory, next to `engines/piper/` and `engines/whisper/`. A `yt-dlp` found on
+  `PATH` is used as a fallback.
+- **Trust model:** the latest tag is resolved from the redirect of the official
+  `releases/latest` page, the official `SHA2-256SUMS` file for that tag is
+  fetched, the binary is downloaded through the verified downloader, and
+  `--version` must print the tag before the previous copy is atomically
+  replaced. A failure at any step leaves the previous installation untouched.
+- **License:** Unlicense (public domain).
+- **Scope:** public content only. See [Internet & Web](../features/INTERNET.md).

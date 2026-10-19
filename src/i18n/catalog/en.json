@@ -140,6 +140,21 @@
         "password",
         "hash"
       ]
+    },
+    "internet": {
+      "name": "Internet & Web",
+      "description": "Download a file or media, capture a web page, shorten a link, measure your connection.",
+      "keywords": [
+        "internet",
+        "web",
+        "download",
+        "url",
+        "link",
+        "site",
+        "youtube",
+        "web page",
+        "online"
+      ]
     }
   },
   "tools": {
@@ -645,7 +660,12 @@
         "tiff",
         "transform an image",
         "heic",
-        "avif"
+        "avif",
+        "heic to jpg",
+        "heif to png",
+        "avif to jpg",
+        "heic to webp",
+        "apng"
       ],
       "aliases": [
         "convert image",
@@ -1459,7 +1479,9 @@
         "mkv to mp4",
         "avi to mp4",
         "webm",
-        "mov"
+        "mov",
+        "webm to mp4",
+        "mp4 to webm"
       ],
       "aliases": [
         "convert video",
@@ -2768,7 +2790,15 @@
         "transform",
         "any file",
         "which format",
-        "converter"
+        "converter",
+        "webp",
+        "webm",
+        "avif",
+        "heic",
+        "heif",
+        "apng",
+        "iso",
+        "what format is this file"
       ],
       "aliases": [
         "universal converter",
@@ -2984,7 +3014,11 @@
         "read a qr",
         "scan",
         "decode a qr code",
-        "qr from an image"
+        "qr from an image",
+        "read a qr code",
+        "scan a qr",
+        "decode a qr from a screenshot",
+        "qr from a photo"
       ],
       "aliases": [
         "qr code reader",
@@ -3825,6 +3859,333 @@
         "remove metadata",
         "anonymize file"
       ]
+    },
+    "url-download": {
+      "name": "Download a file from a URL",
+      "description": "Save an HTTP or HTTPS file, with resume, progress and hash verification.",
+      "keywords": [
+        "download",
+        "download a file",
+        "download link",
+        "wget",
+        "curl",
+        "resume a download",
+        "url to file",
+        "save a link"
+      ],
+      "aliases": [
+        "download file",
+        "download from url",
+        "file downloader",
+        "wget"
+      ],
+      "note": "FourTout contacts the address you give, and only that one. The file only appears under its final name once it is complete."
+    },
+    "media-download": {
+      "name": "Download media from the Internet",
+      "description": "Fetch a public video or sound as MP4, WebM, MP3, M4A, Opus, WAV or FLAC, using yt-dlp.",
+      "keywords": [
+        "youtube",
+        "download a video",
+        "youtube to mp3",
+        "youtube to mp4",
+        "download music",
+        "extract sound from a link",
+        "online video",
+        "yt-dlp",
+        "download a clip",
+        "vimeo"
+      ],
+      "aliases": [
+        "download video",
+        "youtube downloader",
+        "youtube to mp3",
+        "youtube to mp4",
+        "yt-dlp"
+      ],
+      "note": "yt-dlp contacts the media service; it is installed on request and verified by hash. Only public content is supported: no DRM, no account, no cookies."
+    },
+    "media-url-excerpt": {
+      "name": "Download an excerpt of an online video",
+      "description": "Fetch only the part you want of a public video, from one moment to another.",
+      "keywords": [
+        "youtube excerpt",
+        "cut an online video",
+        "part of a video",
+        "clip from a video",
+        "download a passage",
+        "cut a youtube video",
+        "start and end"
+      ],
+      "aliases": [
+        "download video clip",
+        "youtube clip",
+        "cut online video",
+        "video excerpt"
+      ],
+      "note": "When the service allows it, only the excerpt is downloaded; otherwise the whole source is downloaded, then trimmed here — the tool tells you which of the two happened."
+    },
+    "media-url-gif": {
+      "name": "Online video to GIF or animated WebP",
+      "description": "Create a reasonably sized GIF or animated WebP from a few seconds of a public link.",
+      "keywords": [
+        "youtube gif",
+        "create a gif from a link",
+        "animated webp from a link",
+        "meme",
+        "loop",
+        "gif from a url",
+        "animation from a video"
+      ],
+      "aliases": [
+        "online video to gif",
+        "youtube to gif",
+        "url to gif",
+        "video url to webp"
+      ],
+      "note": "Only the requested excerpt is used, at 720p at most: an animation does not need more. Modest settings are offered by default, because a GIF grows very quickly."
+    },
+    "url-shorten": {
+      "name": "Shorten a URL",
+      "description": "Get a short link from a public service (is.gd, v.gd or TinyURL), ready to copy in one click.",
+      "keywords": [
+        "shorten a link",
+        "short link",
+        "short url",
+        "bitly",
+        "tinyurl",
+        "is.gd",
+        "make an address shorter"
+      ],
+      "aliases": [
+        "url shortener",
+        "shorten link",
+        "short link",
+        "link shortener"
+      ],
+      "note": "The original address is sent to the service you choose, which keeps it: do not shorten anything confidential. FourTout adds no tracking."
+    },
+    "web-to-pdf": {
+      "name": "Web page to PDF",
+      "description": "Print a web page to PDF with an already installed Chromium browser, with the paper size and margins of your choice.",
+      "keywords": [
+        "web page to pdf",
+        "site to pdf",
+        "print a page",
+        "save a page as pdf",
+        "article to pdf",
+        "html to pdf",
+        "url to pdf"
+      ],
+      "aliases": [
+        "webpage to pdf",
+        "url to pdf",
+        "print page to pdf",
+        "website to pdf"
+      ],
+      "note": "The page is loaded by an isolated browser (blank temporary profile: none of your cookies or history). Chrome, Chromium or Edge must be installed."
+    },
+    "web-to-image": {
+      "name": "Web page to image",
+      "description": "Capture a web page, whole or at window size, as PNG, JPEG or WebP.",
+      "keywords": [
+        "website screenshot",
+        "web page screenshot",
+        "whole page as image",
+        "site to png",
+        "full page capture",
+        "url to image"
+      ],
+      "aliases": [
+        "webpage to image",
+        "website screenshot",
+        "full page screenshot",
+        "url to png"
+      ],
+      "note": "The page is loaded by an isolated browser (blank temporary profile). A full-page capture is capped at 20,000 pixels tall."
+    },
+    "web-save-offline": {
+      "name": "Save a web page offline",
+      "description": "Save a page and its resources in a single MHTML file that can be read without a connection.",
+      "keywords": [
+        "save a page",
+        "offline page",
+        "mhtml",
+        "archive a site",
+        "save a web page",
+        "page in a single file",
+        "read later"
+      ],
+      "aliases": [
+        "save webpage offline",
+        "mhtml",
+        "web archive",
+        "save page as"
+      ],
+      "note": "The page is loaded by an isolated browser (blank temporary profile). The MHTML file opens in Chrome, Edge and most Chromium browsers."
+    },
+    "speed-test": {
+      "name": "Internet speed test",
+      "description": "Measure your connection's latency, jitter, download speed and upload speed.",
+      "keywords": [
+        "speed test",
+        "internet speed",
+        "speedtest",
+        "upload speed",
+        "download speed",
+        "my connection is slow",
+        "latency",
+        "jitter",
+        "mbps",
+        "fiber",
+        "slow wifi"
+      ],
+      "aliases": [
+        "speed test",
+        "internet speed",
+        "bandwidth test",
+        "download speed",
+        "upload speed"
+      ],
+      "note": "Test traffic generated by FourTout is exchanged with Cloudflare's measurement service (speed.cloudflare.com); none of your files is sent. Results vary: VPN, Wi-Fi, server distance and competing traffic change them."
+    },
+    "iso-create": {
+      "name": "Create an ISO image",
+      "description": "Gather a folder into an ISO 9660 file with long names (Joliet and Rock Ridge).",
+      "keywords": [
+        "create an iso",
+        "make an iso",
+        "folder to iso",
+        "iso image",
+        "cd image",
+        "dvd image",
+        "iso9660",
+        "joliet",
+        "rock ridge",
+        "iso archive"
+      ],
+      "aliases": [
+        "create iso",
+        "make iso",
+        "folder to iso",
+        "disc image",
+        "iso maker"
+      ],
+      "note": "Produces an ordinary .iso file, never a write to a disc or USB stick. The image holds data: it is not bootable."
+    },
+    "iso-inspect": {
+      "name": "Inspect an ISO image",
+      "description": "Read an ISO's volume name, file systems, tree and boot data.",
+      "keywords": [
+        "see the contents of an iso",
+        "open an iso",
+        "list an iso",
+        "iso volume",
+        "el torito",
+        "bootable iso",
+        "iso image",
+        "contents of a cd image"
+      ],
+      "aliases": [
+        "inspect iso",
+        "list iso",
+        "iso viewer",
+        "iso contents",
+        "boot catalog"
+      ],
+      "note": "Only descriptors and directories are read: the image is neither extracted nor modified. A pure UDF image (some Windows ISOs) is only read through its ISO 9660 part."
+    },
+    "iso-extract": {
+      "name": "Extract an ISO image",
+      "description": "Copy the whole content of an ISO, or only the files you choose, into a folder.",
+      "keywords": [
+        "extract an iso",
+        "unpack an iso",
+        "open a disc image",
+        "copy the contents of an iso",
+        "get files out of an iso"
+      ],
+      "aliases": [
+        "extract iso",
+        "unpack iso",
+        "iso extractor",
+        "mount iso alternative"
+      ],
+      "note": "Names inside the image are treated as hostile: nothing can be written outside the chosen folder, and nothing is overwritten unless you ask."
+    },
+    "compress-to-size": {
+      "name": "Compress down to a maximum size",
+      "description": "Get under a target size, for example 25 MB, for a video, a sound, an image or a PDF.",
+      "keywords": [
+        "under 25 mb",
+        "maximum size",
+        "get under a limit",
+        "attachment too heavy",
+        "email too big",
+        "discord 25 mb",
+        "compress to 500 kb",
+        "target weight",
+        "upload limit"
+      ],
+      "aliases": [
+        "compress to size",
+        "target file size",
+        "reduce to under",
+        "compress under 25mb",
+        "max file size"
+      ],
+      "note": "The target size is never promised to the byte: the tool computes a bitrate with a safety margin, retries lower if needed, never enlarges the picture and warns when the target is unrealistic."
+    },
+    "image-upscale": {
+      "name": "Enlarge an image with AI",
+      "description": "Double or quadruple an image's resolution with a super-resolution network that runs on your machine.",
+      "keywords": [
+        "enlarge an image",
+        "upscale",
+        "improve resolution",
+        "blurry image",
+        "super resolution",
+        "x2",
+        "x4",
+        "sharp",
+        "photo quality",
+        "esrgan",
+        "high definition",
+        "image enhancement"
+      ],
+      "aliases": [
+        "ai upscale",
+        "image upscaler",
+        "enhance image",
+        "super resolution",
+        "real-esrgan",
+        "upscale photo"
+      ],
+      "note": "The model (5 MB, BSD-3 licence) is downloaded once, on request; after that everything happens on your machine and the image is sent nowhere. Transparency is kept, but enlarged by ordinary interpolation."
+    },
+    "animated-image-convert": {
+      "name": "Convert an animated image",
+      "description": "Turn an animated WebP or animated PNG (APNG) into GIF, APNG, animated WebP, MP4, WebM or a series of images, without losing the animation.",
+      "keywords": [
+        "animated webp",
+        "apng",
+        "animated png",
+        "webp to gif",
+        "webp to mp4",
+        "animation to video",
+        "extract the frames of an animation",
+        "animated gif",
+        "sticker",
+        "frames"
+      ],
+      "aliases": [
+        "animated webp",
+        "apng converter",
+        "animated image to gif",
+        "webp to mp4",
+        "animated png"
+      ],
+      "note": "Each frame's duration is kept. The tool tells you what the destination cannot keep: transparency (MP4, WebM), looping (video), colors (GIF)."
     }
   }
 }

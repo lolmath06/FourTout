@@ -5,7 +5,7 @@
   "author": "Matheo Dolmen",
   "license": "SEE LICENSE IN LICENSE",
   "type": "module",
-  "description": "Boîte à outils desktop locale et gratuite : PDF, image, audio, vidéo, texte, fichiers, développeur, calculateurs.",
+  "description": "Boîte à outils desktop locale et gratuite : PDF, image, audio, vidéo, texte, fichiers, ISO, Internet et Web, développeur, calculateurs, diagnostic, sécurité.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:assets": "node scripts/generate-test-assets.mjs && node scripts/generate-image-assets.mjs && node scripts/generate-pdf-assets.mjs && node scripts/generate-recovery-fixtures.mjs && node scripts/generate-media-assets.mjs && node scripts/generate-files-assets.mjs && node scripts/generate-speech-assets.mjs && node scripts/generate-document-assets.mjs && node scripts/generate-phase9-assets.mjs && node scripts/generate-phase10-assets.mjs && node scripts/generate-phase11-assets.mjs && node scripts/generate-phase12-assets.mjs && cargo run --quiet --manifest-path src-tauri/Cargo.toml --example phase9_fixtures && cargo run --quiet --manifest-path src-tauri/Cargo.toml --example phase11_fixtures && node scripts/fixture-contract.mjs",
+    "test:assets": "node scripts/generate-test-assets.mjs && node scripts/generate-image-assets.mjs && node scripts/generate-pdf-assets.mjs && node scripts/generate-recovery-fixtures.mjs && node scripts/generate-media-assets.mjs && node scripts/generate-files-assets.mjs && node scripts/generate-speech-assets.mjs && node scripts/generate-document-assets.mjs && node scripts/generate-phase9-assets.mjs && node scripts/generate-phase10-assets.mjs && node scripts/generate-phase11-assets.mjs && node scripts/generate-phase12-assets.mjs && node scripts/generate-phase13-assets.mjs && cargo run --quiet --manifest-path src-tauri/Cargo.toml --example phase9_fixtures && cargo run --quiet --manifest-path src-tauri/Cargo.toml --example phase11_fixtures && cargo run --quiet --manifest-path src-tauri/Cargo.toml --example phase13_fixtures && node scripts/fixture-contract.mjs",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "pdfjs:assets": "node scripts/sync-pdfjs-assets.mjs",
     "ocr:assets": "node scripts/sync-tesseract-assets.mjs",
@@ -31,7 +31,8 @@
     "docs:features": "node scripts/generate-features-doc.mjs",
     "fixtures:contract": "node scripts/fixture-contract.mjs",
     "i18n:extract": "node scripts/i18n/extract.mjs",
-    "i18n:status": "node scripts/i18n/status.mjs"
+    "i18n:status": "node scripts/i18n/status.mjs",
+    "fixtures:serve": "node scripts/serve-web-fixture.mjs"
   },
   "dependencies": {
     "@cantoo/pdf-lib": "^2.9.1",

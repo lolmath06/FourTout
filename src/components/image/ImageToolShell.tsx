@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import type { ToolDefinition } from "@/core/tools/types";
 import { constraintsForTool, formatFileSize, type SelectedFile } from "@/core/files";
 import { FileDropZone } from "@/components/files/FileDropZone";
@@ -10,7 +11,9 @@ import type { OperationContext } from "@/core/pdf/types";
 import { notify } from "@/features/notifications/store";
 import { ResultPanel, type OperationOutcome } from "@/components/pdf/ResultPanel";
 import { Callout, ProgressBar } from "@/components/ui/Callout";
-import { useHandoff } from "@/features/handoff/store";
+import { detectAnimation } from "@/core/image/native";
+import { setHandoff, useHandoff } from "@/features/handoff/store";
+import { toolRoute } from "@/core/tools/types";
 import { t, tx } from "@/i18n";
 
 /**
@@ -51,6 +54,8 @@ export function ImageToolShell({
   const [files, setFiles] = useState<SelectedFile[]>(() => handoff?.files ?? []);
   const [outcome, setOutcome] = useState<OperationOutcome | null>(null);
   const job = useJob<OperationOutcome>();
+  const animated = useAnimatedFiles(files);
+  const navigate = useNavigate();
 
   const constraints = {
     ...constraintsForTool(tool),
@@ -85,6 +90,27 @@ export function ImageToolShell({
         hint={tx(hint)}
         disabled={job.isRunning}
       />
+
+      {animated.length > 0 && (
+        <Callout
+          tone="warning"
+          title={t("Image animée : seule la première image sera traitée")}
+          data-testid="animated-warning"
+          actions={
+            <Button
+              size="sm"
+              onClick={() => {
+                setHandoff({ toolId: "animated-image-convert" });
+                navigate(toolRoute("animated-image-convert"));
+              }}
+            >
+              {t("Convertir en gardant l'animation")}
+            </Button>
+          }
+        >
+          {t("{names} contient plusieurs images. Cet outil travaille sur une image fixe : l'animation serait perdue. Pour la garder, utilisez « Convertir une image animée ».", { names: animated.join(", ") })}
+        </Callout>
+      )}
 
       {files.length > 0 && children?.(files)}
 
@@ -127,4 +153,29 @@ export function ImageToolShell({
       {outcome && <ResultPanel outcome={outcome} />}
     </div>
   );
+}
+
+/** Noms des fichiers déposés qui sont des WebP ou PNG animés (lecture des premiers octets). */
+function useAnimatedFiles(files: SelectedFile[]): string[] {
+  const [names, setNames] = useState<string[]>([]);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const found: string[] = [];
+      for (const file of files) {
+        if (!file.file || (file.extension !== "webp" && file.extension !== "png" && file.extension !== "apng")) continue;
+        try {
+          const head = new Uint8Array(await file.file.slice(0, 65536).arrayBuffer());
+          if (detectAnimation(head)) found.push(file.name);
+        } catch {
+          /* illisible : le traitement le dira */
+        }
+      }
+      if (alive) setNames(found);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [files]);
+  return names;
 }

@@ -14,6 +14,8 @@
 - [Empaquetage Windows et Fedora](#empaquetage-windows-et-fedora)
 - [Limites connues](#limites-connues)
 - [Modèles de détourage](#modèles-de-détourage)
+- [Modèle d'agrandissement par IA](#modèle-dagrandissement-par-ia)
+- [Le moteur yt-dlp](#le-moteur-yt-dlp)
 
 ---
 
@@ -183,3 +185,55 @@ FourTout a lui-même installé.
 
 Le choix d'U²-Net est un choix de licence autant que de qualité : voir
 [THIRD_PARTY_NOTICES.md](../../../THIRD_PARTY_NOTICES.md).
+
+## Modèle d'agrandissement par IA
+
+L'outil **Agrandir une image par IA** (`image-upscale`) exécute Real-ESRGAN
+*general x4 v3* (SRVGGNetCompact) avec ONNX Runtime dans la WebView.
+
+| Élément | Fichiers | Taille | Licence |
+| --- | --- | --- | --- |
+| `upscale-realesr-x4v3` | `upscale/realesr-general-x4v3/model.onnx` et `model.data` | 42 Ko + 4,8 Mo (environ 4,9 Mo) | BSD-3-Clause |
+
+- **Origine :** la conversion ONNX publiée sous `TheGuy444/Real-ESRGAN-ONNX` sur
+  Hugging Face, épinglée à la révision `4c80f3da1a8a85f0757a9e7f79e08d0307220eb5`
+  pour qu'une URL ne change jamais de contenu. Les poids sont ceux de
+  [xinntao/Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN).
+- **Intégrité :** le graphe (`2d1810f8…08fda`) et les poids externes
+  (`512d0ec9…f37f`) sont chacun vérifiés par SHA-256 avant d'être mis en place.
+- **Interface :** entrée fixe de 128 × 128, RVB entre 0 et 1, sortie ×4 (nommées
+  `image` et `upscaled_image`). `model.data` est la donnée externe du graphe et
+  est transmise comme telle à ONNX Runtime.
+- **Découpage en tuiles :** l'image est découpée en tuiles de 128 pixels avec
+  une marge de 8 pixels (cœur de 112 pixels) ; la mémoire ne dépend donc pas de
+  la taille de l'image. Environ une seconde par tuile : une grande photo en ×4
+  peut prendre plusieurs minutes, et l'outil le dit.
+- **×2 et ×4 :** ×4 est la sortie native du modèle. ×2 se calcule à partir du
+  résultat ×4 en moyennant des blocs de 2 × 2, ce qui est plus net qu'un simple
+  redimensionnement ×2.
+- **Transparence :** le canal alpha est agrandi par interpolation bilinéaire : le
+  réseau ne traite que les couleurs. L'interface le dit.
+- **Limite :** la sortie est plafonnée à 64 mégapixels ; au-delà, l'outil refuse
+  et propose ×2 ou une source plus petite.
+- **Confidentialité :** le téléchargement a lieu une fois, à votre demande.
+  Ensuite l'image est traitée dans l'application et n'est jamais envoyée
+  nulle part.
+
+## Le moteur yt-dlp
+
+yt-dlp n'est pas un modèle et n'est pas embarqué, mais il suit les mêmes règles
+que les moteurs de parole : installé à la demande, vérifié avant usage,
+supprimable.
+
+- **Emplacement :** `engines/yt-dlp` (`yt-dlp.exe` sous Windows) dans le dossier
+  de données, à côté de `engines/piper/` et `engines/whisper/`. Un `yt-dlp`
+  trouvé dans le `PATH` sert de repli.
+- **Modèle de confiance :** la dernière version est résolue à partir de la
+  redirection de la page officielle `releases/latest`, le fichier officiel
+  `SHA2-256SUMS` de cette version est récupéré, le binaire est téléchargé par le
+  téléchargeur vérifié, et `--version` doit afficher l'étiquette avant que
+  l'ancienne copie soit remplacée de façon atomique. Un échec à n'importe quelle
+  étape laisse l'installation précédente intacte.
+- **Licence :** Unlicense (domaine public).
+- **Périmètre :** contenus publics uniquement. Voir
+  [Internet & Web](../features/INTERNET.md).

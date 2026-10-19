@@ -35,8 +35,8 @@
       "msi"
     ],
     "category": "Utility",
-    "shortDescription": "Boîte à outils locale : PDF, image, audio, vidéo, texte, fichiers.",
-    "longDescription": "FourTout regroupe dans une seule application desktop les petits outils du quotidien (PDF, images, audio, vidéo, texte, fichiers, développeur, calculateurs). Les traitements sont réalisés localement : vos fichiers ne quittent pas votre appareil.",
+    "shortDescription": "Boîte à outils locale d'abord : PDF, image, audio, vidéo, fichiers, ISO, Internet et Web.",
+    "longDescription": "FourTout regroupe dans une seule application desktop les petits outils du quotidien (PDF, images, audio, vidéo, texte, fichiers, ISO, Internet et Web, développeur, calculateurs, diagnostic, sécurité). Les traitements sont réalisés localement ; seuls les outils Internet et Web et le test de débit contactent les services dont ils ont besoin, et ils l'indiquent.",
     "icon": [
       "icons/32x32.png",
       "icons/64x64.png",

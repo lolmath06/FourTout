@@ -2,13 +2,16 @@
 
 [English](README.md) · [Français](README.fr.md) · [Español](README.es.md) · [Português (Brasil)](README.pt-BR.md) · **Deutsch** · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
 
-<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — 196 tools. 12 categories. One local desktop app." width="100%">
+<img src="docs/assets/branding/fourtout-hero.webp" alt="FourTout — one local-first desktop app for PDF, images, audio, video, files, ISO, Internet &amp; Web, developer tools and more." width="100%">
 
-### 196 Werkzeuge. 12 Kategorien. Eine lokale Desktop-App.
+### 211 Werkzeuge. 13 Kategorien. Eine lokale Desktop-App.
 
-Ein Desktop-Werkzeugkasten für PDF, Bilder, Audio, Video, Dokumente, Dateien,
-Entwicklerwerkzeuge und Datenschutz — 196 Werkzeuge in einer einzigen
-Anwendung, und Ihre Dateien verlassen Ihren Rechner nicht.
+Ein Desktop-Werkzeugkasten nach dem Local-first-Prinzip für PDF, Bilder, Audio,
+Video, Dokumente, Dateien, ISO-Werkzeuge, Internet- und Web-Hilfsmittel,
+Entwicklerwerkzeuge, Diagnose und Sicherheit — 211 Werkzeuge in einer einzigen
+Anwendung. Die Verarbeitung bleibt auf Ihrem Rechner; nur die Internet- und
+Web-Werkzeuge sowie der Geschwindigkeitstest kontaktieren die Dienste, die sie
+brauchen, und sie weisen darauf hin.
 
 [![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#windows-10-and-11)
 [![Linux](https://img.shields.io/badge/Linux-deb%20%C2%B7%20rpm%20%C2%B7%20AppImage-0b1a2e?style=flat-square)](docs/guides/INSTALLATION.md#other-linux-distributions)
@@ -81,7 +84,7 @@ Passwörter, Metadaten.
 </tr>
 </table>
 
-Die vollständige Tabelle der zwölf Kategorien steht [weiter unten](#funktionen);
+Die vollständige Tabelle der dreizehn Kategorien steht [weiter unten](#funktionen);
 die Liste Werkzeug für Werkzeug steht in **[docs/guides/FEATURES.md](docs/guides/FEATURES.md)**.
 
 ## Sprachen
@@ -109,7 +112,7 @@ Oberfläche.
 <td width="50%">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/accueil-dark.webp">
-  <img src="docs/assets/screenshots/accueil-light.webp" alt="Startseite: Favoriten, zuletzt verwendete Werkzeuge und die zwölf Kategorien">
+  <img src="docs/assets/screenshots/accueil-light.webp" alt="Startseite: Favoriten, zuletzt verwendete Werkzeuge und die dreizehn Kategorien">
 </picture>
 <p align="center"><sub><b>Start</b> — Favoriten, zuletzt verwendet, Kategorien</sub></p>
 </td>
@@ -200,19 +203,20 @@ Drei Grundsätze tragen das Produkt:
 | Kategorie | Werkzeuge | Beispiele |
 | --- | ---: | --- |
 | **PDF** | 26 | Zusammenfügen, teilen, komprimieren, schwärzen, OCR, vergessenes Passwort wiederherstellen |
-| **Bilder** | 25 | Konvertieren, komprimieren, zuschneiden, Wasserzeichen, OCR, **Hintergrund entfernen**, EXIF löschen |
+| **Bilder** | 27 | Konvertieren, komprimieren, zuschneiden, Wasserzeichen, OCR, **Hintergrund entfernen**, EXIF löschen |
 | **Audio** | 18 | Konvertieren, normalisieren, Stille entfernen, Sprachausgabe, Transkription |
 | **Video** | 20 | Konvertieren, komprimieren, zuschneiden, untertiteln, einbrennen, Video ↔ GIF |
 | **Text & Dokumente** | 20 | Bereinigen, vergleichen, Markdown ↔ HTML, DOCX lesen und umwandeln |
-| **Dateien & Archive** | 29 | Archive, Prüfsummen, Duplikate, Stapelumbenennung, Sicherung, Hex-Editor |
+| **Dateien & Archive** | 33 | Archive, Prüfsummen, Duplikate, Stapelumbenennung, Sicherung, Hex-Editor |
 | **Konverter** | 1 | Datei ablegen: FourTout schlägt die möglichen Umwandlungen vor |
 | **Entwickler** | 21 | JSON, XML, YAML, TOML, SQL, Base32, **verifiziertes** JWT, **SQLite-Datenbank**, Regex, Cron |
 | **Rechner** | 21 | Einheiten, Prozente, Daten, **Zeitzonen**, **Bandbreite**, **Zinsen**, Währungen |
-| **Netzwerk** | 3 | Ping, Porttest, Erkennung im lokalen Netzwerk — begrenzt und nie darüber hinaus |
+| **Internet & Web** | 8 | Eine Datei oder ein öffentliches Video herunterladen, eine Webseite als PDF oder Bild erfassen, einen Link kürzen |
+| **Netzwerk** | 4 | Ping, Porttest, Erkennung im lokalen Netzwerk — begrenzt und nie darüber hinaus |
 | **Diagnose & Wiederherstellung** | 5 | Beschädigte Datei, unlesbares Archiv, kaputtes PDF, beschädigtes Bild, Datenträger und Partitionen |
 | **Sicherheit** | 7 | Passwörter, Dateiverschlüsselung, HMAC, Entfernen von Metadaten |
 
-Jedes Werkzeug wird in seiner eigenen Kategorie gezählt: insgesamt 196. Ein
+Jedes Werkzeug wird in seiner eigenen Kategorie gezählt: insgesamt 211. Ein
 Werkzeug kann auch in anderen Kategorien angeboten werden, dort, wo man es
 sucht — deshalb zeigt die Anwendung pro Kategorie höhere Zahlen.
 
@@ -220,24 +224,34 @@ Die vollständige Liste, Werkzeug für Werkzeug: **[docs/guides/FEATURES.md](doc
 
 ## Datenschutz
 
-Die gesamte Dateiverarbeitung ist lokal: PDF, Bilder, Audio, Video, Text,
-Archive, Prüfsummen, Verschlüsselung, Freistellen. Keine Datei wird
-hochgeladen. Kein Konto, keine Analyse, keine Telemetrie, keine automatischen
-Updates.
+Die Verarbeitung ist standardmäßig lokal: PDF, Bilder, Audio, Video, Text,
+Archive, Prüfsummen, Verschlüsselung, Freistellen, KI-Vergrößerung, ISO-Images.
+Werkzeuge, die Ihre Dateien verarbeiten, laden sie nie hoch. Kein Konto, keine
+Analyse, keine Telemetrie, keine automatischen Updates.
 
-Zwei Funktionen sind Ausnahmen, und beide sagen das in der Oberfläche:
+Einige Funktionen greifen tatsächlich auf das Netzwerk zu, und jede sagt das in
+ihrer Oberfläche:
 
+- die Werkzeuge der Kategorie **Internet & Web** (Datei-Download, Medien-Download,
+  Ausschnitt und GIF aus Online-Videos, URL-Kürzer, Webseitenerfassung)
+  verbinden sich mit der Adresse, die Sie angeben, und sonst nirgends hin. Der
+  URL-Kürzer sendet diese Adresse an den von Ihnen gewählten Dienst, der sie
+  speichert. Die Webseitenerfassung steuert einen bereits installierten
+  Chromium-Browser mit leerem temporärem Profil;
+- der **Geschwindigkeitstest** tauscht von FourTout erzeugten Testverkehr mit dem
+  Messdienst von Cloudflare aus. Keine Ihrer Dateien wird gesendet;
 - der **Währungsrechner** fragt den täglichen Referenzkurs-Feed der
   Europäischen Zentralbank ab. Der umzurechnende Betrag verlässt den Rechner
   nie; offline werden die zuletzt bekannten Kurse wiederverwendet **und mit
   Datum angezeigt**;
-- die **Modelle** für Sprachausgabe, Transkription und Freistellen werden auf
-  Ihre ausdrückliche Anforderung einmalig heruntergeladen. Danach läuft alles
-  auf dem Rechner.
+- die **Modelle** (Sprachausgabe, Transkription, Freistellen, KI-Vergrößerung)
+  und die Engine **yt-dlp** werden auf Ihre ausdrückliche Anforderung einmalig
+  heruntergeladen und per SHA-256-Prüfsumme verifiziert. Danach laufen die
+  Modelle auf dem Rechner.
 
-Die drei **Netzwerk**-Werkzeuge (Ping, Ports, Erkennung im lokalen Netzwerk)
-öffnen echte Verbindungen, aber nur zu den Hosts, die Sie angeben, oder in Ihr
-lokales Subnetz, und nie ohne einen Klick.
+Die vier **Netzwerk**-Werkzeuge (Ping, Ports, Erkennung im lokalen Netzwerk,
+Geschwindigkeitstest) öffnen echte Verbindungen, aber nur zu den Hosts, die Sie
+angeben, in Ihr lokales Subnetz oder zum Messdienst, und nie ohne einen Klick.
 
 Im Detail, Funktion für Funktion: **[docs/legal/PRIVACY.md](docs/legal/PRIVACY.md)**.
 

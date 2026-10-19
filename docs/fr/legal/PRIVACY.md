@@ -20,10 +20,11 @@ FourTout traite vos fichiers sur votre machine. Cette page dit exactement ce
 qui sort du poste, et ce qui n'en sort jamais — pas les intentions du projet,
 mais ce que fait le code.
 
-Tout ce qui suit est vérifiable : la couche réseau de FourTout tient dans trois
-endroits du code natif — `src-tauri/src/rates.rs` (taux de change),
-`src-tauri/src/models/` (modèles) et `src-tauri/src/network/` (les trois sondes
-de diagnostic, qui ne sortent jamais de votre réseau local). La politique de
+Tout ce qui suit est vérifiable : la couche réseau de FourTout tient dans le
+code natif — `src-tauri/src/rates.rs` (taux de change),
+`src-tauri/src/models/` (modèles), `src-tauri/src/network/` (sondes de
+diagnostic) et, pour la catégorie **Internet & Web**, `src-tauri/src/internet/`,
+`src-tauri/src/ytdlp/` et `src-tauri/src/webcapture/`. La politique de
 sécurité de contenu de l'application
 (`connect-src 'self' ipc:`) **interdit à l'interface d'émettre la moindre
 requête sortante** : aucune page, aucun outil, aucune dépendance JavaScript ne
@@ -48,13 +49,23 @@ peut ouvrir une connexion, même par erreur.
 | **Disques et partitions** | Inventaire en lecture seule. Les numéros de série et identifiants de volume sont affichés pendant la session et enregistrés nulle part — ni récents, ni paramètres, ni journaux. Aucune recherche en ligne de fabricant. |
 | **Parole** | Une fois les modèles installés, la synthèse et la transcription s'exécutent sur votre machine. |
 | **Détourage** | Le modèle de suppression d'arrière-plan tourne dans l'application, sur votre machine. L'image n'est envoyée nulle part — c'est précisément ce que ne font pas les services en ligne équivalents. |
+| **Agrandissement par IA** | Une fois le modèle installé, l'image est agrandie dans l'application. Elle n'est jamais envoyée à un service en ligne. |
+| **Images ISO** | Créer, inspecter et extraire une image est fait par le moteur natif sur des chemins locaux. Rien n'est écrit sur un disque ou une partition. |
+| **Compresser à une taille maximale** | La vidéo et l'audio passent par le FFmpeg local ; images et PDF sont traités dans l'application. |
+| **Convertisseur universel** | La détection du contenu lit le début du fichier, localement. |
 
 ---
 
 ## Ce qui sort, et pourquoi
 
-Deux fonctions contactent Internet, deux seulement. Une troisième famille
-d'outils ouvre des connexions, mais sur votre réseau local uniquement.
+Seules les fonctions ci-dessous contactent Internet, et chacune le dit dans son
+interface : ce sont les seuls outils qui ne portent pas la mention `local`. Une
+autre famille d'outils ouvre des connexions, mais sur votre réseau local
+uniquement.
+
+**Ne lisez pas « FourTout est local » comme couvrant ces outils.** Les outils de
+téléchargement, de raccourcissement et de capture existent précisément pour
+atteindre une adresse distante que vous fournissez.
 
 ### 1. Convertisseur de devises
 
@@ -78,22 +89,51 @@ n'affiche aucun chiffre. Aucun taux n'est jamais inventé.
 **Pour éviter tout appel Internet :** n'ouvrez pas cet outil. Il est le seul du
 catalogue à contacter un serveur distant, et l'interface l'annonce sur sa page.
 
-### 2. Modèles (parole et détourage)
+### 2. Modèles (parole, détourage, agrandissement par IA)
 
-**Ce qui part :** un téléchargement depuis GitHub (moteurs Piper et
-whisper.cpp, modèles U²-Net) et Hugging Face (voix et modèles de
-transcription), **à votre demande explicite**, depuis Paramètres → Modèles.
+**Ce qui part :** un téléchargement explicitement demandé depuis GitHub pour les
+composants Piper, whisper.cpp et U²-Net, ou depuis Hugging Face pour les voix,
+les modèles de transcription et le modèle d'agrandissement, lancé depuis
+Réglages → Modèles ou depuis l'outil.
 
-**Ce qui ne part pas :** le texte que vous faites lire, l'audio que vous faites
-transcrire, l'image que vous faites détourer. Une fois le modèle installé, tout
-s'exécute entièrement sur votre machine, même sans connexion.
+**Ce qui ne part pas :** le texte à synthétiser, l'audio à transcrire, l'image à
+traiter. Une fois installés, les modèles fonctionnent entièrement hors ligne.
+Chaque téléchargement est vérifié par somme avant installation ; une différence
+est refusée et rien n'est installé. Voir [Modèles](../technical/MODELS.md).
 
-Chaque téléchargement est vérifié par empreinte avant installation ; un fichier
-dont l'empreinte ne correspond pas est rejeté et rien n'est installé.
+### 3. Outils Internet & Web
 
-Détails : [MODELS.md](../technical/MODELS.md).
+| Outil | Ce qui part, et vers qui |
+| --- | --- |
+| Téléchargeur de fichiers | Une requête vers l'adresse saisie (et ses redirections). |
+| Téléchargeur de médias, extrait, GIF | yt-dlp contacte le service de médias pour l'adresse saisie. |
+| Raccourcisseur d'URL | L'adresse saisie, vers le service choisi (is.gd, v.gd ou TinyURL), **qui la conserve**. |
+| Page web vers PDF, image ou MHTML | Un navigateur Chromium installé localement charge l'adresse saisie, avec un profil temporaire vierge. |
 
-### 3. Outils réseau — votre réseau local, et rien d'autre
+**Ce qui ne part pas :** vos fichiers, les cookies, l'historique ou les sessions
+de votre navigateur, tout identifiant, toute télémétrie. Les identifiants
+incorporés à l'adresse sont refusés, et FourTout ne contourne ni DRM, ni
+paiement, ni connexion. Une page qui exige une connexion est vue comme la verrait
+un visiteur anonyme.
+
+**yt-dlp** n'est pas embarqué. À votre demande, FourTout le télécharge depuis la
+page de publication officielle (GitHub), le vérifie avec les sommes SHA-256
+officielles, l'exécute une fois pour confirmer la version, et le range dans le
+dossier de données de l'application. Une vérification qui échoue n'installe rien.
+Voir [Internet & Web](../features/INTERNET.md).
+
+**Rien ne démarre sans un clic**, et chaque travail peut être annulé ; la sortie
+partielle est supprimée.
+
+### 4. Test de débit
+
+**Ce qui part :** des données de test générées par FourTout, vers et depuis le
+service de mesure de Cloudflare (`speed.cloudflare.com`). Cloudflare voit
+nécessairement votre adresse IP, comme n'importe quel serveur web.
+
+**Ce qui ne part pas :** aucun de vos fichiers, aucun identifiant.
+
+### 5. Outils réseau — votre réseau local, et rien d'autre
 
 **Ping**, **Tester des ports** et **Découvrir les appareils du réseau local**
 ouvrent de vraies connexions. Elles vont exactement où vous les envoyez :
@@ -117,9 +157,9 @@ une confirmation explicite.
 
 **Pour éviter tout trafic :** n'ouvrez pas ces trois outils. Ils portent la
 capacité « réseau », et l'interface l'annonce sur leur page — en disant qu'ils
-**utilisent le réseau**, et non qu'ils exigent Internet. Seul le convertisseur
-de devises porte la capacité « internet », et c'est le seul dont la page
-annonce qu'une connexion Internet est nécessaire.
+**utilisent le réseau**, et non qu'ils exigent Internet. Le convertisseur
+de devises, les outils Internet & Web et le test de débit portent la capacité
+« internet », et leur page annonce qu'une connexion Internet est nécessaire.
 
 Détails et limites : [NETWORK.md](../features/NETWORK.md).
 
@@ -147,7 +187,8 @@ Détails et limites : [NETWORK.md](../features/NETWORK.md).
 | Favoris | Identifiants d'outils | idem |
 | Récemment utilisés | Identifiants d'outils et horodatages | idem |
 | Taux de change | Dernier relevé BCE et sa date | idem |
-| Modèles (parole, détourage) | Fichiers téléchargés | Dossier de données de l'application |
+| Modèles (parole, détourage, agrandissement par IA) | Fichiers téléchargés | Dossier de données de l'application |
+| Moteur yt-dlp | Le binaire vérifié, si vous l'avez installé | Dossier de données de l'application, `engines/yt-dlp` |
 
 | Système | Chemin |
 | --- | --- |
@@ -163,7 +204,8 @@ permet de tout effacer.
 ## Fichiers temporaires
 
 Certaines opérations média passent par des fichiers temporaires (concaténation
-vidéo, transcodage en plusieurs passes). Ils sont créés dans le dossier
+vidéo, transcodage en plusieurs passes, dossier privé où écrit yt-dlp). La
+capture web crée un profil de navigateur temporaire et le supprime ensuite. Ils sont créés dans le dossier
 temporaire du système et **supprimés à la fin de l'opération, réussie ou
 non** — y compris en cas d'annulation.
 
@@ -198,6 +240,9 @@ directement le fichier de sortie, et le supprime si l'opération échoue.
 src-tauri/src/rates.rs        # taux BCE — le seul appel vers Internet
 src-tauri/src/models/         # téléchargement des modèles, à votre demande
 src-tauri/src/network/        # sondes de diagnostic, réseau local uniquement
+src-tauri/src/internet/       # noyau HTTP, téléchargements, test de débit, raccourcisseur
+src-tauri/src/ytdlp/          # installation et appel de yt-dlp
+src-tauri/src/webcapture/     # capture Chromium sans fenêtre, profil temporaire vierge
 
 # Les bornes des sondes, et les tests qui les vérifient :
 src-tauri/src/network/cidr.rs # 256 adresses au maximum, /24 au plus large
@@ -209,5 +254,6 @@ src-tauri/tauri.conf.json     # app.security.csp
 ```
 
 Vous pouvez aussi observer le trafic réseau du processus pendant une session
-FourTout : hors convertisseur de devises, téléchargement de modèle et sondes de
-diagnostic que vous avez lancées vous-même, il n'y en a pas.
+FourTout : hors convertisseur de devises, outils Internet & Web, test de débit,
+téléchargement de modèle ou de yt-dlp demandé et sondes de diagnostic que vous
+avez lancées vous-même, il n'y en a pas.

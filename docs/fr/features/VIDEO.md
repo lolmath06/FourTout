@@ -276,3 +276,21 @@ d'outils simples.
   cohabitation avec les jobs de parole.
 - `src/tools/impl/video/videoCatalog.test.ts` — catalogue ↔ implémentations ↔
   validation des fichiers déposés.
+
+## WebM, WebP animé et extraits
+
+- **WebM** (VP9 et Opus ou Vorbis) est détecté par le `DocType` EBML, donc sans
+  confusion avec Matroska, et n'est proposé que si ce FFmpeg dispose d'un
+  encodeur VP9 qui fonctionne.
+- **Vidéo vers GIF** produit aussi du **WebP animé** (`videoToWebp`), qui garde
+  toutes les couleurs et une sortie capable de transparence réelle, pour une
+  taille moindre. L'outil avertit que le GIF ne garde que 256 couleurs et une
+  transparence tout ou rien, et qu'une vidéo n'a pas de transparence et ne boucle
+  pas d'elle-même.
+- **Le découpage** réencode les extrémités de l'extrait sauf si vous désactivez
+  l'option. La copie des flux est plus rapide mais s'aligne sur les images clés :
+  le résultat peut commencer plus tôt que demandé, et l'option le dit.
+- **Extraits et GIF d'une vidéo en ligne** ([Internet & Web](INTERNET.md))
+  réutilisent les mêmes constructeurs. Quand le site ne peut pas servir
+  seulement une section, la source entière est téléchargée puis coupée
+  localement, et le résultat le dit.

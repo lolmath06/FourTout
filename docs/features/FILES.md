@@ -174,3 +174,32 @@ vectors, every archive format, damaged/truncated/hostile archives, independent
 generated fixture contracts, real preview rendering, handoff navigation, and
 large ignored performance cases. Fixture-dependent tests skip with an explicit
 message until `pnpm test:assets` is run.
+
+## ISO images
+
+`iso-create`, `iso-inspect` and `iso-extract` are documented in
+[ISO images](ISO.md): a pure-Rust ISO 9660 engine with Joliet and Rock Ridge,
+El Torito reading, hostile-name protection, and rollback on error.
+
+## Compress to a maximum size (`compress-to-size`)
+
+One tool for video, audio, images, and PDF files, built on a shared budget
+planner (`src-tauri/src/media/budget.rs`).
+
+- **Video and audio:** the target size minus a 6% safety margin and the audio
+  stream gives a bitrate budget, kept inside sensible bounds. If the first
+  encode lands above the target, the tool retries with a lower bitrate. When the
+  bitrate would be too low for the resolution, it proposes a lower resolution
+  first and says so. A source that already fits is not re-encoded. Real encoders
+  are chosen by probing which ones work in this FFmpeg.
+- **Warnings instead of promises:** an impossible target for the duration, a very
+  low bitrate, or a lossless audio format that cannot aim at a size are reported
+  clearly. The size is never promised to the byte, and 1 MB is 1,000,000 bytes.
+- **Images:** quality steps first, then downscaling; never upscaled. PNG and other
+  formats that cannot trade quality for size say so and suggest JPEG or a larger
+  target.
+- **PDF:** embedded images are reduced in stages (light, balanced, strong) until
+  the file fits. Text stays text: pages are never turned into pictures to save
+  space. When even the strongest level is not enough, the tool says so.
+- Video and audio need the installed application (FFmpeg); the tool reports a
+  missing FFmpeg instead of failing late.

@@ -1,4 +1,10 @@
 import {
+  ArrowDownToLine,
+  Disc3,
+  FileDown,
+  ImageUp,
+  Printer,
+  ScanSearch,
   AlignLeft,
   GitCompareArrows,
   FolderSync,
@@ -188,6 +194,12 @@ import {
  * Ajouter un outil avec une nouvelle icône = ajouter son nom ici.
  */
 export const ICONS: Record<string, LucideIcon> = {
+  ArrowDownToLine,
+  Disc3,
+  FileDown,
+  ImageUp,
+  Printer,
+  ScanSearch,
   ChevronLeft,
   ZoomIn,
   ZoomOut,

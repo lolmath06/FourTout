@@ -139,6 +139,21 @@
         "パスワード",
         "ハッシュ"
       ]
+    },
+    "internet": {
+      "name": "インターネットとWeb",
+      "description": "ファイルやメディアのダウンロード、Webページのキャプチャ、リンクの短縮、回線の計測。",
+      "keywords": [
+        "インターネット",
+        "web",
+        "ダウンロード",
+        "url",
+        "リンク",
+        "サイト",
+        "youtube",
+        "webページ",
+        "オンライン"
+      ]
     }
   },
   "tools": {
@@ -611,7 +626,13 @@
         "bmp",
         "tiff",
         "heic",
-        "avif"
+        "avif",
+        "heicをjpgに",
+        "heifをpngに",
+        "avifをjpgに",
+        "heicをwebpに",
+        "apng",
+        "webpをpngに"
       ],
       "aliases": [
         "convert image",
@@ -1396,7 +1417,9 @@
         "mkv を mp4 に",
         "avi を mp4 に",
         "webm",
-        "mov"
+        "mov",
+        "webmをmp4に",
+        "mp4をwebmに"
       ],
       "aliases": [
         "convert video",
@@ -2679,7 +2702,15 @@
         "形式を変更",
         "どんなファイルでも",
         "どの形式",
-        "convert"
+        "convert",
+        "webp",
+        "webm",
+        "avif",
+        "heic",
+        "heif",
+        "apng",
+        "iso",
+        "これは何のファイル形式"
       ],
       "aliases": [
         "universal converter",
@@ -2896,7 +2927,11 @@
         "qr を読む",
         "スキャン",
         "qr コードを読み取り",
-        "画像から qr"
+        "画像から qr",
+        "qrコードを読み取る",
+        "qrをスキャン",
+        "スクリーンショットからqrをデコード",
+        "写真からqr"
       ],
       "aliases": [
         "qr code reader",
@@ -3732,6 +3767,334 @@
         "remove metadata",
         "anonymize file"
       ]
+    },
+    "url-download": {
+      "name": "URLからファイルをダウンロード",
+      "description": "HTTPまたはHTTPSのファイルを、再開・進行状況・チェックサム検証付きで保存します。",
+      "keywords": [
+        "ダウンロード",
+        "ファイルをダウンロード",
+        "ダウンロードリンク",
+        "wget",
+        "curl",
+        "ダウンロード再開",
+        "urlからファイル",
+        "リンクを保存"
+      ],
+      "aliases": [
+        "download file",
+        "download from url",
+        "file downloader",
+        "wget"
+      ],
+      "note": "FourToutは指定されたアドレスにのみ接続します。ファイルは完全にダウンロードされて初めて最終的な名前で現れます。"
+    },
+    "media-download": {
+      "name": "インターネットからメディアをダウンロード",
+      "description": "公開されている動画や音声を、yt-dlpでMP4、WebM、MP3、M4A、Opus、WAV、FLACとして取得します。",
+      "keywords": [
+        "youtube",
+        "動画ダウンロード",
+        "youtubeをmp3に",
+        "youtubeをmp4に",
+        "音楽ダウンロード",
+        "リンクから音声抽出",
+        "オンライン動画",
+        "yt-dlp",
+        "クリップをダウンロード",
+        "vimeo"
+      ],
+      "aliases": [
+        "download video",
+        "youtube downloader",
+        "youtube to mp3",
+        "youtube to mp4",
+        "yt-dlp"
+      ],
+      "note": "yt-dlpがメディアサービスに接続します。必要に応じてインストールされ、チェックサムで検証されます。公開コンテンツのみ: DRMなし、アカウントなし、Cookieなし。"
+    },
+    "media-url-excerpt": {
+      "name": "オンライン動画の一部をダウンロード",
+      "description": "公開動画の必要な部分だけを、ある瞬間から別の瞬間まで取得します。",
+      "keywords": [
+        "youtubeの一部",
+        "オンライン動画をカット",
+        "動画の一部分",
+        "動画からクリップ",
+        "抜粋をダウンロード",
+        "youtube動画を切り出し",
+        "開始と終了"
+      ],
+      "aliases": [
+        "download video clip",
+        "youtube clip",
+        "cut online video",
+        "video excerpt"
+      ],
+      "note": "サービスが許可すれば抜粋だけをダウンロードします。そうでなければ元動画全体をダウンロードしてここで切り出します。どちらだったかはツールが知らせます。"
+    },
+    "media-url-gif": {
+      "name": "オンライン動画からGIFまたはアニメーションWebP",
+      "description": "公開リンクの数秒から、適度なサイズのGIFまたはアニメーションWebPを作成します。",
+      "keywords": [
+        "youtubeからgif",
+        "リンクからgifを作成",
+        "リンクからアニメーションwebp",
+        "ミーム",
+        "ループ",
+        "urlからgif",
+        "動画からアニメーション"
+      ],
+      "aliases": [
+        "online video to gif",
+        "youtube to gif",
+        "url to gif",
+        "video url to webp"
+      ],
+      "note": "要求した抜粋のみを使用し、最大720pです。アニメーションにはそれ以上は不要です。GIFは非常に大きくなりやすいため、既定の設定は控えめです。"
+    },
+    "url-shorten": {
+      "name": "URLを短縮",
+      "description": "公開サービス（is.gd、v.gd、TinyURL）から、ワンクリックでコピーできる短いリンクを取得します。",
+      "keywords": [
+        "リンクを短縮",
+        "短いリンク",
+        "短縮url",
+        "bitly",
+        "tinyurl",
+        "is.gd",
+        "アドレスを短く"
+      ],
+      "aliases": [
+        "url shortener",
+        "shorten link",
+        "short link",
+        "link shortener"
+      ],
+      "note": "元のアドレスは、選択したサービスに送信され、保存されます。機密性のあるものは短縮しないでください。FourToutは追跡を一切追加しません。"
+    },
+    "web-to-pdf": {
+      "name": "WebページをPDFに",
+      "description": "インストール済みのChromiumブラウザーで、Webページを選択した用紙サイズと余白でPDFに印刷します。",
+      "keywords": [
+        "webページをpdfに",
+        "サイトをpdfに",
+        "ページを印刷",
+        "ページをpdfで保存",
+        "記事をpdfに",
+        "htmlをpdfに",
+        "urlをpdfに"
+      ],
+      "aliases": [
+        "webpage to pdf",
+        "url to pdf",
+        "print page to pdf",
+        "website to pdf"
+      ],
+      "note": "ページは隔離されたブラウザー（空の一時プロファイル: あなたのCookieや履歴なし）で読み込まれます。Chrome、Chromium、またはEdgeが必要です。"
+    },
+    "web-to-image": {
+      "name": "Webページを画像に",
+      "description": "Webページを全体またはウィンドウサイズで、PNG、JPEG、WebPとしてキャプチャします。",
+      "keywords": [
+        "サイトのスクリーンショット",
+        "webページのスクリーンショット",
+        "ページ全体を画像に",
+        "サイトをpngに",
+        "全ページキャプチャ",
+        "urlを画像に"
+      ],
+      "aliases": [
+        "webpage to image",
+        "website screenshot",
+        "full page screenshot",
+        "url to png"
+      ],
+      "note": "ページは隔離されたブラウザー（空の一時プロファイル）で読み込まれます。全ページキャプチャは高さ20,000ピクセルに制限されます。"
+    },
+    "web-save-offline": {
+      "name": "Webページをオフライン保存",
+      "description": "ページとそのリソースを、接続なしで読める1つのMHTMLファイルに保存します。",
+      "keywords": [
+        "ページを保存",
+        "オフラインページ",
+        "mhtml",
+        "サイトをアーカイブ",
+        "webページを保存",
+        "1ファイルのページ",
+        "あとで読む"
+      ],
+      "aliases": [
+        "save webpage offline",
+        "mhtml",
+        "web archive",
+        "save page as"
+      ],
+      "note": "ページは隔離されたブラウザー（空の一時プロファイル）で読み込まれます。MHTMLファイルはChrome、Edge、ほとんどのChromium系ブラウザーで開けます。"
+    },
+    "speed-test": {
+      "name": "インターネット速度テスト",
+      "description": "回線のレイテンシー、ジッター、ダウンロード速度、アップロード速度を計測します。",
+      "keywords": [
+        "速度テスト",
+        "インターネット速度",
+        "speedtest",
+        "アップロード速度",
+        "ダウンロード速度",
+        "回線が遅い",
+        "レイテンシー",
+        "ping",
+        "ジッター",
+        "mbps",
+        "光回線",
+        "wifiが遅い"
+      ],
+      "aliases": [
+        "speed test",
+        "internet speed",
+        "bandwidth test",
+        "download speed",
+        "upload speed"
+      ],
+      "note": "FourToutが生成したテストトラフィックはCloudflareの計測サービス（speed.cloudflare.com）とやり取りされ、あなたのファイルは送信されません。結果は変動します。VPN、Wi-Fi、サーバーまでの距離、同時トラフィックが影響します。"
+    },
+    "iso-create": {
+      "name": "ISOイメージを作成",
+      "description": "フォルダーを、長い名前（JolietとRock Ridge）対応のISO 9660ファイルにまとめます。",
+      "keywords": [
+        "isoを作成",
+        "isoを作る",
+        "フォルダーからiso",
+        "isoイメージ",
+        "cdイメージ",
+        "dvdイメージ",
+        "iso9660",
+        "joliet",
+        "rock ridge",
+        "isoアーカイブ"
+      ],
+      "aliases": [
+        "create iso",
+        "make iso",
+        "folder to iso",
+        "disc image",
+        "iso maker"
+      ],
+      "note": "通常の.isoファイルを作成し、ディスクやUSBメモリーには決して書き込みません。イメージはデータ用で、ブートできません。"
+    },
+    "iso-inspect": {
+      "name": "ISOイメージを調査",
+      "description": "ISOイメージのボリューム名、ファイルシステム、ツリー、ブート情報を読み取ります。",
+      "keywords": [
+        "isoの内容を見る",
+        "isoを開く",
+        "isoのファイル一覧",
+        "isoボリューム",
+        "el torito",
+        "ブート可能iso",
+        "isoイメージ",
+        "cdイメージの内容"
+      ],
+      "aliases": [
+        "inspect iso",
+        "list iso",
+        "iso viewer",
+        "iso contents",
+        "boot catalog"
+      ],
+      "note": "ディスクリプターとディレクトリのみ読み取ります。イメージは抽出も変更もされません。純粋なUDFイメージ（一部のWindows ISO）は、ISO 9660部分からのみ読み取ります。"
+    },
+    "iso-extract": {
+      "name": "ISOイメージを抽出",
+      "description": "ISOイメージの内容全体、または選択したファイルだけをフォルダーにコピーします。",
+      "keywords": [
+        "isoを抽出",
+        "isoを展開",
+        "ディスクイメージを開く",
+        "isoの内容をコピー",
+        "isoからファイルを取り出す"
+      ],
+      "aliases": [
+        "extract iso",
+        "unpack iso",
+        "iso extractor",
+        "mount iso alternative"
+      ],
+      "note": "イメージ内の名前は敵対的とみなされます。選択したフォルダーの外には何も書き込めず、求めない限り何も上書きされません。"
+    },
+    "compress-to-size": {
+      "name": "最大サイズに圧縮",
+      "description": "動画、音声、画像、PDFを、25 MBなどの希望サイズに収めます。",
+      "keywords": [
+        "25 mb以下",
+        "最大サイズ",
+        "上限に収める",
+        "添付が重すぎる",
+        "メールが大きすぎる",
+        "discord 25 mb",
+        "500 kbに圧縮",
+        "目標サイズ",
+        "送信上限"
+      ],
+      "aliases": [
+        "compress to size",
+        "target file size",
+        "reduce to under",
+        "compress under 25mb",
+        "max file size"
+      ],
+      "note": "希望サイズはバイト単位では保証されません。ツールは余裕を持ってビットレートを算出し、必要なら低い値で再試行し、画像を拡大することはなく、目標が非現実的なときは警告します。"
+    },
+    "image-upscale": {
+      "name": "AIで画像を拡大",
+      "description": "お使いのコンピューター上で動く超解像ネットワークで、画像の解像度を2倍または4倍にします。",
+      "keywords": [
+        "画像を拡大",
+        "アップスケール",
+        "解像度を上げる",
+        "ぼやけた画像",
+        "超解像",
+        "x2",
+        "x4",
+        "鮮明",
+        "写真の画質",
+        "esrgan",
+        "高精細",
+        "画像補正"
+      ],
+      "aliases": [
+        "ai upscale",
+        "image upscaler",
+        "enhance image",
+        "super resolution",
+        "real-esrgan",
+        "upscale photo"
+      ],
+      "note": "モデル（5 MB、BSD-3ライセンス）は要求時に一度だけダウンロードされ、その後はすべてお使いのコンピューター上で行われ、画像はどこにも送信されません。透明度は保持されますが、通常の補間で拡大されます。"
+    },
+    "animated-image-convert": {
+      "name": "アニメーション画像を変換",
+      "description": "アニメーションWebPまたはアニメーションPNG（APNG）を、アニメーションを失わずにGIF、APNG、アニメーションWebP、MP4、WebM、または連番画像に変換します。",
+      "keywords": [
+        "アニメーションwebp",
+        "apng",
+        "アニメーションpng",
+        "webpをgifに",
+        "webpをmp4に",
+        "アニメーションから動画",
+        "アニメーションのフレームを抽出",
+        "アニメーションgif",
+        "ステッカー",
+        "フレーム"
+      ],
+      "aliases": [
+        "animated webp",
+        "apng converter",
+        "animated image to gif",
+        "webp to mp4",
+        "animated png"
+      ],
+      "note": "各フレームの長さは保持されます。出力形式が保持できないものは、ツールが知らせます: 透明度（MP4、WebM）、ループ（動画）、色（GIF）。"
     }
   }
 }

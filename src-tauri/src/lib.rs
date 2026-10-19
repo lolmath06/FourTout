@@ -11,14 +11,19 @@ pub mod disks;
 pub mod exec;
 pub mod files;
 pub mod image_native;
+pub mod imaging;
+pub mod internet;
 pub mod media;
 pub mod microphone;
 pub mod models;
 pub mod network;
+pub mod proc;
 pub mod rates;
 pub mod recovery;
 pub mod security;
 pub mod speech;
+pub mod webcapture;
+pub mod ytdlp;
 pub mod sqlite;
 
 use serde::Serialize;
@@ -78,16 +83,43 @@ pub fn run() {
             media::command::media_reset_encoder_probes,
             media::command::media_stage,
             media::command::media_probe,
+            media::command::media_probe_path,
             media::command::media_read,
             media::command::media_cleanup,
             media::command::media_exec,
             media::command::media_cancel,
+            media::sizecmd::media_compress_size,
             files::command::files_cancel,
             files::command::files_hash,
             files::command::files_compare,
             files::command::files_binary_diff,
             files::command::files_info,
+            files::command::files_identify,
+            files::command::files_identify_path,
             files::command::files_archive_create,
+            internet::command::internet_probe,
+            internet::command::internet_download,
+            internet::command::internet_speedtest,
+            internet::command::internet_shorten,
+            imaging::command::image_native_formats,
+            imaging::command::image_decode_native,
+            imaging::command::image_anim_info,
+            imaging::command::image_anim_convert,
+            webcapture::command::web_browsers,
+            webcapture::command::web_capture,
+            ytdlp::command::ytdlp_status,
+            ytdlp::command::ytdlp_capabilities,
+            ytdlp::command::ytdlp_latest,
+            ytdlp::command::ytdlp_install,
+            ytdlp::command::ytdlp_remove,
+            ytdlp::command::ytdlp_info,
+            ytdlp::command::ytdlp_download,
+            ytdlp::command::ytdlp_animate,
+            ytdlp::command::ytdlp_preview,
+            ytdlp::command::media_budget_plan,
+            files::command::files_iso_create,
+            files::command::files_iso_inspect,
+            files::command::files_iso_extract,
             files::command::files_archive_list,
             files::command::files_archive_extract,
             files::command::files_archive_create_encrypted,

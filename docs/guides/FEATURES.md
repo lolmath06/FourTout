@@ -4,7 +4,7 @@
 
 [← Documentation](../README.md)
 
-196 tools across 12 categories. Every tool in this list is **usable**: FourTout
+211 tools across 13 categories. Every tool in this list is **usable**: FourTout
 does not register incomplete tools and has no “coming soon” state.
 
 A tool may appear in several categories. It is implemented once but remains
@@ -22,15 +22,16 @@ cannot advertise a missing tool or omit a newly registered one.
 ## Contents
 
 - [PDF](#pdf-26)
-- [Images](#images-25)
+- [Images](#images-27)
 - [Audio](#audio-18)
 - [Video](#video-20)
 - [Text & Documents](#text--documents-20)
-- [Files & Archives](#files--archives-29)
+- [Files & Archives](#files--archives-33)
 - [Converters](#converters-1)
 - [Developer](#developer-21)
 - [Calculators](#calculators-21)
-- [Network](#network-3)
+- [Internet & Web](#internet--web-8)
+- [Network](#network-4)
 - [Diagnostics & Recovery](#diagnostics--recovery-5)
 - [Security & Privacy](#security--privacy-7)
 
@@ -73,7 +74,7 @@ _Merge, split, compress, convert and secure PDFs._
 - **Scans and photos to PDF** — Combine scanned or photographed pages into a single PDF, with cleanup and page ordering. · also in *Images*
   <br>_Cleanup applies to every page with the same settings; assembly reuses the “Images to PDF” engine._
 
-### Images (25)
+### Images (27)
 
 _Convert, compress, resize and clean up images._
 
@@ -106,6 +107,10 @@ _Convert, compress, resize and clean up images._
 - **Compare two images** — See and measure what changes between two images: side by side, overlaid or as a difference, with differing pixels, PSNR and SSIM.
   <br>_Two images of different sizes are never resized without your consent: resampling would create differences that aren't in the files._
 - **Create a contact sheet** — Lay out several images in a grid on a single sheet, with each file's name.
+- **Enlarge an image with AI** — Double or quadruple an image's resolution with a super-resolution network that runs on your machine.
+  <br>_The model (5 MB, BSD-3 licence) is downloaded once, on request; after that everything happens on your machine and the image is sent nowhere. Transparency is kept, but enlarged by ordinary interpolation._
+- **Convert an animated image** — Turn an animated WebP or animated PNG (APNG) into GIF, APNG, animated WebP, MP4, WebM or a series of images, without losing the animation. · also in *Video*
+  <br>_Each frame's duration is kept. The tool tells you what the destination cannot keep: transparency (MP4, WebM), looping (video), colors (GIF)._
 
 ### Audio (18)
 
@@ -196,7 +201,7 @@ _Analyze, clean up, compare and transform text._
 - **Edit subtitles** — Convert between SRT and WebVTT, shift timestamps, merge two files, check and repair. · also in *Video* and *Converters*
   <br>_Whatever is mechanically safe is fixed (order, numbering, line endings); overlaps are flagged but never shortened automatically._
 
-### Files & Archives (29)
+### Files & Archives (33)
 
 _Compress, extract, compare, rename and organize files._
 
@@ -248,6 +253,14 @@ _Compress, extract, compare, rename and organize files._
   <br>_Nothing is decompressed: only the archive's table of contents is read. Entries whose path would escape the extraction folder are flagged before you even consider extracting._
 - **Test an archive** — Check that an archive is intact by fully decompressing it, without writing anything to disk. · also in *Security & Privacy*
   <br>_The content is actually decompressed and its checksums verified — listing an archive would prove nothing, since only its header would be read. Nothing is written: the bytes are counted, then discarded._
+- **Create an ISO image** — Gather a folder into an ISO 9660 file with long names (Joliet and Rock Ridge).
+  <br>_Produces an ordinary .iso file, never a write to a disc or USB stick. The image holds data: it is not bootable._
+- **Inspect an ISO image** — Read an ISO's volume name, file systems, tree and boot data.
+  <br>_Only descriptors and directories are read: the image is neither extracted nor modified. A pure UDF image (some Windows ISOs) is only read through its ISO 9660 part._
+- **Extract an ISO image** — Copy the whole content of an ISO, or only the files you choose, into a folder.
+  <br>_Names inside the image are treated as hostile: nothing can be written outside the chosen folder, and nothing is overwritten unless you ask._
+- **Compress down to a maximum size** — Get under a target size, for example 25 MB, for a video, a sound, an image or a PDF. · also in *Video* and *Audio* and *Images* and *PDF*
+  <br>_The target size is never promised to the byte: the tool computes a bitrate with a safety margin, retries lower if needed, never enlarges the picture and warns when the target is unrealistic._
 
 ### Converters (1)
 
@@ -315,7 +328,28 @@ _Units, percentages, dates, durations and everyday math._
 - **Calculate interest** — Simple or compound interest, with optional regular deposits.
   <br>_A math tool, not financial advice: taxes, inflation and fees aren't taken into account._
 
-### Network (3)
+### Internet & Web (8)
+
+_Download a file or media, capture a web page, shorten a link, measure your connection._
+
+- **Download a file from a URL** — Save an HTTP or HTTPS file, with resume, progress and hash verification.
+  <br>_FourTout contacts the address you give, and only that one. The file only appears under its final name once it is complete._
+- **Download media from the Internet** — Fetch a public video or sound as MP4, WebM, MP3, M4A, Opus, WAV or FLAC, using yt-dlp. · also in *Video* and *Audio*
+  <br>_yt-dlp contacts the media service; it is installed on request and verified by hash. Only public content is supported: no DRM, no account, no cookies._
+- **Download an excerpt of an online video** — Fetch only the part you want of a public video, from one moment to another. · also in *Video* and *Audio*
+  <br>_When the service allows it, only the excerpt is downloaded; otherwise the whole source is downloaded, then trimmed here — the tool tells you which of the two happened._
+- **Online video to GIF or animated WebP** — Create a reasonably sized GIF or animated WebP from a few seconds of a public link. · also in *Video* and *Images*
+  <br>_Only the requested excerpt is used, at 720p at most: an animation does not need more. Modest settings are offered by default, because a GIF grows very quickly._
+- **Shorten a URL** — Get a short link from a public service (is.gd, v.gd or TinyURL), ready to copy in one click.
+  <br>_The original address is sent to the service you choose, which keeps it: do not shorten anything confidential. FourTout adds no tracking._
+- **Web page to PDF** — Print a web page to PDF with an already installed Chromium browser, with the paper size and margins of your choice. · also in *PDF*
+  <br>_The page is loaded by an isolated browser (blank temporary profile: none of your cookies or history). Chrome, Chromium or Edge must be installed._
+- **Web page to image** — Capture a web page, whole or at window size, as PNG, JPEG or WebP. · also in *Images*
+  <br>_The page is loaded by an isolated browser (blank temporary profile). A full-page capture is capped at 20,000 pixels tall._
+- **Save a web page offline** — Save a page and its resources in a single MHTML file that can be read without a connection.
+  <br>_The page is loaded by an isolated browser (blank temporary profile). The MHTML file opens in Chrome, Edge and most Chromium browsers._
+
+### Network (4)
 
 _Diagnose a connection, test ports, see what's plugged into your home network._
 
@@ -325,6 +359,8 @@ _Diagnose a connection, test ports, see what's plugged into your home network._
   <br>_One host, at most 256 ports per run, using ordinary TCP connections. This isn't a scanner: no stealth, no service detection, no vulnerability search._
 - **Discover local network devices** — List the machines that show up on your subnet.
   <br>_Limited to the directly connected subnet and to 256 addresses. The exact range is shown before anything is sent, and nothing goes out without confirmation._
+- **Internet speed test** — Measure your connection's latency, jitter, download speed and upload speed. · also in *Internet & Web*
+  <br>_Test traffic generated by FourTout is exchanged with Cloudflare's measurement service (speed.cloudflare.com); none of your files is sent. Results vary: VPN, Wi-Fi, server distance and competing traffic change them._
 
 ### Diagnostics & Recovery (5)
 
