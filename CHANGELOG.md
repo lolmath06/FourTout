@@ -8,9 +8,9 @@ change pour lui. Pour l'historique détaillé du code, `git log`.
 
 ---
 
-## [Non publié]
+## [1.1.0] — 2026-10-19
 
-Cette étape porte FourTout à **211 outils, tous utilisables**, répartis en treize catégories. La version de l'application reste 1.0.1 : rien n'est publié ici.
+Cette version porte FourTout à **211 outils, tous utilisables**, répartis en treize catégories.
 
 ### Internet & Web (nouvelle catégorie)
 
